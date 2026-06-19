@@ -3,6 +3,10 @@ import { Router } from '@angular/router';
 import { RbfTree, RbfTransaction } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { ApiService } from '@app/services/api.service';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { Transaction } from '@interfaces/electrs.interface';
+import { calculateRbfDiff, RbfDiff } from '@app/shared/rbf-diff.utils';
 
 type Connector = 'pipe' | 'corner';
 
@@ -11,6 +15,52 @@ interface TimelineCell {
   connector?: Connector,
   first?: boolean,
   fullRbf?: boolean,
+}
+
+/**
+ * Represents a single replacement edge in the RBF tree (parent replaced child).
+ * Used to let users navigate and diff any adjacent pair in a branching tree.
+ */
+interface RbfEdge {
+  oldTxid: string;      // the replaced (older) transaction
+  newTxid: string;      // the replacement (newer) transaction
+  oldTxidShort: string; // first 8 chars for display
+  newTxidShort: string; // first 8 chars for display
+}
+
+/**
+ * Represents a single row in the comparison table
+ * Each row shows: label, previous value, current value, and optional highlighting
+ */
+interface ComparisonRow {
+  label: string;                    // e.g., "Version", "Locktime", "Fee"
+  previous: string | number | null; // Value from old transaction
+  current: string | number | null;  // Value from new transaction
+  changed: boolean;                 // Whether the value changed
+  changeType?: 'positive' | 'negative' | 'neutral'; // For styling
+  i18nKey?: string;                 // For internationalization
+  percentage?: number | null;       // Pre-calculated percentage change
+  isAmount?: boolean;               // Whether this row displays an amount (for app-amount component)
+  unit?: string;                    // Unit label for metrics (e.g., 'WU', 'vB')
+}
+
+/**
+ * Represents a comparison section (metadata, metrics, inputs, outputs)
+ */
+interface ComparisonSection {
+  title: string;
+  rows: ComparisonRow[];
+  hasChanges: boolean; // Whether any row in this section changed
+}
+
+/**
+ * Complete comparison table data structure
+ */
+interface ComparisonTableData {
+  metadata: ComparisonSection;  // Version, Locktime
+  metrics: ComparisonSection;   // Fee, Weight, vSize
+  inputs: ComparisonSection;    // Input changes summary
+  outputs: ComparisonSection;   // Output changes summary
 }
 
 function isTimelineCell(val: RbfTree | TimelineCell): boolean {
@@ -35,6 +85,19 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
 
   dir: 'rtl' | 'ltr' = 'ltr';
 
+  // RBF Diff state
+  selectedOldTx: Transaction | null = null;
+  selectedNewTx: Transaction | null = null;
+  rbfDiff: RbfDiff | null = null;
+  showDiff: boolean = false;
+  diffLoading: boolean = false;
+  diffError: boolean = false;
+  comparisonData: ComparisonTableData | null = null;
+
+  // Edge navigation for branching RBF trees
+  allEdges: RbfEdge[] = [];
+  selectedEdgeIndex: number = 0;
+
   constructor(
     private router: Router,
     private stateService: StateService,
@@ -48,10 +111,12 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.rows = this.buildTimelines(this.replacements);
+    this.updateEdges();
   }
 
   ngOnChanges(changes): void {
     this.rows = this.buildTimelines(this.replacements);
+    this.updateEdges();
     if (changes.txid && !changes.txid.firstChange && changes.txid.previousValue !== changes.txid.currentValue) {
       setTimeout(() => { this.scrollToSelected(); });
     }
@@ -216,5 +281,371 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
 
   onBlur(event): void {
     this.hoverInfo = null;
+  }
+
+  /**
+   * Fetches full transaction details for two transactions and computes their structural diff
+   * @param oldTxid - The original transaction ID
+   * @param newTxid - The replacement transaction ID
+   */
+  compareTxs(oldTxid: string, newTxid: string): void {
+    this.diffError = false;
+    this.diffLoading = true;
+    this.comparisonData = null;
+    forkJoin({
+      oldTx: this.apiService.getRbfCachedTx$(oldTxid).pipe(
+        catchError(() => of(null))
+      ),
+      newTx: this.apiService.getRbfCachedTx$(newTxid).pipe(
+        catchError(() => of(null))
+      ),
+    }).subscribe((result) => {
+      this.diffLoading = false;
+      if (!result.oldTx || !result.newTx) {
+        this.diffError = true;
+        return;
+      }
+      this.selectedOldTx = result.oldTx;
+      this.selectedNewTx = result.newTx;
+      this.rbfDiff = calculateRbfDiff(result.oldTx, result.newTx);
+      this.prepareComparisonTable();
+      this.showDiff = true;
+    });
+  }
+
+  closeDiff(): void {
+    this.showDiff = false;
+    this.diffLoading = false;
+    this.diffError = false;
+    this.selectedOldTx = null;
+    this.selectedNewTx = null;
+    this.rbfDiff = null;
+    this.comparisonData = null;
+  }
+
+  /**
+   * Prepares the RBF diff data into a block-audit-style comparison table structure
+   * FIXED: Only includes changed rows, calculates deltas in TypeScript, correct units
+   */
+  prepareComparisonTable(): void {
+    if (!this.rbfDiff || !this.selectedOldTx || !this.selectedNewTx) {
+      return;
+    }
+
+    // ========================================
+    // METADATA SECTION - Only add if changed
+    // ========================================
+    const metadataRows: ComparisonRow[] = [];
+
+    if (this.rbfDiff.transaction.versionChanged) {
+      metadataRows.push({
+        label: 'Version',
+        i18nKey: 'transaction.version',
+        previous: this.rbfDiff.transaction.oldVersion,
+        current: this.rbfDiff.transaction.newVersion,
+        changed: true,
+        changeType: 'neutral'
+      });
+    }
+
+    if (this.rbfDiff.transaction.locktimeChanged) {
+      metadataRows.push({
+        label: 'Locktime',
+        i18nKey: 'transaction.locktime',
+        previous: this.rbfDiff.transaction.oldLocktime,
+        current: this.rbfDiff.transaction.newLocktime,
+        changed: true,
+        changeType: 'neutral'
+      });
+    }
+
+    // ========================================
+    // METRICS SECTION - Only metrics that changed
+    // ========================================
+    const metricsRows: ComparisonRow[] = [];
+
+    // Fee (always changed if in this section)
+    if (this.rbfDiff.metrics.feeDelta !== null) {
+      const oldFee = this.selectedOldTx.fee;
+      const newFee = this.selectedNewTx.fee;
+      const feePercentage = oldFee > 0 ? ((newFee - oldFee) / oldFee) * 100 : null;
+
+      metricsRows.push({
+        label: 'Fee',
+        i18nKey: 'transaction.fee',
+        previous: oldFee,
+        current: newFee,
+        changed: true,
+        changeType: this.rbfDiff.metrics.feeDelta > 0 ? 'negative' : 'positive',
+        percentage: feePercentage,
+        isAmount: true
+      });
+    }
+
+    // Weight (with percentage)
+    if (this.rbfDiff.metrics.weightDelta !== null) {
+      const oldWeight = this.selectedOldTx.weight;
+      const newWeight = this.selectedNewTx.weight;
+      const weightPercentage = oldWeight > 0 ? ((newWeight - oldWeight) / oldWeight) * 100 : null;
+
+      metricsRows.push({
+        label: 'Weight',
+        i18nKey: 'transaction.weight',
+        previous: oldWeight,
+        current: newWeight,
+        changed: true,
+        changeType: this.rbfDiff.metrics.weightDelta > 0 ? 'negative' : 'positive',
+        percentage: weightPercentage,
+        isAmount: false,
+        unit: 'WU'
+      });
+    }
+
+    // Virtual size (with percentage) - FIXED: unit is vB
+    if (this.rbfDiff.metrics.vsizeDelta !== null) {
+      const oldVsize = this.selectedOldTx.size;
+      const newVsize = this.selectedNewTx.size;
+      const vsizePercentage = oldVsize > 0 ? ((newVsize - oldVsize) / oldVsize) * 100 : null;
+
+      metricsRows.push({
+        label: 'Virtual size',
+        i18nKey: 'transaction.vsize',
+        previous: oldVsize,
+        current: newVsize,
+        changed: true,
+        changeType: this.rbfDiff.metrics.vsizeDelta > 0 ? 'negative' : 'positive',
+        percentage: vsizePercentage,
+        isAmount: false,
+        unit: 'vB'
+      });
+    }
+
+    // ========================================
+    // INPUTS SECTION - FIXED: Delta formatting in TypeScript
+    // ========================================
+    const inputsRows: ComparisonRow[] = [];
+
+    const oldInputCount = this.selectedOldTx.vin.length;
+    const newInputCount = this.selectedNewTx.vin.length;
+    const inputDelta = newInputCount - oldInputCount;
+
+    // Total Inputs - ONLY add if count changed, with formatted delta
+    if (inputDelta !== 0) {
+      const sign = inputDelta > 0 ? '+' : '';
+      const formattedCurrent = `${newInputCount} (${sign}${inputDelta})`;
+
+      inputsRows.push({
+        label: 'Total Inputs',
+        i18nKey: 'transaction.inputs-count',
+        previous: oldInputCount,
+        current: formattedCurrent,
+        changed: true,
+        changeType: 'neutral'
+      });
+    }
+
+    // Added Inputs
+    if (this.rbfDiff.inputs.added.length > 0) {
+      inputsRows.push({
+        label: 'Added Inputs',
+        i18nKey: 'rbf-diff.inputs-added',
+        previous: null,
+        current: this.rbfDiff.inputs.added.length,
+        changed: true,
+        changeType: 'positive'
+      });
+    }
+
+    // Removed Inputs
+    if (this.rbfDiff.inputs.removed.length > 0) {
+      inputsRows.push({
+        label: 'Removed Inputs',
+        i18nKey: 'rbf-diff.inputs-removed',
+        previous: this.rbfDiff.inputs.removed.length,
+        current: null,
+        changed: true,
+        changeType: 'negative'
+      });
+    }
+
+    // ========================================
+    // OUTPUTS SECTION - FIXED: Delta formatting in TypeScript
+    // ========================================
+    const outputsRows: ComparisonRow[] = [];
+
+    const oldOutputCount = this.selectedOldTx.vout.length;
+    const newOutputCount = this.selectedNewTx.vout.length;
+    const outputDelta = newOutputCount - oldOutputCount;
+
+    // Total Outputs - ONLY add if count changed, with formatted delta
+    if (outputDelta !== 0) {
+      const sign = outputDelta > 0 ? '+' : '';
+      const formattedCurrent = `${newOutputCount} (${sign}${outputDelta})`;
+
+      outputsRows.push({
+        label: 'Total Outputs',
+        i18nKey: 'transaction.outputs-count',
+        previous: oldOutputCount,
+        current: formattedCurrent,
+        changed: true,
+        changeType: 'neutral'
+      });
+    }
+
+    // Added Outputs
+    if (this.rbfDiff.outputs.added.length > 0) {
+      outputsRows.push({
+        label: 'Added Outputs',
+        i18nKey: 'rbf-diff.outputs-added',
+        previous: null,
+        current: this.rbfDiff.outputs.added.length,
+        changed: true,
+        changeType: 'positive'
+      });
+    }
+
+    // Removed Outputs
+    if (this.rbfDiff.outputs.removed.length > 0) {
+      outputsRows.push({
+        label: 'Removed Outputs',
+        i18nKey: 'rbf-diff.outputs-removed',
+        previous: this.rbfDiff.outputs.removed.length,
+        current: null,
+        changed: true,
+        changeType: 'negative'
+      });
+    }
+
+    // Modified Outputs
+    if (this.rbfDiff.outputs.modified.length > 0) {
+      outputsRows.push({
+        label: 'Modified Outputs',
+        i18nKey: 'rbf-diff.outputs-modified',
+        previous: null,
+        current: this.rbfDiff.outputs.modified.length,
+        changed: true,
+        changeType: 'neutral'
+      });
+    }
+
+    // Fee-Adjusted Outputs
+    if (this.rbfDiff.outputs.feeAdjusted.length > 0) {
+      outputsRows.push({
+        label: 'Fee-Adjusted Outputs',
+        i18nKey: 'rbf-diff.outputs-fee-adjusted',
+        previous: null,
+        current: this.rbfDiff.outputs.feeAdjusted.length,
+        changed: true,
+        changeType: 'neutral'
+      });
+    }
+
+    // ========================================
+    // CONSTRUCT FINAL DATA - hasChanges based on row count
+    // ========================================
+    this.comparisonData = {
+      metadata: {
+        title: 'Transaction Metadata',
+        rows: metadataRows,
+        hasChanges: metadataRows.length > 0
+      },
+      metrics: {
+        title: 'Metrics',
+        rows: metricsRows,
+        hasChanges: metricsRows.length > 0
+      },
+      inputs: {
+        title: 'Inputs',
+        rows: inputsRows,
+        hasChanges: inputsRows.length > 0
+      },
+      outputs: {
+        title: 'Outputs',
+        rows: outputsRows,
+        hasChanges: outputsRows.length > 0
+      }
+    };
+  }
+
+  /**
+   * Type-safe helper to convert comparison row values to numbers
+   * Used for app-amount component which requires strict number type
+   */
+  asNumber(value: unknown): number {
+    if (typeof value === 'number' && !Number.isNaN(value)) {
+      return value;
+    }
+    if (typeof value === 'string') {
+      const parsed = Number(value);
+      if (!Number.isNaN(parsed)) {
+        return parsed;
+      }
+    }
+    throw new TypeError(`asNumber: Expected a numeric value or numeric string, received ${typeof value}`);
+  }
+
+  /**
+   * Extracts all parent→child replacement edges from the RBF tree using BFS.
+   * BFS ordering means users see all direct replacements at each level before
+   * going deeper into branches — more intuitive for dropdown navigation.
+   */
+  private extractEdges(tree: RbfTree): RbfEdge[] {
+    if (!tree) { return []; }
+    const edges: RbfEdge[] = [];
+    const queue: RbfTree[] = [tree];
+    while (queue.length > 0) {
+      const node = queue.shift();
+      for (const child of node.replaces) {
+        edges.push({
+          oldTxid: child.tx.txid,
+          newTxid: node.tx.txid,
+          oldTxidShort: child.tx.txid.substring(0, 8),
+          newTxidShort: node.tx.txid.substring(0, 8),
+        });
+        queue.push(child);
+      }
+    }
+    return edges;
+  }
+
+  /**
+   * Rebuilds the edge list and sets the default selected edge
+   * to the one where the current tx is the replacement (newTxid).
+   */
+  private updateEdges(): void {
+    this.allEdges = this.extractEdges(this.replacements);
+    const currentEdgeIndex = this.allEdges.findIndex(e => e.newTxid === this.txid);
+    this.selectedEdgeIndex = currentEdgeIndex >= 0 ? currentEdgeIndex : 0;
+  }
+
+  /**
+   * Selects an edge by index and loads the diff for that pair.
+   */
+  selectEdge(index: number): void {
+    if (index < 0 || index >= this.allEdges.length) { return; }
+    this.selectedEdgeIndex = index;
+    const edge = this.allEdges[index];
+    this.compareTxs(edge.oldTxid, edge.newTxid);
+  }
+
+  get highlightedOldTxid(): string | null {
+    return this.showDiff && this.allEdges.length > 0
+      ? this.allEdges[this.selectedEdgeIndex]?.oldTxid
+      : null;
+  }
+
+  get highlightedNewTxid(): string | null {
+    return this.showDiff && this.allEdges.length > 0
+      ? this.allEdges[this.selectedEdgeIndex]?.newTxid
+      : null;
+  }
+
+  // Toggles the structural diff visibility
+  toggleStructuralDiff(): void {
+    if (this.showDiff) {
+      this.closeDiff();
+    } else if (this.allEdges.length > 0) {
+      this.selectEdge(this.selectedEdgeIndex);
+    }
   }
 }
