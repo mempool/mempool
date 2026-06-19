@@ -75,6 +75,7 @@ export class AddressesTreemap implements OnChanges {
           progressive: 100,
           tooltip: {
             show: true,
+            confine: true,
             backgroundColor: 'rgba(17, 19, 31, 1)',
             borderRadius: 4,
             shadowColor: 'rgba(0, 0, 0, 0.5)',
