@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { SigInfo, SighashLabels } from '@app/shared/transaction.utils';
+import { detectCltvTimestamps, formatCltvTimestamp } from '@app/shared/script.utils';
 
 @Component({
   selector: 'app-asm',
@@ -23,7 +24,7 @@ export class AsmComponent {
   @Output() showSigInfo = new EventEmitter<SigInfo>();
   @Output() hideSigInfo = new EventEmitter<void>();
 
-  instructions: { instruction: string, args: string[] }[] = [];
+  instructions: { instruction: string, args: string[], cltvTimestamp?: number }[] = [];
   sighashLabels: Record<number, string> = SighashLabels;
 
   ngOnInit(): void {
@@ -37,18 +38,19 @@ export class AsmComponent {
   }
 
   parseASM(): void {
-    let instructions = this.asm.split('OP_');
-    // trim instructions to a whole number of instructions with at most `crop` characters total
+    const allInstructions = this.asm.split('OP_').filter(instruction => instruction.trim() !== '');
+
+    const cltvTimestamps = detectCltvTimestamps(allInstructions);
+
+    let instructions = allInstructions;
     if (this.crop && this.asm.length > this.crop) {
       let chars = 0;
       for (let i = 0; i < instructions.length; i++) {
         if (chars + instructions[i].length + 3 > this.crop) {
           const croppedInstruction = instructions[i];
           instructions = instructions.slice(0, i);
-          // add cropped instruction
           let remainingChars = this.crop - chars;
           let parts = croppedInstruction.split(' ');
-          // only render this instruction if there is space for the instruction name and a few args
           if (remainingChars > parts[0].length + 10) {
             remainingChars -= parts[0].length + 1;
             for (let j = 1; j < parts.length; j++) {
@@ -56,9 +58,7 @@ export class AsmComponent {
               if (remainingChars >= arg.length) {
                 remainingChars -= arg.length + 1;
               } else {
-                // crop this argument
                 parts[j] = arg.slice(0, remainingChars);
-                // and remove all following arguments
                 parts = parts.slice(0, j + 1);
                 break;
               }
@@ -70,11 +70,16 @@ export class AsmComponent {
         chars += instructions[i].length + 3;
       }
     }
-    this.instructions = instructions.filter(instruction => instruction.trim() !== '').map(instruction => {
+
+    this.instructions = instructions.map((instruction, index) => {
       const parts = instruction.split(' ');
+      const instructionName = parts[0];
+      const args = parts.slice(1);
+
       return {
-        instruction: parts[0],
-        args: parts.slice(1)
+        instruction: instructionName,
+        args: args,
+        cltvTimestamp: cltvTimestamps.get(index)
       };
     });
   }
@@ -85,6 +90,10 @@ export class AsmComponent {
 
   doHideSigInfo(): void {
     this.hideSigInfo.emit();
+  }
+
+  formatTimestamp(timestamp: number): string {
+    return formatCltvTimestamp(timestamp);
   }
 
   readonly opcodeStyles: Map<string, string> = new Map([
