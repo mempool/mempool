@@ -124,6 +124,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   addressTypeInfo: null | AddressTypeInfo;
   tapTreeIncomplete: boolean = false;
   taprootPsbtExpanded: boolean = false;
+  showCostToSpend: boolean = false;
   psbtForm: UntypedFormGroup;
   psbtError?: string;
   accelerationsSubscription: Subscription;
@@ -159,7 +160,7 @@ export class AddressComponent implements OnInit, OnDestroy {
       this.network = network;
       this.updateAccelerationSubscription();
     });
-    this.websocketService.want(['blocks']);
+    this.websocketService.want(['blocks', 'mempool-blocks']);
     this.psbtForm = this.formBuilder.group({ psbt: [''], tapleaf: [''], taptree: [''], ikey: [''] });
 
     this.onResize();

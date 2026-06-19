@@ -1,5 +1,5 @@
 import '@angular/localize/init';
-import { ScriptInfo } from '@app/shared/script.utils';
+import { ScriptInfo, getVarIntLength } from '@app/shared/script.utils';
 import { Vin, Vout } from '@interfaces/electrs.interface';
 import { BECH32_CHARS_LW, BASE58_CHARS, HEX_CHARS } from '@app/shared/regex.utils';
 import { parseTaproot } from './transaction.utils';
@@ -253,6 +253,82 @@ export class AddressTypeInfo {
       this.isMultisig = { m: script.template['m'], n: script.template['n'] };
     }
     return true;
+  }
+}
+
+// vsize of typical transaction overhead when spending a UTXO in its own
+// transaction: version + locktime + in/out counts + segwit marker/flag (~11 vB)
+// plus one typical output (~31 vB for a p2wpkh recipient).
+export const TX_OVERHEAD_VSIZE = 11;
+export const TYPICAL_OUTPUT_VSIZE = 31;
+
+// estimated vsize (vB) of a single input spending each address type, for the
+// common single-key case. Derived from the per-component byte costs documented
+// in fillUnsignedInput (transaction.utils.ts): DER sig 72 B, pubkey 34 B,
+// Schnorr sig 65 B, with the 4x witness discount applied.
+const INPUT_VSIZE: Partial<Record<AddressType, number>> = {
+  p2pk: 114,
+  p2pkh: 148,
+  'p2sh-p2wpkh': 91,
+  v0_p2wpkh: 68,
+  v1_p2tr: 58, // keyspend
+};
+
+// rough vsize of an m-of-n multisig input. `wrapped` adds the p2sh redeemscript
+// pushed in the scriptsig (p2sh-p2wsh); otherwise native p2wsh.
+function multisigWitnessInputVsize(m: number, n: number, wrapped: boolean): number {
+  const nonWitness = wrapped ? 75 : 41; // outpoint + sequence (+ redeemscript push)
+  const witnessScript = 3 + n * 34; // OP_m + n*push33 + OP_n + OP_CHECKMULTISIG
+  const witnessBytes = 1 + 1 + m * 73 + getVarIntLength(witnessScript) + witnessScript;
+  return Math.round(nonWitness + witnessBytes / 4);
+}
+
+/**
+ * Estimates the vsize (vB) of a single input spending from this address.
+ *
+ * `estimated` flags address types whose input size is variable (multisig,
+ * p2wsh, tapscript script-path, unknown) and therefore only approximated.
+ *
+ * `observedVsize`, when provided, is the realized vsize of an input extracted
+ * from a previous spend and always takes priority over the type-based estimate.
+ */
+export function estimateInputVsize(info: AddressTypeInfo, observedVsize?: number): { vsize: number; estimated: boolean } {
+  if (observedVsize !== undefined) {
+    return { vsize: observedVsize, estimated: false };
+  }
+
+  switch (info.type) {
+    case 'p2pk':
+    case 'p2pkh':
+    case 'p2sh-p2wpkh':
+    case 'v0_p2wpkh':
+      return { vsize: INPUT_VSIZE[info.type], estimated: false };
+    case 'v1_p2tr':
+      // 58 vB is a typical key-path estimate; without an observed spend we
+      // can't tell key-path from a (variable) script-path spend, so it stays
+      // approximate
+      return { vsize: INPUT_VSIZE.v1_p2tr, estimated: true };
+    case 'v0_p2wsh':
+      if (info.isMultisig) {
+        return { vsize: multisigWitnessInputVsize(info.isMultisig.m, info.isMultisig.n, false), estimated: true };
+      }
+      return { vsize: 105, estimated: true }; // assume 2-of-3
+    case 'p2sh-p2wsh':
+      if (info.isMultisig) {
+        return { vsize: multisigWitnessInputVsize(info.isMultisig.m, info.isMultisig.n, true), estimated: true };
+      }
+      return { vsize: 139, estimated: true }; // assume 2-of-3
+    case 'multisig':
+      if (info.isMultisig) {
+        // bare multisig: signatures + redeemscript in the scriptsig (no discount)
+        return { vsize: 41 + info.isMultisig.m * 73 + (3 + info.isMultisig.n * 34), estimated: true };
+      }
+      return { vsize: 252, estimated: true }; // assume 2-of-3
+    case 'p2sh':
+      // unresolved p2sh (no spend seen yet): assume nested segwit single-key
+      return { vsize: INPUT_VSIZE['p2sh-p2wpkh'], estimated: true };
+    default:
+      return { vsize: INPUT_VSIZE.v0_p2wpkh, estimated: true };
   }
 }
 

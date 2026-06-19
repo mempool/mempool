@@ -1,0 +1,28 @@
+.cost-to-spend-table {
+  margin-bottom: 0;
+
+  tr td {
+    &:last-child {
+      text-align: right;
+    }
+
+    &.wrap-cell {
+      white-space: nowrap;
+      @media (max-width: 575.98px) {
+        white-space: normal;
+      }
+    }
+  }
+}
+
+.fiat {
+  margin-left: 10px;
+}
+
+.estimate-marker {
+  cursor: help;
+}
+
+.range-sep {
+  margin: 0 4px;
+}

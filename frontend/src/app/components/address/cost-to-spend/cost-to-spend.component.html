@@ -1,0 +1,117 @@
+<div class="box" *ngIf="costToSpend$ | async as cost; else loading">
+  <div class="row">
+    <div class="col-md">
+      <table class="table table-borderless table-striped cost-to-spend-table">
+        <tbody>
+          <tr>
+            <td i18n="address.cost-to-spend.input-vsize">vsize per input</td>
+            <td class="wrap-cell">
+              <span
+                *ngIf="cost.estimated"
+                class="estimate-marker"
+                i18n-ngbTooltip="address.cost-to-spend.estimated-tooltip"
+                ngbTooltip="Estimated for this script type; actual size varies"
+                placement="bottom"
+                >~</span
+              >{{ cost.inputVsize | number }} <span class="symbol">vB</span>
+            </td>
+          </tr>
+          <tr>
+            <td i18n="address.cost-to-spend.fee-rate">Fee rate (~30 min)</td>
+            <td class="wrap-cell">
+              <app-fee-rate [fee]="cost.feeRate"></app-fee-rate>
+            </td>
+          </tr>
+          <tr>
+            <td
+              i18n-ngbTooltip="address.cost-to-spend.max-cost-tooltip"
+              ngbTooltip="Worst case: each UTXO is spent separately, each in its own transaction with one typical output, so every spend pays full overhead"
+              placement="bottom"
+            >
+              <span i18n="address.cost-to-spend.max-cost"
+                >Max cost to spend</span
+              >
+            </td>
+            <td class="wrap-cell">
+              <app-amount
+                [satoshis]="cost.maxCost"
+                [noFiat]="true"
+              ></app-amount>
+              <span class="fiat"
+                ><app-fiat [value]="cost.maxCost"></app-fiat
+              ></span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md">
+      <table class="table table-borderless table-striped cost-to-spend-table">
+        <tbody>
+          <tr>
+            <td i18n="address.cost-to-spend.utxos">Spendable UTXOs</td>
+            <td class="wrap-cell">{{ utxoCount | number }}</td>
+          </tr>
+          <tr>
+            <td
+              i18n-ngbTooltip="address.cost-to-spend.min-cost-tooltip"
+              ngbTooltip="Best case: all UTXOs consolidated into a single transaction, so the per-transaction overhead is shared"
+              placement="bottom"
+            >
+              <span i18n="address.cost-to-spend.min-cost"
+                >Min cost to spend</span
+              >
+            </td>
+            <td class="wrap-cell">
+              <app-amount
+                [satoshis]="cost.minCost"
+                [noFiat]="true"
+              ></app-amount>
+              <span class="fiat"
+                ><app-fiat [value]="cost.minCost"></app-fiat
+              ></span>
+            </td>
+          </tr>
+          <tr>
+            <td
+              i18n-ngbTooltip="address.cost-to-spend.effective-balance-tooltip"
+              ngbTooltip="Balance remaining after paying to spend every UTXO, from worst case (each spent separately) to best case (all consolidated)"
+              placement="bottom"
+            >
+              <span i18n="address.cost-to-spend.effective-balance-range"
+                >Effective balance range</span
+              >
+            </td>
+            <td class="wrap-cell">
+              <app-amount
+                [satoshis]="cost.worstEffectiveBalance"
+                [noFiat]="true"
+              ></app-amount>
+              <span class="range-sep">–</span>
+              <app-amount
+                [satoshis]="cost.bestEffectiveBalance"
+                [noFiat]="true"
+              ></app-amount>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="box">
+    <div class="row">
+      <div class="col-md" *ngFor="let col of [1, 2]">
+        <table class="table table-borderless table-striped cost-to-spend-table">
+          <tbody>
+            <tr *ngFor="let i of [1, 2, 3]">
+              <td colspan="2"><span class="skeleton-loader"></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-template>

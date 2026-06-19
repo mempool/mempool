@@ -135,6 +135,17 @@
       </div>
     </ng-container>
 
+    <ng-container *ngIf="network !== 'liquid' && network !== 'liquidtestnet' && !address.electrum && addressTypeInfo && (chainStats.utxos + mempoolStats.utxos) > 0">
+      <br>
+      <div class="title-tx">
+        <h2 class="text-start cost-to-spend-toggle" (click)="showCostToSpend = !showCostToSpend">
+          <span i18n="address.cost-to-spend">Cost to Spend</span>
+          <fa-icon [icon]="['fas', showCostToSpend ? 'angle-up' : 'angle-down']" [fixedWidth]="true"></fa-icon>
+        </h2>
+      </div>
+      <app-cost-to-spend *ngIf="showCostToSpend" [addressTypeInfo]="addressTypeInfo" [utxoCount]="chainStats.utxos + mempoolStats.utxos" [balance]="chainStats.balance + mempoolStats.balance"></app-cost-to-spend>
+    </ng-container>
+
     <br>
     <div class="title-tx">
       <h2 class="text-start">
