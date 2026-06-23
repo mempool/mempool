@@ -135,15 +135,17 @@
       </div>
     </ng-container>
 
-    <ng-container *ngIf="network !== 'liquid' && network !== 'liquidtestnet' && !address.electrum && addressTypeInfo && (chainStats.utxos + mempoolStats.utxos) > 0">
+    <ng-container *ngIf="network !== 'liquid' && network !== 'liquidtestnet' && !address.electrum && addressTypeInfo && spendableUtxoCount > 0">
       <br>
       <div class="title-tx">
-        <h2 class="text-start cost-to-spend-toggle" (click)="showCostToSpend = !showCostToSpend">
-          <span i18n="address.cost-to-spend">Cost to Spend</span>
-          <fa-icon [icon]="['fas', showCostToSpend ? 'angle-up' : 'angle-down']" [fixedWidth]="true"></fa-icon>
-        </h2>
+        <h2 *ngIf="showCostToSpend" class="text-start float-start" i18n="address.cost-to-spend">Cost to Spend</h2>
+        <button type="button" class="btn btn-outline-info btn-sm float-end" (click)="showCostToSpend = !showCostToSpend">
+          <ng-container *ngIf="!showCostToSpend" i18n="address.show-cost-to-spend|Show cost to spend">Cost to Spend</ng-container>
+          <ng-container *ngIf="showCostToSpend" i18n="address.hide-cost-to-spend|Hide cost to spend">Hide Cost to Spend</ng-container>
+        </button>
+        <div class="clearfix"></div>
       </div>
-      <app-cost-to-spend *ngIf="showCostToSpend" [addressTypeInfo]="addressTypeInfo" [utxoCount]="chainStats.utxos + mempoolStats.utxos" [balance]="chainStats.balance + mempoolStats.balance"></app-cost-to-spend>
+      <app-cost-to-spend *ngIf="showCostToSpend" [addressTypeInfo]="addressTypeInfo" [utxoCount]="spendableUtxoCount" [balance]="chainStats.balance + mempoolStats.balance"></app-cost-to-spend>
     </ng-container>
 
     <br>

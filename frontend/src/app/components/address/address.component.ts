@@ -12,7 +12,7 @@ import { of, merge, Subscription, Observable, forkJoin } from 'rxjs';
 import { SeoService } from '@app/services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { AddressInformation } from '@interfaces/node-api.interface';
-import { AddressTypeInfo } from '@app/shared/address-utils';
+import { AddressTypeInfo, observedInputVsize } from '@app/shared/address-utils';
 import { extractTapLeaves, fillTapTree, convertTextToBuffer, PsbtKeyValue } from '@app/shared/transaction.utils';
 
 class AddressStats implements ChainStats {
@@ -327,6 +327,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           });
         }
         this.addressTypeInfo.processInputs(addressVin, vinIds);
+        this.addressTypeInfo.observedInputVsize = observedInputVsize(addressVin);
         if (this.addressTypeInfo.type === 'v1_p2tr' && !this.addressTypeInfo.tapscript) {
           this.setTapTreeIncomplete(true);
         }
@@ -519,6 +520,10 @@ export class AddressComponent implements OnInit, OnDestroy {
   updateChainStats(): void {
     this.chainStats = new AddressStats(this.address.chain_stats, this.address.address);
     this.mempoolStats = new AddressStats(this.address.mempool_stats, this.address.address);
+  }
+
+  get spendableUtxoCount(): number {
+    return this.chainStats.utxos + this.mempoolStats.utxos;
   }
 
   setBalancePeriod(period: 'all' | '1m'): boolean {

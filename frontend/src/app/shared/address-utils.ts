@@ -137,6 +137,7 @@ export class AddressTypeInfo {
   isMultisig?: { m: number, n: number };
   tapscript?: boolean;
   simplicity?: boolean;
+  observedInputVsize?: number; // median realized input vsize from previous spends
 
   constructor (network: string, address: string, type?: AddressType, vin?: Vin[], vout?: Vout) {
     this.network = network;
@@ -281,6 +282,42 @@ function multisigWitnessInputVsize(m: number, n: number, wrapped: boolean): numb
   const witnessScript = 3 + n * 34; // OP_m + n*push33 + OP_n + OP_CHECKMULTISIG
   const witnessBytes = 1 + 1 + m * 73 + getVarIntLength(witnessScript) + witnessScript;
   return Math.round(nonWitness + witnessBytes / 4);
+}
+
+// realized weight (WU) of a spent input, reconstructed from its on-chain scriptsig + witness
+function vinWeightUnits(vin: Vin): number | null {
+  if (!vin || vin.is_coinbase) {
+    return null;
+  }
+  const scriptsigLen = (vin.scriptsig?.length || 0) / 2;
+  const base = 36 + getVarIntLength(scriptsigLen) + scriptsigLen + 4;
+  let witnessBytes = 0;
+  // count witness only when present; legacy inputs carry no witness section
+  if (vin.witness && vin.witness.length) {
+    witnessBytes += getVarIntLength(vin.witness.length);
+    for (const item of vin.witness) {
+      const itemLen = item.length / 2;
+      witnessBytes += getVarIntLength(itemLen) + itemLen;
+    }
+  }
+  return base * 4 + witnessBytes;
+}
+
+/**
+ * Median realized input vsize (vB) across previous spends, or undefined if none
+ * are measurable. Kept fractional so rounding error doesn't accumulate per UTXO.
+ */
+export function observedInputVsize(vins: Vin[]): number | undefined {
+  const vsizes = (vins || [])
+    .map((v) => vinWeightUnits(v))
+    .filter((wu): wu is number => wu !== null && wu > 0)
+    .map((wu) => wu / 4);
+  if (!vsizes.length) {
+    return undefined;
+  }
+  vsizes.sort((a, b) => a - b);
+  const mid = Math.floor(vsizes.length / 2);
+  return vsizes.length % 2 ? vsizes[mid] : (vsizes[mid - 1] + vsizes[mid]) / 2;
 }
 
 /**
