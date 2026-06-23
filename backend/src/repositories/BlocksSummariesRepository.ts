@@ -216,6 +216,42 @@ class BlocksSummariesRepository {
     }
     return false;
   }
+
+  /** @asyncSafe */
+  public async $getMinTimestamp(): Promise<number | undefined> {
+    if (!Common.blocksSummariesIndexingEnabled()) {
+      return undefined;
+    }
+
+    try {
+      const [rows]: any[] = await DB.query(`SELECT bs.height, UNIX_TIMESTAMP(b.blockTimestamp) as timestamp FROM blocks_summaries bs JOIN blocks b ON bs.id = b.hash ORDER BY bs.height ASC LIMIT 1`);
+
+      if (rows !== null && rows.length > 0) {
+        return rows[0].timestamp;
+      }
+    } catch (e) {
+      logger.err(`Cannot get the mininm. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+    return undefined;
+  }
+
+  /** @asyncSafe */
+  public async $getIndexedBlockSummariesBetweenTimestamps(timestamp1: number, timestamp2: number): Promise<{height: number, timestamp: number, flags: string}[] | undefined> {
+    if (!Common.blocksSummariesIndexingEnabled()) {
+      return undefined;
+    }
+
+    try {
+      const [rows]: any[] = await DB.query(`SELECT bs.height, UNIX_TIMESTAMP(b.blockTimestamp) as timestamp, JSON_EXTRACT(bs.transactions, '$[*].flags') as flags FROM blocks_summaries bs JOIN blocks b ON b.hash=bs.id WHERE UNIX_TIMESTAMP(b.blockTimestamp) > ? AND UNIX_TIMESTAMP(b.blockTimestamp) <= ? AND b.stale = 0`, [timestamp1, timestamp2]);
+      if (rows !== null && rows.length > 0) {
+        return rows;
+      }
+    } catch (e) {
+      logger.err(`Cannot get the block summaries between ${timestamp1} and ${timestamp2}. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+
+    return undefined;
+  }
 }
 
 export default new BlocksSummariesRepository();
