@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 111;
+  private static currentVersion = 112;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -1255,6 +1255,11 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `compact_cpfp_clusters` ADD template_algo TINYINT UNSIGNED NOT NULL DEFAULT 0');
       await this.updateToSchemaVersion(111);
     }
+
+    if (databaseSchemaVersion < 112 && isBitcoin === true) {
+      await this.$executeQuery(this.getCreateFlagsValuesTableQuery(), await this.$checkIfTableExists('flag_values'));
+      await this.updateToSchemaVersion(112);
+    }
   }
 
   /**
@@ -1839,6 +1844,18 @@ class DatabaseMigration {
       INDEX (height),
       INDEX (pool)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateFlagsValuesTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS flag_values (
+      grouped_time tinyint unsigned NOT NULL,
+      day_bucket int unsigned NOT NULL,
+      avg_height int unsigned NOT NULL,
+      avg_timestamp int unsigned NOT NULL,
+      flag_value bigint unsigned NOT NULL,
+      count int unsigned NOT NULL,
+      PRIMARY KEY (grouped_time, day_bucket, flag_value)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8`;
   }
 
   /** @asyncUnsafe */
