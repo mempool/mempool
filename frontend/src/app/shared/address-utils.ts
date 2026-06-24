@@ -160,6 +160,7 @@ export class AddressTypeInfo {
     cloned.isMultisig = this.isMultisig;
     cloned.tapscript = this.tapscript;
     cloned.simplicity = this.simplicity;
+    cloned.observedInputVsize = this.observedInputVsize;
     return cloned;
   }
 
@@ -278,10 +279,12 @@ const INPUT_VSIZE: Partial<Record<AddressType, number>> = {
 // rough vsize of an m-of-n multisig input. `wrapped` adds the p2sh redeemscript
 // pushed in the scriptsig (p2sh-p2wsh); otherwise native p2wsh.
 function multisigWitnessInputVsize(m: number, n: number, wrapped: boolean): number {
-  const nonWitness = wrapped ? 75 : 41; // outpoint + sequence (+ redeemscript push)
+  // wrapped (p2sh-p2wsh) scriptsig pushes the 34-byte witness program: 1-byte push opcode + 34 bytes
+  const nonWitness = wrapped ? 76 : 41; // outpoint + sequence (+ redeemscript push)
   const witnessScript = 3 + n * 34; // OP_m + n*push33 + OP_n + OP_CHECKMULTISIG
-  const witnessBytes = 1 + 1 + m * 73 + getVarIntLength(witnessScript) + witnessScript;
-  return Math.round(nonWitness + witnessBytes / 4);
+  // stack: item count + dummy + m*(length prefix + signature) + script length prefix + script
+  const witnessBytes = 1 + 1 + m * (1 + 72) + getVarIntLength(witnessScript) + witnessScript;
+  return Math.ceil(nonWitness + witnessBytes / 4); // consensus vsize rounds up
 }
 
 // realized weight (WU) of a spent input, reconstructed from its on-chain scriptsig + witness
