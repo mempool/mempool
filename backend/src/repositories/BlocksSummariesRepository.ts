@@ -217,40 +217,41 @@ class BlocksSummariesRepository {
     return false;
   }
 
-  /** @asyncSafe */
-  public async $getMinTimestamp(): Promise<number | undefined> {
+  public async $getTipAndTailIndexed(): Promise<{tip: number, tail: number} | null> {
     if (!Common.blocksSummariesIndexingEnabled()) {
-      return undefined;
+      return null;
     }
-
     try {
-      const [rows]: any[] = await DB.query(`SELECT bs.height, UNIX_TIMESTAMP(b.blockTimestamp) as timestamp FROM blocks_summaries bs JOIN blocks b ON bs.id = b.hash ORDER BY bs.height ASC LIMIT 1`);
+      const [row]: any[] = await DB.query('SELECT MAX(height) as tip, MIN(height) as tail FROM blocks_summaries');
 
-      if (rows !== null && rows.length > 0) {
-        return rows[0].timestamp;
+      if (row !== null && row.length > 0) {
+        return row[0];
       }
     } catch (e) {
-      logger.err(`Cannot get the mininm. Reason: ` + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot get latest block summary. Reason: ` + (e instanceof Error ? e.message : e));
     }
-    return undefined;
+    return null;
   }
 
-  /** @asyncSafe */
-  public async $getIndexedBlockSummariesBetweenTimestamps(timestamp1: number, timestamp2: number): Promise<{height: number, timestamp: number, flags: string}[] | undefined> {
-    if (!Common.blocksSummariesIndexingEnabled()) {
-      return undefined;
-    }
-
+  public async $getSummariesAboveHeight(height?: number): Promise<{height: number, transactions: string}[]> {
     try {
-      const [rows]: any[] = await DB.query(`SELECT bs.height, UNIX_TIMESTAMP(b.blockTimestamp) as timestamp, JSON_EXTRACT(bs.transactions, '$[*].flags') as flags FROM blocks_summaries bs JOIN blocks b ON b.hash=bs.id WHERE UNIX_TIMESTAMP(b.blockTimestamp) > ? AND UNIX_TIMESTAMP(b.blockTimestamp) <= ? AND b.stale = 0`, [timestamp1, timestamp2]);
+      let whereClause = '';
+      const params: number[] = [];
+      if (height !== undefined) {
+        whereClause = 'WHERE height >= ?';
+        params.push(height);
+      }
+
+      const [rows]: any[] = await DB.query(`SELECT height, transactions FROM blocks_summaries ${whereClause} ORDER BY height ASC`, params);
+
       if (rows !== null && rows.length > 0) {
         return rows;
       }
     } catch (e) {
-      logger.err(`Cannot get the block summaries between ${timestamp1} and ${timestamp2}. Reason: ` + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot get blocks above height ${height}. Reason: ` + (e instanceof Error ? e.message : e));
     }
 
-    return undefined;
+    return [];
   }
 }
 

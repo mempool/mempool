@@ -40,6 +40,7 @@ import CpfpRepository from '../repositories/CpfpRepository';
 import { parseDATUMTemplateCreator, parseDMNDTemplateCreator } from '../utils/bitcoin-script';
 import database from '../database';
 import { getBlockFirstSeenFromLogs, getOldestLogTimestampFromLogs, scanLogsForBlocksFirstSeen } from '../utils/file-read';
+import FlagValueRepository from '../repositories/FlagValueRepository';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -686,6 +687,78 @@ class Blocks {
     } catch (e) {
       logger.err(`Blocks summaries indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
       throw e;
+    }
+  }
+
+  /**
+   * [INDEXING] Index all blocks flag values for the goggles graph rendering
+   *
+   * TODO: Logging debuggers, restart diff checkup on latest blocks_summaries against flag_values and deletion of oldest rows out of blockSpan
+   */
+  public async $generateFlagValuesDatabase(): Promise<void> {
+    if (Common.blocksSummariesIndexingEnabled() === false) {
+      return;
+    }
+
+    const INDEXING_CONFIGS = [
+      {name: 'perBlock', blocksCount: 1,  blockSpanIndex: 144*7}, // block span of 1 week
+      {name: 'perQuarterDay', blocksCount: 36, blockSpanIndex: 144*30*6}, // block span of 6 months
+      {name: 'perDay', blocksCount: 144, blockSpanIndex: 144*30*12*3}, // block span of 3 years
+      {name: 'per5days', blocksCount: 720, blockSpanIndex: -1}, // All history
+    ];
+
+    try {
+      const tipAndTail = await BlocksSummariesRepository.$getTipAndTailIndexed();
+      if (!tipAndTail) {
+        return;
+      }
+      const { tip, tail } = tipAndTail;
+
+      for (const config of INDEXING_CONFIGS) {
+        let lastHeightToIndex;
+        if (config.blockSpanIndex > -1) {
+          lastHeightToIndex = tip - config.blockSpanIndex;
+        }
+
+        const blocksToIndex = await BlocksSummariesRepository.$getSummariesAboveHeight(lastHeightToIndex);
+
+        const rows: any[] = [];
+        let flagValues: any = null;
+
+        for (let i = 0; i < blocksToIndex.length; i++) {
+          const block = blocksToIndex[i];
+          const isFirstRun = (i === 0);
+
+          if(i % config.blocksCount === 0) {
+            if (!isFirstRun && flagValues) {
+              rows.push(flagValues);
+            }
+            if (tip - block.height < config.blocksCount) {
+              break;
+            }
+            flagValues = {
+              startHeight: block.height,
+              blocksCount: config.blocksCount,
+              txCount: {},
+            };
+          }
+
+          const flagsArray = JSON.parse(block.transactions).map((tx) => tx.flags);
+          flagsArray.forEach((flag) => {
+            flagValues.txCount[flag] = (flagValues.txCount[flag] ?? 0) + 1;
+          });
+        }
+
+        rows.forEach((row) => {
+          const flagsObj = row.txCount;
+          const flags = Object.keys(row.txCount);
+          flags.forEach(async (flag) => {
+            await FlagValueRepository.$saveFlagValues(row.blocksCount.toString(), row.startHeight, BigInt(flag), flagsObj[flag]);
+          });
+        });
+      }
+    } catch (e) {
+      logger.err(`Flags values indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.goggles);
     }
   }
 

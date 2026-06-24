@@ -218,6 +218,7 @@ class Indexer {
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();
       await blocks.$generateBlocksSummariesDatabase();
+      await blocks.$generateFlagValuesDatabase();
       await blocks.$generateCPFPDatabase();
       await blocks.$generateAuditStats();
       await blocks.$indexBlocksFirstSeen();
