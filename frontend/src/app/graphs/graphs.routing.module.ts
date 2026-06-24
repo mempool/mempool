@@ -25,6 +25,7 @@ import { AccelerationsListComponent } from '@components/acceleration/acceleratio
 import { AddressComponent } from '@components/address/address.component';
 import { WalletComponent } from '@components/wallet/wallet.component';
 import { CalculatorComponent } from '@components/calculator/calculator.component';
+import { BlockGogglesGraphComponent } from '../components/block-goggles-graph/block-goggles-graph.component';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -113,6 +114,11 @@ const routes: Routes = [
             path: 'mempool',
             data: { networks: ['bitcoin', 'liquid'] },
             component: StatisticsComponent,
+          },
+          {
+            path: 'goggles',
+            data: { networks: [ 'bitcoin', 'liquid' ]},
+            component: BlockGogglesGraphComponent,
           },
           {
             path: 'mining/hashrate-difficulty',
