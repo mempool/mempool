@@ -1,7 +1,13 @@
 <ng-container *ngIf="{ cost: costToSpend$ | async } as state">
   <div class="box" *ngIf="state.cost as cost; else notReady">
-    <div class="row">
+    <div class="row align-items-start">
       <div class="col-md">
+        <div
+          class="text-muted small text-uppercase mb-1"
+          i18n="address.cost-to-spend.parameters|Cost to spend parameters group"
+        >
+          Parameters
+        </div>
         <table class="table table-borderless table-striped cost-to-spend-table">
           <tbody>
             <tr>
@@ -31,7 +37,15 @@
         </table>
       </div>
       <div class="col-md">
-        <table class="table table-borderless table-striped cost-to-spend-table">
+        <div
+          class="text-muted small text-uppercase mb-1"
+          i18n="address.cost-to-spend.group-cost|Cost to spend group header"
+        >
+          Cost to spend
+        </div>
+        <table
+          class="table table-borderless table-striped cost-to-spend-table mb-3"
+        >
           <tbody>
             <tr>
               <td
@@ -73,6 +87,19 @@
                 ></span>
               </td>
             </tr>
+          </tbody>
+        </table>
+        <div
+          class="text-muted small text-uppercase mb-1"
+          i18n="
+            address.cost-to-spend.group-effective-balance|Effective balance
+            group header
+          "
+        >
+          Effective balance
+        </div>
+        <table class="table table-borderless table-striped cost-to-spend-table">
+          <tbody>
             <tr>
               <td
                 i18n-ngbTooltip="
