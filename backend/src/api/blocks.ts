@@ -708,11 +708,10 @@ class Blocks {
     ];
 
     try {
-      const tipAndTail = await BlocksSummariesRepository.$getTipAndTailIndexed();
-      if (!tipAndTail) {
+      const tip = await BlocksSummariesRepository.$getTipIndexed();
+      if (!tip) {
         return;
       }
-      const { tip, tail } = tipAndTail;
 
       for (const config of INDEXING_CONFIGS) {
         let lastHeightToIndex;

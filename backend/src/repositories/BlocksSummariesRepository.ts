@@ -217,15 +217,15 @@ class BlocksSummariesRepository {
     return false;
   }
 
-  public async $getTipAndTailIndexed(): Promise<{tip: number, tail: number} | null> {
+  public async $getTipIndexed(): Promise<number | null> {
     if (!Common.blocksSummariesIndexingEnabled()) {
       return null;
     }
     try {
-      const [row]: any[] = await DB.query('SELECT MAX(height) as tip, MIN(height) as tail FROM blocks_summaries');
+      const [row]: any[] = await DB.query('SELECT MAX(height) as tip FROM blocks_summaries');
 
       if (row !== null && row.length > 0) {
-        return row[0];
+        return row[0].tip;
       }
     } catch (e) {
       logger.err(`Cannot get latest block summary. Reason: ` + (e instanceof Error ? e.message : e));
