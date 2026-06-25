@@ -18,7 +18,7 @@ import { ThemeService } from '../../services/theme.service';
 export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp' | 'applePay' | 'googlePay' | 'cardOnFile';
 
 export type AccelerationEstimate = {
-  hasAccess: boolean;
+  isProUser: boolean;
   txSummary: TxSummary;
   nextBlockFee: number;
   targetFeeRate: number;
@@ -323,11 +323,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
               this.unavailable.emit(true);
             }
             return;
-          }
-          if (this.estimate.hasAccess === true && this.estimate.userBalance <= 0) {
-            if (this.isLoggedIn()) {
-              this.quoteError = `not_enough_balance`;
-            }
           }
           if (this.estimate.unavailable) {
             this.quoteError = `temporarily_unavailable`;
@@ -973,6 +968,10 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     return this.auth !== null;
   }
 
+  isValidCardBrand(brand: string | undefined): boolean {
+    return !!brand && ['VISA', 'MASTERCARD', 'JCB', 'DISCOVER', 'DISCOVER_DINERS', 'AMERICAN_EXPRESS'].includes(brand);
+  }
+
   /**
    * UI events
    */
@@ -1010,15 +1009,19 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     return !!this.estimate?.availablePaymentMethods?.googlePay;
   }
 
-  get couldPayWithBalance(): boolean {
-    if (!this.hasAccessToBalanceMode) {
+  get couldPayWithCardOnFile(): boolean {
+    if (!this.cardOnFileEnabled || (!this.isProdDomain && !isDevMode())) {
       return false;
     }
-    return !!this.estimate?.availablePaymentMethods?.balance;
+    return this.isLoggedIn() && !!this.estimate?.availablePaymentMethods?.cardOnFile;
+  }
+
+  get couldPayWithBalance(): boolean {
+    return this.isLoggedIn() && !!this.estimate?.availablePaymentMethods?.balance;
   }
 
   get couldPay(): boolean {
-    return this.couldPayWithBalance || this.couldPayWithBitcoin || this.couldPayWithCashapp || this.couldPayWithApplePay || this.couldPayWithGooglePay;
+    return this.couldPayWithBalance || this.couldPayWithBitcoin || this.couldPayWithCashapp || this.couldPayWithApplePay || this.couldPayWithGooglePay || this.couldPayWithCardOnFile;
   }
 
   get canOnlyPayWithBitcoin(): boolean {
@@ -1095,7 +1098,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get canPayWithBalance(): boolean {
-    if (!this.hasAccessToBalanceMode) {
+    if (!this.canUseBalance) {
       return false;
     }
     const paymentMethod = this.estimate?.availablePaymentMethods?.balance;
@@ -1103,11 +1106,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   }
 
   get canPay(): boolean {
-    return this.canPayWithBalance || this.canPayWithBitcoin || this.canPayWithCashapp || this.canPayWithApplePay || this.canPayWithGooglePay;
+    return this.canPayWithBalance || this.canPayWithBitcoin || this.canPayWithCashapp || this.canPayWithApplePay || this.canPayWithGooglePay || this.canPayWithCardOnFile;
   }
 
-  get hasAccessToBalanceMode(): boolean {
-    return this.isLoggedIn() && this.estimate?.hasAccess;
+  get canUseBalance(): boolean {
+    return this.isLoggedIn() && this.estimate?.userBalance > 0;
   }
 
   get timeSincePaid(): number {
