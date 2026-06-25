@@ -407,6 +407,13 @@ export class ApiService {
     );
   }
 
+  getHistoricalTxCountByFlags$(interval: string, op?: string, mask?: string) : Observable<any> {
+    return this.httpClient.get<any[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/goggles/${interval}` +
+      (op !== undefined ? `/${op}` : '') + (mask !== undefined ? `/${mask}` : ''), { observe: 'response' }
+    );
+  }
+
   getBlockAudit$(hash: string) : Observable<BlockAudit> {
     this.setBlockAuditLoaded(hash);
     return this.httpClient.get<BlockAudit>(
