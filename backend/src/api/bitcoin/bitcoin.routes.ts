@@ -23,6 +23,7 @@ import { calculateMempoolTxCpfp } from '../cpfp';
 import { handleError } from '../../utils/api';
 import poolsUpdater from '../../tasks/pools-updater';
 import chainTips from '../chain-tips';
+import FlagValueRepository from '../../repositories/FlagValueRepository';
 
 const TXID_REGEX = /^[a-f0-9]{64}$/i;
 const BLOCK_HASH_REGEX = /^[a-f0-9]{64}$/i;
@@ -70,6 +71,9 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'internal/blocks/definition/list', this.getBlockDefinitionHashes)
       .get(config.MEMPOOL.API_URL_PREFIX + 'internal/blocks/definition/current', this.getCurrentBlockDefinitionHash)
       .get(config.MEMPOOL.API_URL_PREFIX + 'internal/blocks/:definitionHash', this.getBlocksByDefinitionHash)
+
+      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval', this.getFlagValues)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval/:op/:mask', this.getFlagValues)
       ;
 
       if (config.MEMPOOL.BACKEND !== 'esplora') {
@@ -1129,6 +1133,36 @@ class BitcoinRoutes {
       }
     } catch (e) {
       handleError(req, res, 500, 'Failed to get difficulty change');
+    }
+  }
+
+  private async getFlagValues(req: Request, res: Response) {
+    try {
+      const {interval, op} = req.params;
+      const mask = BigInt(req.params.mask ?? 0n);
+      const presets = {
+        '24h': {blocksCount: '1', blockSpan: 144},
+        '3d': {blocksCount: '1', blockSpan: 432},
+        '1w': {blocksCount: '1', blockSpan: 1008},
+        '1m': {blocksCount: '36', blockSpan: 4032},
+        '3m': {blocksCount: '36', blockSpan: 12096},
+        '6m': {blocksCount: '36', blockSpan: 24192},
+        '1y': {blocksCount: '144', blockSpan: 48384},
+        '2y': {blocksCount: '144', blockSpan: 96768},
+        '3y': {blocksCount: '144', blockSpan: 145152},
+        'all': {blocksCount: '720'},
+      };
+      const tip = await FlagValueRepository.$getTipIndexedByBlocksCount(presets[interval].blocksCount);
+
+      if (!tip) {
+        handleError(req, res, 400, `Failed to get latest indexed flag values for ${interval}`);
+        return;
+      }
+
+      const txsCount = await FlagValueRepository.$queryTxCountBasedOnMask(mask, presets[interval].blocksCount, op, ((tip - presets[interval].blockSpan) || -1));
+      res.send(txsCount);
+    } catch (e: any) {
+      handleError(req, res, 400, e instanceof Error ? e.message : 'Failed to get flag values');
     }
   }
 
