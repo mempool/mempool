@@ -1,18 +1,23 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, NgZone, OnInit } from '@angular/core';
 import { echarts, EChartsOption } from '@app/graphs/echarts';
-import { Observable, combineLatest, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '@app/services/api.service';
-import { SeoService } from '@app/services/seo.service';
 import { formatNumber } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from '@app/shared/graphs.utils';
+import { download } from '@app/shared/graphs.utils';
 import { StorageService } from '@app/services/storage.service';
 import { MiningService } from '@app/services/mining.service';
 import { selectPowerOfTen } from '@app/bitcoin.utils';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from '@app/services/state.service';
 import { ActivatedRoute, Router } from '@angular/router';
+
+interface GogglesRollup {
+  blocks_count: string;
+  start_height: number;
+  tx_count: number;
+}
 
 @Component({
   selector: 'app-block-goggles-graph',
@@ -42,7 +47,6 @@ export class BlockGogglesGraphComponent implements OnInit {
     renderer: 'svg',
   };
 
-  hrStatsObservable$: Observable<any>;
   statsObservable$: Observable<any>;
   isLoading = true;
   formatNumber = formatNumber;
@@ -51,7 +55,6 @@ export class BlockGogglesGraphComponent implements OnInit {
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
-    private seoService: SeoService,
     private apiService: ApiService,
     private formBuilder: UntypedFormBuilder,
     private storageService: StorageService,
@@ -86,34 +89,41 @@ export class BlockGogglesGraphComponent implements OnInit {
         });
     }
 
-    this.hrStatsObservable$ = combineLatest([
-      this.apiService.getHistoricalBlockFeeRates$('24h'),
-      this.stateService.rateUnits$
-    ]).pipe(
-      map(([response, rateUnits]) => {
-        return {
-          blockCount: parseInt(response.headers.get('x-total-count'), 10),
-          avgMedianRate: response.body.length ? response.body.reduce((acc, rate) => acc + rate.avgFee_50, 0) / response.body.length : 0,
-        };
+    this.statsObservable$ = this.radioGroupForm.get('dateSpan').valueChanges.pipe(
+      startWith(this.radioGroupForm.controls.dateSpan.value),
+      switchMap((timespan) => {
+        if (!this.widget) {
+          this.storageService.setValue('miningWindowPreference', timespan);
+        }
+        this.timespan = timespan;
+        this.isLoading = true;
+        // the backend owns the blockspan/rollup tier for each interval; the frontend just asks for it
+        return this.apiService.getHistoricalTxCountByFlags$(timespan).pipe(
+          tap((response) => {
+            const body: GogglesRollup[] = response.body || [];
+            const seriesData = body.map((row) => [row.start_height, row.tx_count]);
+            this.prepareChartOptions(seriesData);
+            this.isLoading = false;
+            this.cd.markForCheck();
+          }),
+          map((response) => {
+            const body: GogglesRollup[] = response.body || [];
+            const headerCount = parseInt(response.headers.get('x-total-count'), 10);
+            return {
+              // fall back to a high value so the whole range selector stays available
+              blockCount: Number.isFinite(headerCount) ? headerCount : Number.MAX_SAFE_INTEGER,
+              txCount: body.reduce((acc, row) => acc + row.tx_count, 0),
+            };
+          }),
+        );
       }),
       share(),
     );
-
-    this.statsObservable$ = combineLatest([
-        this.widget ? of(this.miningWindowPreference) : this.radioGroupForm.get('dateSpan').valueChanges.pipe(startWith(this.radioGroupForm.controls.dateSpan.value)),
-        this.stateService.rateUnits$
-    ]).pipe();
   }
 
-  prepareChartOptions(data, weightMode) {
+  prepareChartOptions(data): void {
     this.chartOptions = {
-      color: this.widget ? ['#6b6b6b', new echarts.graphic.LinearGradient(0, 0, 0, 0.65, [
-        { offset: 0, color: '#F4511E' },
-        { offset: 0.25, color: '#FB8C00' },
-        { offset: 0.5, color: '#FFB300' },
-        { offset: 0.75, color: '#FDD835' },
-        { offset: 1, color: '#7CB342' }
-      ])] : ['#D81B60', '#8E24AA', '#1E88E5', '#7CB342', '#FDD835', '#6D4C41', '#546E7A'],
+      color: ['#1E88E5'],
       animation: false,
       grid: {
         right: this.right,
@@ -135,41 +145,29 @@ export class BlockGogglesGraphComponent implements OnInit {
           align: 'left',
         },
         borderColor: '#000',
-        formatter: function(data) {
-          if (data.length <= 0) {
+        formatter: function(params): string {
+          if (!params || params.length <= 0) {
             return '';
           }
-          let tooltip = `<b style="color: white; margin-left: 2px">${formatterXAxis(this.locale, this.timespan, parseInt(data[0].axisValue, 10))}</b><br>`;
-
-          for (const rate of data.reverse()) {
-            if (weightMode) {
-              tooltip += `${rate.marker} ${rate.seriesName}: ${(rate.data[1] / 4).toFixed(2)} sats/WU<br>`;
-            } else {
-              tooltip += `${rate.marker} ${rate.seriesName}: ${rate.data[1].toFixed(2)} sats/vByte<br>`;
-            }
-          }
-
-          if (['24h', '3d'].includes(this.timespan)) {
-            tooltip += `<small>` + $localize`At block: ${data[0].data[2]}` + `</small>`;
-          } else {
-            tooltip += `<small>` + $localize`Around block: ${data[0].data[2]}` + `</small>`;
-          }
-
+          const item = params[0];
+          let tooltip = `<b style="color: white; margin-left: 2px">` + $localize`Block: ${item.data[0]}` + `</b><br>`;
+          tooltip += `${item.marker} ` + $localize`Transactions` + `: ${formatNumber(item.data[1], this.locale, '1.0-0')}<br>`;
           return tooltip;
         }.bind(this)
       },
-      xAxis: data.series.length === 0 ? undefined :
-      {
-        name: this.widget ? undefined : formatterXAxisLabel(this.locale, this.timespan),
+      xAxis: data.length === 0 ? undefined : {
+        name: this.widget ? undefined : $localize`Block height`,
         nameLocation: 'middle',
         nameTextStyle: {
           padding: [10, 0, 0, 0],
         },
-        type: 'category',
-        boundaryGap: false,
-        axisLine: { onZero: true },
+        type: 'value',
+        min: 'dataMin',
+        max: 'dataMax',
+        axisLine: { onZero: false },
+        splitLine: { show: false },
         axisLabel: {
-          formatter: val => formatterXAxisTimeCategory(this.locale, this.timespan, parseInt(val, 10)),
+          formatter: (val): string => `${val}`,
           align: 'center',
           fontSize: 11,
           lineHeight: 12,
@@ -177,31 +175,14 @@ export class BlockGogglesGraphComponent implements OnInit {
           padding: [0, 5],
         },
       },
-      legend: (this.widget || data.series.length === 0) ? undefined : {
-        padding: [10, 75],
-        data: data.legends,
-        selected:  JSON.parse(this.storageService.getValue('fee_rates_legend') || 'null') ?? {
-          'Min': true,
-          '10th': true,
-          '25th': true,
-          'Median': true,
-          '75th': true,
-          '90th': true,
-          'Max': false,
-        },
-        id: 4242,
-      },
-      yAxis: data.series.length === 0 ? undefined : {
+      yAxis: data.length === 0 ? undefined : {
         position: 'left',
         axisLabel: {
           color: 'rgb(110, 112, 121)',
-          formatter: (val) => {
-            if (weightMode) {
-              val /= 4;
-            }
+          formatter: (val): string => {
             const selectedPowerOfTen: any = selectPowerOfTen(val);
             const newVal = Math.round(val / selectedPowerOfTen.divider);
-            return `${newVal}${selectedPowerOfTen.unit} s/${weightMode ? 'WU': 'vB'}`;
+            return `${newVal}${selectedPowerOfTen.unit}`;
           },
         },
         splitLine: {
@@ -212,9 +193,15 @@ export class BlockGogglesGraphComponent implements OnInit {
           }
         },
         type: 'value',
-        max: (val) => this.timespan === 'all' ? Math.min(val.max, 5000) : undefined,
       },
-      series: data.series,
+      series: data.length === 0 ? undefined : [{
+        zlevel: 0,
+        name: $localize`Transactions`,
+        data: data,
+        type: 'bar',
+        barWidth: '100%',
+        large: true,
+      }],
       dataZoom: this.widget ? null : [{
         type: 'inside',
         realtime: true,
@@ -243,7 +230,7 @@ export class BlockGogglesGraphComponent implements OnInit {
     };
   }
 
-  onChartInit(ec) {
+  onChartInit(ec): void {
     if (this.chartInstance !== undefined) {
       return;
     }
@@ -252,23 +239,17 @@ export class BlockGogglesGraphComponent implements OnInit {
 
     this.chartInstance.on('click', (e) => {
       this.zone.run(() => {
-        if (['24h', '3d'].includes(this.timespan)) {
-          const url = new RelativeUrlPipe(this.stateService).transform(`/block/${e.data[2]}`);
-          this.router.navigate([url]);
-        }
+        const url = new RelativeUrlPipe(this.stateService).transform(`/block/${e.data[0]}`);
+        this.router.navigate([url]);
       });
-    });
-
-    this.chartInstance.on('legendselectchanged', (e) => {
-      this.storageService.setValue('fee_rates_legend', JSON.stringify(e.selected));
     });
   }
 
-  isMobile() {
+  isMobile(): boolean {
     return (window.innerWidth <= 767.98);
   }
 
-  onSaveChart() {
+  onSaveChart(): void {
     // @ts-ignore
     const prevBottom = this.chartOptions.grid.bottom;
     const now = new Date();
@@ -279,7 +260,7 @@ export class BlockGogglesGraphComponent implements OnInit {
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
       excludeComponents: ['dataZoom'],
-    }), `block-fee-rates-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
+    }), `block-goggles-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
     // @ts-ignore
     this.chartOptions.grid.bottom = prevBottom;
     this.chartOptions.backgroundColor = 'none';
