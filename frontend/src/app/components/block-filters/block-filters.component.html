@@ -25,7 +25,7 @@
           <label class="btn btn-xs red mode-toggle" [class.active]="filterMode === 'nor'" for="match-none"><ng-container i18n="mempool-goggles.none">None</ng-container></label>
         </div>
       </div>
-      <div class="filter-element">
+      <div class="filter-element" *ngIf="showTint">
         <h5 i18n="mempool-goggles.tint">Tint</h5>
         <div class="btn-group" role="group">
           <input type="radio" class="btn-check" id="tint-classic" [value]="'fee'" fragment="classic" (click)="setGradientMode('fee')">
