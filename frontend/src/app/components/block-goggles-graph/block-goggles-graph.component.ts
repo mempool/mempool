@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, NgZone, OnInit } from '@angular/core';
 import { echarts, EChartsOption } from '@app/graphs/echarts';
-import { Observable } from 'rxjs';
-import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, forkJoin, Observable, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, share, startWith, switchMap, tap } from 'rxjs/operators';
+import { ActiveFilter, FilterMode, toFlags } from '@app/shared/filters.utils';
 import { ApiService } from '@app/services/api.service';
 import { formatNumber } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
@@ -53,6 +54,12 @@ export class BlockGogglesGraphComponent implements OnInit {
   timespan = '';
   chartInstance: any = undefined;
 
+  // active goggles filter; empty op/mask means no filter, so the backend returns total tx counts
+  goggle$ = new BehaviorSubject<{ op?: FilterMode, mask?: bigint }>({});
+
+  // totals depend only on the timespan, so cache them per interval across filter changes
+  private totalsCache: Record<string, GogglesRollup[]> = {};
+
   constructor(
     @Inject(LOCALE_ID) public locale: string,
     private apiService: ApiService,
@@ -89,28 +96,56 @@ export class BlockGogglesGraphComponent implements OnInit {
         });
     }
 
-    this.statsObservable$ = this.radioGroupForm.get('dateSpan').valueChanges.pipe(
-      startWith(this.radioGroupForm.controls.dateSpan.value),
-      switchMap((timespan) => {
+    this.statsObservable$ = combineLatest([
+      this.radioGroupForm.get('dateSpan').valueChanges.pipe(
+        startWith(this.radioGroupForm.controls.dateSpan.value),
+        distinctUntilChanged(),
+      ),
+      // debounce so toggling several flags fires one request; startWith keeps the first paint immediate
+      this.goggle$.pipe(
+        debounceTime(250),
+        startWith(this.goggle$.value),
+        distinctUntilChanged((a, b) => a.op === b.op && a.mask === b.mask),
+      ),
+    ]).pipe(
+      switchMap(([timespan, goggle]) => {
         if (!this.widget) {
           this.storageService.setValue('miningWindowPreference', timespan);
         }
         this.timespan = timespan;
         this.isLoading = true;
-        // the backend owns the blockspan/rollup tier for each interval; the frontend just asks for it
-        return this.apiService.getHistoricalTxCountByFlags$(timespan).pipe(
-          tap((response) => {
+        const filtered$ = this.apiService.getHistoricalTxCountByFlags$(timespan, goggle.op, goggle.mask?.toString());
+        // when filtering, fetch unfiltered totals (cached per interval) to compute each bucket's share
+        const totals$ = goggle.mask
+          ? (this.totalsCache[timespan]
+              ? of(this.totalsCache[timespan])
+              : this.apiService.getHistoricalTxCountByFlags$(timespan).pipe(
+                  map((res) => res.body || []),
+                  tap((body) => { this.totalsCache[timespan] = body; }),
+                ))
+          : of(null);
+        return forkJoin([filtered$, totals$]).pipe(
+          tap(([response, totalsBody]) => {
             const body: GogglesRollup[] = response.body || [];
-            const seriesData = body.map((row) => [row.start_height, row.tx_count]);
+            const totalsByHeight: Record<number, number> | null = totalsBody
+              ? totalsBody.reduce((acc, row) => { acc[row.start_height] = row.tx_count; return acc; }, {})
+              : null;
+            // dims: [start_height, tx_count, blocks_count, bucket_total]
+            const seriesData = body.map((row) => [
+              row.start_height,
+              row.tx_count,
+              parseInt(row.blocks_count, 10) || 1,
+              totalsByHeight ? (totalsByHeight[row.start_height] ?? row.tx_count) : row.tx_count,
+            ]);
             this.prepareChartOptions(seriesData);
             this.isLoading = false;
             this.cd.markForCheck();
           }),
-          map((response) => {
+          map(([response]) => {
             const body: GogglesRollup[] = response.body || [];
             const headerCount = parseInt(response.headers.get('x-total-count'), 10);
             return {
-              // fall back to a high value so the whole range selector stays available
+              // fall back high so the whole range selector stays available
               blockCount: Number.isFinite(headerCount) ? headerCount : Number.MAX_SAFE_INTEGER,
               txCount: body.reduce((acc, row) => acc + row.tx_count, 0),
             };
@@ -121,8 +156,32 @@ export class BlockGogglesGraphComponent implements OnInit {
     );
   }
 
+  onFilterChanged(activeFilter: ActiveFilter | null): void {
+    const mask = activeFilter ? toFlags(activeFilter.filters) : 0n;
+    this.goggle$.next(mask > 0n
+      ? { op: activeFilter.mode, mask }
+      : {}
+    );
+  }
+
   prepareChartOptions(data): void {
+    let title: object;
+    if (data.length === 0) {
+      title = {
+        textStyle: {
+          color: 'grey',
+          fontSize: 15
+        },
+        text: this.goggle$.value.mask
+          ? $localize`No transactions match the selected filters`
+          : $localize`:@@23555386d8af1ff73f297e89dd4af3f4689fb9dd:Indexing blocks`,
+        left: 'center',
+        top: 'center'
+      };
+    }
+
     this.chartOptions = {
+      title,
       color: ['#1E88E5'],
       animation: false,
       grid: {
@@ -150,8 +209,30 @@ export class BlockGogglesGraphComponent implements OnInit {
             return '';
           }
           const item = params[0];
-          let tooltip = `<b style="color: white; margin-left: 2px">` + $localize`Block: ${item.data[0]}` + `</b><br>`;
-          tooltip += `${item.marker} ` + $localize`Transactions` + `: ${formatNumber(item.data[1], this.locale, '1.0-0')}<br>`;
+          const startHeight = item.data[0];
+          const count = item.data[1];
+          const blocksCount = item.data[2] || 1;
+          const bucketTotal = item.data[3];
+          const filtered = !!this.goggle$.value.mask;
+          let tooltip = '';
+
+          if (blocksCount > 1) {
+            const endHeight = startHeight + blocksCount - 1;
+            tooltip += `<b style="color: white; margin-left: 2px">` + $localize`Blocks ${startHeight}–${endHeight}` + `</b><br>`;
+          } else {
+            tooltip += `<b style="color: white; margin-left: 2px">` + $localize`Block: ${startHeight}` + `</b><br>`;
+          }
+
+          if (blocksCount > 1) {
+            tooltip += `${item.marker} ` + $localize`Avg per block` + `: ${formatNumber(count / blocksCount, this.locale, '1.0-2')}<br>`;
+          }
+
+          const countLabel = filtered ? $localize`Matched transactions` : (blocksCount > 1 ? $localize`Total transactions` : $localize`Transactions`);
+          tooltip += `${item.marker} ` + countLabel + `: ${formatNumber(count, this.locale, '1.0-0')}<br>`;
+
+          if (filtered && bucketTotal > 0) {
+            tooltip += `${item.marker} ` + $localize`Share of all txs` + `: ${formatNumber(count / bucketTotal * 100, this.locale, '1.0-2')}%<br>`;
+          }
           return tooltip;
         }.bind(this)
       },
