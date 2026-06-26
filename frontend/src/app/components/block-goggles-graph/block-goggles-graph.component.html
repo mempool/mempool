@@ -3,7 +3,7 @@
 <div [class.full-container]="!widget">
   <div *ngIf="!widget" class="card-header mb-0 mb-md-4">
     <div class="d-flex d-md-block align-items-baseline">
-      <span i18n="mining.block-goggles">Block goggles graph</span>
+      <span i18n="mining.transaction-count-per-block">Transaction count per block</span>
       <button class="btn p-0 ps-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
         <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
       </button>
@@ -53,8 +53,11 @@
     </form>
   </div>
 
-  <div [class.chart]="!widget" [class.chart-widget]="widget" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions"
-    (chartInit)="onChartInit($event)" [style]="{opacity: isLoading ? 0.5 : 1}">
+  <div class="goggles-chart-wrapper" [class.chart]="!widget" [class.chart-widget]="widget">
+    <app-block-filters *ngIf="!widget" class="goggles-filters" [showTint]="false" (onFilterChanged)="onFilterChanged($event)"></app-block-filters>
+    <div class="echarts-container" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+      (chartInit)="onChartInit($event)" [style]="{opacity: isLoading ? 0.5 : 1}">
+    </div>
   </div>
   <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">
     <div class="spinner-border text-light"></div>
