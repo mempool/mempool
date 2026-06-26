@@ -70,6 +70,14 @@ class FlagValuesRepository {
     }
     return [];
   }
+
+  public async $deleteFlagValuesBelowHeight(height: number, blocksCount: string):  Promise<void> {
+    try {
+      await DB.query(`DELETE FROM flag_values WHERE start_height < ? AND blocks_count = ?`, [height, blocksCount]);
+    } catch(e) {
+      logger.err(`Cannot delete flag values below block #${height}. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+  }
 }
 
 export default new FlagValuesRepository();
