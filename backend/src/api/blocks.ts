@@ -37,7 +37,7 @@ import { calculateGoodBlockCpfp } from './cpfp';
 import blockProcessor, { BlockProcessingResult, detectTemplateAlgorithm, saveCpfpDataToCpfpSummary } from './block-processor';
 import mempool from './mempool';
 import CpfpRepository from '../repositories/CpfpRepository';
-import { parseDATUMTemplateCreator } from '../utils/bitcoin-script';
+import { parseDATUMTemplateCreator, parseDMNDTemplateCreator } from '../utils/bitcoin-script';
 import database from '../database';
 import { getBlockFirstSeenFromLogs, getOldestLogTimestampFromLogs, scanLogsForBlocksFirstSeen } from '../utils/file-read';
 
@@ -359,6 +359,8 @@ class Blocks {
 
         if (extras.pool.name === 'OCEAN') {
           extras.pool.minerNames = parseDATUMTemplateCreator(extras.coinbaseRaw);
+        } else if (extras.pool.name === 'DMND') {
+          extras.pool.minerNames = parseDMNDTemplateCreator(extras.coinbaseRaw);
         }
       }
 

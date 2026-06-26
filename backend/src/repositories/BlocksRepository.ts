@@ -14,7 +14,7 @@ import chainTips from '../api/chain-tips';
 import blocks from '../api/blocks';
 import BlocksAuditsRepository from './BlocksAuditsRepository';
 import transactionUtils from '../api/transaction-utils';
-import { parseDATUMTemplateCreator } from '../utils/bitcoin-script';
+import { parseDATUMTemplateCreator, parseDMNDTemplateCreator } from '../utils/bitcoin-script';
 import poolsUpdater from '../tasks/pools-updater';
 
 interface DatabaseBlock {
@@ -1374,6 +1374,8 @@ class BlocksRepository {
 
     if (extras.pool.name === 'OCEAN') {
       extras.pool.minerNames = parseDATUMTemplateCreator(extras.coinbaseRaw);
+    } else if (extras.pool.name === 'DMND') {
+      extras.pool.minerNames = parseDMNDTemplateCreator(extras.coinbaseRaw);
     }
 
     blk.extras = <BlockExtension>extras;
