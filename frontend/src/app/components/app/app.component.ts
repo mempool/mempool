@@ -85,10 +85,18 @@ export class AppComponent implements OnInit {
           progress.ibd ||
           (progress.electrs != null && !progress.electrs.indexed) ||
           (progress.mempool != null && !progress.mempool.inSync);
-        if (
-          nodeNotReady &&
-          !this.location.path().startsWith(gettingStartedUrl)
-        ) {
+
+        // Only intercept the dashboard (home) — other routes may work or be
+        // intentionally reachable while the node is still syncing.
+        const currentPath = this.getBasePath(this.location.path()).replace(
+          /\/$/,
+          ''
+        );
+        const dashboardPath = this.getBasePath(
+          new RelativeUrlPipe(this.stateService).transform('/')
+        ).replace(/\/$/, '');
+
+        if (nodeNotReady && currentPath === dashboardPath) {
           this.router.navigate([gettingStartedUrl]);
         }
       });

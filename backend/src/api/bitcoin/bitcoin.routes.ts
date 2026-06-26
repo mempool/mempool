@@ -158,7 +158,7 @@ class BitcoinRoutes {
       if (config.MEMPOOL.BACKEND === 'esplora' || config.MEMPOOL.BACKEND === 'electrum') {
         let indexed = false;
         try {
-          const electrsTip = await bitcoinApi.$getBlockHeightTip();
+          const electrsTip = await bitcoinApi.$getElectrsHeightTip();
           indexed = !blockchainInfo.initialblockdownload && electrsTip >= blockchainInfo.blocks;
         } catch (e) {
           // electrs/electrum unreachable or still starting up — treat as not yet indexed

@@ -1,3 +1,10 @@
+<div class="container-xl getting-started" *ngIf="!syncProgress">
+  <h1 i18n="getting-started.title">Getting started</h1>
+  <p class="description" i18n="getting-started.loading">
+    Loading sync status...
+  </p>
+</div>
+
 <div class="container-xl getting-started" *ngIf="syncProgress">
   <h1 i18n="getting-started.title">Getting started</h1>
   <p class="description" i18n="getting-started.description">
@@ -23,7 +30,13 @@
     </div>
 
     <ng-container *ngIf="bitcoinStatus === 'active'">
-      <div class="sync-bar">
+      <div
+        class="sync-bar"
+        role="progressbar"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        [attr.aria-valuenow]="syncProgress.bitcoind.verificationprogress * 100"
+      >
         <div
           class="sync-bar-fill"
           [style.width]="syncProgress.bitcoind.verificationprogress * 100 + '%'"
@@ -117,8 +130,16 @@
     </div>
 
     <ng-container *ngIf="mempoolStatus === 'active'">
-      <ng-container *ngIf="syncProgress.mempool.progress != null; else mempoolScan">
-        <div class="sync-bar">
+      <ng-container
+        *ngIf="syncProgress.mempool.progress != null; else mempoolScan"
+      >
+        <div
+          class="sync-bar"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuenow]="syncProgress.mempool.progress"
+        >
           <div
             class="sync-bar-fill"
             [style.width]="syncProgress.mempool.progress + '%'"
