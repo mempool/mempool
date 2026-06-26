@@ -3,9 +3,9 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { WebsocketResponse } from '@interfaces/websocket.interface';
 import { StateService } from '@app/services/state.service';
 import { Transaction } from '@interfaces/electrs.interface';
-import { firstValueFrom, Subscription } from 'rxjs';
+import { firstValueFrom, of, Subscription } from 'rxjs';
 import { ApiService } from '@app/services/api.service';
-import { take } from 'rxjs/operators';
+import { catchError, take } from 'rxjs/operators';
 import { TransferState, makeStateKey } from '@angular/core';
 import { CacheService } from '@app/services/cache.service';
 import { uncompressDeltaChange, uncompressTx } from '@app/shared/common.utils';
@@ -358,7 +358,10 @@ export class WebsocketService {
 
     if (response.blocks && response.blocks.length) {
       const blocks = response.blocks;
-      this.minersService.applyBlocksMinerDetails$(blocks).subscribe((mappedBlocks) => {
+      this.minersService.applyBlocksMinerDetails$(blocks).pipe(
+        take(1),
+        catchError(() => of(blocks))
+      ).subscribe((mappedBlocks) => {
         this.stateService.resetBlocks(mappedBlocks);
         const maxHeight = mappedBlocks.reduce((max, block) => Math.max(max, block.height), this.stateService.latestBlockHeight);
         this.stateService.updateChainTip(maxHeight);
@@ -375,7 +378,10 @@ export class WebsocketService {
 
     if (response.block) {
       if (response.block.height === this.stateService.latestBlockHeight + 1) {
-        this.minersService.applyBlockMinerDetails$(response.block).subscribe((block) => {
+        this.minersService.applyBlockMinerDetails$(response.block).pipe(
+          take(1),
+          catchError(() => of(response.block))
+        ).subscribe((block) => {
           this.stateService.updateChainTip(block.height);
           this.stateService.addBlock(block);
           this.stateService.txConfirmed$.next([response.txConfirmed, block]);

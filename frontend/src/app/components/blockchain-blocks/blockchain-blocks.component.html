@@ -79,7 +79,7 @@
         <div class="animated" *ngIf="block.extras?.pool != undefined && showPools">
           <a [attr.data-cy]="'bitcoin-block-' + offset + '-index-' + i + '-pool'" class="badge" [class.miner-name]="block.extras.pool.minerNames?.length > 1 && block.extras.pool.minerNames[1] != ''" [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
             <ng-container *ngIf="block.extras.pool.minerNames?.length > 1 && block.extras.pool.minerNames[1] != ''; else centralisedPool">
-              <ng-container *ngIf="block.extras.pool.minerSlug; else minerName">
+              <ng-container *ngIf="block.extras.pool.minerSlug && block.extras.pool.minerName; else minerName">
                 <app-mining-pool [slug]="block.extras.pool.minerSlug" [name]="block.extras.pool.minerName" [showName]="false"></app-mining-pool>
                 {{ block.extras.pool.minerName }}
               </ng-container>

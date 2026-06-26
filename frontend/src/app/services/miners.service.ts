@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { catchError, map, shareReplay } from 'rxjs/operators';
 import { BlockExtended, StaleTip } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 
@@ -25,7 +25,10 @@ export class MinersService {
     if (!stateService.isBrowser) {
       this.apiBaseUrl = this.stateService.env.NGINX_PROTOCOL + '://' + this.stateService.env.NGINX_HOSTNAME + ':' + this.stateService.env.NGINX_PORT;
     }
-    this.miners$ = this.httpClient.get<Miner[]>(this.apiBaseUrl + '/resources/miners.json').pipe(shareReplay(1));
+    this.miners$ = this.httpClient.get<Miner[]>(this.apiBaseUrl + '/resources/miners.json').pipe(
+      catchError(() => of([])),
+      shareReplay(1)
+    );
   }
 
   public applyBlockMinerDetails$(block: BlockExtended): Observable<BlockExtended> {
@@ -62,7 +65,7 @@ export class MinersService {
     }
 
     const miner = miners.find((minerEntry) => minerEntry.tags.some((tag) => minerNames.includes(tag)));
-    if (miner) {
+    if (miner?.name && miner.slug) {
       block.extras.pool.minerName = miner.name;
       block.extras.pool.minerSlug = miner.slug;
     }

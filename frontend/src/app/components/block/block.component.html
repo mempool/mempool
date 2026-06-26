@@ -188,7 +188,7 @@
         <td i18n="block.miner">Miner</td>
         <td *ngIf="stateService.env.MINING_DASHBOARD">
           <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, block.extras.pool.slug]" class="badge" style="color: #FFF;padding:0;">
-            <ng-container *ngIf="block.extras.pool.minerSlug; else minerName">
+            <ng-container *ngIf="block.extras.pool.minerSlug && block.extras.pool.minerName; else minerName">
               <app-mining-pool [slug]="block.extras.pool.minerSlug" [name]="block.extras.pool.minerName" [showName]="false"></app-mining-pool>
               <span class="miner-name">{{ block.extras.pool.minerName }}</span>
               <app-mining-pool [slug]="block.extras.pool.slug" [name]="block.extras.pool.name"></app-mining-pool>
