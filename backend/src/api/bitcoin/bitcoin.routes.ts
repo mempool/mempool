@@ -1152,7 +1152,7 @@ class BitcoinRoutes {
         '3y': {blocksCount: '144', blockSpan: 145152},
         'all': {blocksCount: '720'},
       };
-      const tip = await FlagValueRepository.$getTipIndexedByBlocksCount(presets[interval].blocksCount);
+      const { tip }  = await FlagValueRepository.$getTipAndTailIndexedByBlocksCount(presets[interval].blocksCount) || { tip: undefined };
 
       if (!tip) {
         handleError(req, res, 400, `Failed to get latest indexed flag values for ${interval}`);
