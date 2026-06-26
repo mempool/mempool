@@ -693,7 +693,7 @@ class Blocks {
   /**
    * [INDEXING] Index all blocks flag values for the goggles graph rendering
    *
-   * TODO: Logging debuggers, restart diff checkup on latest blocks_summaries against flag_values and deletion of oldest rows out of blockSpan
+   *
    */
   public async $generateFlagValuesDatabase(): Promise<void> {
     if (Common.blocksSummariesIndexingEnabled() === false) {
@@ -701,60 +701,81 @@ class Blocks {
     }
 
     const INDEXING_CONFIGS = [
-      {name: 'perBlock', blocksCount: 1,  blockSpanIndex: 144*7}, // block span of 1 week
-      {name: 'perQuarterDay', blocksCount: 36, blockSpanIndex: 144*30*6}, // block span of 6 months
-      {name: 'perDay', blocksCount: 144, blockSpanIndex: 144*30*12*3}, // block span of 3 years
-      {name: 'per5days', blocksCount: 720, blockSpanIndex: -1}, // All history
+      {name: 'per block', blocksCount: 1,  blockSpanIndex: 1008}, // block span of 1 week
+      {name: 'per 36 blocks', blocksCount: 36, blockSpanIndex: 25920}, // block span of 6 months
+      {name: 'per 144 blocks', blocksCount: 144, blockSpanIndex: 155520}, // block span of 3 years
+      {name: 'per 720 blocks', blocksCount: 720, blockSpanIndex: -1}, // All history
     ];
 
     try {
-      const tip = await BlocksSummariesRepository.$getTipIndexed();
-      if (!tip) {
+
+      const tipOfSummaries = await BlocksSummariesRepository.$getTipIndexed();
+      if (!tipOfSummaries) {
         return;
       }
 
       for (const config of INDEXING_CONFIGS) {
-        let lastHeightToIndex;
+        let startHeight = -1;
         if (config.blockSpanIndex > -1) {
-          lastHeightToIndex = tip - config.blockSpanIndex;
+          startHeight = tipOfSummaries - config.blockSpanIndex;
         }
 
-        const blocksToIndex = await BlocksSummariesRepository.$getSummariesAboveHeight(lastHeightToIndex);
+        const tipAndTailOfFlagValues = await FlagValueRepository.$getTipAndTailIndexedByBlocksCount(config.blocksCount.toString());
+        if (tipAndTailOfFlagValues) {
+          const tip = tipAndTailOfFlagValues.tip;
+          const tail = tipAndTailOfFlagValues.tail;
 
-        const rows: any[] = [];
-        let flagValues: any = null;
-
-        for (let i = 0; i < blocksToIndex.length; i++) {
-          const block = blocksToIndex[i];
-          const isFirstRun = (i === 0);
-
-          if(i % config.blocksCount === 0) {
-            if (!isFirstRun && flagValues) {
-              rows.push(flagValues);
-            }
-            if (tip - block.height < config.blocksCount) {
-              break;
-            }
-            flagValues = {
-              startHeight: block.height,
-              blocksCount: config.blocksCount,
-              txCount: {},
-            };
+          if (startHeight > tail + config.blocksCount) {
+            await FlagValueRepository.$deleteFlagValuesBelowHeight(startHeight, config.blocksCount.toString());
           }
 
-          const flagsArray = JSON.parse(block.transactions).map((tx) => tx.flags);
-          flagsArray.forEach((flag) => {
-            flagValues.txCount[flag] = (flagValues.txCount[flag] ?? 0) + 1;
-          });
+          if (tip + config.blocksCount >= tipOfSummaries) {
+            continue; // Do not index if flag values height are synced
+          }
+
+          startHeight = tip; //For diff based indexing
         }
 
-        rows.forEach((row) => {
-          const flagsObj = row.txCount;
-          const flags = Object.keys(row.txCount);
-          flags.forEach(async (flag) => {
-            await FlagValueRepository.$saveFlagValues(row.blocksCount.toString(), row.startHeight, BigInt(flag), flagsObj[flag]);
-          });
-        });
+        logger.debug(`Processing and indexing #${tipOfSummaries - startHeight} blocks. From #${tipOfSummaries} to #${startHeight} ${config.name}`, logger.tags.goggles);
+
+        let timer = Date.now() / 1000;
+        const startedAt = Date.now() / 1000;
+        let blocksComputedInTotal = 0;
+        let blocksComputedThisRun = 0;
+        for (let i = startHeight; i < tipOfSummaries; i += config.blocksCount) {
+          const blocks = await BlocksSummariesRepository.$getSummariesBetweenHeights(i, i + config.blocksCount);
+
+          if (!blocks || blocks.length < config.blocksCount) {
+            break;
+          }
+
+          const txCount: Record<string, number> = {};
+
+          for (const block of blocks) {
+            const txFlags = JSON.parse(block.transactions).map((tx) => tx.flags);
+            for (const flag of txFlags) {
+              txCount[flag] = (txCount[flag] ?? 0) + 1;
+            }
+            blocksComputedInTotal++;
+            blocksComputedThisRun++;
+          }
+
+          const processedFlags = Object.keys(txCount);
+          for (const flag of processedFlags) {
+            await FlagValueRepository.$saveFlagValues(config.blocksCount.toString(), i + 1, BigInt(flag), txCount[flag]);
+          }
+
+          const elapsedSeconds = (Date.now() / 1000) - timer;
+          if (elapsedSeconds > 5) {
+            const runningFor = (Date.now() / 1000) - startedAt;
+            const blocksPerSecond = blocksComputedThisRun / elapsedSeconds;
+            const completion = (blocksComputedInTotal / (tipOfSummaries - startHeight)) * 100;
+            logger.debug(`Indexing flag values ${config.name} | ${blocksComputedInTotal}/${tipOfSummaries - startHeight} (${completion.toFixed(2)}%) | ~${blocksPerSecond.toFixed(2)} blocks/sec | elapsed: ${runningFor.toFixed(2)} seconds`);
+            timer = Date.now() / 1000;
+            blocksComputedThisRun = 0;
+          }
+        }
+        logger.debug(`Successfully indexed #${blocksComputedInTotal} blocks ${config.name} in ${((Date.now() / 1000) - timer).toFixed(2)} seconds`, logger.tags.goggles);
       }
     } catch (e) {
       logger.err(`Flags values indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.goggles);
