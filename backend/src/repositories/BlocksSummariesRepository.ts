@@ -233,22 +233,15 @@ class BlocksSummariesRepository {
     return null;
   }
 
-  public async $getSummariesAboveHeight(height?: number): Promise<{height: number, transactions: string}[]> {
+  public async $getSummariesBetweenHeights(startHeight: number, lastHeight: number): Promise<{height: number, transactions: string}[]> {
     try {
-      let whereClause = '';
-      const params: number[] = [];
-      if (height !== undefined) {
-        whereClause = 'WHERE height >= ?';
-        params.push(height);
-      }
-
-      const [rows]: any[] = await DB.query(`SELECT height, transactions FROM blocks_summaries ${whereClause} ORDER BY height ASC`, params);
+      const [rows]: any[] = await DB.query(`SELECT height, transactions FROM blocks_summaries WHERE height > ? AND height <= ? ORDER BY height ASC`, [startHeight, lastHeight]);
 
       if (rows !== null && rows.length > 0) {
         return rows;
       }
     } catch (e) {
-      logger.err(`Cannot get blocks above height ${height}. Reason: ` + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot get blocks between ${lastHeight} and ${startHeight}. Reason: ` + (e instanceof Error ? e.message : e));
     }
 
     return [];
