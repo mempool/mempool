@@ -45,6 +45,8 @@ export interface Pool {
   id: number;
   name: string;
   slug: string;
+  minerName?: string;
+  minerSlug?: string;
   minerNames: string[] | null;
 }
 
