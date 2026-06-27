@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, ChangeDetectorRef, SimpleChanges, HostListener } from '@angular/core';
-import { Subscription, tap, of, catchError, Observable, switchMap } from 'rxjs';
+import { Subscription, tap, of, catchError, Observable, switchMap, Subject, ReplaySubject, filter, take, takeUntil, timeout } from 'rxjs';
 import { ServicesApiServices } from '@app/services/services-api.service';
 import { md5 } from '@app/shared/common.utils';
 import { StateService } from '@app/services/state.service';
@@ -78,6 +78,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Output() changeMode = new EventEmitter<boolean>();
   @Output() paymentReceipt = new EventEmitter<string>();
 
+  private destroy$ = new Subject<void>();
   calculating = true;
   processing = false;
   isCheckoutLocked = 0; // reference counter, 0 = unlocked, >0 = locked
@@ -105,6 +106,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   difficultySubscription: Subscription;
   estimateSubscription: Subscription;
   estimate: AccelerationEstimate;
+  estimate$: ReplaySubject<AccelerationEstimate | null> = new ReplaySubject(1);
   maxBidBoost: number; // sats
   cost: number; // sats
   etaInfo$: Observable<{ hashratePercentage: number, ETA: number, acceleratedETA: number }>;
@@ -208,6 +210,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     if (this.themeStateSubscription) {
       this.themeStateSubscription.unsubscribe();
     }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -276,6 +280,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   closeModal(): void {
     this.completed.emit(true);
     this.moveToStep('summary', true);
+    this.accelerateError = '';
   }
 
   /**
@@ -296,6 +301,19 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         block: position,
       });
     }
+  }
+
+  private estimateReady$(): Observable<AccelerationEstimate> {
+    return this.estimate$.pipe(
+      filter((estimate: AccelerationEstimate | null): estimate is AccelerationEstimate => estimate !== null),
+      take(1),
+      takeUntil(this.destroy$),
+      timeout({ first: 30_000 }),
+      catchError(() => {
+        this.accelerateError = 'estimate_timeout';
+        return of();
+      })
+    );
   }
 
   /**
@@ -322,6 +340,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             if (this.step === 'summary') {
               this.unavailable.emit(true);
             }
+            this.estimate$.next(null);
             return;
           }
           if (this.estimate.hasAccess === true && this.estimate.userBalance <= 0) {
@@ -344,6 +363,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           this.defaultBid = this.maxRateOptions[1].fee;
           this.userBid = this.defaultBid;
           this.cost = this.userBid + this.estimate.mempoolBaseFee + this.estimate.vsizeFee;
+          this.estimate$.next(this.estimate);
 
           this.validateChoice();
 
@@ -506,6 +526,12 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
     this.processing = true;
 
+    this.estimateReady$().subscribe(async () => {
+        if (!this.estimate) {
+          // error state should already be handled by estimateReady
+          return;
+        }
+
         if (this.applePay) {
           this.applePay.destroy();
         }
@@ -611,6 +637,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           this.processing = false;
           console.error(e);
         }
+
+    });
   }
 
   /**
@@ -622,6 +650,12 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     }
 
     this.processing = true;
+
+    this.estimateReady$().subscribe(async () => {
+          if (!this.estimate) {
+          // error state should already be handled by estimateReady
+          return;
+        }
 
         if (this.googlePay) {
           this.googlePay.destroy();
@@ -731,6 +765,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             this.isCheckoutLocked--;
           }
         });
+
+    });
   }
 
   /**
@@ -742,6 +778,12 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     }
 
     this.processing = true;
+
+    this.estimateReady$().subscribe(async () => {
+        if (!this.estimate) {
+          // error state should already be handled by estimateReady
+          return;
+        }
 
         const costUSD = this.cost / 100_000_000 * this.conversions.USD;
         if (this.isCheckoutLocked > 0) {
@@ -829,6 +871,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
           this.isCheckoutLocked--;
           this.isTokenizing--;
         }
+
+    });
   }
 
   /**
@@ -840,6 +884,12 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     }
 
     this.processing = true;
+
+    this.estimateReady$().subscribe(async () => {
+        if (!this.estimate) {
+          // error state should already be handled by estimateReady
+          return;
+        }
 
         if (this.cashAppPay) {
           this.cashAppPay.destroy();
@@ -911,6 +961,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
             });
           }
         });
+    
+    });
   }
 
   /**
