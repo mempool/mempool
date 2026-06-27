@@ -57,8 +57,14 @@
               <div class="animated" *ngIf="chainTip.stale?.extras?.pool != undefined">
                 <a class="badge" [class.miner-name]="chainTip.stale.extras.pool.minerNames?.length > 1 && chainTip.stale.extras.pool.minerNames[1] != ''" [routerLink]="[('/mining/pool/' + chainTip.stale.extras.pool.slug) | relativeUrl]">
                   <ng-container *ngIf="chainTip.stale.extras.pool.minerNames?.length > 1 && chainTip.stale.extras.pool.minerNames[1] != ''; else staleBlockCentralisedPool">
-                    <app-mining-pool [slug]="chainTip.stale.extras.pool.slug" [name]="chainTip.stale.extras.pool.name" [logoStyle]="'filter: grayscale(100%) brightness(1.5);'" [showName]="false"></app-mining-pool>
-                    {{ chainTip.stale.extras.pool.minerNames[1] }}
+                    <ng-container *ngIf="chainTip.stale.extras.pool.minerSlug && chainTip.stale.extras.pool.minerName; else minerName">
+                      <app-mining-pool [slug]="chainTip.stale.extras.pool.minerSlug" [name]="chainTip.stale.extras.pool.minerName" [showName]="false"></app-mining-pool>
+                      {{ chainTip.stale.extras.pool.minerName }}
+                    </ng-container>
+                    <ng-template #minerName>
+                      <app-mining-pool [slug]="chainTip.stale.extras.pool.slug" [name]="chainTip.stale.extras.pool.name" [logoStyle]="'filter: grayscale(100%) brightness(1.5);'" [showName]="false"></app-mining-pool>
+                      {{ chainTip.stale.extras.pool.minerNames[1] }}
+                    </ng-template>
                   </ng-container>
                   <ng-template #staleBlockCentralisedPool>
                     <app-mining-pool [slug]="chainTip.stale.extras.pool.slug" [name]="chainTip.stale.extras.pool.name"></app-mining-pool>
@@ -103,8 +109,14 @@
               <div class="animated" *ngIf="chainTip.canonical?.extras?.pool != undefined">
                 <a class="badge" [class.miner-name]="chainTip.canonical.extras.pool.minerNames?.length > 1 && chainTip.canonical.extras.pool.minerNames[1] != ''" [routerLink]="[('/mining/pool/' + chainTip.canonical.extras.pool.slug) | relativeUrl]">
                   <ng-container *ngIf="chainTip.canonical.extras.pool.minerNames?.length > 1 && chainTip.canonical.extras.pool.minerNames[1] != ''; else canonicalBlockCentralisedPool">
-                    <app-mining-pool [slug]="chainTip.canonical.extras.pool.slug" [name]="chainTip.canonical.extras.pool.name" [logoStyle]="'filter: grayscale(100%) brightness(1.5);'" [showName]="false"></app-mining-pool>
-                    {{ chainTip.canonical.extras.pool.minerNames[1] }}
+                    <ng-container *ngIf="chainTip.canonical.extras.pool.minerSlug && chainTip.canonical.extras.pool.minerName; else minerName">
+                      <app-mining-pool [slug]="chainTip.canonical.extras.pool.minerSlug" [name]="chainTip.canonical.extras.pool.minerName" [showName]="false"></app-mining-pool>
+                      {{ chainTip.canonical.extras.pool.minerName }}
+                    </ng-container>
+                    <ng-template #minerName>
+                      <app-mining-pool [slug]="chainTip.canonical.extras.pool.slug" [name]="chainTip.canonical.extras.pool.name" [logoStyle]="'filter: grayscale(100%) brightness(1.5);'" [showName]="false"></app-mining-pool>
+                      {{ chainTip.canonical.extras.pool.minerNames[1] }}
+                    </ng-template>
                   </ng-container>
                   <ng-template #canonicalBlockCentralisedPool>
                     <app-mining-pool [slug]="chainTip.canonical.extras.pool.slug" [name]="chainTip.canonical.extras.pool.name"></app-mining-pool>

@@ -333,14 +333,21 @@
         @if (pool) {
           <td class="wrap-cell">
             <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, pool.slug]" class="badge" style="color: var(--fg);padding:0;">
-              <span class="miner-name" *ngIf="pool.minerNames?.length > 1 && pool.minerNames[1] != ''">
-                @if (pool.minerNames[1].length > 16) {
-                  {{ pool.minerNames[1].slice(0, 15) }}…
-                } @else {
-                  {{ pool.minerNames[1] }}
-                }
-              </span>
-              <app-mining-pool [slug]="pool.slug" [name]="pool.name"></app-mining-pool>
+              <ng-container *ngIf="pool.minerSlug && pool.minerName; else minerName">
+                <app-mining-pool [slug]="pool.minerSlug" [name]="pool.minerName" [showName]="false"></app-mining-pool>
+                <span class="miner-name">{{ pool.minerName }}</span>
+                <app-mining-pool [slug]="pool.slug" [name]="pool.name"></app-mining-pool>
+              </ng-container>
+              <ng-template #minerName>
+                <span class="miner-name" *ngIf="pool.minerNames?.length > 1 && pool.minerNames[1] != ''">
+                  @if (pool.minerNames[1].length > 16) {
+                    {{ pool.minerNames[1].slice(0, 15) }}…
+                  } @else {
+                    {{ pool.minerNames[1] }}
+                  }
+                </span>
+                <app-mining-pool [slug]="pool.slug" [name]="pool.name"></app-mining-pool>
+              </ng-template>
             </a>
           </td>
         } @else {
