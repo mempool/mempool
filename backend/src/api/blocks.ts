@@ -45,6 +45,9 @@ import FlagValueRepository from '../repositories/FlagValueRepository';
 class Blocks {
   private blocks: BlockExtended[] = [];
   private blockSummaries: BlockSummary[] = [];
+  private flagValuesPer36: any = {};
+  private flagValuesPer144: any = {};
+  private flagValuesPer720: any = {};
   private currentBlockHeight = 0;
   private currentBits = 0;
   private lastDifficultyAdjustmentTime = 0;
@@ -798,15 +801,113 @@ class Blocks {
   }
 
   /** @asyncUnsafe */
-  public async $indexBlockSummary(hash: string, height: number, stale?: boolean): Promise<void> {
+  public async $indexBlockSummary(hash: string, height: number, stale?: boolean, currentBlockHeight?: number): Promise<void> {
     if (config.MEMPOOL.BACKEND === 'esplora') {
       const txs = (await bitcoinApi.$getTxsForBlock(hash, stale)).map(tx => transactionUtils.extendMempoolTransaction(tx));
       const cpfpSummary = await this.$indexCPFP(hash, height, txs, stale);
       if (cpfpSummary) {
-        await this.$getStrippedBlockTransactions(hash, true, true, cpfpSummary, height); // This will index the block summary
+        const transactionsSummary = cpfpSummary.transactions.map(tx => {
+          let flags: number = 0;
+          try {
+            flags = Common.getTransactionFlags(tx, height);
+          } catch (e) {
+            logger.warn('Failed to classify transaction: ' + (e instanceof Error ? e.message : e));
+          }
+          return {
+            txid: tx.txid,
+            time: tx.firstSeen,
+            fee: tx.fee || 0,
+            vsize: tx.vsize,
+            value: Math.round(tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0)),
+            rate: tx.effectiveFeePerVsize,
+            flags: flags,
+          };
+        });
+
+        if (Common.blocksSummariesIndexingEnabled()) {
+          await BlocksSummariesRepository.$saveTransactions(height, hash, transactionsSummary, cpfpSummary.version);
+          await this.$indexFlagValues(height, transactionsSummary, currentBlockHeight);
+        }
       }
     } else {
-      await this.$getStrippedBlockTransactions(hash, true, true); // This will index the block summary
+      const txs = (await bitcoinApi.$getTxsForBlock(hash, true)).map(tx => transactionUtils.extendTransaction(tx));
+      const summary = this.summarizeBlockTransactions(hash, height || 0, txs);
+
+      if (Common.blocksSummariesIndexingEnabled()) {
+        await BlocksSummariesRepository.$saveTransactions(height, hash, summary.transactions, 1);
+        await this.$indexFlagValues(height, summary.transactions, currentBlockHeight);
+      }
+    }
+  }
+
+  public async $indexFlagValues(height: number, transactionsSummary: TransactionClassified[], currentHeight?: number): Promise<void> {
+    if (Common.blocksSummariesIndexingEnabled() === false) {
+      return;
+    }
+
+    try {
+      const currentBlockHeight = currentHeight ?? (await bitcoinClient.getBlockchainInfo()).blocks;
+
+      const isInBlockSpan = {
+        1: currentBlockHeight - height < 1008,
+        36: currentBlockHeight - height < 25920,
+        144: currentBlockHeight - height < 155520,
+      };
+
+      const flags = transactionsSummary.map((tx) => tx.flags);
+      const flagValues = {};
+
+      for (const flag of flags) {
+        if (isInBlockSpan['1']) {
+          flagValues[flag] = (flagValues[flag] ?? 0) + 1;
+        }
+
+        if (isInBlockSpan['36']) {
+          if (!this.flagValuesPer36.flagValues) {
+            this.flagValuesPer36.flagValues = {};
+          }
+          this.flagValuesPer36.startHeight = this.flagValuesPer36.startHeight ?? height;
+          this.flagValuesPer36.nBlocks = (this.flagValuesPer36.nBlocks ?? 0) + 1;
+          this.flagValuesPer36.flagValues[flag] = (this.flagValuesPer36.flagValues[flag] ?? 0) + 1;
+        }
+
+        if (isInBlockSpan['144']) {
+          if (!this.flagValuesPer144.flagValues) {
+            this.flagValuesPer144.flagValues = {};
+          }
+          this.flagValuesPer144.startHeight = this.flagValuesPer144.startHeight ?? height;
+          this.flagValuesPer144.nBlocks = (this.flagValuesPer144.nBlocks ?? 0) + 1;
+          this.flagValuesPer144.flagValues[flag] = (this.flagValuesPer144.flagValues[flag] ?? 0) + 1;
+        }
+
+        if (!this.flagValuesPer720.flagValues) {
+          this.flagValuesPer720.flagValues = {};
+        }
+        this.flagValuesPer720.startHeight = this.flagValuesPer720.startHeight ?? height;
+        this.flagValuesPer720.nBlocks = (this.flagValuesPer720.nBlocks ?? 0) + 1;
+        this.flagValuesPer720.flagValues[flag] = (this.flagValuesPer720.flagValues[flag] ?? 0) + 1;
+      }
+
+      if (Object.keys(flagValues).length > 0) {
+        await FlagValueRepository.$saveBatchFlagValues('1', height, flagValues);
+      }
+
+      if (Object.keys(this.flagValuesPer36).length > 0 && this.flagValuesPer36.nBlocks >= 36) {
+        await FlagValueRepository.$saveBatchFlagValues('36', this.flagValuesPer36.startHeight, this.flagValuesPer36.flagValues);
+        this.flagValuesPer36 = {};
+      }
+
+      if (Object.keys(this.flagValuesPer144).length > 0 && this.flagValuesPer144.nBlocks >= 144) {
+        await FlagValueRepository.$saveBatchFlagValues('144', this.flagValuesPer144.startHeight, this.flagValuesPer144.flagValues);
+        this.flagValuesPer144 = {};
+      }
+
+      if (Object.keys(this.flagValuesPer720).length > 0 && this.flagValuesPer720.nBlocks >= 720) {
+        await FlagValueRepository.$saveBatchFlagValues('720', this.flagValuesPer720.startHeight, this.flagValuesPer720.flagValues);
+        this.flagValuesPer720 = {};
+      }
+    } catch (e) {
+      logger.err(`Flag values indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.goggles);
     }
   }
 
