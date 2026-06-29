@@ -19,6 +19,24 @@ class FlagValuesRepository {
     return null;
   }
 
+  public async $saveBatchFlagValues(blocksCount: string, startHeight: number, flagValues: Record<string, number>): Promise<void> {
+    const params: any[] = [];
+    const flags = Object.keys(flagValues);
+    for (const flag of flags) {
+      params.push([blocksCount, startHeight, flag, flagValues[flag]]);
+    }
+    try {
+      await DB.query(`
+        INSERT INTO flag_values (blocks_count, start_height, flag_value, tx_count) VALUES ?
+        ON DUPLICATE KEY UPDATE
+        tx_count = VALUES(tx_count)
+        `, [params]);
+    } catch (e) {
+      logger.debug(`Cannot save flag batched values. Reason: ${e instanceof Error ? e.message : e}`);
+      throw e;
+    }
+  }
+
   public async $saveFlagValues(blocksCount: string, startHeight: number, flags: bigint, txCount: number): Promise<void> {
     try {
       await DB.query(`
