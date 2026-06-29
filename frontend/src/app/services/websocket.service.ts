@@ -3,12 +3,13 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { WebsocketResponse } from '@interfaces/websocket.interface';
 import { StateService } from '@app/services/state.service';
 import { Transaction } from '@interfaces/electrs.interface';
-import { firstValueFrom, Subscription } from 'rxjs';
+import { firstValueFrom, of, Subscription } from 'rxjs';
 import { ApiService } from '@app/services/api.service';
-import { take } from 'rxjs/operators';
+import { catchError, take } from 'rxjs/operators';
 import { TransferState, makeStateKey } from '@angular/core';
 import { CacheService } from '@app/services/cache.service';
 import { uncompressDeltaChange, uncompressTx } from '@app/shared/common.utils';
+import { MinersService } from '@app/services/miners.service';
 
 const OFFLINE_RETRY_AFTER_MS = 2000;
 const OFFLINE_PING_CHECK_AFTER_MS = 30000;
@@ -51,6 +52,7 @@ export class WebsocketService {
     private apiService: ApiService,
     private transferState: TransferState,
     private cacheService: CacheService,
+    private minersService: MinersService,
   ) {
     if (!this.stateService.isBrowser) {
       // @ts-ignore
@@ -356,9 +358,14 @@ export class WebsocketService {
 
     if (response.blocks && response.blocks.length) {
       const blocks = response.blocks;
-      this.stateService.resetBlocks(blocks);
-      const maxHeight = blocks.reduce((max, block) => Math.max(max, block.height), this.stateService.latestBlockHeight);
-      this.stateService.updateChainTip(maxHeight);
+      this.minersService.applyBlocksMinerDetails$(blocks).pipe(
+        take(1),
+        catchError(() => of(blocks))
+      ).subscribe((mappedBlocks) => {
+        this.stateService.resetBlocks(mappedBlocks);
+        const maxHeight = mappedBlocks.reduce((max, block) => Math.max(max, block.height), this.stateService.latestBlockHeight);
+        this.stateService.updateChainTip(maxHeight);
+      });
     }
 
     if (response.tx) {
@@ -371,9 +378,14 @@ export class WebsocketService {
 
     if (response.block) {
       if (response.block.height === this.stateService.latestBlockHeight + 1) {
-        this.stateService.updateChainTip(response.block.height);
-        this.stateService.addBlock(response.block);
-        this.stateService.txConfirmed$.next([response.txConfirmed, response.block]);
+        this.minersService.applyBlockMinerDetails$(response.block).pipe(
+          take(1),
+          catchError(() => of(response.block))
+        ).subscribe((block) => {
+          this.stateService.updateChainTip(block.height);
+          this.stateService.addBlock(block);
+          this.stateService.txConfirmed$.next([response.txConfirmed, block]);
+        });
       } else if (response.block.height > this.stateService.latestBlockHeight + 1) {
         reinitBlocks = true;
       }
