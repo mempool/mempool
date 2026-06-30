@@ -732,51 +732,47 @@ class Blocks {
 
       let newlyIndexed = 0;
       for (const preset of INDEXING_PRESETS) {
-        newlyIndexed = 0; // Just so it stores the agg of indexed blocks of the last preset 'all'
-        let startHeight = -1;
-        if (preset.blockSpan > -1) {
-          startHeight = tipOfSummaries - preset.blockSpan;
-        }
+        newlyIndexed = 0;
 
+        let rangeStart = preset.blockSpan > -1 ? tipOfSummaries - preset.blockSpan : 0;
         if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT > 0) {
-          startHeight = Math.min(startHeight, tipOfSummaries - config.MEMPOOL.INDEXING_BLOCKS_AMOUNT - 1);
-          if (startHeight === -1) {
-            startHeight = tipOfSummaries - config.MEMPOOL.INDEXING_BLOCKS_AMOUNT - 1;
-          }
+          rangeStart = Math.max(rangeStart, tipOfSummaries - config.MEMPOOL.INDEXING_BLOCKS_AMOUNT + 1);
         }
+        let firstBucket = Math.max(0, Math.floor(rangeStart / preset.blocksCount) * preset.blocksCount);
 
         const tipAndTailOfFlagValues = await FlagValueRepository.$getTipAndTailIndexedByBlocksCount(preset.blocksCount.toString());
         if (tipAndTailOfFlagValues) {
-          const tip = tipAndTailOfFlagValues.tip;
-          const tail = tipAndTailOfFlagValues.tail;
+          const { tip, tail } = tipAndTailOfFlagValues;
 
-          if (startHeight > tail + preset.blocksCount) {
-            logger.debug(`Deleting all the flag values ${preset.name} below height #${startHeight}`, logger.tags.goggles);
-            await FlagValueRepository.$deleteFlagValuesBelowHeight(startHeight, preset.blocksCount.toString());
+          if (firstBucket > tail) { // Drop buckets that fell out of block span
+            logger.debug(`Deleting all the flag values ${preset.name} below height #${firstBucket}`, logger.tags.goggles);
+            await FlagValueRepository.$deleteFlagValuesBelowHeight(firstBucket, preset.blocksCount.toString());
           }
 
-          if (tip + preset.blocksCount >= tipOfSummaries) {
-            continue; // Do not index if flag values height are synced
-          }
-
-          startHeight = tip; //For diff based indexing
+          firstBucket = Math.max(firstBucket, Math.floor(tip / preset.blocksCount) * preset.blocksCount);
         }
 
-        logger.debug(`Processing and indexing #${tipOfSummaries - startHeight + 1} blocks. From #${tipOfSummaries} to #${startHeight + 1} ${preset.name}`, logger.tags.goggles);
+        const lastBucket = Math.floor((tipOfSummaries + 1) / preset.blocksCount) * preset.blocksCount - preset.blocksCount;
+        if (firstBucket > lastBucket) {
+          continue; // already synced up to the most recent complete bucket
+        }
+
+        logger.debug(`Processing and indexing flag values from #${firstBucket} to #${lastBucket + preset.blocksCount - 1} ${preset.name}`, logger.tags.goggles);
 
         let timer = Date.now() / 1000;
         const startedAt = Date.now() / 1000;
         let blocksComputedInTotal = 0;
         let blocksComputedThisRun = 0;
-        for (let i = startHeight; i < tipOfSummaries; i += preset.blocksCount) {
-          const blocks = await BlocksSummariesRepository.$getSummariesBetweenHeights(i, i + preset.blocksCount);
+        const blocksToCompute = lastBucket + preset.blocksCount - firstBucket;
+        for (let bucketStart = firstBucket; bucketStart <= lastBucket; bucketStart += preset.blocksCount) {
+          // heights [bucketStart, bucketStart + blocksCount - 1]
+          const blocks = await BlocksSummariesRepository.$getSummariesBetweenHeights(bucketStart - 1, bucketStart + preset.blocksCount - 1);
 
           if (!blocks || blocks.length < preset.blocksCount) {
-            break;
+            continue; // Incomplete bucket
           }
 
           const txCountPerFlag: Record<string, number> = {};
-
           for (const block of blocks) {
             const txFlags = JSON.parse(block.transactions).map((tx) => tx.flags);
             for (const flag of txFlags) {
@@ -786,18 +782,15 @@ class Blocks {
             blocksComputedThisRun++;
           }
 
-          const processedFlags = Object.keys(txCountPerFlag);
-          for (const flag of processedFlags) {
-            await FlagValueRepository.$saveFlagValue(preset.blocksCount.toString(), i + 1, BigInt(flag), txCountPerFlag[flag]);
-          }
+          await FlagValueRepository.$saveBatchFlagValues(preset.blocksCount.toString(), bucketStart, txCountPerFlag);
           newlyIndexed = newlyIndexed + preset.blocksCount;
 
           const elapsedSeconds = (Date.now() / 1000) - timer;
           if (elapsedSeconds > 5) {
             const runningFor = (Date.now() / 1000) - startedAt;
             const blocksPerSecond = blocksComputedThisRun / elapsedSeconds;
-            const completion = (blocksComputedInTotal / (tipOfSummaries - startHeight)) * 100;
-            logger.debug(`Indexing flag values ${preset.name} | ${blocksComputedInTotal}/${tipOfSummaries - startHeight} (${completion.toFixed(2)}%) | ~${blocksPerSecond.toFixed(2)} blocks/sec | elapsed: ${runningFor.toFixed(2)} seconds`,logger.tags.goggles);
+            const completion = (blocksComputedInTotal / blocksToCompute) * 100;
+            logger.debug(`Indexing flag values ${preset.name} | ${blocksComputedInTotal}/${blocksToCompute} (${completion.toFixed(2)}%) | ~${blocksPerSecond.toFixed(2)} blocks/sec | elapsed: ${runningFor.toFixed(2)} seconds`,logger.tags.goggles);
             timer = Date.now() / 1000;
             blocksComputedThisRun = 0;
           }
@@ -816,7 +809,6 @@ class Blocks {
 
   /**
    * Indexes a block summary and returns its classified transactions so the caller can roll up flag values.
-   * Flag value indexing is intentionally left to the caller, so each indexing stream owns its own accumulator.
    *
    * @asyncUnsafe
    */
