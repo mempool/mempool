@@ -23,7 +23,7 @@ class FlagValuesRepository {
     const params: any[] = [];
     const flags = Object.keys(txCount);
     for (const flag of flags) {
-      params.push([blocksCount, startHeight, flag, txCount[flag]]);
+      params.push([blocksCount, startHeight, BigInt(flag), txCount[flag]]);
     }
     try {
       await DB.query(`
@@ -37,7 +37,7 @@ class FlagValuesRepository {
     }
   }
 
-  public async $saveFlagValues(blocksCount: string, startHeight: number, flags: bigint, txCount: number): Promise<void> {
+  public async $saveFlagValue(blocksCount: string, startHeight: number, flags: bigint, txCount: number): Promise<void> {
     try {
       await DB.query(`
         INSERT INTO flag_values 
