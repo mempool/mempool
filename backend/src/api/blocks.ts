@@ -53,11 +53,7 @@ interface FlagValueBucket {
 class Blocks {
   private blocks: BlockExtended[] = [];
   private blockSummaries: BlockSummary[] = [];
-  private flagValuesCache: FlagValueBucket[] = [
-    {blocksCount: 36, blockSpan: 25920, startHeight: 0, nBlocks: 0, txCountPerFlag: {}},
-    {blocksCount: 144, blockSpan: 155520, startHeight: 0, nBlocks: 0, txCountPerFlag: {}},
-    {blocksCount: 720, blockSpan: -1, startHeight: 0, nBlocks: 0, txCountPerFlag: {}},
-  ];
+  private flagValuesCache: FlagValueBucket[] = Blocks.newFlagValueBuckets();
   private topIndexingHeight = 0;
   private currentBlockHeight = 0;
   private currentBits = 0;
@@ -594,9 +590,11 @@ class Blocks {
     }
 
     if (Common.blocksSummariesIndexingEnabled() === true) {
-      // indexes the summary as a side effect
-      await this.$indexBlockSummary(blockExtended.id, blockExtended.height, undefined, blockSummary);
+      const classifiedTransactions = await this.$indexBlockSummary(blockExtended.id, blockExtended.height, undefined, blockSummary);
       this.updateTimerProgress(timer, `saved block summary for ${this.currentBlockHeight}`);
+      // live stream: roll up flag values into the shared cache while the classified txs are in memory
+      await this.$indexFlagValues(blockExtended.height, classifiedTransactions);
+      this.updateTimerProgress(timer, `indexed flag values for ${this.currentBlockHeight}`);
     }
 
     if (config.MEMPOOL.CPFP_INDEXING) {
@@ -672,6 +670,8 @@ class Blocks {
       let timer = Date.now() / 1000;
       const startedAt = Date.now() / 1000;
 
+      const flagValuesBuckets = Blocks.newFlagValueBuckets();
+
       for (const block of indexedBlocks) {
         if (indexedBlockSummariesHashes[block.hash] === true) {
           continue;
@@ -688,7 +688,8 @@ class Blocks {
           indexedThisRun = 0;
         }
 
-        await this.$indexBlockSummary(block.hash, block.height, block.stale);
+        const classifiedTransactions = await this.$indexBlockSummary(block.hash, block.height, block.stale);
+        await this.$indexFlagValues(block.height, classifiedTransactions, flagValuesBuckets);
 
         // Logging
         indexedThisRun++;
@@ -813,12 +814,16 @@ class Blocks {
     }
   }
 
-  /** @asyncUnsafe */
-  public async $indexBlockSummary(hash: string, height: number, stale?: boolean, blockSummary?: BlockSummary): Promise<void> {
+  /**
+   * Indexes a block summary and returns its classified transactions so the caller can roll up flag values.
+   * Flag value indexing is intentionally left to the caller, so each indexing stream owns its own accumulator.
+   *
+   * @asyncUnsafe
+   */
+  public async $indexBlockSummary(hash: string, height: number, stale?: boolean, blockSummary?: BlockSummary): Promise<TransactionClassified[]> {
     if (blockSummary !== undefined) {
       await BlocksSummariesRepository.$saveTransactions(height, hash, blockSummary.transactions, blockSummary.version ?? 1);
-      await this.$indexFlagValues(height, blockSummary.transactions);
-      return;
+      return blockSummary.transactions;
     }
 
     const fallbackToCore = stale !== undefined ? stale : true;
@@ -829,7 +834,7 @@ class Blocks {
       const cpfpSummary = await this.$indexCPFP(hash, height, formattedTxs, fallbackToCore);
 
       if (!cpfpSummary) {
-        return;
+        return [];
       }
 
       const transactionsSummary = cpfpSummary.transactions.map(tx => {
@@ -852,20 +857,25 @@ class Blocks {
 
       if (Common.blocksSummariesIndexingEnabled()) {
         await BlocksSummariesRepository.$saveTransactions(height, hash, transactionsSummary, cpfpSummary.version);
-        await this.$indexFlagValues(height, transactionsSummary);
+        return transactionsSummary;
       }
+      return [];
     } else {
       const formattedTxs = txs.map(tx => transactionUtils.extendTransaction(tx));
       const summary = this.summarizeBlockTransactions(hash, height || 0, formattedTxs);
 
       if (Common.blocksSummariesIndexingEnabled()) {
         await BlocksSummariesRepository.$saveTransactions(height, hash, summary.transactions, 1);
-        await this.$indexFlagValues(height, summary.transactions);
+        return summary.transactions;
       }
+      return [];
     }
   }
 
-  public async $indexFlagValues(height: number, classifiedTransactions: TransactionClassified[]): Promise<void> {
+  /**
+   * Rolls up flag values for a block into `buckets`, cached or passed through parameters
+   */
+  public async $indexFlagValues(height: number, classifiedTransactions: TransactionClassified[], buckets: FlagValueBucket[] = this.flagValuesCache): Promise<void> {
     if (Common.blocksSummariesIndexingEnabled() === false) {
       return;
     }
@@ -891,35 +901,46 @@ class Blocks {
         }
       }
 
-      for (const cache of this.flagValuesCache) {
-        if (height > (cache.blockSpan > -1 ? (topIndexedHeight - cache.blockSpan) : -1)) { // We check the height of the block is within blockspan, if -1 we force the indexing 'all'
+      for (const bucket of buckets) {
+        if (height > (bucket.blockSpan > -1 ? (topIndexedHeight - bucket.blockSpan) : -1)) { // We check the height of the block is within blockspan, if -1 we force the indexing 'all'
 
-          const bucketStart = Math.floor(height / cache.blocksCount) * cache.blocksCount;
+          const bucketStart = Math.floor(height / bucket.blocksCount) * bucket.blocksCount;
 
           // Moved past the bucket we were accumulating before it filled (e.g. a gap): persist what we have, then start fresh
-          if (cache.nBlocks > 0 && cache.startHeight !== bucketStart) {
-            await this.$flushFlagValueBucket(cache);
-            cache.nBlocks = 0;
-            cache.txCountPerFlag = {};
+          if (bucket.nBlocks > 0 && bucket.startHeight !== bucketStart) {
+            await this.$flushFlagValueBucket(bucket);
+            bucket.nBlocks = 0;
+            bucket.txCountPerFlag = {};
           }
 
-          cache.startHeight = bucketStart;
-          cache.nBlocks++;
+          bucket.startHeight = bucketStart;
+          bucket.nBlocks++;
           for (const flag of distinctFlags) {
-            cache.txCountPerFlag[flag] = (cache.txCountPerFlag[flag] ?? 0) + txCountPerFlag[flag];
+            bucket.txCountPerFlag[flag] = (bucket.txCountPerFlag[flag] ?? 0) + txCountPerFlag[flag];
           }
 
-          if (cache.nBlocks >= cache.blocksCount) { // bucket fully accumulated
-            await this.$flushFlagValueBucket(cache);
-            cache.startHeight = 0;
-            cache.nBlocks = 0;
-            cache.txCountPerFlag = {};
+          if (bucket.nBlocks >= bucket.blocksCount) { // bucket fully accumulated
+            await this.$flushFlagValueBucket(bucket);
+            bucket.startHeight = 0;
+            bucket.nBlocks = 0;
+            bucket.txCountPerFlag = {};
           }
         }
       }
     } catch (e) {
       logger.err(`Flag values indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.goggles);
     }
+  }
+
+  /**
+   * Fresh set of rolled-up flag value tiers (the per-block tier '1' is handled separately).
+   */
+  private static newFlagValueBuckets(): FlagValueBucket[] {
+    return [
+      {blocksCount: 36, blockSpan: 25920, startHeight: 0, nBlocks: 0, txCountPerFlag: {}},
+      {blocksCount: 144, blockSpan: 155520, startHeight: 0, nBlocks: 0, txCountPerFlag: {}},
+      {blocksCount: 720, blockSpan: -1, startHeight: 0, nBlocks: 0, txCountPerFlag: {}},
+    ];
   }
 
   /**
