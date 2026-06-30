@@ -446,7 +446,7 @@ class WebsocketHandler {
             delete client['track-mempool'];
           }
 
-          if (parsedMessage && parsedMessage['track-stratum'] != null) {
+          if (parsedMessage && parsedMessage['track-stratum'] !== undefined) {
             if (parsedMessage['track-stratum'] === 'all' || typeof parsedMessage['track-stratum'] === 'number') {
               const sub = parsedMessage['track-stratum'];
               client['track-stratum'] = sub;
