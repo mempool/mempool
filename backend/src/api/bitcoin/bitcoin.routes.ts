@@ -73,8 +73,8 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'internal/blocks/definition/current', this.getCurrentBlockDefinitionHash)
       .get(config.MEMPOOL.API_URL_PREFIX + 'internal/blocks/:definitionHash', this.getBlocksByDefinitionHash)
 
-      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval', this.getFlagValues)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval/:op/:mask', this.getFlagValues)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval', this.getTxCountPerFlagValue)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval/:op/:mask', this.getTxCountPerFlagValue)
       ;
 
       if (config.MEMPOOL.BACKEND !== 'esplora') {
@@ -1137,10 +1137,10 @@ class BitcoinRoutes {
     }
   }
 
-  private async getFlagValues(req: Request, res: Response) {
+  private async getTxCountPerFlagValue(req: Request, res: Response) {
     try {
       const {interval, op} = req.params;
-      if (!JUST_NUMBERS_REGEX.test(req.params.mask)) {
+      if (req.params.mask && !JUST_NUMBERS_REGEX.test(req.params.mask)) {
         handleError(req, res, 400, `Invalid mask value, must be a positive integer`);
         return;
       }
