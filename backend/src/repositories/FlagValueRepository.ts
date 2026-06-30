@@ -19,11 +19,11 @@ class FlagValuesRepository {
     return null;
   }
 
-  public async $saveBatchFlagValues(blocksCount: string, startHeight: number, flagValues: Record<string, number>): Promise<void> {
+  public async $saveBatchFlagValues(blocksCount: string, startHeight: number, txCount: Record<string, number>): Promise<void> {
     const params: any[] = [];
-    const flags = Object.keys(flagValues);
+    const flags = Object.keys(txCount);
     for (const flag of flags) {
-      params.push([blocksCount, startHeight, flag, flagValues[flag]]);
+      params.push([blocksCount, startHeight, flag, txCount[flag]]);
     }
     try {
       await DB.query(`
