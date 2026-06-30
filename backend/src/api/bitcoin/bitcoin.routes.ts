@@ -30,6 +30,7 @@ const BLOCK_HASH_REGEX = /^[a-f0-9]{64}$/i;
 const ADDRESS_REGEX = /^[a-z0-9]{2,120}$/i;
 const SCRIPT_HASH_REGEX = /^([a-f0-9]{2})+$/i;
 const MAX_TRANSACTION_TIMES = 100;
+const JUST_NUMBERS_REGEX = /^[1-9]\d*$/;
 
 class BitcoinRoutes {
   public initRoutes(app: Application) {
@@ -1139,6 +1140,10 @@ class BitcoinRoutes {
   private async getFlagValues(req: Request, res: Response) {
     try {
       const {interval, op} = req.params;
+      if (!JUST_NUMBERS_REGEX.test(req.params.mask)) {
+        handleError(req, res, 400, `Invalid mask value, must be a positive integer`);
+        return;
+      }
       const mask = BigInt(req.params.mask ?? 0n);
       const presets = {
         '24h': {blocksCount: '1', blockSpan: 144},
