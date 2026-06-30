@@ -46,9 +46,9 @@ class Blocks {
   private blocks: BlockExtended[] = [];
   private blockSummaries: BlockSummary[] = [];
   private flagValuesCache = [
-    {blocksCount: 36, blockSpan: 25920, startHeight: 0, nBlocks: 0, txCount: {}},
-    {blocksCount: 144, blockSpan: 155520, startHeight: 0, nBlocks: 0, txCount: {}},
-    {blocksCount: 720, blockSpan: -1, startHeight: 0, nBlocks: 0, txCount: {}},
+    {blocksCount: 36, blockSpan: 25920, startHeight: 0, nBlocks: 0, txCountPerFlag: {}},
+    {blocksCount: 144, blockSpan: 155520, startHeight: 0, nBlocks: 0, txCountPerFlag: {}},
+    {blocksCount: 720, blockSpan: -1, startHeight: 0, nBlocks: 0, txCountPerFlag: {}},
   ];
   private topIndexingHeight = 0;
   private currentBlockHeight = 0;
@@ -709,10 +709,10 @@ class Blocks {
     }
 
     const INDEXING_PRESETS = [
-      {name: 'per block', blocksCount: 1,  blockSpanIndex: 1008}, // block span of 1 week
-      {name: 'per 36 blocks', blocksCount: 36, blockSpanIndex: 25920}, // block span of 6 months
-      {name: 'per 144 blocks', blocksCount: 144, blockSpanIndex: 155520}, // block span of 3 years
-      {name: 'per 720 blocks', blocksCount: 720, blockSpanIndex: -1}, // All history
+      {name: 'per block', blocksCount: 1,  blockSpan: 1008}, // block span of 1 week
+      {name: 'per 36 blocks', blocksCount: 36, blockSpan: 25920}, // block span of 6 months
+      {name: 'per 144 blocks', blocksCount: 144, blockSpan: 155520}, // block span of 3 years
+      {name: 'per 720 blocks', blocksCount: 720, blockSpan: -1}, // All history
     ];
 
     try {
@@ -725,8 +725,8 @@ class Blocks {
       for (const preset of INDEXING_PRESETS) {
         newlyIndexed = 0; // Just so it stores the agg of indexed blocks of the last preset 'all'
         let startHeight = -1;
-        if (preset.blockSpanIndex > -1) {
-          startHeight = tipOfSummaries - preset.blockSpanIndex;
+        if (preset.blockSpan > -1) {
+          startHeight = tipOfSummaries - preset.blockSpan;
         }
 
         if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT > 0) {
@@ -779,7 +779,7 @@ class Blocks {
 
           const processedFlags = Object.keys(txCountPerFlag);
           for (const flag of processedFlags) {
-            await FlagValueRepository.$saveFlagValues(preset.blocksCount.toString(), i + 1, BigInt(flag), txCountPerFlag[flag]);
+            await FlagValueRepository.$saveFlagValue(preset.blocksCount.toString(), i + 1, BigInt(flag), txCountPerFlag[flag]);
           }
           newlyIndexed = newlyIndexed + preset.blocksCount;
 
@@ -806,10 +806,10 @@ class Blocks {
   }
 
   /** @asyncUnsafe */
-  public async $indexBlockSummary(hash: string, height: number, stale?: boolean, blockSummaries?: BlockSummary): Promise<void> {
-    if (blockSummaries !== undefined) {
-      await BlocksSummariesRepository.$saveTransactions(height, hash, blockSummaries.transactions, blockSummaries.version ?? 1);
-      await this.$indexFlagValues(height, blockSummaries.transactions);
+  public async $indexBlockSummary(hash: string, height: number, stale?: boolean, blockSummary?: BlockSummary): Promise<void> {
+    if (blockSummary !== undefined) {
+      await BlocksSummariesRepository.$saveTransactions(height, hash, blockSummary.transactions, blockSummary.version ?? 1);
+      await this.$indexFlagValues(height, blockSummary.transactions);
       return;
     }
 
@@ -857,51 +857,51 @@ class Blocks {
     }
   }
 
-  public async $indexFlagValues(height: number, transactionsSummary: TransactionClassified[]): Promise<void> {
+  public async $indexFlagValues(height: number, classifiedTransactions: TransactionClassified[]): Promise<void> {
     if (Common.blocksSummariesIndexingEnabled() === false) {
       return;
     }
 
     try {
-      const currentBlockHeight = this.topIndexingHeight;
+      const topIndexedHeight = this.topIndexingHeight;
 
-      const flags = transactionsSummary.map((tx) => tx.flags);
-      const txCount = {};
+      const flags = classifiedTransactions.map((tx) => tx.flags);
+      const txCountPerFlag = {};
 
       for (const flag of flags) {
-        txCount[flag] = (txCount[flag] ?? 0) + 1;
+        txCountPerFlag[flag] = (txCountPerFlag[flag] ?? 0) + 1;
       }
 
-      if (Object.keys(txCount).length > 0 && height > (currentBlockHeight - 1008)) { // Hardcoded for 1 week time interval
+      const distinctFlags = Object.keys(txCountPerFlag);
+      if (distinctFlags.length > 0 && height > (topIndexedHeight - 1008)) { // Hardcoded for 1 week time interval
         const { tip, tail } = (await FlagValueRepository.$getTipAndTailIndexedByBlocksCount('1')) ?? {tip: 0, tail: 0};
         const blocksCountInDB = tip - tail;
-        await FlagValueRepository.$saveBatchFlagValues('1', height, txCount);
+        await FlagValueRepository.$saveBatchFlagValues('1', height, txCountPerFlag);
 
         if (blocksCountInDB > 1008) {
           await FlagValueRepository.$deleteFlagValuesBelowHeight(tip - 1008, '1');
         }
       }
 
-      const flagValues = Object.keys(txCount);
       for (const cache of this.flagValuesCache) {
-        if (height > (cache.blockSpan > -1 ? (currentBlockHeight - cache.blockSpan) : -1)) { // We check the height of the block is within blockspan, if -1 we force the indexing 'all'
+        if (height > (cache.blockSpan > -1 ? (topIndexedHeight - cache.blockSpan) : -1)) { // We check the height of the block is within blockspan, if -1 we force the indexing 'all'
           if (cache.startHeight === 0) {
             cache.startHeight = height;
           }
           cache.nBlocks++;
-          for (const flag of flagValues) {
-            cache.txCount[flag] = (cache.txCount[flag] ?? 0) + txCount[flag];
+          for (const flag of distinctFlags) {
+            cache.txCountPerFlag[flag] = (cache.txCountPerFlag[flag] ?? 0) + txCountPerFlag[flag];
           }
           if (cache.nBlocks >= cache.blocksCount) {
             const { tip, tail } = (await FlagValueRepository.$getTipAndTailIndexedByBlocksCount(cache.blocksCount.toString())) ?? {tip: 0, tail: 0};
-            const blocksCountInDB = tip - tail;
-            await FlagValueRepository.$saveBatchFlagValues(cache.blocksCount.toString(), height, cache.txCount);
+            const indexedBlockSpan = tip - tail;
+            await FlagValueRepository.$saveBatchFlagValues(cache.blocksCount.toString(), cache.startHeight, cache.txCountPerFlag);
 
             cache.startHeight = 0;
             cache.nBlocks = 0;
-            cache.txCount = {};
+            cache.txCountPerFlag = {};
 
-            if (blocksCountInDB > cache.blockSpan && cache.blockSpan !== -1) { // Delete old flag values that are no longer in blockSpan
+            if (indexedBlockSpan > cache.blockSpan && cache.blockSpan !== -1) { // Delete old flag values that are no longer in blockSpan
               await FlagValueRepository.$deleteFlagValuesBelowHeight(tip - cache.blockSpan, cache.blocksCount.toString());
             }
           }
