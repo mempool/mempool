@@ -54,7 +54,7 @@ class Blocks {
   private blocks: BlockExtended[] = [];
   private blockSummaries: BlockSummary[] = [];
   private flagValuesCache: FlagValueBucket[] = Blocks.newFlagValueBuckets();
-  private topIndexingHeight = 0;
+  private heightIndexingSummariesTo = 0;
   private currentBlockHeight = 0;
   private currentBits = 0;
   private lastDifficultyAdjustmentTime = 0;
@@ -647,7 +647,7 @@ class Blocks {
     try {
       const blockchainInfo = await bitcoinClient.getBlockchainInfo();
       const currentBlockHeight = blockchainInfo.blocks;
-      this.topIndexingHeight = currentBlockHeight;
+      this.heightIndexingSummariesTo = currentBlockHeight;
       let indexingBlockAmount = Math.min(config.MEMPOOL.INDEXING_BLOCKS_AMOUNT, currentBlockHeight);
       if (indexingBlockAmount <= -1) {
         indexingBlockAmount = currentBlockHeight + 1;
@@ -738,23 +738,24 @@ class Blocks {
         if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT > 0) {
           rangeStart = Math.max(rangeStart, tipOfSummaries - config.MEMPOOL.INDEXING_BLOCKS_AMOUNT + 1);
         }
-        let firstBucket = Math.max(0, Math.floor(rangeStart / preset.blocksCount) * preset.blocksCount);
+        const firstBucket = Math.max(0, Math.floor(rangeStart / preset.blocksCount) * preset.blocksCount);
 
         const tipAndTailOfFlagValues = await FlagValueRepository.$getTipAndTailIndexedByBlocksCount(preset.blocksCount.toString());
-        if (tipAndTailOfFlagValues) {
-          const { tip, tail } = tipAndTailOfFlagValues;
-
-          if (firstBucket > tail) { // Drop buckets that fell out of block span
-            logger.debug(`Deleting all the flag values ${preset.name} below height #${firstBucket}`, logger.tags.goggles);
-            await FlagValueRepository.$deleteFlagValuesBelowHeight(firstBucket, preset.blocksCount.toString());
-          }
-
-          firstBucket = Math.max(firstBucket, Math.floor(tip / preset.blocksCount) * preset.blocksCount);
+        if (tipAndTailOfFlagValues && firstBucket > tipAndTailOfFlagValues.tail) { // Drop buckets that fell out of block span
+          logger.debug(`Deleting all the flag values ${preset.name} below height #${firstBucket}`, logger.tags.goggles);
+          await FlagValueRepository.$deleteFlagValuesBelowHeight(firstBucket, preset.blocksCount.toString());
         }
 
         const lastBucket = Math.floor((tipOfSummaries + 1) / preset.blocksCount) * preset.blocksCount - preset.blocksCount;
         if (firstBucket > lastBucket) {
-          continue; // already synced up to the most recent complete bucket
+          continue; // no complete bucket in range
+        }
+
+        const indexedBuckets = await FlagValueRepository.$getIndexedStartHeights(preset.blocksCount.toString(), firstBucket, lastBucket);
+        const isBucketIndexed = {};
+        // We map the buckets that are already indexed to skip them
+        for (const startHeight of indexedBuckets) {
+          isBucketIndexed[startHeight] = true;
         }
 
         logger.debug(`Processing and indexing flag values from #${firstBucket} to #${lastBucket + preset.blocksCount - 1} ${preset.name}`, logger.tags.goggles);
@@ -765,7 +766,10 @@ class Blocks {
         let blocksComputedThisRun = 0;
         const blocksToCompute = lastBucket + preset.blocksCount - firstBucket;
         for (let bucketStart = firstBucket; bucketStart <= lastBucket; bucketStart += preset.blocksCount) {
-          // heights [bucketStart, bucketStart + blocksCount - 1]
+          if (isBucketIndexed[bucketStart]) {
+            continue; // already indexed
+          }
+
           const blocks = await BlocksSummariesRepository.$getSummariesBetweenHeights(bucketStart - 1, bucketStart + preset.blocksCount - 1);
 
           if (!blocks || blocks.length < preset.blocksCount) {
@@ -873,7 +877,7 @@ class Blocks {
     }
 
     try {
-      const topIndexedHeight = this.topIndexingHeight;
+      const heightIndexingSummariesTo = this.heightIndexingSummariesTo > 0 ? this.heightIndexingSummariesTo : (await bitcoinClient.getBlockchainInfo()).blocks;
 
       const flags = classifiedTransactions.map((tx) => tx.flags);
       const txCountPerFlag = {};
@@ -883,7 +887,7 @@ class Blocks {
       }
 
       const distinctFlags = Object.keys(txCountPerFlag);
-      if (distinctFlags.length > 0 && height > (topIndexedHeight - 1008)) { // Hardcoded for 1 week time interval
+      if (distinctFlags.length > 0 && height > (heightIndexingSummariesTo - 1008)) { // Hardcoded for 1 week time interval
         const { tip, tail } = (await FlagValueRepository.$getTipAndTailIndexedByBlocksCount('1')) ?? {tip: 0, tail: 0};
         const indexedBlockSpan = tip - tail;
         await FlagValueRepository.$saveBatchFlagValues('1', height, txCountPerFlag);
@@ -894,13 +898,14 @@ class Blocks {
       }
 
       for (const bucket of buckets) {
-        if (height > (bucket.blockSpan > -1 ? (topIndexedHeight - bucket.blockSpan) : -1)) { // We check the height of the block is within blockspan, if -1 we force the indexing 'all'
+        if (height > (bucket.blockSpan > -1 ? (heightIndexingSummariesTo - bucket.blockSpan) : -1)) { // We check the height of the block is within blockspan, if -1 we force the indexing 'all'
 
           const bucketStart = Math.floor(height / bucket.blocksCount) * bucket.blocksCount;
 
-          // Moved past the bucket we were accumulating before it filled (e.g. a gap): persist what we have, then start fresh
+          // Moved past the bucket we were accumulating before it filled (gap / mid-bucket start): discard the partial.
+          // Incomplete buckets are left unwritten so $generateFlagValuesDatabase fills them from summaries once
+          // complete — we never persist (and then skip) an undercounted bucket.
           if (bucket.nBlocks > 0 && bucket.startHeight !== bucketStart) {
-            await this.$flushFlagValueBucket(bucket);
             bucket.nBlocks = 0;
             bucket.txCountPerFlag = {};
           }
