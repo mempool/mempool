@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, L
 import { echarts, EChartsOption } from '@app/graphs/echarts';
 import { BehaviorSubject, combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, share, startWith, switchMap, tap } from 'rxjs/operators';
-import { ActiveFilter, FilterMode, toFlags } from '@app/shared/filters.utils';
+import { ActiveFilter, FilterMode, toFilters, toFlags } from '@app/shared/filters.utils';
 import { ApiService } from '@app/services/api.service';
 import { formatNumber } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
@@ -57,6 +57,8 @@ export class BlockGogglesGraphComponent implements OnInit {
   // active goggles filter; empty op/mask means no filter, so the backend returns total tx counts
   goggle$ = new BehaviorSubject<{ op?: FilterMode, mask?: bigint }>({});
 
+  private intervals = ['24h', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', 'all'];
+
   // totals depend only on the timespan, so cache them per interval across filter changes
   private totalsCache: Record<string, GogglesRollup[]> = {};
 
@@ -90,9 +92,7 @@ export class BlockGogglesGraphComponent implements OnInit {
       this.route
         .fragment
         .subscribe((fragment) => {
-          if (['24h', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
-            this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
-          }
+          this.parseFragment(fragment);
         });
     }
 
@@ -162,6 +162,39 @@ export class BlockGogglesGraphComponent implements OnInit {
       ? { op: activeFilter.mode, mask }
       : {}
     );
+    if (!this.widget) {
+      this.router.navigate([], { relativeTo: this.route, fragment: this.getFragment(), replaceUrl: true });
+    }
+  }
+
+  // builds the URL fragment: just the interval when no filter is active ("1m"), or "interval=1m&op=and&mask=5" when filtering
+  getFragment(interval?: string): string {
+    const timespan = interval ?? this.radioGroupForm.controls.dateSpan.value;
+    const { op, mask } = this.goggle$.value;
+    return mask ? `interval=${timespan}&op=${op}&mask=${mask.toString()}` : timespan;
+  }
+
+  // restores state from a fragment in either form, letting block-filters pick up restored filters via activeGoggles$
+  private parseFragment(fragment: string): void {
+    if (!fragment) {
+      return;
+    }
+    if (this.intervals.includes(fragment)) {
+      this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
+      return;
+    }
+    const params = new URLSearchParams(fragment);
+    const interval = params.get('interval');
+    if (this.intervals.includes(interval)) {
+      this.radioGroupForm.controls.dateSpan.setValue(interval, { emitEvent: false });
+    }
+    const maskParam = params.get('mask');
+    const mask = maskParam && /^\d+$/.test(maskParam) ? BigInt(maskParam) : 0n;
+    const op = (['and', 'or', 'nor'].includes(params.get('op')) ? params.get('op') : 'and') as FilterMode;
+    // skip if already applied, otherwise the navigation in onFilterChanged would loop back here
+    if (mask > 0n && (this.goggle$.value.mask ?? 0n) !== mask) {
+      this.stateService.activeGoggles$.next({ mode: op, filters: toFilters(mask).map(f => f.key), gradient: 'fee' });
+    }
   }
 
   prepareChartOptions(data): void {
