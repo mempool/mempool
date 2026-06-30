@@ -19,6 +19,23 @@ class FlagValuesRepository {
     return null;
   }
 
+  /**
+   * Get the set of bucket that area already indexed between heights by blocksCount
+   *
+   * @asyncSafe */
+  public async $getIndexedStartHeights(blocksCount: string, fromHeight: number, toHeight: number): Promise<number[]> {
+    try {
+      const [rows]: any[] = await DB.query(
+        `SELECT DISTINCT start_height FROM flag_values WHERE blocks_count = ? AND start_height >= ? AND start_height <= ?`,
+        [blocksCount, fromHeight, toHeight]
+      );
+      return rows.map(row => row.start_height);
+    } catch (e) {
+      logger.err(`Cannot get indexed start heights from flag_values. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+    return [];
+  }
+
   public async $saveBatchFlagValues(blocksCount: string, startHeight: number, txCount: Record<string, number>): Promise<void> {
     const params: any[] = [];
     const flags = Object.keys(txCount);
