@@ -37,20 +37,6 @@ class FlagValuesRepository {
     }
   }
 
-  public async $saveFlagValue(blocksCount: string, startHeight: number, flags: bigint, txCount: number): Promise<void> {
-    try {
-      await DB.query(`
-        INSERT INTO flag_values 
-        SET blocks_count = ?, start_height = ?, flag_value = ?, tx_count = ?
-        ON DUPLICATE KEY UPDATE
-        tx_count = ?
-        `, [blocksCount, startHeight, flags, txCount, txCount]);
-    } catch (e) {
-      logger.debug(`Cannot save flag values. Reason: ${e instanceof Error ? e.message : e}`);
-      throw e;
-    }
-  }
-
   public async $queryTxCountBasedOnMask(mask: bigint, blocksCount: string, op: string, startHeight: number): Promise<{blocksCount: string, startHeight: number, txCount: number}[]> {
     let booleanClause = '';
     let params: any[]= [];
