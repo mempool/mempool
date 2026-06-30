@@ -42,10 +42,18 @@ import database from '../database';
 import { getBlockFirstSeenFromLogs, getOldestLogTimestampFromLogs, scanLogsForBlocksFirstSeen } from '../utils/file-read';
 import FlagValueRepository from '../repositories/FlagValueRepository';
 
+interface FlagValueBucket {
+  blocksCount: number;
+  blockSpan: number; // how many recent blocks this tier retains (-1 = keep all history)
+  startHeight: number; // fixed boundary of the bucket currently being accumulated (0 = none)
+  nBlocks: number;
+  txCountPerFlag: Record<string, number>;
+}
+
 class Blocks {
   private blocks: BlockExtended[] = [];
   private blockSummaries: BlockSummary[] = [];
-  private flagValuesCache = [
+  private flagValuesCache: FlagValueBucket[] = [
     {blocksCount: 36, blockSpan: 25920, startHeight: 0, nBlocks: 0, txCountPerFlag: {}},
     {blocksCount: 144, blockSpan: 155520, startHeight: 0, nBlocks: 0, txCountPerFlag: {}},
     {blocksCount: 720, blockSpan: -1, startHeight: 0, nBlocks: 0, txCountPerFlag: {}},
@@ -875,40 +883,57 @@ class Blocks {
       const distinctFlags = Object.keys(txCountPerFlag);
       if (distinctFlags.length > 0 && height > (topIndexedHeight - 1008)) { // Hardcoded for 1 week time interval
         const { tip, tail } = (await FlagValueRepository.$getTipAndTailIndexedByBlocksCount('1')) ?? {tip: 0, tail: 0};
-        const blocksCountInDB = tip - tail;
+        const indexedBlockSpan = tip - tail;
         await FlagValueRepository.$saveBatchFlagValues('1', height, txCountPerFlag);
 
-        if (blocksCountInDB > 1008) {
+        if (indexedBlockSpan > 1008) {
           await FlagValueRepository.$deleteFlagValuesBelowHeight(tip - 1008, '1');
         }
       }
 
       for (const cache of this.flagValuesCache) {
         if (height > (cache.blockSpan > -1 ? (topIndexedHeight - cache.blockSpan) : -1)) { // We check the height of the block is within blockspan, if -1 we force the indexing 'all'
-          if (cache.startHeight === 0) {
-            cache.startHeight = height;
+
+          const bucketStart = Math.floor(height / cache.blocksCount) * cache.blocksCount;
+
+          // Moved past the bucket we were accumulating before it filled (e.g. a gap): persist what we have, then start fresh
+          if (cache.nBlocks > 0 && cache.startHeight !== bucketStart) {
+            await this.$flushFlagValueBucket(cache);
+            cache.nBlocks = 0;
+            cache.txCountPerFlag = {};
           }
+
+          cache.startHeight = bucketStart;
           cache.nBlocks++;
           for (const flag of distinctFlags) {
             cache.txCountPerFlag[flag] = (cache.txCountPerFlag[flag] ?? 0) + txCountPerFlag[flag];
           }
-          if (cache.nBlocks >= cache.blocksCount) {
-            const { tip, tail } = (await FlagValueRepository.$getTipAndTailIndexedByBlocksCount(cache.blocksCount.toString())) ?? {tip: 0, tail: 0};
-            const indexedBlockSpan = tip - tail;
-            await FlagValueRepository.$saveBatchFlagValues(cache.blocksCount.toString(), cache.startHeight, cache.txCountPerFlag);
 
+          if (cache.nBlocks >= cache.blocksCount) { // bucket fully accumulated
+            await this.$flushFlagValueBucket(cache);
             cache.startHeight = 0;
             cache.nBlocks = 0;
             cache.txCountPerFlag = {};
-
-            if (indexedBlockSpan > cache.blockSpan && cache.blockSpan !== -1) { // Delete old flag values that are no longer in blockSpan
-              await FlagValueRepository.$deleteFlagValuesBelowHeight(tip - cache.blockSpan, cache.blocksCount.toString());
-            }
           }
         }
       }
     } catch (e) {
       logger.err(`Flag values indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.goggles);
+    }
+  }
+
+  /**
+   * Persist a rolled-up flag value bucket keyed at its fixed start height, pruning anything older than the tier's span
+   *
+   * @asyncUnsafe
+   */
+  private async $flushFlagValueBucket(cache: FlagValueBucket): Promise<void> {
+    const { tip, tail } = (await FlagValueRepository.$getTipAndTailIndexedByBlocksCount(cache.blocksCount.toString())) ?? {tip: 0, tail: 0};
+    const indexedBlockSpan = tip - tail;
+    await FlagValueRepository.$saveBatchFlagValues(cache.blocksCount.toString(), cache.startHeight, cache.txCountPerFlag);
+
+    if (cache.blockSpan !== -1 && indexedBlockSpan > cache.blockSpan) { // Delete old flag values that are no longer in blockSpan
+      await FlagValueRepository.$deleteFlagValuesBelowHeight(tip - cache.blockSpan, cache.blocksCount.toString());
     }
   }
 
