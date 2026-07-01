@@ -12015,7 +12015,7 @@ export const restApiDocsData = [
       "fee": 12500
     }
   ],
-  "hasAccess": false,
+  "isProUser": false,
   "availablePaymentMethods": {
     "bitcoin": {
       "enabled": true,
@@ -12259,7 +12259,7 @@ export const restApiDocsData = [
     category: 'accelerator-private',
     httpRequestMethod: 'POST',
     fragment: 'accelerator-top-up',
-    title: 'POST Top-up Accelerator (Pro)',
+    title: 'POST Top-up Accelerator Credits',
     description: {
       default: '<p>Generate a bitcoin invoice to top-up your accelerator credits. Minimum is <code>1,000,000</code> sats.</p>'
     },
@@ -12299,7 +12299,7 @@ export const restApiDocsData = [
     category: 'accelerator-private',
     httpRequestMethod: 'GET',
     fragment: 'accelerator-top-up-history',
-    title: 'GET Top-up History (Pro)',
+    title: 'GET Credits Top-up History',
     description: {
       default: '<p>Returns a list of top ups the user has made as prepayment for the accelerator service.</p>'
     },
@@ -12347,9 +12347,9 @@ export const restApiDocsData = [
     category: 'accelerator-private',
     httpRequestMethod: 'GET',
     fragment: 'accelerator-balance',
-    title: 'GET Available Balance (Pro)',
+    title: 'GET Available Credit Balance',
     description: {
-      default: '<p>Returns the user\'s currently available balance, currently locked funds, and total fees paid so far.</p>'
+      default: '<p>Returns the user\'s currently available accelerator credit balance, locked funds, and total fees paid so far.</p>'
     },
     urlString: '/v1/services/accelerator/balance',
     showConditions: [''],
@@ -12381,9 +12381,9 @@ export const restApiDocsData = [
     category: 'accelerator-private',
     httpRequestMethod: 'POST',
     fragment: 'accelerator-accelerate',
-    title: 'POST Accelerate A Transaction (Pro)',
+    title: 'POST Accelerate A Transaction',
     description: {
-      default: '<p>Sends a request to accelerate a transaction.</p>'
+      default: '<p>Sends a request to accelerate a transaction <u><strong>using accelerator credits.</strong></u></p>'
     },
     urlString: '/v1/services/accelerator/accelerate',
     showConditions: [''],

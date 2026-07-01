@@ -22,7 +22,6 @@ interface GraphBar {
 export class AccelerateFeeGraphComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   @Input() tx: Transaction;
   @Input() estimate: AccelerationEstimate;
-  @Input() showEstimate = false;
   @Input() maxRateOptions: RateOption[] = [];
   @Input() maxRateIndex: number = 0;
   @Output() setUserBid = new EventEmitter<{ fee: number, index: number }>();
@@ -89,7 +88,7 @@ export class AccelerateFeeGraphComponent implements OnInit, AfterViewInit, OnCha
         rate: option.rate,
         height: lastHeight,
         class: 'max',
-        label: this.showEstimate ? $localize`maximum` : $localize`:@@b484583f0ce10f3341ab36750d05271d9d22c9a1:Accelerated`.toLowerCase(),
+        label: this.estimate.isProUser ? $localize`maximum` : $localize`:@@b484583f0ce10f3341ab36750d05271d9d22c9a1:Accelerated`.toLowerCase(),
         active: option.index === this.maxRateIndex,
         rateIndex: option.index,
         fee: option.fee,
