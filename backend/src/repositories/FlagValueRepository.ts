@@ -54,7 +54,7 @@ class FlagValuesRepository {
     }
   }
 
-  public async $queryTxCountBasedOnMask(mask: bigint, blocksCount: string, op: string, startHeight: number): Promise<{blocksCount: string, startHeight: number, txCount: number}[]> {
+  public async $queryTxCountBasedOnMask(mask: bigint, blocksCount: string, op: 'and' | 'or' | 'nor' | undefined, startHeight: number): Promise<{blocksCount: string, startHeight: number, txCount: number}[]> {
     let booleanClause = '';
     let params: any[]= [];
     switch (op) {
@@ -73,13 +73,13 @@ class FlagValuesRepository {
       case undefined: { // op not passed, no boolean operations
         break;
       }
-      default: throw new Error(`Invalid op '${op}', expected 'and' | 'or' | 'nor'`);
+      default: throw new Error(`Invalid op '${op}', expected 'and' | 'or' | 'nor' | undefined`);
     }
     params.push(blocksCount);
     params.push(startHeight);
     try {
       const [rows]: any[] = await DB.query(`
-        SELECT blocks_count, start_height, SUM(tx_count) AS tx_count FROM flag_values
+        SELECT blocks_count as blocksCount, start_height as startHeight, SUM(tx_count) AS txCount FROM flag_values
         WHERE ${booleanClause} blocks_count = ? AND start_height > ?
         GROUP BY start_height ORDER BY start_height DESC
         `, params);

@@ -15,9 +15,9 @@ import { StateService } from '@app/services/state.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 interface GogglesRollup {
-  blocks_count: string;
-  start_height: number;
-  tx_count: number;
+  blocksCount: string;
+  startHeight: number;
+  txCount: number;
 }
 
 @Component({
@@ -128,14 +128,14 @@ export class BlockGogglesGraphComponent implements OnInit {
           tap(([response, totalsBody]) => {
             const body: GogglesRollup[] = response.body || [];
             const totalsByHeight: Record<number, number> | null = totalsBody
-              ? totalsBody.reduce((acc, row) => { acc[row.start_height] = row.tx_count; return acc; }, {})
+              ? totalsBody.reduce((acc, row) => { acc[row.startHeight] = row.txCount; return acc; }, {})
               : null;
-            // dims: [start_height, tx_count, blocks_count, bucket_total]
+            // dims: [startHeight, txCount, blocksCount, bucketTotal]
             const seriesData = body.map((row) => [
-              row.start_height,
-              row.tx_count,
-              parseInt(row.blocks_count, 10) || 1,
-              totalsByHeight ? (totalsByHeight[row.start_height] ?? row.tx_count) : row.tx_count,
+              row.startHeight,
+              row.txCount,
+              parseInt(row.blocksCount, 10) || 1,
+              totalsByHeight ? (totalsByHeight[row.startHeight] ?? row.txCount) : row.txCount,
             ]);
             this.prepareChartOptions(seriesData);
             this.isLoading = false;
@@ -147,7 +147,7 @@ export class BlockGogglesGraphComponent implements OnInit {
             return {
               // fall back high so the whole range selector stays available
               blockCount: Number.isFinite(headerCount) ? headerCount : Number.MAX_SAFE_INTEGER,
-              txCount: body.reduce((acc, row) => acc + row.tx_count, 0),
+              txCount: body.reduce((acc, row) => acc + row.txCount, 0),
             };
           }),
         );
