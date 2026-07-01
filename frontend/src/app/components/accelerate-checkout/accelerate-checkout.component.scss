@@ -26,6 +26,10 @@ hr {
   cursor: pointer;
 }
 
+.purple-filter {
+  filter: brightness(0) saturate(100%) invert(30%) sepia(90%) saturate(5000%) hue-rotate(260deg);
+}
+
 .default-slot:not(:only-child) {
   display: none;
 }

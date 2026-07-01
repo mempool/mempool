@@ -32,7 +32,6 @@
         <app-accelerate-fee-graph
           [tx]="tx"
           [estimate]="estimate"
-          [showEstimate]="hasAccessToBalanceMode"
           [maxRateOptions]="maxRateOptions"
           [maxRateIndex]="selectFeeRateIndex"
           (setUserBid)="setUserBid($event)"
@@ -112,7 +111,7 @@
                 <tbody>
                   <!-- ESTIMATED FEE -->
                   <ng-container *ngIf="showDetails">
-                    @if (hasAccessToBalanceMode) {
+                    @if (estimate.isProUser) {
                       <tr class="group-first">
                         <td class="item" i18n="accelerator.next-block-rate">Next block market rate</td>
                         <td class="amt" style="font-size: 16px">
@@ -187,7 +186,7 @@
                   </ng-container>
 
                   <!-- NEXT BLOCK ESTIMATE -->
-                  <ng-container *ngIf="hasAccessToBalanceMode">
+                  <ng-container *ngIf="estimate.isProUser">
                     <tr class="group-first">
                       <td class="item">
                         <b style="background-color: #5E35B1" class="p-1" i18n="accelerator.estimated-cost">Estimated acceleration cost</b> ~{{ estimate.targetFeeRate | number : '1.0-0' }} sat/vB
@@ -208,7 +207,7 @@
                   <ng-container>
                     <tr class="group-first group-last">
                       <td class="item">
-                        @if (hasAccessToBalanceMode) {
+                        @if (estimate.isProUser) {
                           <b style="background-color: var(--primary);" class="p-1" i18n="accelerator.maximum-cost">Maximum acceleration cost</b>
                         } @else {
                           <b style="background-color: var(--primary);" class="p-1" i18n="accelerator.cost">Acceleration cost</b>
@@ -222,14 +221,14 @@
                       <td class="units">
                         <span class="symbol" i18n="shared.sats">sats</span>
                         <span class="fiat ms-1">
-                          <app-fiat [value]="cost" [colorClass]="hasAccessToBalanceMode && estimate.userBalance < cost ? 'red-color' : 'green-color'"></app-fiat>
+                          <app-fiat [value]="cost" [colorClass]="canUseBalance && estimate.userBalance < cost ? 'red-color' : 'green-color'"></app-fiat>
                         </span>
                       </td>
                     </tr>
                   </ng-container>
 
                   <!-- USER BALANCE -->
-                  <ng-container *ngIf="hasAccessToBalanceMode && estimate.userBalance < cost">
+                  <ng-container *ngIf="canUseBalance && estimate.userBalance < cost">
                     <tr class="group-first group-last dashed-top">
                       <td class="item" i18n="accelerator.available-balance">Available balance</td>
                       <td class="amt">
@@ -371,63 +370,69 @@
         <div class="row text-center justify-content-center mx-2 mb-3">
           <span i18n="accelerator.payment-to-mempool-space">Payment to mempool.space for acceleration of txid <a [routerLink]="'/tx/' + tx.txid" target="_blank">{{ tx.txid.substr(0, 10) }}..{{ tx.txid.substr(-10) }}</a></span>
         </div>
-        @if (canPayWithBalance || !(canPayWithBitcoin || canPayWithCashapp || canPayWithApplePay || canPayWithGooglePay)) {
-          <div class="row">
+        <div class="row payment-options" [class.flex-column]="forceMobile">
+          @if (canPayWithCashapp || canPayWithApplePay || canPayWithGooglePay || canPayWithCardOnFile) {
             <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
-              <p><ng-container i18n="accelerator.your-account-will-be-debited">Your account will be debited no more than</ng-container>&nbsp;<small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></p>
-              <div class="d-flex justify-content-center" [class.grayOut]="!canPayWithBalance || quoteError || accelerateError || showSuccess">
-                <ng-container *ngTemplateOutlet="accountPayButton"></ng-container>
-              </div>
+              <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<app-fiat [value]="cost"></app-fiat> with</p>
+              @if (canPayWithCashapp) {
+                <img class="paymentMethod mx-2" style="width: 200px" [src]="isLightMode ? '/resources/cash-app-light.svg' : '/resources/cash-app.svg'" height=55 (click)="moveToStep('cashapp')">
+              }
+              @if (canPayWithApplePay) {
+                @if (canPayWithCashapp) { <span class="mt-1 mb-1"></span> }
+                <div class="paymentMethod mx-2" style="width: 200px; height: 55px" (click)="moveToStep('applepay')">
+                  <img [src]="isLightMode ? '/resources/apple-pay-light.png' : '/resources/apple-pay.png'" height=37>
+                </div>
+              }
+              @if (canPayWithGooglePay) {
+                @if (canPayWithCashapp || canPayWithApplePay) { <span class="mt-1 mb-1"></span> }
+                <div class="paymentMethod mx-2" style="width: 200px; height: 55px" (click)="moveToStep('googlepay')">
+                  <img [src]="isLightMode ? '/resources/google-pay-light.png' : '/resources/google-pay.png'" height=37>
+                </div>
+              }
+              @if (canPayWithCardOnFile) {
+                @if (canPayWithCashapp || canPayWithApplePay || canPayWithGooglePay) { <span class="mt-1 mb-1"></span> }
+                <div class="paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" (click)="moveToStep('cardonfile')">
+                  @if (isValidCardBrand(estimate?.availablePaymentMethods?.cardOnFile?.card?.brand)) {
+                    <app-svg-images [name]="estimate?.availablePaymentMethods?.cardOnFile?.card?.brand" height="33" class="me-2"></app-svg-images>
+                  } @else {
+                    <app-svg-images name="OTHER_BRAND" height="33" class="me-2"></app-svg-images>
+                  }
+                  <span style="font-size: 22px; padding-bottom: 3px">{{ estimate?.availablePaymentMethods?.cardOnFile?.card?.last_4 }}</span>
+                </div>
+              }
             </div>
-          </div>
-        } @else {
-          <div class="row payment-options" [class.flex-column]="forceMobile">
-            @if (canPayWithCashapp || canPayWithApplePay || canPayWithGooglePay || canPayWithCardOnFile) {
-              <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
-                <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<app-fiat [value]="cost"></app-fiat> with</p>
-                @if (canPayWithCashapp) {
-                  <img class="paymentMethod mx-2" style="width: 200px" [src]="isLightMode ? '/resources/cash-app-light.svg' : '/resources/cash-app.svg'" height=55 (click)="moveToStep('cashapp')">
-                }
-                @if (canPayWithApplePay) {
-                  @if (canPayWithCashapp) { <span class="mt-1 mb-1"></span> }
-                  <div class="paymentMethod mx-2" style="width: 200px; height: 55px" (click)="moveToStep('applepay')">
-                    <img [src]="isLightMode ? '/resources/apple-pay-light.png' : '/resources/apple-pay.png'" height=37>
+          }
+          @if (((canPayWithBalance || canPayWithBitcoin) && (canPayWithCashapp || canPayWithApplePay || canPayWithGooglePay || canPayWithCardOnFile))) {
+            <div class="col-sm text-center flex-grow-0 d-flex flex-column justify-content-center align-items-center">
+              <span class="text-nowrap mb-3 mt-3" [class.mt-md-0]="!forceMobile">&mdash;&mdash;<span i18n="or"> OR </span>&mdash;&mdash;</span>
+            </div>
+          }
+          @if (canPayWithBalance || canPayWithBitcoin) {
+            <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
+              @if (canPayWithBalance) {
+                <p>
+                  @if (estimate.isProUser) {
+                    <ng-container i18n="accelerator.your-account-will-be-debited">Your account will be debited no more than </ng-container>
+                  } @else {
+                    <ng-container i18n="accelerator.use-accelerator-credits">Use accelerator credits for </ng-container>
+                  }
+                  &nbsp;<span style="white-space: nowrap"><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>
+                </p>
+                <div class="d-flex justify-content-center" [class.disabled]="quoteError || accelerateError || showSuccess || calculating || processing">
+                  <div class="paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px; font-size: 30px" (click)="accelerateWithMempoolAccount()">
+                    <img class="me-2 purple-filter" src="/resources/mempool-accelerator-sparkles-light.svg" height="30">
+                    <span i18n="transaction.pay|Pay button label">Pay</span>
                   </div>
-                }
-                @if (canPayWithGooglePay) {
-                  @if (canPayWithCashapp || canPayWithApplePay) { <span class="mt-1 mb-1"></span> }
-                  <div class="paymentMethod mx-2" style="width: 200px; height: 55px" (click)="moveToStep('googlepay')">
-                    <img [src]="isLightMode ? '/resources/google-pay-light.png' : '/resources/google-pay.png'" height=37>
-                  </div>
-                }
-                @if (canPayWithCardOnFile) {
-                  @if (canPayWithCashapp || canPayWithApplePay || canPayWithGooglePay) { <span class="mt-1 mb-1"></span> }
-                  <div class="paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" (click)="moveToStep('cardonfile')">
-                    @if (['VISA', 'MASTERCARD', 'JCB', 'DISCOVER', 'DISCOVER_DINERS', 'AMERICAN_EXPRESS'].includes(estimate?.availablePaymentMethods?.cardOnFile?.card?.brand)) {
-                      <app-svg-images [name]="estimate?.availablePaymentMethods?.cardOnFile?.card?.brand" height="33" class="me-2"></app-svg-images>
-                    } @else {
-                      <app-svg-images name="OTHER_BRAND" height="33" class="me-2"></app-svg-images>
-                    }
-                    <span style="font-size: 22px; padding-bottom: 3px">{{ estimate?.availablePaymentMethods?.cardOnFile?.card?.last_4 }}</span>
-                  </div>
-                }
-              </div>
-            }
-            @if ((canPayWithBitcoin && (canPayWithCashapp || canPayWithApplePay || canPayWithGooglePay || canPayWithCardOnFile))) {
-              <div class="col-sm text-center flex-grow-0 d-flex flex-column justify-content-center align-items-center">
-                <span class="text-nowrap mb-3 mt-3" [class.mt-md-0]="!forceMobile">&mdash;&mdash;<span i18n="or"> OR </span>&mdash;&mdash;</span>
-              </div>
-            }
-            @if (canPayWithBitcoin) {
-              <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
+                </div>
+              } @else {
                 <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<span><small style="font-family: monospace;">{{ ((invoice?.btcDue * 100_000_000) || cost) | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span> with</p>
                 <div class="paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" (click)="moveToStep('bitcoin')">
                   <img src="/resources/bitcoin-btc-logo-full.svg" height=30>
                 </div>
-              </div>
-            }
-          </div>
-        }
+              }
+            </div>
+          }
+        </div>
       </div>
     </ng-container>
     <ng-template #loadingCheckout>
@@ -510,7 +515,7 @@
               <div id="google-pay-button" class="d-inline-block" style="height: 50px" [style]="loadingGooglePay ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
             } @else if (step === 'cardonfile') {
               <div class="ms-auto me-auto paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" (click)="requestCardOnFilePayment()" [style]="loadingCardOnFile ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''">
-                @if (['VISA', 'MASTERCARD', 'JCB', 'DISCOVER', 'DISCOVER_DINERS', 'AMERICAN_EXPRESS'].includes(estimate?.availablePaymentMethods?.cardOnFile?.card?.brand)) {
+                @if (isValidCardBrand(estimate?.availablePaymentMethods?.cardOnFile?.card?.brand)) {
                   <app-svg-images [name]="estimate?.availablePaymentMethods?.cardOnFile?.card?.brand" height="33" class="me-2"></app-svg-images>
                 } @else {
                   <app-svg-images name="OTHER_BRAND" height="33" class="me-2"></app-svg-images>
@@ -635,20 +640,6 @@
       <div class="btn-error-wrapper"><span class="btn-error"><app-mempool-error [error]="quoteError || cantPayReason" [textOnly]="true" alertClass=""></app-mempool-error></span></div>
     }
   </div>
-</ng-template>
-
-<ng-template #accountPayButton>
-  @if (hasAccessToBalanceMode) {
-    <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center" [class.disabled]="!canPay || calculating" style="width: 200px" (click)="accelerateWithMempoolAccount()">
-      <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="me-2" style="margin-left: -10px">
-      <span i18n="transaction.pay|Pay button label">Pay</span>
-    </button>
-  } @else {
-    <button type="button" class="mt-1 btn btn-purple rounded-pill align-self-center d-flex flex-row justify-content-center align-items-center disabled" style="width: 200px">
-      <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="me-2" style="margin-left: -10px">
-      <span>Coming soon</span>
-    </button>
-  }
 </ng-template>
 
 <ng-template #prioritizedBy let-i i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to <strong>{{ i | number : '1.1-1' }}%</strong> of miners.</ng-template>
