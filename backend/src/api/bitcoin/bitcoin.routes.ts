@@ -1139,12 +1139,7 @@ class BitcoinRoutes {
 
   private async getTxCountPerFlagValue(req: Request, res: Response) {
     try {
-      const {interval, op} = req.params;
-      if (req.params.mask && !JUST_NUMBERS_REGEX.test(req.params.mask)) {
-        handleError(req, res, 400, `Invalid mask value, must be a positive integer`);
-        return;
-      }
-      const mask = BigInt(req.params.mask ?? 0n);
+      const operations = ['and', 'or', 'nor', undefined];
       const presets = {
         '24h': {blocksCount: '1', blockSpan: 144},
         '3d': {blocksCount: '1', blockSpan: 432},
@@ -1157,6 +1152,23 @@ class BitcoinRoutes {
         '3y': {blocksCount: '144', blockSpan: 145152},
         'all': {blocksCount: '720'},
       };
+      const intervals = Object.keys(presets);
+      if (req.params.mask && !JUST_NUMBERS_REGEX.test(req.params.mask)) {
+        handleError(req, res, 400, `Invalid mask value, must be a positive integer`);
+        return;
+      }
+      if (!operations.includes(req.params.op)) {
+        handleError(req, res, 400, `Invalid operation, must be 'and', 'or', 'nor' or undefined.`);
+        return;
+      }
+      if (!intervals.includes(req.params.interval)) {
+        handleError(req, res, 400, `Invalid operation, must be 'and', 'or', 'nor' or undefined.`);
+        return;
+      }
+      const op = (req.params.op) as 'and' | 'or' | 'nor' | undefined;
+      const mask = BigInt(req.params.mask ?? 0n);
+      const interval = req.params.interval;
+
       const { tip }  = await FlagValueRepository.$getTipAndTailIndexedByBlocksCount(presets[interval].blocksCount) || { tip: undefined };
 
       if (!tip) {
