@@ -25,7 +25,7 @@ import { AccelerationsListComponent } from '@components/acceleration/acceleratio
 import { AddressComponent } from '@components/address/address.component';
 import { WalletComponent } from '@components/wallet/wallet.component';
 import { CalculatorComponent } from '@components/calculator/calculator.component';
-import { BlockGogglesGraphComponent } from '../components/block-goggles-graph/block-goggles-graph.component';
+import { BlockGogglesGraphComponent } from '@components/block-goggles-graph/block-goggles-graph.component';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -117,7 +117,7 @@ const routes: Routes = [
           },
           {
             path: 'goggles',
-            data: { networks: [ 'bitcoin', 'liquid' ]},
+            data: { networks: [ 'bitcoin' ]},
             component: BlockGogglesGraphComponent,
           },
           {

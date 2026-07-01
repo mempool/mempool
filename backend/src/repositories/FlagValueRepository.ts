@@ -80,7 +80,7 @@ class FlagValuesRepository {
     try {
       const [rows]: any[] = await DB.query(`
         SELECT blocks_count as blocksCount, start_height as startHeight, SUM(tx_count) AS txCount FROM flag_values
-        WHERE ${booleanClause} blocks_count = ? AND start_height > ?
+        WHERE ${booleanClause} blocks_count = ? AND start_height >= ?
         GROUP BY start_height ORDER BY start_height DESC
         `, params);
       if (rows !== null && rows.length > 0) {
