@@ -732,7 +732,6 @@ class Blocks {
 
       let newlyIndexed = 0;
       for (const preset of INDEXING_PRESETS) {
-        newlyIndexed = 0;
 
         let rangeStart = preset.blockSpan > -1 ? tipOfSummaries - preset.blockSpan : 0;
         if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT > 0) {
@@ -800,6 +799,9 @@ class Blocks {
           }
         }
         logger.debug(`Successfully indexed #${blocksComputedInTotal} blocks ${preset.name} in ${((Date.now() / 1000) - startedAt).toFixed(2)} seconds`, logger.tags.goggles);
+        if (blocksComputedInTotal > 0) {
+          newlyIndexed += (blocksComputedInTotal - newlyIndexed);
+        }
       }
       if (newlyIndexed > 0) {
         logger.notice(`Flag values indexing completed: indexed ${newlyIndexed} blocks`, logger.tags.goggles);
