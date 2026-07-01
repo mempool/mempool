@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, NgZone, OnInit } from '@angular/core';
-import { echarts, EChartsOption } from '@app/graphs/echarts';
+import { EChartsOption } from '@app/graphs/echarts';
 import { BehaviorSubject, combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ActiveFilter, FilterMode, toFilters, toFlags } from '@app/shared/filters.utils';
