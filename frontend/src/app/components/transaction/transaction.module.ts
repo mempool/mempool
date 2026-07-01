@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
 import { TransactionComponent } from '@components/transaction/transaction.component';
+import { TransactionAccelerateComponent } from '@components/transaction/transaction-accelerate.component';
 import { TransactionDetailsComponent } from '@components/transaction/transaction-details/transaction-details.component';
 import { SharedModule } from '@app/shared/shared.module';
 import { TxBowtieModule } from '@components/tx-bowtie-graph/tx-bowtie.module';
@@ -22,6 +23,13 @@ const routes: Routes = [
   {
     path: 'preview',
     component: TransactionRawComponent,
+  },
+  {
+    path: ':id/accelerate',
+    component: TransactionAccelerateComponent,
+    data: {
+      ogImage: true
+    }
   },
   {
     path: ':id',
@@ -53,6 +61,7 @@ export class TransactionRoutingModule { }
   ],
   declarations: [
     TransactionComponent,
+    TransactionAccelerateComponent,
     TransactionDetailsComponent,
     AccelerateCheckout,
     AccelerateFeeGraphComponent,
