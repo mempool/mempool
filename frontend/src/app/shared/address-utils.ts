@@ -1,5 +1,5 @@
 import '@angular/localize/init';
-import { ScriptInfo } from '@app/shared/script.utils';
+import { ScriptInfo, getVarIntLength } from '@app/shared/script.utils';
 import { Vin, Vout } from '@interfaces/electrs.interface';
 import { BECH32_CHARS_LW, BASE58_CHARS, HEX_CHARS } from '@app/shared/regex.utils';
 import { parseTaproot } from './transaction.utils';
@@ -137,6 +137,7 @@ export class AddressTypeInfo {
   isMultisig?: { m: number, n: number };
   tapscript?: boolean;
   simplicity?: boolean;
+  observedInputVsize?: number; // median realized input vsize from previous spends
 
   constructor (network: string, address: string, type?: AddressType, vin?: Vin[], vout?: Vout) {
     this.network = network;
@@ -159,6 +160,7 @@ export class AddressTypeInfo {
     cloned.isMultisig = this.isMultisig;
     cloned.tapscript = this.tapscript;
     cloned.simplicity = this.simplicity;
+    cloned.observedInputVsize = this.observedInputVsize;
     return cloned;
   }
 
@@ -253,6 +255,120 @@ export class AddressTypeInfo {
       this.isMultisig = { m: script.template['m'], n: script.template['n'] };
     }
     return true;
+  }
+}
+
+// vsize of typical transaction overhead when spending a UTXO in its own
+// transaction: version + locktime + in/out counts + segwit marker/flag (~11 vB)
+// plus one typical output (~31 vB for a p2wpkh recipient).
+export const TX_OVERHEAD_VSIZE = 11;
+export const TYPICAL_OUTPUT_VSIZE = 31;
+
+// estimated vsize (vB) of a single input spending each address type, for the
+// common single-key case. Derived from the per-component byte costs documented
+// in fillUnsignedInput (transaction.utils.ts): DER sig 72 B, pubkey 34 B,
+// Schnorr sig 65 B, with the 4x witness discount applied.
+const INPUT_VSIZE: Partial<Record<AddressType, number>> = {
+  p2pk: 114,
+  p2pkh: 148,
+  'p2sh-p2wpkh': 91,
+  v0_p2wpkh: 68,
+  v1_p2tr: 58, // keyspend
+};
+
+// rough vsize of an m-of-n multisig input. `wrapped` adds the p2sh redeemscript
+// pushed in the scriptsig (p2sh-p2wsh); otherwise native p2wsh.
+function multisigWitnessInputVsize(m: number, n: number, wrapped: boolean): number {
+  // wrapped (p2sh-p2wsh) scriptsig pushes the 34-byte witness program: 1-byte push opcode + 34 bytes
+  const nonWitness = wrapped ? 76 : 41; // outpoint + sequence (+ redeemscript push)
+  const witnessScript = 3 + n * 34; // OP_m + n*push33 + OP_n + OP_CHECKMULTISIG
+  // stack: item count + dummy + m*(length prefix + signature) + script length prefix + script
+  const witnessBytes = 1 + 1 + m * (1 + 72) + getVarIntLength(witnessScript) + witnessScript;
+  return Math.ceil(nonWitness + witnessBytes / 4); // consensus vsize rounds up
+}
+
+// realized weight (WU) of a spent input, reconstructed from its on-chain scriptsig + witness
+function vinWeightUnits(vin: Vin): number | null {
+  if (!vin || vin.is_coinbase) {
+    return null;
+  }
+  const scriptsigLen = (vin.scriptsig?.length || 0) / 2;
+  const base = 36 + getVarIntLength(scriptsigLen) + scriptsigLen + 4;
+  let witnessBytes = 0;
+  // count witness only when present; legacy inputs carry no witness section
+  if (vin.witness && vin.witness.length) {
+    witnessBytes += getVarIntLength(vin.witness.length);
+    for (const item of vin.witness) {
+      const itemLen = item.length / 2;
+      witnessBytes += getVarIntLength(itemLen) + itemLen;
+    }
+  }
+  return base * 4 + witnessBytes;
+}
+
+/**
+ * Median realized input vsize (vB) across previous spends, or undefined if none
+ * are measurable. Kept fractional so rounding error doesn't accumulate per UTXO.
+ */
+export function observedInputVsize(vins: Vin[]): number | undefined {
+  const vsizes = (vins || [])
+    .map((v) => vinWeightUnits(v))
+    .filter((wu): wu is number => wu !== null && wu > 0)
+    .map((wu) => wu / 4);
+  if (!vsizes.length) {
+    return undefined;
+  }
+  vsizes.sort((a, b) => a - b);
+  const mid = Math.floor(vsizes.length / 2);
+  return vsizes.length % 2 ? vsizes[mid] : (vsizes[mid - 1] + vsizes[mid]) / 2;
+}
+
+/**
+ * Estimates the vsize (vB) of a single input spending from this address.
+ *
+ * `estimated` flags address types whose input size is variable (multisig,
+ * p2wsh, tapscript script-path, unknown) and therefore only approximated.
+ *
+ * `observedVsize`, when provided, is the realized vsize of an input extracted
+ * from a previous spend and always takes priority over the type-based estimate.
+ */
+export function estimateInputVsize(info: AddressTypeInfo, observedVsize?: number): { vsize: number; estimated: boolean } {
+  if (observedVsize !== undefined) {
+    return { vsize: observedVsize, estimated: false };
+  }
+
+  switch (info.type) {
+    case 'p2pk':
+    case 'p2pkh':
+    case 'p2sh-p2wpkh':
+    case 'v0_p2wpkh':
+      return { vsize: INPUT_VSIZE[info.type], estimated: false };
+    case 'v1_p2tr':
+      // 58 vB is a typical key-path estimate; without an observed spend we
+      // can't tell key-path from a (variable) script-path spend, so it stays
+      // approximate
+      return { vsize: INPUT_VSIZE.v1_p2tr, estimated: true };
+    case 'v0_p2wsh':
+      if (info.isMultisig) {
+        return { vsize: multisigWitnessInputVsize(info.isMultisig.m, info.isMultisig.n, false), estimated: true };
+      }
+      return { vsize: 105, estimated: true }; // assume 2-of-3
+    case 'p2sh-p2wsh':
+      if (info.isMultisig) {
+        return { vsize: multisigWitnessInputVsize(info.isMultisig.m, info.isMultisig.n, true), estimated: true };
+      }
+      return { vsize: 139, estimated: true }; // assume 2-of-3
+    case 'multisig':
+      if (info.isMultisig) {
+        // bare multisig: signatures + redeemscript in the scriptsig (no discount)
+        return { vsize: 41 + info.isMultisig.m * 73 + (3 + info.isMultisig.n * 34), estimated: true };
+      }
+      return { vsize: 252, estimated: true }; // assume 2-of-3
+    case 'p2sh':
+      // unresolved p2sh (no spend seen yet): assume nested segwit single-key
+      return { vsize: INPUT_VSIZE['p2sh-p2wpkh'], estimated: true };
+    default:
+      return { vsize: INPUT_VSIZE.v0_p2wpkh, estimated: true };
   }
 }
 
