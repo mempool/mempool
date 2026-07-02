@@ -1,6 +1,17 @@
 import { Location, ViewportScroller } from '@angular/common';
-import { Component, HostListener, OnInit, Inject, LOCALE_ID, HostBinding } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  OnInit,
+  Inject,
+  LOCALE_ID,
+  HostBinding,
+} from '@angular/core';
 import { Router, NavigationEnd, Scroll } from '@angular/router';
+import { EMPTY } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { ApiService } from '@app/services/api.service';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from '@app/services/state.service';
 import { OpenGraphService } from '@app/services/opengraph.service';
 import { NgbTooltipConfig } from '@ng-bootstrap/ng-bootstrap';
@@ -12,11 +23,12 @@ import { SeoService } from '@app/services/seo.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   standalone: false,
-  providers: [NgbTooltipConfig]
+  providers: [NgbTooltipConfig],
 })
 export class AppComponent implements OnInit {
   constructor(
     public router: Router,
+    private apiService: ApiService,
     private stateService: StateService,
     private openGraphService: OpenGraphService,
     private seoService: SeoService,
@@ -24,9 +36,13 @@ export class AppComponent implements OnInit {
     private location: Location,
     private viewportScroller: ViewportScroller,
     tooltipConfig: NgbTooltipConfig,
-    @Inject(LOCALE_ID) private locale: string,
+    @Inject(LOCALE_ID) private locale: string
   ) {
-    if (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he')) {
+    if (
+      this.locale.startsWith('ar') ||
+      this.locale.startsWith('fa') ||
+      this.locale.startsWith('he')
+    ) {
       this.dir = 'rtl';
       this.class = 'rtl-layout';
     } else {
@@ -44,17 +60,47 @@ export class AppComponent implements OnInit {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvents(event: KeyboardEvent) {
-    if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+    if (
+      event.target instanceof HTMLInputElement ||
+      event.target instanceof HTMLTextAreaElement
+    ) {
       return;
     }
     // prevent arrow key horizontal scrolling
-    if(['ArrowLeft','ArrowRight'].indexOf(event.code) > -1) {
+    if (['ArrowLeft', 'ArrowRight'].indexOf(event.code) > -1) {
       event.preventDefault();
     }
     this.stateService.keyNavigation$.next(event);
   }
 
   ngOnInit() {
+    this.apiService
+      .getSyncProgress$()
+      .pipe(catchError(() => EMPTY))
+      .subscribe((progress) => {
+        const gettingStartedUrl = new RelativeUrlPipe(
+          this.stateService
+        ).transform('/getting-started');
+        const nodeNotReady =
+          progress.ibd ||
+          (progress.electrs != null && !progress.electrs.indexed) ||
+          (progress.mempool != null && !progress.mempool.inSync);
+
+        // Only intercept the dashboard (home) — other routes may work or be
+        // intentionally reachable while the node is still syncing.
+        const currentPath = this.getBasePath(this.location.path()).replace(
+          /\/$/,
+          ''
+        );
+        const dashboardPath = this.getBasePath(
+          new RelativeUrlPipe(this.stateService).transform('/')
+        ).replace(/\/$/, '');
+
+        if (nodeNotReady && currentPath === dashboardPath) {
+          this.router.navigate([gettingStartedUrl]);
+        }
+      });
+
     this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) {
         this.seoService.updateCanonical(this.location.path());
@@ -62,9 +108,12 @@ export class AppComponent implements OnInit {
       if (val instanceof Scroll) {
         if (val.position) {
           this.viewportScroller.scrollToPosition(val.position);
-        } else if (!history.state?.skipScroll
-          && val.routerEvent instanceof NavigationEnd
-          && this.getBasePath(val.routerEvent.urlAfterRedirects) !== this.getBasePath(this.previousUrl)) {
+        } else if (
+          !history.state?.skipScroll &&
+          val.routerEvent instanceof NavigationEnd &&
+          this.getBasePath(val.routerEvent.urlAfterRedirects) !==
+            this.getBasePath(this.previousUrl)
+        ) {
           this.viewportScroller.scrollToPosition([0, 0]);
         }
         if (val.routerEvent instanceof NavigationEnd) {
