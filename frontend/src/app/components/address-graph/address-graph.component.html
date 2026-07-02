@@ -1,4 +1,4 @@
-<app-indexing-progress *ngIf="!widget"></app-indexing-progress>
+<app-indexing-progress [blocks]="false" *ngIf="!widget"></app-indexing-progress>
 
 <div [class.full-container]="!widget">
   <ng-container *ngIf="!error">

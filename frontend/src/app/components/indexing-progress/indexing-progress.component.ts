@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-indexing-progress',
@@ -7,6 +7,10 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
   standalone: false,
 })
 export class IndexingProgressComponent implements OnInit {
+  @Input() blocks: boolean = true;
+  @Input() networkHashrate: boolean = true;
+  @Input() poolsHashrate: boolean = true;
+
   constructor(
   ) {}
 
