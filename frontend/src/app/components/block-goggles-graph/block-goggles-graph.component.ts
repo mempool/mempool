@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, NgZone, OnInit } from '@angular/core';
 import { EChartsOption } from '@app/graphs/echarts';
-import { BehaviorSubject, combineLatest, forkJoin, Observable, of, throwError } from 'rxjs';
+import { BehaviorSubject, combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ActiveFilter, FilterMode, toFilters, toFlags } from '@app/shared/filters.utils';
 import { ApiService } from '@app/services/api.service';
@@ -125,12 +125,6 @@ export class BlockGogglesGraphComponent implements OnInit {
                 ))
           : of(null);
         return forkJoin([filtered$, totals$]).pipe(
-          catchError(err => {
-            this.prepareChartOptions([], err);
-            this.isLoading = false;
-            this.cd.markForCheck();
-            return throwError(err);
-          }),
           tap(([response, totalsBody]) => {
             const body: GogglesRollup[] = response.body || [];
             const totalsByHeight: Record<number, number> | null = totalsBody
@@ -155,6 +149,12 @@ export class BlockGogglesGraphComponent implements OnInit {
               blockCount: Number.isFinite(headerCount) ? headerCount : Number.MAX_SAFE_INTEGER,
               txCount: body.reduce((acc, row) => acc + row.txCount, 0),
             };
+          }),
+          catchError(err => {
+            this.prepareChartOptions([], err);
+            this.isLoading = false;
+            this.cd.markForCheck();
+            return of({ blockCount: Number.MAX_SAFE_INTEGER, txCount: 0 });
           }),
         );
       }),
