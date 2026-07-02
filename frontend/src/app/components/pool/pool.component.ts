@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { echarts, EChartsOption } from '@app/graphs/echarts';
 import { BehaviorSubject, Observable, Subscription, combineLatest, of } from 'rxjs';
@@ -26,7 +26,7 @@ interface AccelerationTotal {
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PoolComponent implements OnInit {
+export class PoolComponent implements OnInit, OnDestroy {
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
 
@@ -365,5 +365,6 @@ export class PoolComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.slugSubscription.unsubscribe();
+    this.websocketService.stopTrackStratum();
   }
 }
