@@ -40,6 +40,7 @@ import { PartnerCodeService } from '@app/services/partner-code.service';
 import { ZONE_SERVICE } from '@app/injection-tokens';
 import { MiningService, MiningStats } from '@app/services/mining.service';
 import { ETA, EtaService } from '@app/services/eta.service';
+import { getRegex } from '@app/shared/regex.utils';
 
 export interface Pool {
   id: number;
@@ -149,6 +150,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   overrideFlowPreference: boolean = null;
   flowEnabled: boolean;
   isDetailsOpen: boolean = false;
+  isAddressFocused: boolean = false;
+  destination: string = '';
+  confsRequired: number = 1;
+  regexAddress = getRegex('address', 'mainnet');
   tooltipPosition: { x: number, y: number };
   isMobile: boolean;
   firstLoad = true;
@@ -230,6 +235,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.enterpriseService.page();
     this.isDetailsOpen = this.route.snapshot.queryParams['showDetails'] === 'true';
+    this.destination = this.route.snapshot.queryParams['destination'] ?? '';
     this.cpfpMode = this.route.snapshot.queryParams['cpfp'] === 'true';
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -248,6 +254,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       (network) => {
         this.network = network;
         this.acceleratorAvailable = this.stateService.env.ACCELERATOR_BUTTON && this.stateService.network === '';
+        this.regexAddress = getRegex('address', network as any || 'mainnet');
       }
     );
 
@@ -356,6 +363,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
       if (!this.tx) {
         this.tx = tx;
+        this.isAddressFocused = this.isAddressFocusedView(tx);
         this.setFeatures();
         this.isCached = true;
         if (tx.fee === undefined) {
@@ -684,6 +692,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.seoService.clearSoft404();
 
           this.tx = tx;
+          this.isAddressFocused = this.isAddressFocusedView(tx);
           this.setFeatures();
           this.isCached = false;
           if (tx.fee === undefined) {
@@ -1016,6 +1025,37 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  isAddressFocusedView(tx: Transaction): boolean {
+    if (!this.regexAddress.test(this.destination)) {
+      return false;
+    }
+
+    const isDestinationInOutputs = tx.vout.map((vout) => vout.scriptpubkey_address).includes(this.destination);
+    if (!isDestinationInOutputs) {
+      return false;
+    }
+
+    this.setConfs();
+
+    return true;
+  }
+
+  setConfs() {
+    let confs = this.route.snapshot.queryParams['confs'];
+
+    if (confs === undefined) {
+      confs = 1;
+    } else if (isNaN(parseInt(confs))) {
+      confs = 1;
+      this.route.snapshot.queryParams['confs'] = 1;
+    } else if (confs < 1) {
+      confs = 1;
+      this.route.snapshot.queryParams['confs'] = 1;
+    }
+
+    this.confsRequired = confs;
+  }
+
   isAuditAvailable(blockHeight: number): boolean {
     if (!this.auditEnabled) {
       return false;
@@ -1079,6 +1119,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.gotInitialPosition = false;
     this.error = undefined;
     this.tx = null;
+    this.isAddressFocused = false;
+    this.destination = '';
+    this.confsRequired = 1;
     this.txChanged$.next(true);
     this.setFeatures();
     this.waitingForTransaction = false;
