@@ -730,7 +730,7 @@ class Blocks {
         return;
       }
 
-      let newlyIndexed = 0;
+      let newlyIndexedBuckets = 0;
       for (const preset of INDEXING_PRESETS) {
 
         let rangeStart = preset.blockSpan > -1 ? tipOfSummaries - preset.blockSpan : 0;
@@ -786,8 +786,7 @@ class Blocks {
           }
 
           await FlagValueRepository.$saveBatchFlagValues(preset.blocksCount.toString(), bucketStart, txCountPerFlag);
-          newlyIndexed = newlyIndexed + preset.blocksCount;
-
+          newlyIndexedBuckets++;
           const elapsedSeconds = (Date.now() / 1000) - timer;
           if (elapsedSeconds > 5) {
             const runningFor = (Date.now() / 1000) - startedAt;
@@ -799,14 +798,11 @@ class Blocks {
           }
         }
         logger.debug(`Successfully indexed #${blocksComputedInTotal} blocks ${preset.name} in ${((Date.now() / 1000) - startedAt).toFixed(2)} seconds`, logger.tags.goggles);
-        if (blocksComputedInTotal > 0) {
-          newlyIndexed += (blocksComputedInTotal - newlyIndexed);
-        }
       }
-      if (newlyIndexed > 0) {
-        logger.notice(`Flag values indexing completed: indexed ${newlyIndexed} blocks`, logger.tags.goggles);
+      if (newlyIndexedBuckets > 0) {
+        logger.notice(`Flag values indexing completed: indexed ${newlyIndexedBuckets} buckets`, logger.tags.goggles);
       } else {
-        logger.debug(`Flag values indexing completed: indexed ${newlyIndexed} blocks`, logger.tags.goggles);
+        logger.debug(`Flag values indexing completed: indexed ${newlyIndexedBuckets} buckets`, logger.tags.goggles);
       }
     } catch (e) {
       logger.err(`Flags values indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.goggles);
@@ -2026,7 +2022,7 @@ class Blocks {
     if (transactions?.length != null) {
       const { cpfpSummary } = await detectTemplateAlgorithm(height, transactions, [], true);
 
-      if (!stale) {
+      if (!stale && Common.cpfpIndexingEnabled() === true) {
         await this.$saveCpfp(hash, height, cpfpSummary);
       }
 

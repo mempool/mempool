@@ -1180,7 +1180,8 @@ class BitcoinRoutes {
         return;
       }
 
-      const txsCount = await FlagValueRepository.$queryTxCountBasedOnMask(mask, presets[interval].blocksCount, op, ((tip - presets[interval].blockSpan) || -1));
+      const startHeight = presets[interval].blockSpan !== undefined ? (tip - presets[interval].blockSpan) : -1;
+      const txsCount = await FlagValueRepository.$queryTxCountBasedOnMask(mask, presets[interval].blocksCount, op, startHeight);
       res.header('X-total-count', tip.toString());
       res.send(txsCount);
     } catch (e: any) {
