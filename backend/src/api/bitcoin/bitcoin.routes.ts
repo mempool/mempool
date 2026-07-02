@@ -1139,6 +1139,10 @@ class BitcoinRoutes {
 
   private async getTxCountPerFlagValue(req: Request, res: Response) {
     try {
+      if (!Common.blocksSummariesIndexingEnabled()) {
+        handleError(req, res, 404, `Block summaries indexing is required for this API`);
+        return;
+      }
       const presets = {
         '24h': {blocksCount: '1', blockSpan: 144},
         '3d': {blocksCount: '1', blockSpan: 432},

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, NgZone, OnInit } from '@angular/core';
 import { EChartsOption } from '@app/graphs/echarts';
-import { BehaviorSubject, combineLatest, forkJoin, Observable, of } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, share, startWith, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, forkJoin, Observable, of, throwError } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ActiveFilter, FilterMode, toFilters, toFlags } from '@app/shared/filters.utils';
 import { ApiService } from '@app/services/api.service';
 import { formatNumber } from '@angular/common';
@@ -125,6 +125,12 @@ export class BlockGogglesGraphComponent implements OnInit {
                 ))
           : of(null);
         return forkJoin([filtered$, totals$]).pipe(
+          catchError(err => {
+            this.prepareChartOptions([], err);
+            this.isLoading = false;
+            this.cd.markForCheck();
+            return throwError(err);
+          }),
           tap(([response, totalsBody]) => {
             const body: GogglesRollup[] = response.body || [];
             const totalsByHeight: Record<number, number> | null = totalsBody
@@ -197,9 +203,9 @@ export class BlockGogglesGraphComponent implements OnInit {
     }
   }
 
-  prepareChartOptions(data): void {
+  prepareChartOptions(data, error?): void {
     let title: object;
-    if (data.length === 0) {
+    if (data.length === 0 ) {
       title = {
         textStyle: {
           color: 'grey',
@@ -208,6 +214,17 @@ export class BlockGogglesGraphComponent implements OnInit {
         text: this.goggle$.value.mask
           ? $localize`No transactions match the selected filters`
           : $localize`:@@23555386d8af1ff73f297e89dd4af3f4689fb9dd:Indexing blocks`,
+        left: 'center',
+        top: 'center'
+      };
+    }
+    if (error && error.status === 404) {
+      title = {
+        textStyle: {
+          color: 'grey',
+          fontSize: 15
+        },
+        text: $localize`Block summaries indexing is required for this graph`,
         left: 'center',
         top: 'center'
       };
