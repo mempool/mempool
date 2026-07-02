@@ -949,7 +949,7 @@ class BlocksRepository {
    */
   public async $getIndexedBlocks(): Promise<{ height: number, hash: string, stale: boolean }[]> {
     try {
-      const [rows] = await DB.query(`SELECT height, hash, stale FROM blocks ORDER BY height ASC`) as RowDataPacket[][];
+      const [rows] = await DB.query(`SELECT height, hash, stale FROM blocks ORDER BY height DESC`) as RowDataPacket[][];
       return rows as { height: number, hash: string, stale: boolean }[];
     } catch (e) {
       logger.err('Cannot generate block size and weight history. Reason: ' + (e instanceof Error ? e.message : e));
