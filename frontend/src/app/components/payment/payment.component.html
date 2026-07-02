@@ -1,0 +1,172 @@
+<div class="container-xl">
+
+  @if (!error || loadingCachedTx) {
+
+  <div class="title-block">
+    <h1 i18n="shared.bitcoin.payment">Bitcoin payment</h1>
+    <span class="tx-link">
+      <span class="txid">
+        <app-truncate [text]="txId" [lastChars]="12" [link]="['/tx/' | relativeUrl, txId]">
+          <app-clipboard [text]="txId"></app-clipboard>
+        </app-truncate>
+      </span>
+    </span>
+  </div>
+  <div class="clearfix"></div>
+
+  <div class="box">
+    <div class="row">
+      @if (isMobile) {
+      <div class="col-sm">
+        <ng-container *ngTemplateOutlet="qr"></ng-container>
+        <ng-container *ngTemplateOutlet="trackerBar"></ng-container>
+        <table class="table table-borderless table-striped">
+          <tbody>
+            <ng-container *ngTemplateOutlet="rows"></ng-container>
+          </tbody>
+        </table>
+      </div>
+      } @else {
+      <div class="col-sm">
+        <ng-container *ngTemplateOutlet="trackerBar"></ng-container>
+        <table class="table table-borderless table-striped">
+          <tbody>
+            <ng-container *ngTemplateOutlet="rows"></ng-container>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-sm qr-col">
+        <ng-container *ngTemplateOutlet="qr"></ng-container>
+      </div>
+      }
+    </div>
+  </div>
+
+  <div class="details-link">
+    <button type="button" class="btn btn-sm btn-outline-info" (click)="viewFullDetails()">
+      <span i18n="transaction.view-full-details">View full transaction details</span>
+    </button>
+  </div>
+
+  }
+
+  @if (error && !loadingCachedTx) {
+    <app-http-error [error]="error">
+      <span i18n="transaction.error.loading-transaction-data">Error loading transaction data.</span>
+    </app-http-error>
+  }
+
+</div>
+
+<ng-template #rows>
+  <ng-container *ngTemplateOutlet="addressRow"></ng-container>
+  <ng-container *ngTemplateOutlet="amountRow"></ng-container>
+  <ng-container *ngTemplateOutlet="statusRow"></ng-container>
+</ng-template>
+
+<ng-template #addressRow>
+  @if (isValidView) {
+    <tr>
+      <td class="td-width" i18n="shared.address">Address</td>
+      <td>
+        <app-truncate class="address" [text]="destination" [lastChars]="4"
+          [link]="['/address/' | relativeUrl, destination]"></app-truncate>
+      </td>
+    </tr>
+  } @else {
+    <ng-container *ngTemplateOutlet="skeletonRow"></ng-container>
+  }
+</ng-template>
+<ng-template #amountRow>
+  @if (tx) {
+    <tr>
+      <td class="td-width" i18n="transaction.amount|Amount">Amount</td>
+      <td class="wrap-cell">
+        <app-amount [satoshis]="amount" [blockConversion]="tx.price" [noFiat]="true"></app-amount>
+        <span class="fiat">
+          <app-fiat [value]="amount" [blockConversion]="tx.price"></app-fiat>
+        </span>
+      </td>
+    </tr>
+  } @else {
+    <ng-container *ngTemplateOutlet="skeletonRow"></ng-container>
+  }
+</ng-template>
+<ng-template #statusRow>
+  @if (tx && !replaced) {
+    <tr>
+      <td class="td-width" i18n="transaction.status|Transaction Status">Status</td>
+      <td>
+        @if (!tx.status?.confirmed) {
+          <ng-container *ngIf="(ETA$ | async) as eta; else etaSkeleton">
+            @if (eta.blocks >= 7) {
+              <span i18n="transaction.eta.not-any-time-soon|Transaction ETA mot any time soon">Not any time soon</span>
+            } @else {
+              <app-time kind="until" [time]="eta.time" [fastRender]="false"></app-time>
+            }
+          </ng-container>
+          <ng-template #etaSkeleton>
+            <span class="skeleton-loader"></span>
+          </ng-template>
+        } @else {
+          <ng-container *ngTemplateOutlet="confs"></ng-container>
+        }
+      </td>
+    </tr>
+  } @else if (replaced) {
+  } @else {
+    <ng-container *ngTemplateOutlet="skeletonRow"></ng-container>
+  }
+</ng-template>
+
+<ng-template #confs>
+  @if (settled) {
+  <span class="settled" i18n="transaction.status.settled|Settled">Settled</span>
+  } @else if (isValidView && confsRequired > 1) {
+  <div class="confs-cell">
+    <span i18n="transaction.confirmed|Transaction confirmed state">Confirmed</span>
+    <span>
+      @for (conf of confsRequiredArr; track $index) {
+      <span>
+        <svg width="25px" height="25px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+          <path class="confirmations" [class.pending]="($index + 1) > confirmations"
+            [class.animate]="($index + 1) === (confirmations + 1)" d="M23.05 23.05V488.9H488.9V23.05H23.05z" />
+        </svg>
+      </span>
+      }
+    </span>
+  </div>
+  } @else {
+  <span class="skeleton-loader"></span>
+  }
+</ng-template>
+
+<ng-template #qr>
+  @if (isValidView) {
+  <div class="qr-wrapper">
+    <app-qrcode [size]="isMobile ? 125 : 200" [data]="destination"></app-qrcode>
+  </div>
+  }
+</ng-template>
+
+<ng-template #trackerBar>
+  @if (replaced) {
+  <div class="alert-replaced" role="alert">
+    <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>
+    <a [routerLink]="['/tx/' | relativeUrl, latestReplacement]" [queryParams]="{ mode: 'status' }">{{ latestReplacement
+      }}</a>
+  </div>
+  } @else if (tx && !isCached) {
+  <div class="tracker-bar">
+    <app-tracker-bar [stage]="trackerStage"></app-tracker-bar>
+  </div>
+  } @else {
+  <ng-container *ngTemplateOutlet="skeletonRow"></ng-container>
+  }
+</ng-template>
+
+<ng-template #skeletonRow>
+  <tr>
+    <td><span class="skeleton-loader"></span></td>
+  </tr>
+</ng-template>
