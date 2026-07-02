@@ -5,6 +5,7 @@ import { BlockViewComponent } from '@components/block-view/block-view.component'
 import { EightBlocksComponent } from '@components/eight-blocks/eight-blocks.component';
 import { MempoolBlockViewComponent } from '@components/mempool-block-view/mempool-block-view.component';
 import { ClockComponent } from '@components/clock/clock.component';
+import { DifficultyFullscreenComponent } from '@components/difficulty-fullscreen/difficulty-fullscreen.component';
 import { StatusViewComponent } from '@components/status-view/status-view.component';
 import { AddressGroupComponent } from '@components/address-group/address-group.component';
 import { TrackerGuard } from '@app/route-guards';
@@ -252,6 +253,10 @@ let routes: Routes = [
   {
     path: 'clock/:mode/:index',
     component: ClockComponent,
+  },
+  {
+    path: 'difficulty',
+    component: DifficultyFullscreenComponent,
   },
   {
     path: 'view/block/:id',
