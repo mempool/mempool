@@ -237,7 +237,7 @@ export class BlockRewardsGraphComponent implements OnInit {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: function(val) {
-              return this.fiatShortenerPipe.transform(val, null, this.currency);
+              return this.fiatShortenerPipe.transform(val, this.currency);
             }.bind(this)
           },
           splitLine: {

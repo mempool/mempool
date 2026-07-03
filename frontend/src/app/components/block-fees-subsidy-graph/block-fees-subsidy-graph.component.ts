@@ -328,7 +328,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           axisLabel: {
             color: 'var(--grey)',
             formatter: function(val) {
-              return this.fiatShortenerPipe.transform(val, null, 'USD');
+              return this.fiatShortenerPipe.transform(val, 'USD');
             }.bind(this)
           },
           splitLine: {
