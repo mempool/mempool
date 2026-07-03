@@ -45,6 +45,7 @@ export class AccelerationStatsComponent implements OnInit, OnChanges {
       websocketRefresh$,
       this.stateService.chainTip$.pipe(distinctUntilChanged())
     ).pipe(
+      debounceTime(0),
       switchMap(() =>
         this.servicesApiService
           .getAccelerationStats$({ timeframe: this.timespan })
