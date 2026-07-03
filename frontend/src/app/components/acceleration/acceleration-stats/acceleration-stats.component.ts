@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit } from '@angular/core';
-import { BehaviorSubject, EMPTY, Observable, merge, catchError, debounceTime, distinctUntilChanged, filter, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, EMPTY, Observable, merge, catchError, debounceTime, distinctUntilChanged, filter, switchMap, tap, throttleTime } from 'rxjs';
 import { ServicesApiServices } from '@app/services/services-api.service';
 import { StateService } from '@app/services/state.service';
 
@@ -37,7 +37,7 @@ export class AccelerationStatsComponent implements OnInit, OnChanges {
         (delta) =>
           !delta.reset && (!!delta.added.length || !!delta.removed.length)
       ),
-      debounceTime(2000)
+      throttleTime(2000)
     );
 
     this.accelerationStats$ = merge(
