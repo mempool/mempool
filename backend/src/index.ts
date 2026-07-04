@@ -400,6 +400,16 @@ class Server {
       this.warnedHeapCritical = false;
       this.maxHeapSize = 0;
       this.lastHeapLogTime = now;
+      this.server?.getConnections((error, count) => {
+        if (!error) {
+          logger.debug(`${count} open TCP sockets`);
+        }
+      });
+      this.serverUnixSocket?.getConnections((error, count) => {
+        if (!error) {
+          logger.debug(`${count} open unix sockets`);
+        }
+      });
     }
   }
 
