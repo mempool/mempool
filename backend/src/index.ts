@@ -230,6 +230,8 @@ class Server {
         logger.notice(`Mempool Server is running on port ${config.MEMPOOL.HTTP_PORT}`);
       }
     });
+    this.server.keepAliveTimeout = 70 * 1000;
+    this.server.headersTimeout = 71 * 1000;
 
     if (this.serverUnixSocket) {
       this.serverUnixSocket.listen(config.MEMPOOL.UNIX_SOCKET_PATH, () => {
@@ -239,6 +241,9 @@ class Server {
           logger.notice(`Mempool Server is listening on ${config.MEMPOOL.UNIX_SOCKET_PATH}`);
         }
       });
+
+      this.serverUnixSocket.keepAliveTimeout = 70 * 1000;
+      this.serverUnixSocket.headersTimeout = 71 * 1000;
     }
 
     void poolsUpdater.$startService();
