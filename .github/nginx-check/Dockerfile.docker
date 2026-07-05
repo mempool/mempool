@@ -1,0 +1,17 @@
+FROM nginx:1.30.1-alpine
+
+# Validate the config set loaded by the mempool/frontend docker image.
+# Build context: repo root
+COPY nginx.conf http-basic.conf /etc/nginx/
+COPY nginx-mempool.conf /etc/nginx/conf.d/
+
+# Replay the transforms applied by docker/init.sh (with the default values
+# docker/frontend/entrypoint.sh substitutes at container start)
+RUN sed -i \
+      -e "s!127.0.0.1:80!0.0.0.0:8080!g" \
+      -e "s!127.0.0.1!0.0.0.0!g" \
+      -e "s!user nobody;!!g" \
+      -e "s!/etc/nginx/nginx-mempool.conf!/etc/nginx/conf.d/nginx-mempool.conf!g" \
+      /etc/nginx/nginx.conf
+
+CMD ["nginx", "-t"]

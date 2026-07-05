@@ -6,7 +6,7 @@
     <button class="menu-toggle" (click)="menuOpen = !menuOpen" title="Mempool Goggles&reg;">
       <app-svg-images name="goggles" width="100%" height="100%"></app-svg-images>
     </button>
-    <div class="active-tags">
+    <div class="active-tags" [class.menu-open]="menuOpen">
       <ng-container *ngFor="let filter of activeFilters;">
         <button class="btn filter-tag selected" (click)="toggleFilter(filter)">{{ filters[filter].label }}</button>
       </ng-container>

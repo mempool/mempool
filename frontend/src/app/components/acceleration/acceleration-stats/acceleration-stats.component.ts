@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, EMPTY, Observable, merge, catchError, debounceTime, distinctUntilChanged, filter, switchMap, tap, throttleTime } from 'rxjs';
 import { ServicesApiServices } from '@app/services/services-api.service';
+import { StateService } from '@app/services/state.service';
 
 export type AccelerationStats = {
   totalRequested: number;
@@ -21,21 +22,45 @@ export class AccelerationStatsComponent implements OnInit, OnChanges {
   @Input() timespan: '24h' | '1m' | '1y' | 'all' = '1y';
   accelerationStats$: Observable<AccelerationStats>;
   blocksInPeriod: number = 7 * 144;
+  private timespan$ = new BehaviorSubject<'24h' | '1m' | '1y' | 'all'>(
+    this.timespan
+  );
 
   constructor(
-    private servicesApiService: ServicesApiServices
-  ) { }
+    private servicesApiService: ServicesApiServices,
+    private stateService: StateService
+  ) {}
 
   ngOnInit(): void {
-    this.updateStats();
+    const websocketRefresh$ = this.stateService.accelerations$.pipe(
+      filter(
+        (delta) =>
+          !delta.reset && (!!delta.added.length || !!delta.removed.length)
+      ),
+      throttleTime(2000)
+    );
+
+    this.accelerationStats$ = merge(
+      this.timespan$.pipe(tap(() => this.updateBlocksInPeriod())),
+      websocketRefresh$,
+      this.stateService.chainTip$.pipe(distinctUntilChanged())
+    ).pipe(
+      debounceTime(0),
+      switchMap(() =>
+        this.servicesApiService
+          .getAccelerationStats$({ timeframe: this.timespan })
+          .pipe(
+            catchError(() => EMPTY)
+          )
+      )
+    );
   }
 
   ngOnChanges(): void {
-    this.updateStats();
+    this.timespan$.next(this.timespan);
   }
 
-  updateStats(): void {
-    this.accelerationStats$ = this.servicesApiService.getAccelerationStats$({ timeframe: this.timespan });
+  private updateBlocksInPeriod(): void {
     switch (this.timespan) {
       case '24h':
         this.blocksInPeriod = 144;
