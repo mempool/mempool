@@ -1662,6 +1662,8 @@ class Blocks {
       await DifficultyAdjustmentsRepository.$deleteAdjustementsFromHeight(forkTail.height);
       await cpfpRepository.$deleteClustersFrom(forkTail.height);
       await AccelerationRepository.$deleteAccelerationsFrom(forkTail.height);
+      await FlagValueRepository.$deleteFlagValuesFromHeight(forkTail.height);
+      this.flagValuesCache = Blocks.newFlagValueBuckets();
       chainTips.clearOrphanCacheAboveHeight(forkTail.height);
       this.updateTimerProgress(timer, `deleted stale block data`);
 

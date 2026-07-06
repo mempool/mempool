@@ -100,6 +100,24 @@ class FlagValuesRepository {
       logger.err(`Cannot delete flag values below block #${height}. Reason: ` + (e instanceof Error ? e.message : e));
     }
   }
+
+  public async $deleteFlagValuesFromHeight(height: number): Promise<void> {
+    const startHeights = {
+      '1': height,
+      '36': Math.floor(height / 36) * 36,
+      '144': Math.floor(height / 144) * 144,
+      '720': Math.floor(height / 720) * 720
+    };
+    const bucketSizes = Object.keys(startHeights);
+
+    try {
+      for (const bucketSize of bucketSizes) {
+        await DB.query(`DELETE FROM flag_values WHERE start_height >= ? AND blocks_count = ?`, [startHeights[bucketSize], bucketSize]);
+      }
+    } catch (e) {
+      logger.err(`Cannot delete flag values above ${height}. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+  }
 }
 
 export default new FlagValuesRepository();
