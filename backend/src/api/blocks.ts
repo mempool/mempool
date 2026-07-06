@@ -689,7 +689,7 @@ class Blocks {
         }
 
         const classifiedTransactions = await this.$indexBlockSummary(block.hash, block.height, block.stale);
-        await this.$indexFlagValues(block.height, classifiedTransactions, flagValuesBuckets);
+        await this.$indexFlagValues(block.height, classifiedTransactions, flagValuesBuckets, block.stale);
 
         // Logging
         indexedThisRun++;
@@ -869,8 +869,8 @@ class Blocks {
   /**
    * Rolls up flag values for a block into `buckets`, cached or passed through parameters
    */
-  public async $indexFlagValues(height: number, classifiedTransactions: TransactionClassified[], buckets: FlagValueBucket[] = this.flagValuesCache): Promise<void> {
-    if (Common.blocksSummariesIndexingEnabled() === false) {
+  public async $indexFlagValues(height: number, classifiedTransactions: TransactionClassified[], buckets: FlagValueBucket[] = this.flagValuesCache, stale: boolean = false): Promise<void> {
+    if (Common.blocksSummariesIndexingEnabled() === false || stale) {
       return;
     }
 
