@@ -4,7 +4,7 @@ import { BehaviorSubject, combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ActiveFilter, FilterMode, toFilters, toFlags } from '@app/shared/filters.utils';
 import { ApiService } from '@app/services/api.service';
-import { formatNumber } from '@angular/common';
+import { CurrencyPipe, formatNumber } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { download } from '@app/shared/graphs.utils';
 import { StorageService } from '@app/services/storage.service';
@@ -207,7 +207,7 @@ export class BlockGogglesGraphComponent implements OnInit {
     const mask = maskParam && /^\d+$/.test(maskParam) ? BigInt(maskParam) : 0n;
     const op = (['and', 'or', 'nor'].includes(params.get('op')) ? params.get('op') : 'and') as FilterMode;
     // skip if already applied, otherwise the navigation in onFilterChanged would loop back here
-    if (mask > 0n && (this.goggle$.value.mask ?? 0n) !== mask) {
+    if ((mask > 0n && (this.goggle$.value.mask ?? 0n) !== mask) || this.goggle$.value.op !== op) {
       this.stateService.activeGoggles$.next({ mode: op, filters: toFilters(mask).map(f => f.key), gradient: 'fee' });
     }
   }

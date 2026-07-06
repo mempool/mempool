@@ -796,6 +796,7 @@ class Blocks {
       }
     } catch (e) {
       logger.err(`Flags values indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.goggles);
+      throw(e);
     }
   }
 

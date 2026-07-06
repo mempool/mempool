@@ -1144,16 +1144,16 @@ class BitcoinRoutes {
         return;
       }
       const presets = {
-        '24h': {bucketSize: '1', retentionSpan: 144},
-        '3d': {bucketSize: '1', retentionSpan: 432},
-        '1w': {bucketSize: '1', retentionSpan: 1008},
-        '1m': {bucketSize: '36', retentionSpan: 4032},
-        '3m': {bucketSize: '36', retentionSpan: 12096},
-        '6m': {bucketSize: '36', retentionSpan: 24192},
-        '1y': {bucketSize: '144', retentionSpan: 48384},
-        '2y': {bucketSize: '144', retentionSpan: 96768},
-        '3y': {bucketSize: '144', retentionSpan: 145152},
-        'all': {bucketSize: '720'},
+        '24h': {bucketSize: 1, retentionSpan: 144},
+        '3d': {bucketSize: 1, retentionSpan: 432},
+        '1w': {bucketSize: 1, retentionSpan: 1008},
+        '1m': {bucketSize: 36, retentionSpan: 4032},
+        '3m': {bucketSize: 36, retentionSpan: 12096},
+        '6m': {bucketSize: 36, retentionSpan: 24192},
+        '1y': {bucketSize: 144, retentionSpan: 48384},
+        '2y': {bucketSize: 144, retentionSpan: 96768},
+        '3y': {bucketSize: 144, retentionSpan: 145152},
+        'all': {bucketSize: 720},
       };
       const intervals = Object.keys(presets);
       const operations = ['and', 'or', 'nor', undefined];
