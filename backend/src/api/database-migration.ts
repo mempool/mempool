@@ -1852,6 +1852,7 @@ class DatabaseMigration {
       start_height int unsigned NOT NULL,
       flag_value bigint unsigned NOT NULL,
       tx_count int unsigned NOT NULL,
+      vsize_total int unsigned NOT NULL,
       PRIMARY KEY (bucket_size, start_height, flag_value)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8`;
   }

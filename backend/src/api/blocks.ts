@@ -758,17 +758,24 @@ class Blocks {
             continue; // Incomplete bucket
           }
 
-          const txCountPerFlag: Record<string, number> = {};
+          const dataPerFlag: Record<string, Record<string, number>> = {};
           for (const block of blocks) {
-            const txFlags = JSON.parse(block.transactions).map((tx) => tx.flags);
-            for (const flag of txFlags) {
-              txCountPerFlag[flag] = (txCountPerFlag[flag] ?? 0) + 1;
+            const txData = JSON.parse(block.transactions).map((tx) => ({flags: tx.flags, vsize: tx.vsize}));
+            for (const data of txData) {
+              if (dataPerFlag[data.flags] === undefined || Object.keys(dataPerFlag[data.flags]).length === 0) {
+                dataPerFlag[data.flags] = {
+                  txCount: 0,
+                  vSizeTotal: 0
+                };
+              }
+              dataPerFlag[data.flags].txCount = dataPerFlag[data.flags].txCount + 1;
+              dataPerFlag[data.flags].vSizeTotal = dataPerFlag[data.flags].vSizeTotal + data.vsize;
             }
             blocksComputedInTotal++;
             blocksComputedThisRun++;
           }
 
-          await FlagValueRepository.$saveBatchFlagValues(preset.bucketSize, bucketStart, txCountPerFlag);
+          await FlagValueRepository.$saveBatchFlagValues(preset.bucketSize, bucketStart, dataPerFlag);
           newlyIndexedBuckets++;
           const elapsedSeconds = (Date.now() / 1000) - timer;
           if (elapsedSeconds > 5) {

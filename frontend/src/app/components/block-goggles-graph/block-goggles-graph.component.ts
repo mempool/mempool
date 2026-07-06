@@ -18,7 +18,11 @@ interface GogglesRollup {
   bucketSize: string;
   startHeight: number;
   txCount: number;
+  vSizeTotal: number;
 }
+
+// a block's max capacity: 4,000,000 WU = 1,000,000 vB
+const MAX_BLOCK_VSIZE = 1_000_000;
 
 @Component({
   selector: 'app-block-goggles-graph',
@@ -127,17 +131,22 @@ export class BlockGogglesGraphComponent implements OnInit {
         return forkJoin([filtered$, totals$]).pipe(
           tap(([response, totalsBody]) => {
             const body: GogglesRollup[] = response.body || [];
-            const totalsByHeight: Record<number, number> | null = totalsBody
-              ? totalsBody.reduce((acc, row) => { acc[row.startHeight] = row.txCount; return acc; }, {})
-              : null;
-            // dims: [startHeight, txCount, bucketSize, bucketTotal]
-            const seriesData = body.map((row) => [
-              row.startHeight,
-              row.txCount,
-              parseInt(row.bucketSize, 10) || 1,
-              totalsByHeight ? (totalsByHeight[row.startHeight] ?? row.txCount) : row.txCount,
-            ]);
-            this.prepareChartOptions(seriesData);
+            const filtered = !!this.goggle$.value.mask;
+            // when filtering, body is the matched rows and totalsBody the unfiltered totals; otherwise body itself is the totals
+            const totalRows: GogglesRollup[] = filtered ? (totalsBody || []) : body;
+            const matchedRows: GogglesRollup[] = filtered ? body : [];
+            // dims: [startHeight, plotted (avg per block once rolled up), bucketSize, vSizeTotal, txCount]
+            const toSeries = (rows: GogglesRollup[]): number[][] => rows.map((row) => {
+              const bucketSize = parseInt(row.bucketSize, 10) || 1;
+              return [
+                row.startHeight,
+                bucketSize > 1 ? row.txCount / bucketSize : row.txCount,
+                bucketSize,
+                row.vSizeTotal,
+                row.txCount,
+              ];
+            });
+            this.prepareChartOptions(toSeries(totalRows), toSeries(matchedRows));
             this.isLoading = false;
             this.cd.markForCheck();
           }),
@@ -151,7 +160,7 @@ export class BlockGogglesGraphComponent implements OnInit {
             };
           }),
           catchError(err => {
-            this.prepareChartOptions([], err);
+            this.prepareChartOptions([], [], err);
             this.isLoading = false;
             this.cd.markForCheck();
             return of({ blockCount: Number.MAX_SAFE_INTEGER, txCount: 0 });
@@ -203,17 +212,16 @@ export class BlockGogglesGraphComponent implements OnInit {
     }
   }
 
-  prepareChartOptions(data, error?): void {
+  prepareChartOptions(totalData: number[][], matchedData: number[][], error?): void {
+    const filtered = !!this.goggle$.value.mask;
     let title: object;
-    if (data.length === 0 ) {
+    if (totalData.length === 0 ) {
       title = {
         textStyle: {
           color: 'grey',
           fontSize: 15
         },
-        text: this.goggle$.value.mask
-          ? $localize`No transactions match the selected filters`
-          : $localize`:@@23555386d8af1ff73f297e89dd4af3f4689fb9dd:Indexing blocks`,
+        text: $localize`:@@23555386d8af1ff73f297e89dd4af3f4689fb9dd:Indexing blocks`,
         left: 'center',
         top: 'center'
       };
@@ -258,11 +266,12 @@ export class BlockGogglesGraphComponent implements OnInit {
           if (!params || params.length <= 0) {
             return '';
           }
-          const item = params[0];
-          const startHeight = item.data[0];
-          const count = item.data[1];
-          const bucketSize = item.data[2] || 1;
-          const bucketTotal = item.data[3];
+          // dims: [startHeight, plotted, bucketSize, vSizeTotal, txCount]
+          const baseline = params.find(p => p.seriesIndex === 0) || params[0];
+          const matched = params.find(p => p.seriesIndex === 1);
+          const startHeight = baseline.data[0];
+          const bucketSize = baseline.data[2] || 1;
+          const totalCount = baseline.data[4];
           const filtered = !!this.goggle$.value.mask;
           let tooltip = '';
 
@@ -273,20 +282,40 @@ export class BlockGogglesGraphComponent implements OnInit {
             tooltip += `<b style="color: white; margin-left: 2px">` + $localize`Block: ${startHeight}` + `</b><br>`;
           }
 
+          const totalLabel = bucketSize > 1 ? $localize`Total transactions` : $localize`Transactions`;
+          tooltip += `${baseline.marker} ` + totalLabel + `: ${formatNumber(totalCount, this.locale, '1.0-0')}<br>`;
+
           if (bucketSize > 1) {
-            tooltip += `${item.marker} ` + $localize`Avg per block` + `: ${formatNumber(count / bucketSize, this.locale, '1.0-2')}<br>`;
+            tooltip += `${baseline.marker} ` + $localize`Avg txs per block` + `: ${formatNumber(totalCount / bucketSize, this.locale, '1.0-2')}<br>`;
           }
 
-          const countLabel = filtered ? $localize`Matched transactions` : (bucketSize > 1 ? $localize`Total transactions` : $localize`Transactions`);
-          tooltip += `${item.marker} ` + countLabel + `: ${formatNumber(count, this.locale, '1.0-0')}<br>`;
-
-          if (filtered && bucketTotal > 0) {
-            tooltip += `${item.marker} ` + $localize`Share of all txs` + `: ${formatNumber(count / bucketTotal * 100, this.locale, '1.0-2')}%<br>`;
+          if (filtered) {
+            const matchedCount = matched ? matched.data[4] : 0;
+            const matchedMarker = matched ? matched.marker : baseline.marker;
+            if (bucketSize > 1) {
+              tooltip += `${matchedMarker} ` + $localize`Avg txs filtered per block` + `: ${formatNumber(matchedCount / bucketSize, this.locale, '1.0-2')}<br>`;
+            } else {
+              tooltip += `${matchedMarker} ` + $localize`Matched transactions` + `: ${formatNumber(matchedCount, this.locale, '1.0-0')}<br>`;
+            }
+            if (totalCount > 0) {
+              tooltip += `${matchedMarker} ` + $localize`Share of all txs` + `: ${formatNumber(matchedCount / totalCount * 100, this.locale, '1.0-2')}%<br>`;
+            }
+            const matchedVSize = matched ? matched.data[3] : 0;
+            if (matchedVSize > 0) {
+              const weightShare = matchedVSize / (bucketSize * MAX_BLOCK_VSIZE) * 100;
+              tooltip += `${matchedMarker} ` + $localize`Share of block weight` + `: ${formatNumber(weightShare, this.locale, '1.0-2')}%<br>`;
+            }
+          } else {
+            const vSizeTotal = baseline.data[3];
+            if (vSizeTotal > 0) {
+              const weightShare = vSizeTotal / (bucketSize * MAX_BLOCK_VSIZE) * 100;
+              tooltip += `${baseline.marker} ` + $localize`Share of block weight` + `: ${formatNumber(weightShare, this.locale, '1.0-2')}%<br>`;
+            }
           }
           return tooltip;
         }.bind(this)
       },
-      xAxis: data.length === 0 ? undefined : {
+      xAxis: totalData.length === 0 ? undefined : {
         name: this.widget ? undefined : $localize`Block height`,
         nameLocation: 'middle',
         nameTextStyle: {
@@ -306,7 +335,7 @@ export class BlockGogglesGraphComponent implements OnInit {
           padding: [0, 5],
         },
       },
-      yAxis: data.length === 0 ? undefined : {
+      yAxis: totalData.length === 0 ? undefined : {
         position: 'left',
         axisLabel: {
           color: 'rgb(110, 112, 121)',
@@ -325,14 +354,28 @@ export class BlockGogglesGraphComponent implements OnInit {
         },
         type: 'value',
       },
-      series: data.length === 0 ? undefined : [{
-        zlevel: 0,
-        name: $localize`Transactions`,
-        data: data,
-        type: 'bar',
-        barWidth: '100%',
-        large: true,
-      }],
+      series: totalData.length === 0 ? undefined : [
+        {
+          zlevel: 0,
+          name: filtered ? $localize`All transactions` : $localize`Transactions`,
+          data: totalData,
+          type: 'bar',
+          barWidth: '100%',
+          large: true,
+          itemStyle: { color: '#1E88E5' }, // blue: total tx count
+        },
+        ...(filtered && matchedData.length > 0 ? [{
+          zlevel: 1,
+          z: 3,
+          name: $localize`Matched`,
+          data: matchedData,
+          type: 'bar',
+          barWidth: '100%',
+          barGap: '-100%', // overlay directly on top of the total bars
+          large: true,
+          itemStyle: { color: '#8E24AA' },
+        }] : []),
+      ],
       dataZoom: this.widget ? null : [{
         type: 'inside',
         realtime: true,
