@@ -7,9 +7,9 @@ class FlagValuesRepository {
    * Get the latest indexed day from the database
    *
    * @asyncSafe */
-  public async $getTipAndTailIndexedByBlocksCount(blocksCount: string): Promise<{tip: number, tail: number} | null> {
+  public async $getTipAndTailIndexedByBlocksCount(blocksCount: number): Promise<{tip: number, tail: number} | null> {
     try {
-      const [rows]: any[] = await DB.query(`SELECT (MAX(start_height) + ?) as tip, MIN(start_height) as tail FROM flag_values WHERE blocks_count = ?`, [parseInt(blocksCount, 10), blocksCount]);
+      const [rows]: any[] = await DB.query(`SELECT (MAX(start_height) + ?) as tip, MIN(start_height) as tail FROM flag_values WHERE blocks_count = ?`, [blocksCount, blocksCount.toString()]);
       if (rows !== null && rows.length > 0 && rows[0].tip !== null && rows[0].tail !== null) {
         return rows[0];
       }
@@ -23,11 +23,11 @@ class FlagValuesRepository {
    * Get the set of bucket that area already indexed between heights by blocksCount
    *
    * @asyncSafe */
-  public async $getIndexedStartHeights(blocksCount: string, fromHeight: number, toHeight: number): Promise<number[]> {
+  public async $getIndexedStartHeights(blocksCount: number, fromHeight: number, toHeight: number): Promise<number[]> {
     try {
       const [rows]: any[] = await DB.query(
         `SELECT DISTINCT start_height FROM flag_values WHERE blocks_count = ? AND start_height >= ? AND start_height <= ?`,
-        [blocksCount, fromHeight, toHeight]
+        [blocksCount.toString(), fromHeight, toHeight]
       );
       return rows.map(row => row.start_height);
     } catch (e) {
@@ -36,11 +36,11 @@ class FlagValuesRepository {
     return [];
   }
 
-  public async $saveBatchFlagValues(blocksCount: string, startHeight: number, txCount: Record<string, number>): Promise<void> {
+  public async $saveBatchFlagValues(blocksCount: number, startHeight: number, txCount: Record<string, number>): Promise<void> {
     const params: any[] = [];
     const flags = Object.keys(txCount);
     for (const flag of flags) {
-      params.push([blocksCount, startHeight, BigInt(flag), txCount[flag]]);
+      params.push([blocksCount.toString(), startHeight, BigInt(flag), txCount[flag]]);
     }
     try {
       await DB.query(`
@@ -54,7 +54,7 @@ class FlagValuesRepository {
     }
   }
 
-  public async $queryTxCountBasedOnMask(mask: bigint, blocksCount: string, op: 'and' | 'or' | 'nor' | undefined, startHeight: number): Promise<{blocksCount: string, startHeight: number, txCount: number}[]> {
+  public async $queryTxCountBasedOnMask(mask: bigint, blocksCount: number, op: 'and' | 'or' | 'nor' | undefined, startHeight: number): Promise<{blocksCount: string, startHeight: number, txCount: number}[]> {
     let sumField = '';
     let params: any[]= [];
     switch (op) {
@@ -76,7 +76,7 @@ class FlagValuesRepository {
       }
       default: throw new Error(`Invalid op '${op}', expected 'and' | 'or' | 'nor' | undefined`);
     }
-    params.push(blocksCount);
+    params.push(blocksCount.toString());
     params.push(startHeight);
     try {
       const [rows]: any[] = await DB.query(`
@@ -93,9 +93,9 @@ class FlagValuesRepository {
     return [];
   }
 
-  public async $deleteFlagValuesBelowHeight(height: number, blocksCount: string):  Promise<void> {
+  public async $deleteFlagValuesBelowHeight(height: number, blocksCount: number):  Promise<void> {
     try {
-      await DB.query(`DELETE FROM flag_values WHERE start_height < ? AND blocks_count = ?`, [height, blocksCount]);
+      await DB.query(`DELETE FROM flag_values WHERE start_height < ? AND blocks_count = ?`, [height, blocksCount.toString()]);
     } catch(e) {
       logger.err(`Cannot delete flag values below block #${height}. Reason: ` + (e instanceof Error ? e.message : e));
     }

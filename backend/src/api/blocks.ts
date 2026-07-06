@@ -739,10 +739,10 @@ class Blocks {
         }
         const firstBucket = Math.max(0, Math.floor(rangeStart / preset.blocksCount) * preset.blocksCount);
 
-        const tipAndTailOfFlagValues = await FlagValueRepository.$getTipAndTailIndexedByBlocksCount(preset.blocksCount.toString());
+        const tipAndTailOfFlagValues = await FlagValueRepository.$getTipAndTailIndexedByBlocksCount(preset.blocksCount);
         if (tipAndTailOfFlagValues && firstBucket > tipAndTailOfFlagValues.tail) { // Drop buckets that fell out of block span
           logger.debug(`Deleting all the flag values ${preset.name} below height #${firstBucket}`, logger.tags.goggles);
-          await FlagValueRepository.$deleteFlagValuesBelowHeight(firstBucket, preset.blocksCount.toString());
+          await FlagValueRepository.$deleteFlagValuesBelowHeight(firstBucket, preset.blocksCount);
         }
 
         const lastBucket = Math.floor((tipOfSummaries + 1) / preset.blocksCount) * preset.blocksCount - preset.blocksCount;
@@ -750,7 +750,7 @@ class Blocks {
           continue; // no complete bucket in range
         }
 
-        const indexedBuckets = await FlagValueRepository.$getIndexedStartHeights(preset.blocksCount.toString(), firstBucket, lastBucket);
+        const indexedBuckets = await FlagValueRepository.$getIndexedStartHeights(preset.blocksCount, firstBucket, lastBucket);
         const isBucketIndexed = {};
         // We map the buckets that are already indexed to skip them
         for (const startHeight of indexedBuckets) {
@@ -785,7 +785,7 @@ class Blocks {
             blocksComputedThisRun++;
           }
 
-          await FlagValueRepository.$saveBatchFlagValues(preset.blocksCount.toString(), bucketStart, txCountPerFlag);
+          await FlagValueRepository.$saveBatchFlagValues(preset.blocksCount, bucketStart, txCountPerFlag);
           newlyIndexedBuckets++;
           const elapsedSeconds = (Date.now() / 1000) - timer;
           if (elapsedSeconds > 5) {
@@ -887,12 +887,12 @@ class Blocks {
       const distinctFlags = Object.keys(txCountPerFlag);
       const weekStartHeight = heightIndexingSummariesTo - 1008;
       if (distinctFlags.length > 0 && height > weekStartHeight) { // Hardcoded for 1 week time interval
-        const { tip, tail } = (await FlagValueRepository.$getTipAndTailIndexedByBlocksCount('1')) ?? {tip: 0, tail: 0};
+        const { tip, tail } = (await FlagValueRepository.$getTipAndTailIndexedByBlocksCount(1)) ?? {tip: 0, tail: 0};
         const indexedBlockSpan = tip - tail;
-        await FlagValueRepository.$saveBatchFlagValues('1', height, txCountPerFlag);
+        await FlagValueRepository.$saveBatchFlagValues(1, height, txCountPerFlag);
 
         if (indexedBlockSpan > 1008) {
-          await FlagValueRepository.$deleteFlagValuesBelowHeight(tip - 1008, '1');
+          await FlagValueRepository.$deleteFlagValuesBelowHeight(tip - 1008, 1);
         }
       }
 
@@ -946,12 +946,12 @@ class Blocks {
    * @asyncUnsafe
    */
   private async $flushFlagValueBucket(bucket: FlagValueBucket): Promise<void> {
-    const { tip, tail } = (await FlagValueRepository.$getTipAndTailIndexedByBlocksCount(bucket.blocksCount.toString())) ?? {tip: 0, tail: 0};
+    const { tip, tail } = (await FlagValueRepository.$getTipAndTailIndexedByBlocksCount(bucket.blocksCount)) ?? {tip: 0, tail: 0};
     const indexedBlockSpan = tip - tail;
-    await FlagValueRepository.$saveBatchFlagValues(bucket.blocksCount.toString(), bucket.startHeight, bucket.txCountPerFlag);
+    await FlagValueRepository.$saveBatchFlagValues(bucket.blocksCount, bucket.startHeight, bucket.txCountPerFlag);
 
     if (bucket.blockSpan > -1 && indexedBlockSpan > bucket.blockSpan) { // Delete old flag values that are no longer in blockSpan
-      await FlagValueRepository.$deleteFlagValuesBelowHeight(tip - bucket.blockSpan, bucket.blocksCount.toString());
+      await FlagValueRepository.$deleteFlagValuesBelowHeight(tip - bucket.blockSpan, bucket.blocksCount);
     }
   }
 
