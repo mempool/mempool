@@ -235,7 +235,7 @@ class BlocksSummariesRepository {
 
   public async $getSummariesBetweenHeights(startHeight: number, lastHeight: number): Promise<{height: number, transactions: string}[]> {
     try {
-      const [rows]: any[] = await DB.query(`SELECT height, transactions FROM blocks_summaries WHERE height > ? AND height <= ? ORDER BY height ASC`, [startHeight, lastHeight]);
+      const [rows]: any[] = await DB.query(`SELECT bs.height, bs.transactions FROM blocks_summaries bs JOIN blocks b ON bs.id = b.hash WHERE bs.height > ? AND bs.height <= ? AND b.stale = 0 ORDER BY height ASC`, [startHeight, lastHeight]);
 
       if (rows !== null && rows.length > 0) {
         return rows;
