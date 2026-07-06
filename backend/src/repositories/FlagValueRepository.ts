@@ -55,22 +55,23 @@ class FlagValuesRepository {
   }
 
   public async $queryTxCountBasedOnMask(mask: bigint, blocksCount: string, op: 'and' | 'or' | 'nor' | undefined, startHeight: number): Promise<{blocksCount: string, startHeight: number, txCount: number}[]> {
-    let booleanClause = '';
+    let sumField = '';
     let params: any[]= [];
     switch (op) {
       case 'and': {
-        booleanClause = ' (flag_value & ?) = ? AND ';
+        sumField = 'CASE WHEN (flag_value & ?) = ? THEN tx_count ELSE 0 END';
         params = [mask, mask];
       } break;
       case 'or': {
-        booleanClause = ' (flag_value & ?) > 0 AND ';
+        sumField = 'CASE WHEN (flag_value & ?) > 0 THEN tx_count ELSE 0 END';
         params = [mask];
       } break;
       case 'nor': {
-        booleanClause = ' (flag_value & ?) = 0 AND ';
+        sumField = 'CASE WHEN (flag_value & ?) = 0 THEN tx_count ELSE 0 END';
         params = [mask];
       } break;
       case undefined: { // op not passed, no boolean operations
+        sumField = 'tx_count';
         break;
       }
       default: throw new Error(`Invalid op '${op}', expected 'and' | 'or' | 'nor' | undefined`);
@@ -79,8 +80,8 @@ class FlagValuesRepository {
     params.push(startHeight);
     try {
       const [rows]: any[] = await DB.query(`
-        SELECT blocks_count as blocksCount, start_height as startHeight, SUM(tx_count) AS txCount FROM flag_values
-        WHERE ${booleanClause} blocks_count = ? AND start_height >= ?
+        SELECT blocks_count as blocksCount, start_height as startHeight, SUM(${sumField}) AS txCount FROM flag_values
+        WHERE blocks_count = ? AND start_height >= ?
         GROUP BY start_height ORDER BY start_height DESC
         `, params);
       if (rows !== null && rows.length > 0) {
