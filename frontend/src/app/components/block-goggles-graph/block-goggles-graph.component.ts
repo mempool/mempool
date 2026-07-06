@@ -15,7 +15,7 @@ import { StateService } from '@app/services/state.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 interface GogglesRollup {
-  blocksCount: string;
+  bucketSize: string;
   startHeight: number;
   txCount: number;
 }
@@ -130,11 +130,11 @@ export class BlockGogglesGraphComponent implements OnInit {
             const totalsByHeight: Record<number, number> | null = totalsBody
               ? totalsBody.reduce((acc, row) => { acc[row.startHeight] = row.txCount; return acc; }, {})
               : null;
-            // dims: [startHeight, txCount, blocksCount, bucketTotal]
+            // dims: [startHeight, txCount, bucketSize, bucketTotal]
             const seriesData = body.map((row) => [
               row.startHeight,
               row.txCount,
-              parseInt(row.blocksCount, 10) || 1,
+              parseInt(row.bucketSize, 10) || 1,
               totalsByHeight ? (totalsByHeight[row.startHeight] ?? row.txCount) : row.txCount,
             ]);
             this.prepareChartOptions(seriesData);
@@ -261,23 +261,23 @@ export class BlockGogglesGraphComponent implements OnInit {
           const item = params[0];
           const startHeight = item.data[0];
           const count = item.data[1];
-          const blocksCount = item.data[2] || 1;
+          const bucketSize = item.data[2] || 1;
           const bucketTotal = item.data[3];
           const filtered = !!this.goggle$.value.mask;
           let tooltip = '';
 
-          if (blocksCount > 1) {
-            const endHeight = startHeight + blocksCount - 1;
+          if (bucketSize > 1) {
+            const endHeight = startHeight + bucketSize - 1;
             tooltip += `<b style="color: white; margin-left: 2px">` + $localize`Blocks ${startHeight}–${endHeight}` + `</b><br>`;
           } else {
             tooltip += `<b style="color: white; margin-left: 2px">` + $localize`Block: ${startHeight}` + `</b><br>`;
           }
 
-          if (blocksCount > 1) {
-            tooltip += `${item.marker} ` + $localize`Avg per block` + `: ${formatNumber(count / blocksCount, this.locale, '1.0-2')}<br>`;
+          if (bucketSize > 1) {
+            tooltip += `${item.marker} ` + $localize`Avg per block` + `: ${formatNumber(count / bucketSize, this.locale, '1.0-2')}<br>`;
           }
 
-          const countLabel = filtered ? $localize`Matched transactions` : (blocksCount > 1 ? $localize`Total transactions` : $localize`Transactions`);
+          const countLabel = filtered ? $localize`Matched transactions` : (bucketSize > 1 ? $localize`Total transactions` : $localize`Transactions`);
           tooltip += `${item.marker} ` + countLabel + `: ${formatNumber(count, this.locale, '1.0-0')}<br>`;
 
           if (filtered && bucketTotal > 0) {
