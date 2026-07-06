@@ -61,7 +61,7 @@ export class GettingStartedComponent implements OnInit, OnDestroy {
     if (!coreDone || !electrsDone) {
       return 'waiting';
     }
-    return mempool.inSync ? 'complete' : 'active';
+    return mempool.inSync && mempool.indexed ? 'complete' : 'active';
   }
 
   get bitcoinDescription(): string {
@@ -83,14 +83,17 @@ export class GettingStartedComponent implements OnInit, OnDestroy {
   }
 
   get mempoolDescription(): string {
-    switch (this.mempoolStatus) {
-      case 'active':
-        return $localize`:@@getting-started.mempool.desc.active:Indexing backend data and preparing the dashboard.`;
-      case 'complete':
-        return $localize`:@@getting-started.mempool.desc.complete:Backend indexing complete.`;
-      default:
-        return $localize`:@@getting-started.mempool.desc.waiting:Waiting for the transaction indexer before backend indexing can begin.`;
+    if (this.mempoolStatus === 'active') {
+      // Two phases: mempool transaction sync, then heavy block indexing.
+      if (this.syncProgress?.mempool && !this.syncProgress.mempool.inSync) {
+        return $localize`:@@getting-started.mempool.desc.mempool-sync:Syncing the mempool and preparing the dashboard.`;
+      }
+      return $localize`:@@getting-started.mempool.desc.block-indexing:Indexing block summaries, CPFP and audits.`;
     }
+    if (this.mempoolStatus === 'complete') {
+      return $localize`:@@getting-started.mempool.desc.complete:Backend and block indexing complete.`;
+    }
+    return $localize`:@@getting-started.mempool.desc.waiting:Waiting for the transaction indexer before backend indexing can begin.`;
   }
 
   ngOnInit(): void {

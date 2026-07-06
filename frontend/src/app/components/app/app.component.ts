@@ -84,7 +84,8 @@ export class AppComponent implements OnInit {
         const nodeNotReady =
           progress.ibd ||
           (progress.electrs != null && !progress.electrs.indexed) ||
-          (progress.mempool != null && !progress.mempool.inSync);
+          (progress.mempool != null &&
+            (!progress.mempool.inSync || !progress.mempool.indexed));
 
         // Only intercept the dashboard (home) — other routes may work or be
         // intentionally reachable while the node is still syncing.

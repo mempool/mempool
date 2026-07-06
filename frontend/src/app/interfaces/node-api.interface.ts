@@ -545,6 +545,7 @@ export interface SyncProgress {
   mempool?: {
     inSync: boolean;
     indexing: boolean;
+    indexed: boolean;
     progress: number | null;
   };
 }

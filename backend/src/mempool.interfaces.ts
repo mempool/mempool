@@ -542,6 +542,7 @@ export interface IBDProgress {
   mempool?: {
     inSync: boolean;
     indexing: boolean;
+    indexed: boolean;
     progress: number | null;
   };
 }

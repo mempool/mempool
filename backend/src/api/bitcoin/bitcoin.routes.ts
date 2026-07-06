@@ -140,6 +140,12 @@ class BitcoinRoutes {
         }
       }
 
+      const indicators = loadingIndicators.getLoadingIndicators();
+      const mempoolProgress = indicators['mempool'] ?? null;
+      const blockIndexingProgress = indicators['block-indexing'] ?? null;
+      const inSync = mempool.isInSync();
+      const indexed = !Common.indexingEnabled() || indexer.isInitialIndexingComplete();
+
       const result: IBDProgress = {
         ibd: blockchainInfo.initialblockdownload,
         bitcoind: {
@@ -149,9 +155,10 @@ class BitcoinRoutes {
           estimatedTimeRemaining,
         },
         mempool: {
-          inSync: mempool.isInSync(),
+          inSync,
           indexing: indexer.indexerIsRunning(),
-          progress: loadingIndicators.getLoadingIndicators()['mempool'] ?? null,
+          indexed,
+          progress: inSync ? blockIndexingProgress : mempoolProgress,
         },
       };
 
