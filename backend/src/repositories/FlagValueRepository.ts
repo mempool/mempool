@@ -36,17 +36,17 @@ class FlagValuesRepository {
     return [];
   }
 
-  public async $saveBatchFlagValues(bucketSize: number, startHeight: number, txCount: Record<string, number>): Promise<void> {
+  public async $saveBatchFlagValues(bucketSize: number, startHeight: number, dataPerFlag: Record<string, Record<string, number>>): Promise<void> {
     const params: any[] = [];
-    const flags = Object.keys(txCount);
-    for (const flag of flags) {
-      params.push([bucketSize.toString(), startHeight, BigInt(flag), txCount[flag]]);
+    const distinctFlags = Object.keys(dataPerFlag);
+    for (const flag of distinctFlags) {
+      params.push([bucketSize.toString(), startHeight, BigInt(flag), dataPerFlag[flag].txCount, dataPerFlag[flag].vSizeTotal]);
     }
     try {
       await DB.query(`
-        INSERT INTO flag_values (bucket_size, start_height, flag_value, tx_count) VALUES ?
+        INSERT INTO flag_values (bucket_size, start_height, flag_value, tx_count, vsize_total) VALUES ?
         ON DUPLICATE KEY UPDATE
-        tx_count = VALUES(tx_count)
+        tx_count = VALUES(tx_count), vsize_total = VALUES(vsize_total)
         `, [params]);
     } catch (e) {
       logger.debug(`Cannot save flag batched values. Reason: ${e instanceof Error ? e.message : e}`);
@@ -54,24 +54,24 @@ class FlagValuesRepository {
     }
   }
 
-  public async $queryTxCountBasedOnMask(mask: bigint, bucketSize: number, op: 'and' | 'or' | 'nor' | undefined, startHeight: number): Promise<{bucketSize: string, startHeight: number, txCount: number}[]> {
-    let sumField = '';
+  public async $queryTxCountBasedOnMask(mask: bigint, bucketSize: number, op: 'and' | 'or' | 'nor' | undefined, startHeight: number): Promise<{bucketSize: string, startHeight: number, txCount: number, vSizeTotal: number}[]> {
+    let statFields = '';
     let params: any[]= [];
     switch (op) {
       case 'and': {
-        sumField = 'CASE WHEN (flag_value & ?) = ? THEN tx_count ELSE 0 END';
-        params = [mask, mask];
+        statFields = 'SUM(CASE WHEN (flag_value & ?) = ? THEN tx_count ELSE 0 END) as txCount, SUM(CASE WHEN (flag_value & ?) = ? THEN vsize_total ELSE 0 END) as vSizeTotal';
+        params = [mask, mask, mask, mask];
       } break;
       case 'or': {
-        sumField = 'CASE WHEN (flag_value & ?) > 0 THEN tx_count ELSE 0 END';
-        params = [mask];
+        statFields = 'SUM(CASE WHEN (flag_value & ?) > 0 THEN tx_count ELSE 0 END) as txCount, SUM(CASE WHEN (flag_value & ?) > 0 THEN vsize_total ELSE 0 END) as vSizeTotal';
+        params = [mask, mask];
       } break;
       case 'nor': {
-        sumField = 'CASE WHEN (flag_value & ?) = 0 THEN tx_count ELSE 0 END';
-        params = [mask];
+        statFields = 'SUM(CASE WHEN (flag_value & ?) = 0 THEN tx_count ELSE 0 END) AS txCount, SUM(CASE WHEN (flag_value & ?) = 0 THEN vsize_total ELSE 0 END) as vSizeTotal';
+        params = [mask, mask];
       } break;
       case undefined: { // op not passed, no boolean operations
-        sumField = 'tx_count';
+        statFields = 'SUM(tx_count) as txCount, SUM(vsize_total) as vSizeTotal';
         break;
       }
       default: throw new Error(`Invalid op '${op}', expected 'and' | 'or' | 'nor' | undefined`);
@@ -80,7 +80,7 @@ class FlagValuesRepository {
     params.push(startHeight);
     try {
       const [rows]: any[] = await DB.query(`
-        SELECT bucket_size as bucketSize, start_height as startHeight, SUM(${sumField}) AS txCount FROM flag_values
+        SELECT bucket_size as bucketSize, start_height as startHeight, ${statFields} FROM flag_values
         WHERE bucket_size = ? AND start_height >= ?
         GROUP BY start_height ORDER BY start_height DESC
         `, params);
