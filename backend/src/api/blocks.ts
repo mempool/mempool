@@ -42,19 +42,9 @@ import database from '../database';
 import { getBlockFirstSeenFromLogs, getOldestLogTimestampFromLogs, scanLogsForBlocksFirstSeen } from '../utils/file-read';
 import FlagValueRepository from '../repositories/FlagValueRepository';
 
-interface FlagValueBucket {
-  bucketSize: number;
-  retentionSpan: number; // how many recent blocks this tier retains (-1 = keep all history)
-  startHeight: number; // fixed boundary of the bucket currently being accumulated (0 = none)
-  nBlocks: number;
-  txCountPerFlag: Record<string, number>;
-}
-
 class Blocks {
   private blocks: BlockExtended[] = [];
   private blockSummaries: BlockSummary[] = [];
-  private flagValuesCache: FlagValueBucket[] = Blocks.newFlagValueBuckets();
-  private heightIndexingSummariesTo = 0;
   private currentBlockHeight = 0;
   private currentBits = 0;
   private lastDifficultyAdjustmentTime = 0;
@@ -590,11 +580,8 @@ class Blocks {
     }
 
     if (Common.blocksSummariesIndexingEnabled() === true) {
-      const classifiedTransactions = await this.$indexBlockSummary(blockExtended.id, blockExtended.height, undefined, blockSummary);
+      await this.$indexBlockSummary(blockExtended.id, blockExtended.height, undefined, blockSummary);
       this.updateTimerProgress(timer, `saved block summary for ${this.currentBlockHeight}`);
-      // live stream: roll up flag values into the shared cache while the classified txs are in memory
-      await this.$indexFlagValues(blockExtended.height, classifiedTransactions);
-      this.updateTimerProgress(timer, `indexed flag values for ${this.currentBlockHeight}`);
     }
 
     if (config.MEMPOOL.CPFP_INDEXING) {
@@ -647,7 +634,6 @@ class Blocks {
     try {
       const blockchainInfo = await bitcoinClient.getBlockchainInfo();
       const currentBlockHeight = blockchainInfo.blocks;
-      this.heightIndexingSummariesTo = currentBlockHeight;
       let indexingBlockAmount = Math.min(config.MEMPOOL.INDEXING_BLOCKS_AMOUNT, currentBlockHeight);
       if (indexingBlockAmount <= -1) {
         indexingBlockAmount = currentBlockHeight + 1;
@@ -670,8 +656,6 @@ class Blocks {
       let timer = Date.now() / 1000;
       const startedAt = Date.now() / 1000;
 
-      const flagValuesBuckets = Blocks.newFlagValueBuckets();
-
       for (const block of indexedBlocks) {
         if (indexedBlockSummariesHashes[block.hash] === true) {
           continue;
@@ -688,8 +672,7 @@ class Blocks {
           indexedThisRun = 0;
         }
 
-        const classifiedTransactions = await this.$indexBlockSummary(block.hash, block.height, block.stale);
-        await this.$indexFlagValues(block.height, classifiedTransactions, flagValuesBuckets, block.stale);
+        await this.$indexBlockSummary(block.hash, block.height, block.stale);
 
         // Logging
         indexedThisRun++;
@@ -863,95 +846,6 @@ class Blocks {
         return summary.transactions;
       }
       return [];
-    }
-  }
-
-  /**
-   * Rolls up flag values for a block into `buckets`, cached or passed through parameters
-   */
-  public async $indexFlagValues(height: number, classifiedTransactions: TransactionClassified[], buckets: FlagValueBucket[] = this.flagValuesCache, isStale: boolean = false): Promise<void> {
-    if (Common.blocksSummariesIndexingEnabled() === false || Common.isLiquid() ||  isStale) {
-      return;
-    }
-
-    try {
-      const heightIndexingSummariesTo = this.heightIndexingSummariesTo > 0 ? this.heightIndexingSummariesTo : (await bitcoinClient.getBlockchainInfo()).blocks;
-
-      const flags = classifiedTransactions.map((tx) => tx.flags);
-      const txCountPerFlag = {};
-
-      for (const flag of flags) {
-        txCountPerFlag[flag] = (txCountPerFlag[flag] ?? 0) + 1;
-      }
-
-      const distinctFlags = Object.keys(txCountPerFlag);
-      const weekStartHeight = heightIndexingSummariesTo - 1008;
-      if (distinctFlags.length > 0 && height > weekStartHeight) { // Hardcoded for 1 week time interval
-        const { tip, tail } = (await FlagValueRepository.$getTipAndTailIndexedByBucketSize(1)) ?? {tip: 0, tail: 0};
-        const indexedBlockSpan = tip - tail;
-        await FlagValueRepository.$saveBatchFlagValues(1, height, txCountPerFlag);
-
-        if (indexedBlockSpan > 1008) {
-          await FlagValueRepository.$deleteFlagValuesBelowHeight(tip - 1008, 1);
-        }
-      }
-
-      for (const bucket of buckets) {
-        const startBucketHeight = (bucket.retentionSpan > -1 ? heightIndexingSummariesTo - bucket.retentionSpan : -1); // We get the starting block height at which the indexing should occur
-        if (height > startBucketHeight) {
-
-          const bucketStart = Math.floor(height / bucket.bucketSize) * bucket.bucketSize; // Fixed startHeight the bucket will be stored at
-
-          // Moved past the bucket we were accumulating before it filled (gap / mid-bucket start): discard the partial.
-          // Incomplete buckets are left unwritten so $generateFlagValuesDatabase fills them from summaries once
-          // complete — we never persist (and then skip) an undercounted bucket.
-          if (bucket.nBlocks > 0 && bucket.startHeight !== bucketStart) {
-            bucket.nBlocks = 0;
-            bucket.txCountPerFlag = {};
-          }
-
-          bucket.startHeight = bucketStart;
-          bucket.nBlocks++;
-          for (const flag of distinctFlags) {
-            bucket.txCountPerFlag[flag] = (bucket.txCountPerFlag[flag] ?? 0) + txCountPerFlag[flag];
-          }
-
-          if (bucket.nBlocks >= bucket.bucketSize) { // bucket fully accumulated
-            await this.$flushFlagValueBucket(bucket);
-            bucket.startHeight = 0;
-            bucket.nBlocks = 0;
-            bucket.txCountPerFlag = {};
-          }
-        }
-      }
-    } catch (e) {
-      logger.err(`Flag values indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.goggles);
-    }
-  }
-
-  /**
-   * Fresh set of rolled-up flag value tiers (the per-block tier '1' is handled separately).
-   */
-  private static newFlagValueBuckets(): FlagValueBucket[] {
-    return [
-      {bucketSize: 36, retentionSpan: 25920, startHeight: 0, nBlocks: 0, txCountPerFlag: {}},
-      {bucketSize: 144, retentionSpan: 155520, startHeight: 0, nBlocks: 0, txCountPerFlag: {}},
-      {bucketSize: 720, retentionSpan: -1, startHeight: 0, nBlocks: 0, txCountPerFlag: {}},
-    ];
-  }
-
-  /**
-   * Persist a rolled-up flag value bucket keyed at its fixed start height, pruning anything older than the tier's span
-   *
-   * @asyncUnsafe
-   */
-  private async $flushFlagValueBucket(bucket: FlagValueBucket): Promise<void> {
-    const { tip, tail } = (await FlagValueRepository.$getTipAndTailIndexedByBucketSize(bucket.bucketSize)) ?? {tip: 0, tail: 0};
-    const indexedBlockSpan = tip - tail;
-    await FlagValueRepository.$saveBatchFlagValues(bucket.bucketSize, bucket.startHeight, bucket.txCountPerFlag);
-
-    if (bucket.retentionSpan > -1 && indexedBlockSpan > bucket.retentionSpan) { // Delete old flag values that are no longer in retentionSpan
-      await FlagValueRepository.$deleteFlagValuesBelowHeight(tip - bucket.retentionSpan, bucket.bucketSize);
     }
   }
 
@@ -1663,7 +1557,6 @@ class Blocks {
       await cpfpRepository.$deleteClustersFrom(forkTail.height);
       await AccelerationRepository.$deleteAccelerationsFrom(forkTail.height);
       await FlagValueRepository.$deleteFlagValuesFromHeight(forkTail.height);
-      this.flagValuesCache = Blocks.newFlagValueBuckets();
       chainTips.clearOrphanCacheAboveHeight(forkTail.height);
       this.updateTimerProgress(timer, `deleted stale block data`);
 
