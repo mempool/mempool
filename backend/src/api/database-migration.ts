@@ -1848,11 +1848,11 @@ class DatabaseMigration {
 
   private getCreateFlagsValuesTableQuery(): string {
     return `CREATE TABLE IF NOT EXISTS flag_values (
-      blocks_count enum('1', '36', '72', '144', '432', '720', '1008') NOT NULL,
+      bucket_size enum('1', '36', '72', '144', '432', '720', '1008') NOT NULL,
       start_height int unsigned NOT NULL,
       flag_value bigint unsigned NOT NULL,
       tx_count int unsigned NOT NULL,
-      PRIMARY KEY (blocks_count, start_height, flag_value)
+      PRIMARY KEY (bucket_size, start_height, flag_value)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8`;
   }
 

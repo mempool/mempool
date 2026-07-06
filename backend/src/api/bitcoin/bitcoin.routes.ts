@@ -1144,16 +1144,16 @@ class BitcoinRoutes {
         return;
       }
       const presets = {
-        '24h': {blocksCount: '1', blockSpan: 144},
-        '3d': {blocksCount: '1', blockSpan: 432},
-        '1w': {blocksCount: '1', blockSpan: 1008},
-        '1m': {blocksCount: '36', blockSpan: 4032},
-        '3m': {blocksCount: '36', blockSpan: 12096},
-        '6m': {blocksCount: '36', blockSpan: 24192},
-        '1y': {blocksCount: '144', blockSpan: 48384},
-        '2y': {blocksCount: '144', blockSpan: 96768},
-        '3y': {blocksCount: '144', blockSpan: 145152},
-        'all': {blocksCount: '720'},
+        '24h': {bucketSize: '1', retentionSpan: 144},
+        '3d': {bucketSize: '1', retentionSpan: 432},
+        '1w': {bucketSize: '1', retentionSpan: 1008},
+        '1m': {bucketSize: '36', retentionSpan: 4032},
+        '3m': {bucketSize: '36', retentionSpan: 12096},
+        '6m': {bucketSize: '36', retentionSpan: 24192},
+        '1y': {bucketSize: '144', retentionSpan: 48384},
+        '2y': {bucketSize: '144', retentionSpan: 96768},
+        '3y': {bucketSize: '144', retentionSpan: 145152},
+        'all': {bucketSize: '720'},
       };
       const intervals = Object.keys(presets);
       const operations = ['and', 'or', 'nor', undefined];
@@ -1173,15 +1173,15 @@ class BitcoinRoutes {
       const mask = BigInt(req.params.mask ?? 0n);
       const interval = req.params.interval;
 
-      const { tip }  = await FlagValueRepository.$getTipAndTailIndexedByBlocksCount(presets[interval].blocksCount) || { tip: undefined };
+      const { tip }  = await FlagValueRepository.$getTipAndTailIndexedByBucketSize(presets[interval].bucketSize) || { tip: undefined };
 
       if (!tip) {
         handleError(req, res, 400, `Failed to get latest indexed flag values for ${interval}`);
         return;
       }
 
-      const startHeight = presets[interval].blockSpan !== undefined ? (tip - presets[interval].blockSpan) : -1;
-      const txsCount = await FlagValueRepository.$queryTxCountBasedOnMask(mask, presets[interval].blocksCount, op, startHeight);
+      const startHeight = presets[interval].retentionSpan !== undefined ? (tip - presets[interval].retentionSpan) : -1;
+      const txsCount = await FlagValueRepository.$queryTxCountBasedOnMask(mask, presets[interval].bucketSize, op, startHeight);
       res.header('X-total-count', tip.toString());
       res.send(txsCount);
     } catch (e: any) {
