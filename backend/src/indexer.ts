@@ -218,7 +218,6 @@ class Indexer {
       await mining.$generateNetworkHashrateHistory();
       await mining.$generatePoolHashrateHistory();
       await blocks.$generateBlocksSummariesDatabase();
-      await blocks.$generateFlagValuesDatabase();
       await blocks.$generateCPFPDatabase();
       await blocks.$generateAuditStats();
       await blocks.$indexBlocksFirstSeen();
@@ -227,6 +226,7 @@ class Indexer {
       await AccelerationRepository.$indexPastAccelerations();
       await BlocksAuditsRepository.$migrateAuditsV0toV1();
       await BlocksRepository.$migrateBlocks();
+      await blocks.$generateFlagValuesDatabase();
       // do not wait for classify blocks to finish
       void blocks.$classifyBlocks();
       runSuccessful = true;
