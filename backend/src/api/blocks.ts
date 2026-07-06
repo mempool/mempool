@@ -713,7 +713,7 @@ class Blocks {
    *
    */
   public async $generateFlagValuesDatabase(): Promise<void> {
-    if (Common.blocksSummariesIndexingEnabled() === false) {
+    if (Common.blocksSummariesIndexingEnabled() === false || Common.isLiquid()) {
       return;
     }
 
@@ -869,8 +869,8 @@ class Blocks {
   /**
    * Rolls up flag values for a block into `buckets`, cached or passed through parameters
    */
-  public async $indexFlagValues(height: number, classifiedTransactions: TransactionClassified[], buckets: FlagValueBucket[] = this.flagValuesCache, stale: boolean = false): Promise<void> {
-    if (Common.blocksSummariesIndexingEnabled() === false || stale) {
+  public async $indexFlagValues(height: number, classifiedTransactions: TransactionClassified[], buckets: FlagValueBucket[] = this.flagValuesCache, isStale: boolean = false): Promise<void> {
+    if (Common.blocksSummariesIndexingEnabled() === false || Common.isLiquid() ||  isStale) {
       return;
     }
 

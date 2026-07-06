@@ -1256,7 +1256,7 @@ class DatabaseMigration {
       await this.updateToSchemaVersion(111);
     }
 
-    if (databaseSchemaVersion < 112 && isBitcoin === true) {
+    if (databaseSchemaVersion < 112) {
       await this.$executeQuery(this.getCreateFlagsValuesTableQuery(), await this.$checkIfTableExists('flag_values'));
       await this.updateToSchemaVersion(112);
     }
