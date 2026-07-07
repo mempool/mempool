@@ -106,7 +106,13 @@
       ></ng-container>
     </div>
 
-    <div class="scan-loader" *ngIf="electrsStatus === 'active'">
+    <div
+      class="scan-loader has-tooltip"
+      *ngIf="electrsStatus === 'active'"
+      i18n-ngbTooltip="getting-started.electrs.hint.tooltip"
+      ngbTooltip="Initial indexing can take several hours on mainnet."
+      placement="top"
+    >
       <div class="scan-segment"></div>
     </div>
   </section>
@@ -144,6 +150,25 @@
             class="sync-bar-fill"
             [style.width]="syncProgress.mempool.progress + '%'"
           ></div>
+        </div>
+
+        <div
+          class="sync-stats"
+          *ngIf="syncProgress.mempool.estimatedTimeRemaining != null"
+        >
+          <div
+            class="item has-tooltip"
+            i18n-ngbTooltip="getting-started.eta.tooltip"
+            ngbTooltip="The actual time can vary."
+            placement="top"
+          >
+            <div class="card-text">
+              {{ formatETA(syncProgress.mempool.estimatedTimeRemaining) }}
+            </div>
+            <div class="symbol" i18n="getting-started.eta.label">
+              Time remaining
+            </div>
+          </div>
         </div>
       </ng-container>
       <ng-template #mempoolScan>

@@ -544,6 +544,7 @@ export interface IBDProgress {
     indexing: boolean;
     indexed: boolean;
     progress: number | null;
+    estimatedTimeRemaining: number | null;
   };
 }
 

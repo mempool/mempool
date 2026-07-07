@@ -31,8 +31,10 @@ const ADDRESS_REGEX = /^[a-z0-9]{2,120}$/i;
 const SCRIPT_HASH_REGEX = /^([a-f0-9]{2})+$/i;
 const MAX_TRANSACTION_TIMES = 100;
 const IBD_ETA_BASELINE_MS = 30 * 60 * 1000;
+const BLOCK_INDEX_ETA_BASELINE_MS = 2 * 60 * 1000;
 
 let lastIBDSample: { time: number; progress: number } | null = null;
+let lastBlockIndexSample: { time: number; progress: number } | null = null;
 
 class BitcoinRoutes {
   public initRoutes(app: Application) {
@@ -146,6 +148,24 @@ class BitcoinRoutes {
       const inSync = mempool.isInSync();
       const indexed = !Common.indexingEnabled() || indexer.isInitialIndexingComplete();
 
+      // Estimate block-indexing time remaining by sampling its progress over a
+      // stable window, the same way the Core IBD ETA is computed above.
+      let blockIndexingETA: number | null = null;
+      if (inSync && blockIndexingProgress !== null && blockIndexingProgress < 100) {
+        const now = Date.now();
+        if (lastBlockIndexSample && blockIndexingProgress > lastBlockIndexSample.progress) {
+          const progressPerSecond = (blockIndexingProgress - lastBlockIndexSample.progress) / ((now - lastBlockIndexSample.time) / 1000);
+          if (progressPerSecond > 0) {
+            blockIndexingETA = Math.round((100 - blockIndexingProgress) / progressPerSecond);
+          }
+        }
+        if (!lastBlockIndexSample || (now - lastBlockIndexSample.time) >= BLOCK_INDEX_ETA_BASELINE_MS) {
+          lastBlockIndexSample = { time: now, progress: blockIndexingProgress };
+        }
+      } else {
+        lastBlockIndexSample = null;
+      }
+
       const result: IBDProgress = {
         ibd: blockchainInfo.initialblockdownload,
         bitcoind: {
@@ -159,19 +179,22 @@ class BitcoinRoutes {
           indexing: indexer.indexerIsRunning(),
           indexed,
           progress: inSync ? blockIndexingProgress : mempoolProgress,
+          estimatedTimeRemaining: blockIndexingETA,
         },
       };
 
       if (config.MEMPOOL.BACKEND === 'esplora' || config.MEMPOOL.BACKEND === 'electrum') {
-        let indexed = false;
+        let electrsIndexed = false;
         try {
           const electrsTip = await bitcoinApi.$getElectrsHeightTip();
-          indexed = !blockchainInfo.initialblockdownload && electrsTip >= blockchainInfo.blocks;
+          electrsIndexed = !blockchainInfo.initialblockdownload && electrsTip >= blockchainInfo.blocks;
         } catch (e) {
           // electrs/electrum unreachable or still starting up — treat as not yet indexed
         }
+        // electrs exposes neither an indexing percentage nor a reliable start
+        // time, so we can only report whether it is done — no bar, ETA or elapsed.
         result.electrs = {
-          indexed,
+          indexed: electrsIndexed,
           progress: null,
         };
       }

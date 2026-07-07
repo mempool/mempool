@@ -143,6 +143,10 @@
   border-radius: 999px;
   background: var(--block-top);
   overflow: hidden;
+
+  &.has-tooltip {
+    cursor: help;
+  }
 }
 
 .scan-segment {

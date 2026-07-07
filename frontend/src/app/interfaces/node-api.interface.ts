@@ -547,5 +547,6 @@ export interface SyncProgress {
     indexing: boolean;
     indexed: boolean;
     progress: number | null;
+    estimatedTimeRemaining: number | null;
   };
 }
