@@ -51,6 +51,15 @@
         <label class="btn btn-primary btn-sm" for="goggles-all">ALL</label>
       </div>
     </form>
+
+    <form [formGroup]="unitGroupForm" class="formRadioGroup">
+      <div class="btn-group" role="group" name="radioBasic">
+        <input type="radio" class="btn-check" id="goggles-vBytes" [value]="'vb'" [fragment]="getFragment(undefined, 'vb')" [routerLink]="['/graphs/goggles' | relativeUrl]" formControlName="unitType">
+        <label class="btn btn-primary btn-sm" for="goggles-vBytes">vBytes</label>
+        <input type="radio" class="btn-check" id="goggles-txCount" [value]="'txCount'" [fragment]="getFragment(undefined, 'txCount')" [routerLink]="['/graphs/goggles' | relativeUrl]" formControlName="unitType">
+        <label class="btn btn-primary btn-sm" for="goggles-txCount">{{count}}</label>
+      </div>
+    </form>
   </div>
 
   <div class="goggles-chart-wrapper" [class.chart]="!widget" [class.chart-widget]="widget">

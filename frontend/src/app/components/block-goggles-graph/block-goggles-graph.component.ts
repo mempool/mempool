@@ -4,7 +4,7 @@ import { BehaviorSubject, combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ActiveFilter, FilterMode, toFilters, toFlags } from '@app/shared/filters.utils';
 import { ApiService } from '@app/services/api.service';
-import { CurrencyPipe, formatNumber } from '@angular/common';
+import { formatNumber } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { download } from '@app/shared/graphs.utils';
 import { StorageService } from '@app/services/storage.service';
@@ -13,6 +13,8 @@ import { selectPowerOfTen } from '@app/bitcoin.utils';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from '@app/services/state.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HttpResponse } from '@angular/common/http';
+import { VbytesPipe } from '@app/shared/pipes/bytes-pipe/vbytes.pipe';
 
 interface GogglesRollup {
   bucketSize: string;
@@ -20,9 +22,6 @@ interface GogglesRollup {
   txCount: number;
   vSizeTotal: number;
 }
-
-// a block's max capacity: 4,000,000 WU = 1,000,000 vB
-const MAX_BLOCK_VSIZE = 1_000_000;
 
 @Component({
   selector: 'app-block-goggles-graph',
@@ -46,6 +45,8 @@ export class BlockGogglesGraphComponent implements OnInit {
 
   miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
+  unitGroupForm: UntypedFormGroup;
+  count = $localize`:@@8177873832400820695:Count`;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -80,6 +81,8 @@ export class BlockGogglesGraphComponent implements OnInit {
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
+    this.unitGroupForm = this.formBuilder.group({ unitType: 'txCount'});
+    this.unitGroupForm.controls.unitType.setValue('txCount');
   }
 
   ngOnInit(): void {
@@ -91,6 +94,8 @@ export class BlockGogglesGraphComponent implements OnInit {
 
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
+    this.unitGroupForm = this.formBuilder.group({ unitType: 'txCount'});
+    this.unitGroupForm.controls.unitType.setValue('txCount');
 
     if (!this.widget) {
       this.route
@@ -111,8 +116,12 @@ export class BlockGogglesGraphComponent implements OnInit {
         startWith(this.goggle$.value),
         distinctUntilChanged((a, b) => a.op === b.op && a.mask === b.mask),
       ),
+      this.unitGroupForm.get('unitType').valueChanges.pipe(
+        startWith(this.unitGroupForm.controls.unitType.value),
+        distinctUntilChanged(),
+      ),
     ]).pipe(
-      switchMap(([timespan, goggle]) => {
+      switchMap(([timespan, goggle, unitType]) => {
         if (!this.widget) {
           this.storageService.setValue('miningWindowPreference', timespan);
         }
@@ -128,23 +137,24 @@ export class BlockGogglesGraphComponent implements OnInit {
                   tap((body) => { this.totalsCache[timespan] = body; }),
                 ))
           : of(null);
-        return forkJoin([filtered$, totals$]).pipe(
-          tap(([response, totalsBody]) => {
+        const unit = of(unitType);
+        return forkJoin<[HttpResponse<GogglesRollup[]>, GogglesRollup[], string]>([filtered$, totals$, unit]).pipe(
+          tap(([response, totalsBody, unit]) => {
             const body: GogglesRollup[] = response.body || [];
             const filtered = !!this.goggle$.value.mask;
             // when filtering, body is the matched rows and totalsBody the unfiltered totals; otherwise body itself is the totals
             const totalRows: GogglesRollup[] = filtered ? (totalsBody || []) : body;
             const matchedRows: GogglesRollup[] = filtered ? body : [];
-            // dims: [startHeight, plotted (avg per block once rolled up), bucketSize, vSizeTotal, txCount]
+            const unitIsTx = unit === 'txCount';
+            // dims: [startHeight, plotted (avg per block once rolled up), bucketSize, txCount, vSizeTotal]
             const toSeries = (rows: GogglesRollup[]): number[][] => rows.map((row) => {
               const bucketSize = parseInt(row.bucketSize, 10) || 1;
-              return [
-                row.startHeight,
-                bucketSize > 1 ? row.txCount / bucketSize : row.txCount,
-                bucketSize,
-                row.vSizeTotal,
-                row.txCount,
-              ];
+              // vsize_total is a BIGINT sum and arrives as a string, so coerce before it reaches the chart/tooltip
+              const txCount = Number(row.txCount);
+              const vSizeTotal = Number(row.vSizeTotal);
+              const selected = unitIsTx ? txCount : vSizeTotal;
+              const plotted = bucketSize > 1 ? selected / bucketSize : selected;
+              return [row.startHeight, plotted, bucketSize, txCount, vSizeTotal];
             });
             this.prepareChartOptions(toSeries(totalRows), toSeries(matchedRows));
             this.isLoading = false;
@@ -183,10 +193,11 @@ export class BlockGogglesGraphComponent implements OnInit {
   }
 
   // builds the URL fragment: just the interval when no filter is active ("1m"), or "interval=1m&op=and&mask=5" when filtering
-  getFragment(interval?: string): string {
+  getFragment(interval?: string, unitType?: string): string {
     const timespan = interval ?? this.radioGroupForm.controls.dateSpan.value;
+    const unit = unitType ?? this.unitGroupForm.controls.unitType.value;
     const { op, mask } = this.goggle$.value;
-    return mask ? `interval=${timespan}&op=${op}&mask=${mask.toString()}` : timespan;
+    return mask ? `interval=${timespan}&unit=${unit}&op=${op}&mask=${mask.toString()}` : `interval=${timespan}&unit=${unit}`;
   }
 
   // restores state from a fragment in either form, letting block-filters pick up restored filters via activeGoggles$
@@ -194,18 +205,16 @@ export class BlockGogglesGraphComponent implements OnInit {
     if (!fragment) {
       return;
     }
-    if (this.intervals.includes(fragment)) {
-      this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
-      return;
-    }
     const params = new URLSearchParams(fragment);
-    const interval = params.get('interval');
-    if (this.intervals.includes(interval)) {
-      this.radioGroupForm.controls.dateSpan.setValue(interval, { emitEvent: false });
-    }
-    const maskParam = params.get('mask');
+    const rawInterval = params.get('interval') ?? '';
+    const interval = this.intervals.includes(rawInterval) ? rawInterval : this.radioGroupForm.controls.dateSpan.value;
+    const unit = ['vb', 'txCount'].includes(params.get('unit')) ? params.get('unit') : 'txCount';
+    const maskParam = params.get('mask') ?? '';
     const mask = maskParam && /^\d+$/.test(maskParam) ? BigInt(maskParam) : 0n;
     const op = (['and', 'or', 'nor'].includes(params.get('op')) ? params.get('op') : 'and') as FilterMode;
+
+    this.radioGroupForm.controls.dateSpan.setValue(interval, { emitEvent: false });
+    this.unitGroupForm.controls.unitType.setValue(unit, { emitEvent: false });
     // skip if already applied, otherwise the navigation in onFilterChanged would loop back here
     if ((mask > 0n && (this.goggle$.value.mask ?? 0n) !== mask) || this.goggle$.value.op !== op) {
       this.stateService.activeGoggles$.next({ mode: op, filters: toFilters(mask).map(f => f.key), gradient: 'fee' });
@@ -266,50 +275,61 @@ export class BlockGogglesGraphComponent implements OnInit {
           if (!params || params.length <= 0) {
             return '';
           }
-          // dims: [startHeight, plotted, bucketSize, vSizeTotal, txCount]
+          // dims: [startHeight, plotted, bucketSize, txCount, vSizeTotal]
           const baseline = params.find(p => p.seriesIndex === 0) || params[0];
           const matched = params.find(p => p.seriesIndex === 1);
           const startHeight = baseline.data[0];
           const bucketSize = baseline.data[2] || 1;
-          const totalCount = baseline.data[4];
+          const baseTxCount = baseline.data[3];
+          const baseVSize = baseline.data[4];
           const filtered = !!this.goggle$.value.mask;
-          let tooltip = '';
+          const unitIsTxCount = this.unitGroupForm.controls.unitType.value === 'txCount';
+          const rolledUp = bucketSize > 1;
 
-          if (bucketSize > 1) {
+          const fmtCount = (v): string => formatNumber(v, this.locale, '1.0-0');
+          const fmtAvg = (v): string => formatNumber(v, this.locale, '1.0-2');
+          const fmtVSize = (v): string => new VbytesPipe().transform(v, 2, 'vB', undefined, true);
+          const fmtPct = (v): string => formatNumber(v, this.locale, '1.0-2') + '%';
+
+          let tooltip = '';
+          if (rolledUp) {
             const endHeight = startHeight + bucketSize - 1;
             tooltip += `<b style="color: white; margin-left: 2px">` + $localize`Blocks ${startHeight}–${endHeight}` + `</b><br>`;
           } else {
             tooltip += `<b style="color: white; margin-left: 2px">` + $localize`Block: ${startHeight}` + `</b><br>`;
           }
 
-          const totalLabel = bucketSize > 1 ? $localize`Total transactions` : $localize`Transactions`;
-          tooltip += `${baseline.marker} ` + totalLabel + `: ${formatNumber(totalCount, this.locale, '1.0-0')}<br>`;
-
-          if (bucketSize > 1) {
-            tooltip += `${baseline.marker} ` + $localize`Avg txs per block` + `: ${formatNumber(totalCount / bucketSize, this.locale, '1.0-2')}<br>`;
-          }
-
-          if (filtered) {
-            const matchedCount = matched ? matched.data[4] : 0;
-            const matchedMarker = matched ? matched.marker : baseline.marker;
-            if (bucketSize > 1) {
-              tooltip += `${matchedMarker} ` + $localize`Avg txs filtered per block` + `: ${formatNumber(matchedCount / bucketSize, this.locale, '1.0-2')}<br>`;
-            } else {
-              tooltip += `${matchedMarker} ` + $localize`Matched transactions` + `: ${formatNumber(matchedCount, this.locale, '1.0-0')}<br>`;
-            }
-            if (totalCount > 0) {
-              tooltip += `${matchedMarker} ` + $localize`Share of all txs` + `: ${formatNumber(matchedCount / totalCount * 100, this.locale, '1.0-2')}%<br>`;
-            }
-            const matchedVSize = matched ? matched.data[3] : 0;
-            if (matchedVSize > 0) {
-              const weightShare = matchedVSize / (bucketSize * MAX_BLOCK_VSIZE) * 100;
-              tooltip += `${matchedMarker} ` + $localize`Share of block weight` + `: ${formatNumber(weightShare, this.locale, '1.0-2')}%<br>`;
+          // baseline (unfiltered total) metric, labelled/formatted for the active unit
+          if (unitIsTxCount) {
+            tooltip += `${baseline.marker} ` + (rolledUp ? $localize`Total transactions` : $localize`Transactions`) + `: ${fmtCount(baseTxCount)}<br>`;
+            if (rolledUp) {
+              tooltip += `${baseline.marker} ` + $localize`Avg txs per block` + `: ${fmtAvg(baseTxCount / bucketSize)}<br>`;
             }
           } else {
-            const vSizeTotal = baseline.data[3];
-            if (vSizeTotal > 0) {
-              const weightShare = vSizeTotal / (bucketSize * MAX_BLOCK_VSIZE) * 100;
-              tooltip += `${baseline.marker} ` + $localize`Share of block weight` + `: ${formatNumber(weightShare, this.locale, '1.0-2')}%<br>`;
+            tooltip += `${baseline.marker} ` + (rolledUp ? $localize`Total size` : $localize`Size`) + `: ${fmtVSize(baseVSize)}<br>`;
+            if (rolledUp) {
+              tooltip += `${baseline.marker} ` + $localize`Avg size per block` + `: ${fmtVSize(baseVSize / bucketSize)}<br>`;
+            }
+          }
+
+          if (filtered && matched) {
+            const matchedTxCount = matched.data[3];
+            const matchedVSize = matched.data[4];
+            const m = matched.marker;
+            if (unitIsTxCount) {
+              tooltip += rolledUp
+                ? `${m} ` + $localize`Avg matched per block` + `: ${fmtAvg(matchedTxCount / bucketSize)}<br>`
+                : `${m} ` + $localize`Matched transactions` + `: ${fmtCount(matchedTxCount)}<br>`;
+              if (matchedTxCount > 0) {
+                tooltip += `${m} ` + $localize`Share of all txs` + `: ${fmtPct(matchedTxCount / baseTxCount * 100)}<br>`;
+              }
+            } else {
+              tooltip += rolledUp
+                ? `${m} ` + $localize`Avg matched vSize per block` + `: ${fmtVSize(matchedVSize / bucketSize)}<br>`
+                : `${m} ` + $localize`Matched vSize` + `: ${fmtVSize(matchedVSize)}<br>`;
+              if (matchedVSize > 0) {
+                tooltip += `${m} ` + $localize`Share of block vSize` + `: ${fmtPct(matchedVSize / (bucketSize * baseVSize) * 100)}<br>`;
+              }
             }
           }
           return tooltip;
@@ -340,6 +360,9 @@ export class BlockGogglesGraphComponent implements OnInit {
         axisLabel: {
           color: 'rgb(110, 112, 121)',
           formatter: (val): string => {
+            if (this.unitGroupForm.controls.unitType.value === 'vb') {
+              return new VbytesPipe().transform(val, 0, 'vB', undefined, true);
+            }
             const selectedPowerOfTen: any = selectPowerOfTen(val);
             const newVal = Math.round(val / selectedPowerOfTen.divider);
             return `${newVal}${selectedPowerOfTen.unit}`;
