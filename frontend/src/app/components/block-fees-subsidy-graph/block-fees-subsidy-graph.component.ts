@@ -240,6 +240,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
         }
       ],
       legend: this.data.blockFees.length === 0 ? undefined : {
+        top: 'top',
         data: [
           {
             name: this.subsidyLabel,

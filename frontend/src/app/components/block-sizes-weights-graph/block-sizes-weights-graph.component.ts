@@ -182,7 +182,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
         }
       },
       legend: data.sizes.length === 0 ? undefined : {
-        padding: 10,
+        top: 'top',
         data: [
           {
             name: $localize`:@@7faaaa08f56427999f3be41df1093ce4089bbd75:Size`,
