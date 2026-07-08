@@ -211,6 +211,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
       },
       graphic: graphicElements.length > 0 ? graphicElements : undefined,
       legend: (this.showLegend && !this.stateService.isAnyTestnet()) ? {
+        top: 'top',
         data: [
           {
             name: $localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`,
@@ -451,6 +452,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
       },
       graphic: graphicElements.length > 0 ? graphicElements : undefined,
       legend: {
+        top: 'top',
         selected: this.selected,
       },
       dataZoom: this.allowZoom ? [{
