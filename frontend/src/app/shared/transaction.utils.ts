@@ -1641,6 +1641,9 @@ export function encodePsbt(rawTx: Uint8Array, inputs: PsbtKeyValueMap[], outputs
   // Add unsigned transaction (key type 0x00)
   writeKeyValue(PSBT_GLOBAL.UNSIGNED_TX, new Uint8Array(), rawTx);
   for (const [keyType, items] of globals) {
+    if (keyType === PSBT_GLOBAL.UNSIGNED_TX) {
+      throw new Error('PSBT global map must not include UNSIGNED_TX (0x00); provide it via rawTx');
+    }
     for (const record of items) {
       writeKeyValue(keyType, record.keyData, record.value);
     }
