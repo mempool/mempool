@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { syncStatusGuard } from '@components/getting-started/sync-status.guard';
 import { BlockHealthGraphComponent } from '@components/block-health-graph/block-health-graph.component';
 import { BlockFeeRatesGraphComponent } from '@components/block-fee-rates-graph/block-fee-rates-graph.component';
 import { BlockFeesGraphComponent } from '@components/block-fees-graph/block-fees-graph.component';
@@ -184,6 +185,7 @@ const routes: Routes = [
       {
         path: '',
         component: StartComponent,
+        canActivate: [syncStatusGuard],
         children: [{
           path: '',
           component: isCustomized ? CustomDashboardComponent : DashboardComponent,

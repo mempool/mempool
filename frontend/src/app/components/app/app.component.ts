@@ -8,10 +8,6 @@ import {
   HostBinding,
 } from '@angular/core';
 import { Router, NavigationEnd, Scroll } from '@angular/router';
-import { EMPTY } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { ApiService } from '@app/services/api.service';
-import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from '@app/services/state.service';
 import { OpenGraphService } from '@app/services/opengraph.service';
 import { NgbTooltipConfig } from '@ng-bootstrap/ng-bootstrap';
@@ -28,7 +24,6 @@ import { SeoService } from '@app/services/seo.service';
 export class AppComponent implements OnInit {
   constructor(
     public router: Router,
-    private apiService: ApiService,
     private stateService: StateService,
     private openGraphService: OpenGraphService,
     private seoService: SeoService,
@@ -74,34 +69,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.apiService
-      .getSyncProgress$()
-      .pipe(catchError(() => EMPTY))
-      .subscribe((progress) => {
-        const gettingStartedUrl = new RelativeUrlPipe(
-          this.stateService
-        ).transform('/getting-started');
-        const nodeNotReady =
-          progress.ibd ||
-          (progress.electrs != null && !progress.electrs.indexed) ||
-          (progress.mempool != null &&
-            (!progress.mempool.inSync || !progress.mempool.indexed));
-
-        // Only intercept the dashboard (home) — other routes may work or be
-        // intentionally reachable while the node is still syncing.
-        const currentPath = this.getBasePath(this.location.path()).replace(
-          /\/$/,
-          ''
-        );
-        const dashboardPath = this.getBasePath(
-          new RelativeUrlPipe(this.stateService).transform('/')
-        ).replace(/\/$/, '');
-
-        if (nodeNotReady && currentPath === dashboardPath) {
-          this.router.navigate([gettingStartedUrl]);
-        }
-      });
-
     this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) {
         this.seoService.updateCanonical(this.location.path());
