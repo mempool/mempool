@@ -1,7 +1,14 @@
-<div class="container-xl getting-started" *ngIf="!syncProgress">
+<div class="container-xl getting-started" *ngIf="!syncProgress && !loadError">
   <h1 i18n="getting-started.title">Getting started</h1>
   <p class="description" i18n="getting-started.loading">
     Loading sync status...
+  </p>
+</div>
+
+<div class="container-xl getting-started" *ngIf="!syncProgress && loadError">
+  <h1 i18n="getting-started.title">Getting started</h1>
+  <p class="description" i18n="getting-started.error">
+    Couldn't reach your node. Retrying…
   </p>
 </div>
 

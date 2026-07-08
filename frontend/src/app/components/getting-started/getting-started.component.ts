@@ -22,6 +22,7 @@ type StageStatus = 'complete' | 'active' | 'waiting';
 })
 export class GettingStartedComponent implements OnInit, OnDestroy {
   syncProgress: SyncProgress;
+  loadError = false;
   syncProgressSubscription: Subscription;
 
   constructor(
@@ -100,10 +101,17 @@ export class GettingStartedComponent implements OnInit, OnDestroy {
     this.syncProgressSubscription = timer(0, 30000)
       .pipe(
         switchMap(() =>
-          this.apiService.getSyncProgress$().pipe(catchError(() => EMPTY))
+          this.apiService.getSyncProgress$().pipe(
+            catchError(() => {
+              this.loadError = true;
+              this.cd.markForCheck();
+              return EMPTY;
+            })
+          )
         )
       )
       .subscribe((progress) => {
+        this.loadError = false;
         this.syncProgress = progress;
         this.cd.markForCheck();
       });
