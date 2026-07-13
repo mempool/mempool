@@ -328,7 +328,7 @@ export class BlockGogglesGraphComponent implements OnInit {
                 ? `${m} ` + $localize`Avg matched vSize per block` + `: ${fmtVSize(matchedVSize / bucketSize)}<br>`
                 : `${m} ` + $localize`Matched vSize` + `: ${fmtVSize(matchedVSize)}<br>`;
               if (matchedVSize > 0) {
-                tooltip += `${m} ` + $localize`Share of block vSize` + `: ${fmtPct(matchedVSize / (bucketSize * baseVSize) * 100)}<br>`;
+                tooltip += `${m} ` + $localize`Share of block vSize` + `: ${fmtPct(matchedVSize / (baseVSize) * 100)}<br>`;
               }
             }
           }
