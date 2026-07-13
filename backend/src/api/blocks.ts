@@ -559,7 +559,6 @@ class Blocks {
   ): Promise<void> {
     const blockExtended = processingResult.blockExtended;
     const cpfpSummary = processingResult.cpfpSummary;
-    const blockSummary = processingResult.blockSummary;
 
     let latestPriceId;
     try {
@@ -580,7 +579,8 @@ class Blocks {
     }
 
     if (Common.blocksSummariesIndexingEnabled() === true) {
-      await this.$indexBlockSummary(blockExtended.id, blockExtended.height, undefined, blockSummary);
+      // indexes the summary as a side effect
+      await this.$getStrippedBlockTransactions(blockExtended.id, true, false, cpfpSummary, blockExtended.height);
       this.updateTimerProgress(timer, `saved block summary for ${this.currentBlockHeight}`);
     }
 
@@ -800,60 +800,16 @@ class Blocks {
     }
   }
 
-  /**
-   * Indexes a block summary and returns its classified transactions so the caller can roll up flag values.
-   *
-   * @asyncUnsafe
-   */
-  public async $indexBlockSummary(hash: string, height: number, stale?: boolean, blockSummary?: BlockSummary): Promise<TransactionClassified[]> {
-    if (blockSummary !== undefined) {
-      await BlocksSummariesRepository.$saveTransactions(height, hash, blockSummary.transactions, blockSummary.version ?? 1);
-      return blockSummary.transactions;
-    }
-
-    const fallbackToCore = stale !== undefined ? stale : true;
-    const txs = await bitcoinApi.$getTxsForBlock(hash, fallbackToCore);
-
+  /** @asyncUnsafe */
+  public async $indexBlockSummary(hash: string, height: number, stale?: boolean): Promise<void> {
     if (config.MEMPOOL.BACKEND === 'esplora') {
-      const formattedTxs = txs.map(tx => transactionUtils.extendMempoolTransaction(tx));
-      const cpfpSummary = await this.$indexCPFP(hash, height, formattedTxs, fallbackToCore);
-
-      if (!cpfpSummary) {
-        return [];
+      const txs = (await bitcoinApi.$getTxsForBlock(hash, stale)).map(tx => transactionUtils.extendMempoolTransaction(tx));
+      const cpfpSummary = await this.$indexCPFP(hash, height, txs, stale);
+      if (cpfpSummary) {
+        await this.$getStrippedBlockTransactions(hash, true, true, cpfpSummary, height); // This will index the block summary
       }
-
-      const transactionsSummary = cpfpSummary.transactions.map(tx => {
-        let flags: number = 0;
-        try {
-          flags = Common.getTransactionFlags(tx, height);
-        } catch (e) {
-          logger.warn('Failed to classify transaction: ' + (e instanceof Error ? e.message : e));
-        }
-        return {
-          txid: tx.txid,
-          time: tx.firstSeen,
-          fee: tx.fee || 0,
-          vsize: tx.vsize,
-          value: Math.round(tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0)),
-          rate: tx.effectiveFeePerVsize,
-          flags: flags,
-        };
-      });
-
-      if (Common.blocksSummariesIndexingEnabled()) {
-        await BlocksSummariesRepository.$saveTransactions(height, hash, transactionsSummary, cpfpSummary.version);
-        return transactionsSummary;
-      }
-      return [];
     } else {
-      const formattedTxs = txs.map(tx => transactionUtils.extendTransaction(tx));
-      const summary = this.summarizeBlockTransactions(hash, height || 0, formattedTxs);
-
-      if (Common.blocksSummariesIndexingEnabled()) {
-        await BlocksSummariesRepository.$saveTransactions(height, hash, summary.transactions, 1);
-        return summary.transactions;
-      }
-      return [];
+      await this.$getStrippedBlockTransactions(hash, true, true); // This will index the block summary
     }
   }
 
