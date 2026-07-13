@@ -55,33 +55,33 @@ class FlagValuesRepository {
   }
 
   public async $queryTxCountBasedOnMask(mask: bigint, bucketSize: number, op: 'and' | 'or' | 'nor' | undefined, startHeight: number): Promise<{bucketSize: string, startHeight: number, txCount: number, vSizeTotal: number}[]> {
-    let statFields = '';
+    let flagPredicate = '';
     let params: any[]= [];
     switch (op) {
       case 'and': {
-        statFields = 'SUM(CASE WHEN (flag_value & ?) = ? THEN tx_count ELSE 0 END) as txCount, SUM(CASE WHEN (flag_value & ?) = ? THEN vsize_total ELSE 0 END) as vSizeTotal';
-        params = [mask, mask, mask, mask];
+        flagPredicate = 'AND (flag_value & ?) = ?';
+        params = [bucketSize.toString(), startHeight, mask, mask];
       } break;
       case 'or': {
-        statFields = 'SUM(CASE WHEN (flag_value & ?) > 0 THEN tx_count ELSE 0 END) as txCount, SUM(CASE WHEN (flag_value & ?) > 0 THEN vsize_total ELSE 0 END) as vSizeTotal';
-        params = [mask, mask];
+        flagPredicate = 'AND (flag_value & ?) > 0';
+        params = [bucketSize.toString(), startHeight, mask];
       } break;
       case 'nor': {
-        statFields = 'SUM(CASE WHEN (flag_value & ?) = 0 THEN tx_count ELSE 0 END) AS txCount, SUM(CASE WHEN (flag_value & ?) = 0 THEN vsize_total ELSE 0 END) as vSizeTotal';
-        params = [mask, mask];
+        flagPredicate = 'AND (flag_value & ?) = 0';
+        params = [bucketSize.toString(), startHeight, mask];
       } break;
       case undefined: { // op not passed, no boolean operations
-        statFields = 'SUM(tx_count) as txCount, SUM(vsize_total) as vSizeTotal';
+        params = [bucketSize.toString(), startHeight];
         break;
       }
       default: throw new Error(`Invalid op '${op}', expected 'and' | 'or' | 'nor' | undefined`);
     }
-    params.push(bucketSize.toString());
-    params.push(startHeight);
     try {
       const [rows]: any[] = await DB.query(`
-        SELECT bucket_size as bucketSize, start_height as startHeight, ${statFields} FROM flag_values
-        WHERE bucket_size = ? AND start_height >= ?
+        SELECT bucket_size as bucketSize, start_height as startHeight,
+          SUM(tx_count) as txCount, SUM(vsize_total) as vSizeTotal
+        FROM flag_values
+        WHERE bucket_size = ? AND start_height >= ? ${flagPredicate}
         GROUP BY start_height ORDER BY start_height DESC
         `, params);
       if (rows !== null && rows.length > 0) {
