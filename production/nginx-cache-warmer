@@ -172,16 +172,22 @@ do
 	for url in $warmMiningURLs
 	do
 		warm "http://${hostnameBitcoin}${url}"
-		warm "http://${hostnameBitcoin}/testnet${url}"
-		warm "http://${hostnameBitcoin}/testnet4${url}"
-		warm "http://${hostnameBitcoin}/signet${url}"
+		# only warm cache for testnet URLs 10% of the time
+		if (( RANDOM % 100 < 10 )); then
+			warm "http://${hostnameBitcoin}/testnet${url}"
+			warm "http://${hostnameBitcoin}/testnet4${url}"
+			warm "http://${hostnameBitcoin}/signet${url}"
+		fi
 	done
 
 	for url in $warmLightningURLs
 	do
 		warm "http://${hostnameBitcoin}${url}"
-		warm "http://${hostnameBitcoin}/testnet${url}"
-		warm "http://${hostnameBitcoin}/signet${url}"
+		# only warm cache for testnet URLs 10% of the time
+		if (( RANDOM % 100 < 10 )); then
+			warm "http://${hostnameBitcoin}/testnet${url}"
+			warm "http://${hostnameBitcoin}/signet${url}"
+		fi
 	done
 
 	for url in $warmLiquidURLs
