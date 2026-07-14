@@ -306,39 +306,6 @@ class BlocksRepository {
   }
 
   /**
-   * Get empty blocks for one or all pools
-   * @asyncSafe
-   */
-  public async $countEmptyBlocks(poolId: number | null, interval: string | null = null): Promise<any> {
-    interval = Common.getSqlInterval(interval);
-
-    const params: any[] = [];
-    let query = `SELECT count(height) as count, pools.id as poolId
-      FROM blocks
-      JOIN pools on pools.id = blocks.pool_id
-      WHERE tx_count = 1 AND stale = 0`;
-
-    if (poolId) {
-      query += ` AND pool_id = ?`;
-      params.push(poolId);
-    }
-
-    if (interval) {
-      query += ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
-    }
-
-    query += ` GROUP by pools.id`;
-
-    try {
-      const [rows] = await DB.query(query, params);
-      return rows;
-    } catch (e) {
-      logger.err('Cannot count empty blocks. Reason: ' + (e instanceof Error ? e.message : e));
-      throw e;
-    }
-  }
-
-  /**
    * Return most recent block height
    * @asyncSafe
    */
