@@ -175,6 +175,9 @@ do
 	for url in $warmURLs
 	do
 		warm "https://${hostname}${url}"
+		warm "https://${hostname}/testnet${url}"
+		warm "https://${hostname}/testnet4${url}"
+		warm "https://${hostname}/signet${url}"
 		sleep $delay # delay between queries to not DoS mariadb
 	done
 
