@@ -7,6 +7,8 @@ const JsonRPC = function (opts) {
   this.opts = opts || {};
   // @ts-ignore
   this.http = this.opts.ssl ? https : http;
+  // @ts-ignore
+  this.agent = new this.http.Agent({ keepAlive: true, maxSockets: 16 }); // We match the max sockets to bitcoin core's default max threads on v31
 };
 
 JsonRPC.prototype.call = function (method, params) {
@@ -46,7 +48,7 @@ JsonRPC.prototype.call = function (method, params) {
         'Host': this.opts.host || 'localhost',
         'Content-Length': requestJSON.length
       },
-      agent: false,
+      agent: this.agent,
       rejectUnauthorized: this.opts.ssl && this.opts.sslStrict !== false
     };
 
@@ -67,110 +69,121 @@ JsonRPC.prototype.call = function (method, params) {
       requestOptions.auth = this.opts.user + ':' + this.opts.pass;
     }
 
-    // Now we'll make a request to the server
-    let cbCalled = false;
-    const request = this.http.request(requestOptions);
+    const attempt = (canRetry: boolean) => {
+      // Now we'll make a request to the server
+      let cbCalled = false;
+      const request = this.http.request(canRetry ? requestOptions : {...requestOptions, agent: false});
 
-    // start request timeout timer
-    const reqTimeout = setTimeout(function () {
-      if (cbCalled) {return;}
-      cbCalled = true;
-      request.abort();
-      const err = new Error('ETIMEDOUT');
-      // @ts-ignore
-      err.code = 'ETIMEDOUT';
-      reject(err);
-    }, this.opts.timeout || 30000);
-
-    // set additional timeout on socket in case of remote freeze after sending headers
-    request.setTimeout(this.opts.timeout || 30000, function () {
-      if (cbCalled) {return;}
-      cbCalled = true;
-      request.abort();
-      const err = new Error('ESOCKETTIMEDOUT');
-      // @ts-ignore
-      err.code = 'ESOCKETTIMEDOUT';
-      reject(err);
-    });
-
-    request.on('error', function (err) {
-      if (cbCalled) {return;}
-      cbCalled = true;
-      clearTimeout(reqTimeout);
-      reject(err);
-    });
-
-    request.on('response', (response) => {
-      clearTimeout(reqTimeout);
-
-      // We need to buffer the response chunks in a nonblocking way.
-      let buffer = '';
-      response.on('data', function (chunk) {
-        buffer = buffer + chunk;
-      });
-      // When all the responses are finished, we decode the JSON and
-      // depending on whether it's got a result or an error, we call
-      // emitSuccess or emitError on the promise.
-      response.on('end', () => {
-        let err;
-
+      // start request timeout timer
+      const reqTimeout = setTimeout(function () {
         if (cbCalled) {return;}
         cbCalled = true;
+        request.abort();
+        const err = new Error('ETIMEDOUT');
+        // @ts-ignore
+        err.code = 'ETIMEDOUT';
+        reject(err);
+      }, this.opts.timeout || 30000);
 
-        try {
-          var decoded = JSON.parse(buffer);
-        } catch (e) {
-          // if we authenticated using a cookie and it failed, read the cookie file again
-          if (
-            response.statusCode === 401 /* Unauthorized */ &&
-            this.opts.cookie
-          ) {
-            this.cachedCookie = undefined;
-          }
+      // set additional timeout on socket in case of remote freeze after sending headers
+      request.setTimeout(this.opts.timeout || 30000, function () {
+        if (cbCalled) {return;}
+        cbCalled = true;
+        request.abort();
+        const err = new Error('ESOCKETTIMEDOUT');
+        // @ts-ignore
+        err.code = 'ESOCKETTIMEDOUT';
+        reject(err);
+      });
 
-          if (response.statusCode !== 200) {
-            err = new Error('Invalid params, response status code: ' + response.statusCode);
-            err.code = -32602;
-            reject(err);
-          } else {
-            err = new Error('Problem parsing JSON response from server');
-            err.code = -32603;
-            reject(err);
-          }
+      request.on('error', (err) => {
+        if (cbCalled) {return;}
+        cbCalled = true;
+        clearTimeout(reqTimeout);
+        // bitcoind may close an idle keep-alive socket at the same moment we reuse it;
+        // retry once on a fresh connection, only for that specific race
+        if (canRetry && err.code === 'ECONNRESET' && request.reusedSocket) {
+          attempt(false);
           return;
         }
+        reject(err);
+      });
 
-        if (!Array.isArray(decoded)) {
-          decoded = [decoded];
-        }
+      request.on('response', (response) => {
+        clearTimeout(reqTimeout);
 
-        // iterate over each response, normally there will be just one
-        // unless a batch rpc call response is being processed
-        decoded.forEach(function (decodedResponse, i) {
-          if (decodedResponse.hasOwnProperty('error') && decodedResponse.error != null) {
-            if (reject) {
-              err = new Error(decodedResponse.error.message || '');
-              if (decodedResponse.error.code) {
-                err.code = decodedResponse.error.code;
-              }
+        // We need to buffer the response chunks in a nonblocking way.
+        const chunks: Buffer[] = [];
+        response.on('data', function (chunk) {
+          chunks.push(chunk);
+        });
+        // When all the responses are finished, we decode the JSON and
+        // depending on whether it's got a result or an error, we call
+        // emitSuccess or emitError on the promise.
+        response.on('end', () => {
+          let err;
+
+          if (cbCalled) {return;}
+          cbCalled = true;
+
+          try {
+            const buffer = Buffer.concat(chunks).toString('utf8');
+            var decoded = JSON.parse(buffer);
+          } catch (e) {
+            // if we authenticated using a cookie and it failed, read the cookie file again
+            if (
+              response.statusCode === 401 /* Unauthorized */ &&
+              this.opts.cookie
+            ) {
+              this.cachedCookie = undefined;
+            }
+
+            if (response.statusCode !== 200) {
+              err = new Error('Invalid params, response status code: ' + response.statusCode);
+              err.code = -32602;
+              reject(err);
+            } else {
+              err = new Error('Problem parsing JSON response from server');
+              err.code = -32603;
               reject(err);
             }
-          } else if (decodedResponse.hasOwnProperty('result')) {
-            // @ts-ignore
-            resolve(decodedResponse.result, response.headers);
-          } else {
-            if (reject) {
-              err = new Error(decodedResponse.error.message || '');
-              if (decodedResponse.error.code) {
-                err.code = decodedResponse.error.code;
-              }
-              reject(err);
-            }
+            return;
           }
+
+          if (!Array.isArray(decoded)) {
+            decoded = [decoded];
+          }
+
+          // iterate over each response, normally there will be just one
+          // unless a batch rpc call response is being processed
+          decoded.forEach(function (decodedResponse, i) {
+            if (decodedResponse.hasOwnProperty('error') && decodedResponse.error != null) {
+              if (reject) {
+                err = new Error(decodedResponse.error.message || '');
+                if (decodedResponse.error.code) {
+                  err.code = decodedResponse.error.code;
+                }
+                reject(err);
+              }
+            } else if (decodedResponse.hasOwnProperty('result')) {
+              // @ts-ignore
+              resolve(decodedResponse.result, response.headers);
+            } else {
+              if (reject) {
+                err = new Error(decodedResponse.error.message || '');
+                if (decodedResponse.error.code) {
+                  err.code = decodedResponse.error.code;
+                }
+                reject(err);
+              }
+            }
+          });
         });
       });
-    });
-    request.end(requestJSON);
+      request.end(requestJSON);
+    };
+
+    attempt(true);
   });
 };
 
