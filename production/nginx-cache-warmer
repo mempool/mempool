@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-delay=0.15
+delay=0.25
 hostname=$(hostname)
 slugs=(`curl -sSL https://${hostname}/api/v1/mining/pools/3y|jq -r -S '(.pools[].slug)'`)
 
@@ -137,7 +137,7 @@ warmURLs=(
 	'/api/v1/lightning/nodes/isp/34197' `# SHRD SARL`
 	'/api/v1/lightning/nodes/isp/42275' `# Three Fourteen SASU`
 	'/api/v1/lightning/nodes/isp/16276' `# OVH SAS`
-	'/api/v1/lightning/nodes/isp/10796,11351,11426,11427,12271,20001,2$delay,33363' `# Spectrum`
+	'/api/v1/lightning/nodes/isp/10796,11351,11426,11427,12271,20001,20115,33363' `# Spectrum` \
 	'/api/v1/lightning/nodes/isp/701' `# Verizon`
 	'/api/v1/lightning/nodes/isp/12876' `# Scaleway`
 	'/api/v1/lightning/nodes/isp/33915' `# Ziggo`
