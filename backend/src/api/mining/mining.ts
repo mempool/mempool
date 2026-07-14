@@ -149,6 +149,8 @@ class Mining {
       poolsStatistics['lastEstimatedHashrate1w'] = await bitcoinClient.getNetworkHashPs(totalBlock1w);
     } catch (e) {
       poolsStatistics['lastEstimatedHashrate'] = 0;
+      poolsStatistics['lastEstimatedHashrate3d'] = 0;
+      poolsStatistics['lastEstimatedHashrate1w'] = 0;
       logger.debug('Bitcoin Core is not available, using zeroed value for current hashrate', logger.tags.mining);
     }
 

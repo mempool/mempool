@@ -327,17 +327,26 @@ class BlocksRepository {
     interval = Common.getSqlInterval(interval);
 
     const params: any[] = [];
-    let query = `SELECT count(height) as blockCount
-      FROM blocks 
-      WHERE stale = 0`;
-
-    if (poolId) {
-      query += ` AND pool_id = ?`;
+    let query;
+    if (!poolId && !interval) {
+      // optimized query to get full indexed block count
+      query = `SELECT CAST(COALESCE(MAX(height) - MIN(height) + 1, 0) AS SIGNED) as blockCount FROM blocks`;
+    } else if (!poolId) {
+      // optimized query for indexed count within an interval
+      query = `SELECT GREATEST(0, COALESCE(
+        CAST((SELECT height FROM blocks WHERE stale = 0 AND blockTimestamp <= NOW() ORDER BY blockTimestamp DESC LIMIT 1) AS SIGNED) -
+        CAST((SELECT height FROM blocks WHERE stale = 0 AND blockTimestamp >= DATE_SUB(NOW(), INTERVAL ${interval}) ORDER BY blockTimestamp ASC LIMIT 1) AS SIGNED) + 1
+      , 0)) as blockCount`;
+    } else {
+      // for specific pools, we do still have to actually count the blocks
+      query = `SELECT count(*) as blockCount
+        FROM blocks
+        WHERE stale = 0 AND pool_id = ?`;
       params.push(poolId);
-    }
 
-    if (interval) {
-      query += ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+      if (interval) {
+        query += ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+      }
     }
 
     try {
