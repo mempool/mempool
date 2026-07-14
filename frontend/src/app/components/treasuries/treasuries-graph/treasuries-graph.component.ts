@@ -402,6 +402,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
 
     this.chartOptions = {
       legend: {
+        top: 'top',
         selected: this.selectedWallets,
       }
     };
