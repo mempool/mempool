@@ -38,6 +38,7 @@ class PoolsRepository {
     let query = `
       SELECT
         COUNT(blocks.height) As blockCount,
+          COUNT(CASE WHEN blocks.tx_count = 1 THEN 1 END) AS emptyBlocks,
           pool_id AS poolId,
           pools.name AS name,
           pools.link AS link,
@@ -47,7 +48,7 @@ class PoolsRepository {
           unique_id as poolUniqueId
       FROM blocks
       JOIN pools on pools.id = pool_id
-      LEFT JOIN blocks_audits ON blocks_audits.height = blocks.height
+      LEFT JOIN blocks_audits ON blocks_audits.hash = blocks.hash
       WHERE blocks.stale = 0
     `;
 
