@@ -550,6 +550,9 @@ zfsCreateFilesystems()
     zfs create -o "mountpoint=${ELEMENTS_HOME}/liquidv1" "${ZPOOL}/elements/liquidv1"
     zfs create -o "mountpoint=${ELEMENTS_ELECTRS_HOME}" "${ZPOOL}/elements/electrs"
 
+    # create /mempool/socket with custom ACL for electrs unix sockets
+    zfs create -o "mountpoint=${MEMPOOL_HOME}/socket" "${ZPOOL}/mempool/socket"
+
     # create /bitcoin/socket with custom ACL for electrs unix sockets
     zfs create -o "mountpoint=${BITCOIN_HOME}/socket" "${ZPOOL}/bitcoin/socket"
 
@@ -1838,6 +1841,8 @@ echo "[*] Setting permissions for electrs sockets"
 case $OS in
 
     FreeBSD)
+        setfacl -m "user:bitcoin:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,everyone@::f:allow" "${MEMPOOL_HOME}/socket"
+        chown "${MEMPOOL_USER}:${MEMPOOL_GROUP}" "${MEMPOOL_HOME}/socket"
         setfacl -m "user:bitcoin:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,everyone@::f:allow" "${BITCOIN_HOME}/socket"
         chown "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_HOME}/socket"
         setfacl -m "user:elements:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,everyone@::f:allow" "${ELEMENTS_HOME}/socket"

@@ -211,6 +211,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
       },
       graphic: graphicElements.length > 0 ? graphicElements : undefined,
       legend: (this.showLegend && !this.stateService.isAnyTestnet()) ? {
+        top: 'top',
         data: [
           {
             name: $localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`,
@@ -451,6 +452,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
       },
       graphic: graphicElements.length > 0 ? graphicElements : undefined,
       legend: {
+        top: 'top',
         selected: this.selected,
       },
       dataZoom: this.allowZoom ? [{
@@ -490,15 +492,15 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     // Add a point at today's date to make the graph end at the current time
     extendedSummary.unshift({ time: Date.now() / 1000, value: 0 });
 
-    let maxTime = Date.now() / 1000;
-
+    const timeStep = 0.001;
     const oneHour = 60 * 60;
     // Fill gaps longer than interval
     for (let i = 0; i < extendedSummary.length - 1; i++) {
-      if (extendedSummary[i].time > maxTime) {
-        extendedSummary[i].time = maxTime - 30;
+      if (extendedSummary[i].height !== undefined && extendedSummary[i + 1].height === extendedSummary[i].height) {
+        extendedSummary[i + 1].time = extendedSummary[i].time;
+      } else if (extendedSummary[i + 1].time >= extendedSummary[i].time) {
+        extendedSummary[i + 1].time = extendedSummary[i].time - timeStep;
       }
-      maxTime = extendedSummary[i].time;
       const hours = Math.floor((extendedSummary[i].time - extendedSummary[i + 1].time) / oneHour);
       if (hours > 1) {
         for (let j = 1; j < hours; j++) {

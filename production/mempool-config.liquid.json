@@ -4,6 +4,7 @@
     "NETWORK": "liquid",
     "BACKEND": "esplora",
     "HTTP_PORT": 8998,
+    "UNIX_SOCKET_PATH": "/mempool/socket/mempool-elements-liquid",
     "MINED_BLOCKS_CACHE": 144,
     "SPAWN_CLUSTER_PROCS": 0,
     "API_URL_PREFIX": "/api/v1/",

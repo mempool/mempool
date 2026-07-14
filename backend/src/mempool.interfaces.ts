@@ -17,6 +17,7 @@ export interface PoolInfo {
   name: string;
   link: string;
   blockCount: number;
+  emptyBlocks: number;
   slug: string;
   avgMatchRate: number | null;
   avgFeeDelta: number | null;
@@ -25,7 +26,6 @@ export interface PoolInfo {
 
 export interface PoolStats extends PoolInfo {
   rank: number;
-  emptyBlocks: number;
 }
 
 export enum TemplateAlgorithm {

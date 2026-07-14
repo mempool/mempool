@@ -240,6 +240,7 @@ export class PoolComponent implements OnInit, OnDestroy {
         }
       },
       legend: {
+        top: 'top',
         data: [
           {
             name: $localize`:@@79a9dc5b1caca3cbeb1733a19515edacc5fc7920:Hashrate`,
