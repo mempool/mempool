@@ -139,6 +139,21 @@ footer .row.version p a {
   display: inline-block;
 }
 
+.footer-logo-wrapper {
+  display: block;
+  position: relative;
+  width: 100%;
+}
+
+.footer-logo-reg {
+  color: var(--fg);
+  font-size: 15px;
+  line-height: 1.6;
+  position: absolute;
+  right: -20px;
+  top: 5px;
+}
+
 footer .sponsor {
   height: 31px;
   align-items: center;
