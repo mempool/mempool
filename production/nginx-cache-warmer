@@ -132,6 +132,25 @@ warmLightningURLs=(
 	'/api/v1/lightning/nodes/rankings/age'
 )
 
+warmLiquidURLs=(
+	'/api/v1/assets/icons'
+	'/api/v1/assets/featured'
+	'/api/v1/liquid/pegs'
+	'/api/v1/liquid/pegs/month'
+	'/api/v1/liquid/pegs/volume'
+	'/api/v1/liquid/pegs/count'
+	'/api/v1/liquid/reserves'
+	'/api/v1/liquid/reserves/month'
+	'/api/v1/liquid/reserves/addresses'
+	'/api/v1/liquid/reserves/addresses/total'
+	'/api/v1/liquid/reserves/utxos'
+	'/api/v1/liquid/reserves/utxos/total'
+	'/api/v1/liquid/reserves/utxos/expired'
+	'/api/v1/liquid/reserves/utxos/emergency-spent'
+	'/api/v1/liquid/reserves/utxos/emergency-spent/stats'
+	'/api/v1/liquid/reserves/status'
+)
+
 echo "[*] Wait 60s for mempool backend to start..."
 sleep 60
 
@@ -163,6 +182,12 @@ do
 		warm "http://${hostnameBitcoin}${url}"
 		warm "http://${hostnameBitcoin}/testnet${url}"
 		warm "http://${hostnameBitcoin}/signet${url}"
+	done
+
+	for url in $warmLiquidURLs
+	do
+		warm "http://${hostnameLiquid}${url}"
+		warm "http://${hostnameLiquid}/testnet${url}"
 	done
 
 	slugs=(`curl -sSL http://${hostnameBitcoin}/api/v1/mining/pools/3y|jq -r -S '(.pools[].slug)'`)
