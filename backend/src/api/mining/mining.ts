@@ -267,6 +267,10 @@ class Mining {
     this.poolsHistoricalHashrateCache.clear();
   }
 
+  public invalidatePoolsStatsCache(): void {
+    this.poolsStatsCache.clear();
+  }
+
   /**
    * Get all mining pool stats for a pool
    */

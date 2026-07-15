@@ -129,6 +129,7 @@ class PoolsParser {
       // update persistent cache with the reindexed data
       void diskCache.$saveCacheToDisk();
       void redisCache.$updateBlocks(blocks.getBlocks());
+      mining.invalidatePoolsStatsCache();
     }
   }
 
