@@ -1219,6 +1219,8 @@ class Blocks {
         await blocksRepository.$saveBlockInDatabase(blockExtended);
         this.updateTimerProgress(timer, `saved ${this.currentBlockHeight} to database`);
 
+        mining.invalidatePoolsStatsCache();
+
         await AccelerationRepository.$indexAccelerationsForBlock(
           blockExtended,
           Object.values(accelerations),

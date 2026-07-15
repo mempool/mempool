@@ -30,6 +30,9 @@ class Mining {
   public reindexHashrateRequested = false;
   public reindexDifficultyAdjustmentRequested = false;
 
+  private static readonly POOLS_STATS_CACHE_TTL_MS = 60000;
+  private poolsStatsCache: Map<string, { time: number, stats: Promise<object> }> = new Map();
+
   private genesisData: {
     timestamp: number,
     bits: number,
@@ -111,6 +114,29 @@ class Mining {
    * Generate high level overview of the pool ranks and general stats
    */
   public async $getPoolsStats(interval: string | null): Promise<object> {
+    const cacheKey = Common.getSqlInterval(interval) ?? 'all';
+
+    const cached = this.poolsStatsCache.get(cacheKey);
+    if (cached && Date.now() - cached.time < Mining.POOLS_STATS_CACHE_TTL_MS) {
+      return cached.stats;
+    }
+
+    const stats = this.$buildPoolsStats(interval);
+    this.poolsStatsCache.set(cacheKey, { time: Date.now(), stats });
+    stats.catch(() => {
+      if (this.poolsStatsCache.get(cacheKey)?.stats === stats) {
+        this.poolsStatsCache.delete(cacheKey);
+      }
+    });
+
+    return stats;
+  }
+
+  public invalidatePoolsStatsCache(): void {
+    this.poolsStatsCache.clear();
+  }
+
+  private async $buildPoolsStats(interval: string | null): Promise<object> {
     const poolsStatistics = {};
 
     const poolsInfo: PoolInfo[] = await PoolsRepository.$getPoolsInfo(interval);
