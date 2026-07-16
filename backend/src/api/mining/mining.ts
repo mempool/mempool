@@ -125,7 +125,7 @@ class Mining {
    */
   public async $getPoolsStats(interval: string | null): Promise<PoolsStats> {
     // Unrecognized intervals are queried as if no interval was given, so key on the resolved one
-    const cacheKey = interval ?? 'all';
+    const cacheKey = Common.getSqlInterval(interval) ?? 'all';
 
     const cached = this.poolsStatsCache.get(cacheKey);
     if (cached && Date.now() - cached.syncedAt < Mining.POOLS_STATS_RESYNC_MS) {
@@ -244,7 +244,7 @@ class Mining {
    * Get weekly hashrate history for all pools
    */
   public async $getPoolsHistoricalHashrate(interval: string | null): Promise<any[]> {
-    const cacheKey = interval ?? 'all';
+    const cacheKey = Common.getSqlInterval(interval) ?? 'all';
 
     const cached = this.poolsHistoricalHashrateCache.get(cacheKey);
     if (cached && Date.now() - cached.syncedAt < Mining.POOLS_STATS_RESYNC_MS) {
