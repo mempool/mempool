@@ -1218,8 +1218,7 @@ class Blocks {
       if (Common.indexingEnabled()) {
         await blocksRepository.$saveBlockInDatabase(blockExtended);
         this.updateTimerProgress(timer, `saved ${this.currentBlockHeight} to database`);
-
-        await mining.$updatePoolsStatsWithBlock(blockExtended);
+        mining.invalidatePoolsStatsCache();
 
         await AccelerationRepository.$indexAccelerationsForBlock(
           blockExtended,
