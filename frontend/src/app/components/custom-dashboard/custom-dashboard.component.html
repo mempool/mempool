@@ -55,13 +55,15 @@
               <div class="card-body">
                 <ng-container *ngTemplateOutlet="mempoolTable; context: { $implicit: mempoolInfoData }"></ng-container>
                   <h5 class="card-title mt-3" i18n="dashboard.incoming-transactions">Incoming Transactions</h5>
-                  <div class="mempool-graph" *ngIf="(mempoolStats$ | async) as mempoolStats">
+                  <div class="mempool-graph">
                     <app-incoming-transactions-graph
                       [height]="incomingGraphHeight"
                       [left]="50"
                       [right]="20"
                       [data]="mempoolStats?.weightPerSecond"
+                      [isLoading]="isMempoolStatsLoading"
                       [windowPreferenceOverride]="'2h'"
+                      [error]="mempoolStatsError"
                       ></app-incoming-transactions-graph>
                   </div>
               </div>
