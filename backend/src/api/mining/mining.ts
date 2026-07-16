@@ -41,7 +41,7 @@ class Mining {
   // Updated as blocks arrive, and resynced with the database occasionally to correct drift
   private static readonly POOLS_STATS_RESYNC_MS = 600000;
   private poolsStatsCache: Map<string, { syncedAt: number, stats: Promise<PoolsStats> }> = new Map();
-  private poolsHistoricalHashrateCache: Map<string, {syncedAt: number, hashrates: any[]}> = new Map();
+  private poolsHistoricalHashrateCache: Map<string, {syncedAt: number, hashrates: Promise<any[]>}> = new Map();
 
   private genesisData: {
     timestamp: number,
@@ -251,17 +251,16 @@ class Mining {
       return cached.hashrates;
     }
 
-    try {
-      const hashrates = await HashratesRepository.$getPoolsWeeklyHashrate(interval);
-      this.poolsHistoricalHashrateCache.set(cacheKey, {syncedAt: Date.now(), hashrates: hashrates});
-      return hashrates;
-    } catch (e) {
-      if (cached) {
-        return cached.hashrates;
+    // Cache the promise, so concurrent requests share one rebuild instead of each querying
+    const hashrates = HashratesRepository.$getPoolsWeeklyHashrate(interval);
+    this.poolsHistoricalHashrateCache.set(cacheKey, { syncedAt: Date.now(), hashrates });
+    hashrates.catch(() => {
+      if (this.poolsHistoricalHashrateCache.get(cacheKey)?.hashrates === hashrates) {
+        this.poolsHistoricalHashrateCache.delete(cacheKey);
       }
-      logger.err(`Failed to get historical pools hashrates. Reason: ${(e instanceof Error ? e.message : e)}`);
-      throw e;
-    }
+    });
+
+    return hashrates;
   }
 
   public invalidatePoolsHistoricalHashrateCache(): void {
