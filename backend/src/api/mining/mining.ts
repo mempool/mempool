@@ -148,9 +148,7 @@ class Mining {
    * Apply a newly indexed block to the in-memory pools stats
    *
    * Only the block counters are updated here. avgMatchRate, avgFeeDelta, and the estimated
-   * hashrate are left untouched: per the issue, they're only occasionally re-synced with the
-   * ground truth from the database (the block's audit is saved asynchronously and usually
-   * doesn't exist yet here, and hashrate needs its own RPC calls) instead of on every block.
+   * hashrate are left untouched.
    */
   public async $updatePoolsStatsWithBlock(block: BlockExtended): Promise<void> {
     if (this.poolsStatsCache.size === 0) {
