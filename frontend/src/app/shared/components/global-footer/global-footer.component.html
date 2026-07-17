@@ -7,7 +7,7 @@
           @if (enterpriseInfo?.footer_img) {
             <img [src]="enterpriseInfo?.footer_img" [alt]="enterpriseInfo.title" height="60px" class="enterprise-logo">
           } @else {
-            <a *ngIf="officialMempoolSpace" class="footer-logo-wrapper" href="https://mempool.holdings" target="_blank" rel="noopener noreferrer" aria-label="Mempool Holdings">
+            <a *ngIf="officialMempoolSpace" class="footer-logo-wrapper" href="https://mempool.holdings" target="_blank" aria-label="Mempool Holdings">
               <app-svg-images name="blocks-3-2" width="500" height="126" style="display: block; width: 100%; height: auto; transform: scale(1.22);"></app-svg-images>
               <span class="footer-logo-reg">&trade;</span>
             </a>
