@@ -41,7 +41,7 @@
               {{ row.job.tag }}
             </td>
             <td class="reward">
-              <app-amount [satoshis]="row.job.reward"></app-amount>
+              <app-amount [satoshis]="row.job.reward" [noFiat]="true" [ignoreViewMode]="true"></app-amount>
             </td>
             <td class="height">
               <a [routerLink]="['/tx/preview' | relativeUrl]" [fragment]="'offline=true&tx=' + row.job.coinbase">
