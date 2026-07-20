@@ -40,8 +40,7 @@ class Mining {
 
   // Rebuilt in the background on new blocks/reorgs/pool changes; entries older than this get a lazy refresh
   private static readonly POOLS_STATS_RESYNC_MS = 600000;
-  private poolsStatsCache: Record<string, { syncedAt: number, stats: PoolsStats }> = {};
-  private buildingPoolsStatsCache: boolean = false;
+  private poolsStatsCache: Record<string, { syncedAt: number, stats: Promise<PoolsStats> }> = {};
   private poolsHistoricalHashrateCache: Map<string, {syncedAt: number, hashrates: Promise<any[]>}> = new Map();
 
   private genesisData: {
@@ -130,72 +129,73 @@ class Mining {
     const cached = this.poolsStatsCache[cacheKey];
     if (cached) {
       if (Date.now() - cached.syncedAt >= Mining.POOLS_STATS_RESYNC_MS) {
-        await this.$rebuildPoolsStatsCache();
+        this.$rebuildPoolsStatsCache().catch(() => {/** */});
       }
       return cached.stats;
     }
 
-    await this.$rebuildPoolsStatsCache();
-    const built = this.poolsStatsCache[cacheKey];
-    if (!built) {
-      throw new Error ('Pools stats are still being built');
-    }
-    return built.stats;
+    this.$rebuildPoolsStatsCache().catch(() => {/** */});
+    return this.poolsStatsCache[cacheKey].stats;
   }
 
-  /** @asyncSafe */
-  public async $rebuildPoolsStatsCache(): Promise<void> {
-    if (this.buildingPoolsStatsCache) {
-      return;
+  public $rebuildPoolsStatsCache(): Promise<void> {
+    const syncedAt = Date.now();
+    const build = this.$queryAllPoolsStats();
+
+    for (const interval of POOLS_STATS_INTERVALS) {
+      const stats = build.then((byInterval) => byInterval[interval]);
+      this.poolsStatsCache[interval] = { syncedAt, stats };
+      stats.catch(() => {
+        if (this.poolsStatsCache[interval]?.stats === stats) {
+          delete this.poolsStatsCache[interval];
+        }
+      });
     }
 
-    this.buildingPoolsStatsCache = true;
-
-    try {
-      const poolsInfoPerInterval: PoolInfoPerInterval[] = await PoolsRepository.$getPoolsInfoPerInterval();
-      const estimatedHashrates = await this.$getEstimatedHashrates();
-
-      const poolsInfo: Record<string, PoolInfo[]> = {};
-      for (const interval of POOLS_STATS_INTERVALS) {
-        poolsInfo[interval] = [];
-      }
-      for (const row of poolsInfoPerInterval) {
-        const {interval, ...poolInfo} = row;
-        (poolsInfo[interval] ??= []).push(poolInfo);
-      }
-
-      for (const interval of POOLS_STATS_INTERVALS) {
-        let rank = 1;
-        let blockCount = 0;
-
-        const poolStats: PoolStats[] = [];
-        poolsInfo[interval].forEach((poolInfo) => {
-          poolStats.push({
-            poolId: poolInfo.poolId, // mysql row id
-            name: poolInfo.name,
-            link: poolInfo.link,
-            blockCount: poolInfo.blockCount,
-            rank: rank++,
-            emptyBlocks: poolInfo.emptyBlocks,
-            slug: poolInfo.slug,
-            avgMatchRate: poolInfo.avgMatchRate !== null ? Math.round(100 * poolInfo.avgMatchRate) / 100 : null,
-            avgFeeDelta: poolInfo.avgFeeDelta,
-            poolUniqueId: poolInfo.poolUniqueId
-          });
-          blockCount += poolInfo.blockCount;
-        });
-
-        this.poolsStatsCache[interval] = {
-          syncedAt: Date.now(),
-          stats: { pools: poolStats, blockCount: blockCount, ...estimatedHashrates },
-        };
-      }
-    } catch (e) {
+    return build.then(() => undefined, (e) => {
       logger.err(`Failed to build pools stats cache. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
-      throw e;
-    } finally {
-      this.buildingPoolsStatsCache = false;
+    });
+  }
+
+  private async $queryAllPoolsStats(): Promise<Record<string, PoolsStats>> {
+    const poolsInfoPerInterval: PoolInfoPerInterval[] = await PoolsRepository.$getPoolsInfoPerInterval();
+    const estimatedHashrates = await this.$getEstimatedHashrates();
+
+    const poolsInfo: Record<string, PoolInfo[]> = {};
+    for (const interval of POOLS_STATS_INTERVALS) {
+      poolsInfo[interval] = [];
     }
+    for (const row of poolsInfoPerInterval) {
+      const {interval, ...poolInfo} = row;
+      (poolsInfo[interval] ??= []).push(poolInfo);
+    }
+
+    const statsByInterval: Record<string, PoolsStats> = {};
+    for (const interval of POOLS_STATS_INTERVALS) {
+      let rank = 1;
+      let blockCount = 0;
+
+      const poolStats: PoolStats[] = [];
+      poolsInfo[interval].forEach((poolInfo) => {
+        poolStats.push({
+          poolId: poolInfo.poolId, // mysql row id
+          name: poolInfo.name,
+          link: poolInfo.link,
+          blockCount: poolInfo.blockCount,
+          rank: rank++,
+          emptyBlocks: poolInfo.emptyBlocks,
+          slug: poolInfo.slug,
+          avgMatchRate: poolInfo.avgMatchRate !== null ? Math.round(100 * poolInfo.avgMatchRate) / 100 : null,
+          avgFeeDelta: poolInfo.avgFeeDelta,
+          poolUniqueId: poolInfo.poolUniqueId
+        });
+        blockCount += poolInfo.blockCount;
+      });
+
+      statsByInterval[interval] = { pools: poolStats, blockCount: blockCount, ...estimatedHashrates };
+    }
+
+    return statsByInterval;
   }
 
   /** @asyncSafe */
