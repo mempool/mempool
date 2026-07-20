@@ -71,6 +71,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   @Input() forceMobile: boolean = false;
   @Input() showDetails: boolean = false;
   @Input() noCTA: boolean = false;
+  @Input() initialStep: CheckoutStep = 'summary';
   @Input() partnerCode: string | undefined;
   @Output() unavailable = new EventEmitter<boolean>();
   @Output() completed = new EventEmitter<boolean>();
@@ -169,7 +170,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         this.accelerateError = null;
         this.timePaid = 0;
         this.btcpayInvoiceFailed = false;
-        this.moveToStep('summary', true);
+        this.moveToStep(this.initialStep, true);
       } else {
         this.auth = auth;
       }
@@ -182,7 +183,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.insertSquare();
       this.setupSquare();
     } else {
-      this.moveToStep('summary', true);
+      this.moveToStep(this.initialStep, true);
     }
 
     this.conversionsSubscription = this.stateService.conversions$.subscribe(
@@ -237,9 +238,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     if (this._step === 'checkout') {
       this.insertSquare();
       this.enterpriseService.goal(8);
-      this.scrollToElementWithTimeout('acceleratePreviewAnchor', 'start', 100);
+      if (!this.startedPastSummary) {
+        this.scrollToElementWithTimeout('acceleratePreviewAnchor', 'start', 100);
+      }
     }
-    
+
     if (this._step === 'checkout' && this.canPayWithBitcoin) {
       this.btcpayInvoiceFailed = false;
       this.invoice = undefined;
@@ -330,14 +333,14 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       tap((response) => {
         if (response.status === 204) {
           this.quoteError = `cannot_accelerate_tx`;
-          if (this.step === 'summary') {
+          if (this.step === 'summary' || this.startedPastSummary) {
             this.unavailable.emit(true);
           }
         } else {
           this.estimate = response.body;
           if (!this.estimate) {
             this.quoteError = `cannot_accelerate_tx`;
-            if (this.step === 'summary') {
+            if (this.step === 'summary' || this.startedPastSummary) {
               this.unavailable.emit(true);
             }
             this.estimate$.next(null);
@@ -364,7 +367,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
           if (!this.couldPay) {
             this.quoteError = `cannot_accelerate_tx`;
-            if (this.step === 'summary') {
+            if (this.step === 'summary' || this.startedPastSummary) {
               this.unavailable.emit(true);
             }
             return;
@@ -383,7 +386,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         this.estimate = undefined;
         this.quoteError = `cannot_accelerate_tx`;
         this.estimateSubscription.unsubscribe();
-        if (this.step === 'summary') {
+        if (this.step === 'summary' || this.startedPastSummary) {
           this.unavailable.emit(true);
         } else {
           this.accelerateError = 'cannot_accelerate_tx';
@@ -1029,6 +1032,10 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   get step(): CheckoutStep {
     return this._step;
+  }
+
+  get startedPastSummary(): boolean {
+    return this.initialStep !== 'summary';
   }
 
   get paymentMethods(): PaymentMethod[] {
