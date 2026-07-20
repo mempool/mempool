@@ -10,6 +10,7 @@ import { SMALL_FIAT_THRESHOLD } from './fiat-currency.pipe';
 export class FiatShortenerPipe implements PipeTransform, OnDestroy {
   fiatSubscription: Subscription;
   currency: string;
+  private currencyMaxFracCache: Record<string, number> = {};
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -24,12 +25,26 @@ export class FiatShortenerPipe implements PipeTransform, OnDestroy {
     this.fiatSubscription.unsubscribe();
   }
 
-  transform(num: number, ...args: any[]): unknown {
-    const digits = args[0] || 1;
-    const currency = args[1] || this.currency || 'USD';
+  private getCurrencyMaxFrac(currency: string): number {
+    if (!(currency in this.currencyMaxFracCache)) {
+      this.currencyMaxFracCache[currency] =
+        new Intl.NumberFormat(this.locale, { style: 'currency', currency }).resolvedOptions().maximumFractionDigits ??
+        Number.POSITIVE_INFINITY;
+    }
+    return this.currencyMaxFracCache[currency];
+  }
+
+  transform(num: number, currencyInput?: string): unknown {
+    let currency = currencyInput || this.currency || 'USD';
+    try {
+      this.getCurrencyMaxFrac(currency); // validates & warms cache
+    } catch {
+      currency = 'USD';
+    }
 
     if (Math.abs(num) < SMALL_FIAT_THRESHOLD) {
-      return new Intl.NumberFormat(this.locale, { style: 'currency', currency, maximumFractionDigits: 1 }).format(num);
+      const maxFrac = Math.min(2, this.getCurrencyMaxFrac(currency));
+      return new Intl.NumberFormat(this.locale, { style: 'currency', currency, minimumFractionDigits: maxFrac, maximumFractionDigits: maxFrac }).format(num);
     }
 
     const lookup = [
@@ -41,11 +56,14 @@ export class FiatShortenerPipe implements PipeTransform, OnDestroy {
       { value: 1e15, symbol: 'P' },
       { value: 1e18, symbol: 'E' }
     ];
-    const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
-    const item = lookup.slice().reverse().find((item) => num >= item.value);
+    const absNum = Math.abs(num);
+    const item = lookup.slice().reverse().find((item) => absNum >= item.value);
 
-    let result = item ? (num / item.value).toFixed(digits).replace(rx, '$1') : '0';
-    result = new Intl.NumberFormat(this.locale, { style: 'currency', currency, maximumFractionDigits: 0 }).format(item ? num / item.value : 0);
+    if (!item) {
+      return new Intl.NumberFormat(this.locale, { style: 'currency', currency, maximumFractionDigits: 0 }).format(0);
+    }
+
+    const result = new Intl.NumberFormat(this.locale, { style: 'currency', currency, maximumFractionDigits: 0 }).format(num / item.value);
 
     return result + item.symbol;
   }
