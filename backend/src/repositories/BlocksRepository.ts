@@ -13,6 +13,8 @@ import config from '../config';
 import chainTips from '../api/chain-tips';
 import blocks from '../api/blocks';
 import BlocksAuditsRepository from './BlocksAuditsRepository';
+import AccelerationRepository from './AccelerationRepository';
+import { computeMinFeeRate, MinFeeRateResult, MinFeeRateStatus } from '../api/mining/min-fee-rate';
 import transactionUtils from '../api/transaction-utils';
 import { parseDATUMTemplateCreator, parseDMNDTemplateCreator } from '../utils/bitcoin-script';
 import poolsUpdater from '../tasks/pools-updater';
@@ -1425,6 +1427,163 @@ class BlocksRepository {
       throw e;
     }
     return blocksMigrated;
+  }
+
+  // Blocks never attempted for min_fee_rate (issue #6639): status PENDING (0). The
+  // DESC-height order makes strict forward progress because every processed block
+  // leaves status 0.
+  public async $getBlocksWithoutMinFeeRate(limit: number): Promise<{ height: number, hash: string }[]> {
+    try {
+      const [blocks]: any[] = await DB.query(`
+        SELECT height, hash
+        FROM blocks
+        WHERE min_fee_rate_status = ${MinFeeRateStatus.Pending} AND stale = 0
+        ORDER BY height DESC
+        LIMIT ?
+      `, [limit]);
+      return blocks;
+    } catch (e) {
+      logger.err(`Cannot get blocks without min_fee_rate. Reason: ` + (e instanceof Error ? e.message : e));
+      return [];
+    }
+  }
+
+  // Blocks attempted but not yet computable because their summary was < version 2:
+  // status UNAVAILABLE_RETRY (3). Re-attempted as $classifyBlocks upgrades summaries.
+  public async $getBlocksWithRetryableMinFeeRate(limit: number): Promise<{ height: number, hash: string }[]> {
+    try {
+      const [blocks]: any[] = await DB.query(`
+        SELECT height, hash
+        FROM blocks
+        WHERE min_fee_rate_status = ${MinFeeRateStatus.UnavailableRetry} AND stale = 0
+        ORDER BY height DESC
+        LIMIT ?
+      `, [limit]);
+      return blocks;
+    } catch (e) {
+      logger.err(`Cannot get blocks with retryable min_fee_rate. Reason: ` + (e instanceof Error ? e.message : e));
+      return [];
+    }
+  }
+
+  // Persist both columns from a compute result: the rate is set only when AVAILABLE,
+  // NULL otherwise, and the status records why.
+  public async $updateMinFeeRate(height: number, result: MinFeeRateResult): Promise<void> {
+    try {
+      await DB.query(
+        `UPDATE blocks SET min_fee_rate = ?, min_fee_rate_status = ? WHERE height = ?`,
+        [result.rate, result.status, height]
+      );
+    } catch (e) {
+      logger.err(`Cannot update min_fee_rate for block ${height}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Minimum fee-merit effective fee rate per UTC calendar day (issue #6639).
+   * Unlike the rolling DIV-bucket mining charts, this buckets on the fixed UTC day so
+   * the "minimum daily fee rate" is stable regardless of the selected interval. Only
+   * AVAILABLE blocks contribute (min_fee_rate is non-NULL exactly for those).
+   * @asyncSafe
+   */
+  public async $getMinFeeRatesByDay(interval: string | null): Promise<any> {
+    try {
+      let query = `
+        SELECT
+          CAST(MIN(min_fee_rate) AS DOUBLE) AS minRate,
+          MIN(height) AS minHeight,
+          UNIX_TIMESTAMP(DATE(CONVERT_TZ(blockTimestamp, @@session.time_zone, '+00:00'))) AS timestamp
+        FROM blocks
+        WHERE stale = 0 AND min_fee_rate_status = ${MinFeeRateStatus.Available}`;
+
+      if (interval !== null) {
+        query += ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+      }
+
+      query += `
+        GROUP BY DATE(CONVERT_TZ(blockTimestamp, @@session.time_zone, '+00:00'))
+        ORDER BY timestamp`;
+
+      const [rows]: any = await DB.query(query);
+      return rows;
+    } catch (e) {
+      logger.err(`Cannot generate min fee rates by day. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Backfill blocks.min_fee_rate from persisted tables only (blocks_summaries +
+   * blocks_audits + accelerations), so live and historical blocks share one path.
+   * Follows the $migrateBlocksToV1 idiom: batches of 250 descending by height, with
+   * progress throttled to every 5 seconds.
+   *
+   * Two-phase design. The primary phase drains PENDING (status 0) blocks — every one
+   * is stamped with a terminal-or-retry status, so the selector makes strict forward
+   * progress toward older blocks. Only once no PENDING blocks remain does one batch of
+   * the UNAVAILABLE_RETRY (status 3) sweep run, re-attempting blocks whose summary has
+   * since been upgraded to version 2 by $classifyBlocks. Retry never starves the
+   * primary backfill because it runs solely when the primary queue is empty.
+   * @asyncSafe
+   */
+  public async $backfillMinFeeRate(): Promise<number> {
+    const batchSize = 250;
+    let blocksProcessed = 0;
+    try {
+      let timer = Date.now() / 1000;
+      const startedAt = Date.now() / 1000;
+
+      const processBatch = async (batch: { height: number, hash: string }[]): Promise<void> => {
+        for (const row of batch) {
+          const summary = await BlocksSummariesRepository.$getByBlockId(row.hash);
+          const audit = await BlocksAuditsRepository.$getBlockAuditExclusions(row.hash);
+          const accelerationTxids = await AccelerationRepository.$getAcceleratedTxidsAtHeight(row.height);
+
+          const result = computeMinFeeRate({
+            transactions: summary?.transactions ?? [],
+            summaryVersion: summary?.version ?? 0,
+            hasAudit: audit !== null,
+            prioritizedTxs: audit?.prioritizedTxs ?? [],
+            acceleratedTxs: audit?.acceleratedTxs ?? [],
+            accelerationTxids,
+          });
+
+          await this.$updateMinFeeRate(row.height, result);
+
+          const elapsedSeconds = (Date.now() / 1000) - timer;
+          if (elapsedSeconds > 5) {
+            const runningFor = (Date.now() / 1000) - startedAt;
+            const blockPerSeconds = blocksProcessed / elapsedSeconds;
+            logger.debug(`Backfilling min_fee_rate | ~${blockPerSeconds.toFixed(2)} blocks/sec | height: ${row.height} | total: ${blocksProcessed} | elapsed: ${runningFor.toFixed(2)} seconds`);
+            timer = Date.now() / 1000;
+          }
+
+          blocksProcessed++;
+        }
+      };
+
+      // Primary phase: drain never-attempted blocks.
+      let batch = await this.$getBlocksWithoutMinFeeRate(batchSize);
+      while (batch.length) {
+        await processBatch(batch);
+        batch = await this.$getBlocksWithoutMinFeeRate(batchSize);
+      }
+
+      // Retry phase: one batch of blocks that may have become computable meanwhile.
+      const retryBatch = await this.$getBlocksWithRetryableMinFeeRate(batchSize);
+      if (retryBatch.length) {
+        await processBatch(retryBatch);
+      }
+
+      if (blocksProcessed > 0) {
+        logger.notice(`Backfilling min_fee_rate completed: processed ${blocksProcessed} blocks`);
+      }
+    } catch (e) {
+      logger.err(`Backfilling min_fee_rate failed. Trying again later. Reason: ${(e instanceof Error ? e.message : e)}`);
+      throw e;
+    }
+    return blocksProcessed;
   }
 }
 

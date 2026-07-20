@@ -121,6 +121,33 @@ class BlocksAuditRepositories {
     }
   }
 
+  /**
+   * Lean fetch of just the out-of-band exclusion arrays for a block. Returns null
+   * when no audit row exists (the metric is then unavailable — see min-fee-rate.ts).
+   * Unlike $getBlockAudit this does not join blocks_templates, so it still resolves
+   * for audited blocks whose template row is missing.
+   * @asyncSafe
+   */
+  public async $getBlockAuditExclusions(hash: string): Promise<{ prioritizedTxs: string[], acceleratedTxs: string[] } | null> {
+    try {
+      const [rows]: any[] = await DB.query(
+        `SELECT prioritized_txs as prioritizedTxs, accelerated_txs as acceleratedTxs
+         FROM blocks_audits WHERE hash = ?`,
+        [hash]
+      );
+      if (!rows.length) {
+        return null;
+      }
+      return {
+        prioritizedTxs: JSON.parse(rows[0].prioritizedTxs),
+        acceleratedTxs: JSON.parse(rows[0].acceleratedTxs),
+      };
+    } catch (e) {
+      logger.err(`Cannot get block audit exclusions for ${hash}. Reason: ` + (e instanceof Error ? e.message : e));
+      return null;
+    }
+  }
+
   /** @asyncSafe */
   public async $getBlockTemplateAlgo(hash: string): Promise<TemplateAlgorithm | null> {
     try {

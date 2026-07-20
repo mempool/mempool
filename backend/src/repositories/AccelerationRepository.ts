@@ -93,6 +93,22 @@ class AccelerationRepository {
     return null;
   }
 
+  /**
+   * Returns the txids of every acceleration persisted for a given block height.
+   * Reads straight from the accelerations table (not gated by MEMPOOL_SERVICES),
+   * since this is used to exclude accelerated txs from persisted-data metrics.
+   * @asyncSafe
+   */
+  public async $getAcceleratedTxidsAtHeight(height: number): Promise<string[]> {
+    try {
+      const [rows]: any[] = await DB.query(`SELECT txid FROM accelerations WHERE height = ?`, [height]);
+      return rows.map(row => row.txid);
+    } catch (e) {
+      logger.err(`Cannot get accelerated txids at height ${height}. Reason: ` + (e instanceof Error ? e.message : e));
+      return [];
+    }
+  }
+
   public async $getAccelerationInfo(poolSlug: string | null = null, height: number | null = null, interval: string | null = null): Promise<PublicAcceleration[]> {
     if (!interval || !['24h', '3d', '1w', '1m'].includes(interval)) {
       interval = '1m';
