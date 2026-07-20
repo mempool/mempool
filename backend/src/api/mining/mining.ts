@@ -1,4 +1,4 @@
-import { BlockPrice, PoolInfo, PoolInfoPerInterval, PoolStats, RewardStats } from '../../mempool.interfaces';
+import { BlockPrice, PoolInfo, PoolStats, RewardStats } from '../../mempool.interfaces';
 import BlocksRepository from '../../repositories/BlocksRepository';
 import PoolsRepository, { POOLS_STATS_INTERVALS } from '../../repositories/PoolsRepository';
 import HashratesRepository from '../../repositories/HashratesRepository';
@@ -159,17 +159,8 @@ class Mining {
   }
 
   private async $queryAllPoolsStats(): Promise<Record<string, PoolsStats>> {
-    const poolsInfoPerInterval: PoolInfoPerInterval[] = await PoolsRepository.$getPoolsInfoPerInterval();
+    const poolsInfoPerInterval: Record<string, PoolInfo[]> = await PoolsRepository.$getPoolsInfoPerInterval();
     const estimatedHashrates = await this.$getEstimatedHashrates();
-
-    const poolsInfo: Record<string, PoolInfo[]> = {};
-    for (const interval of POOLS_STATS_INTERVALS) {
-      poolsInfo[interval] = [];
-    }
-    for (const row of poolsInfoPerInterval) {
-      const {interval, ...poolInfo} = row;
-      (poolsInfo[interval] ??= []).push(poolInfo);
-    }
 
     const statsByInterval: Record<string, PoolsStats> = {};
     for (const interval of POOLS_STATS_INTERVALS) {
@@ -177,7 +168,7 @@ class Mining {
       let blockCount = 0;
 
       const poolStats: PoolStats[] = [];
-      poolsInfo[interval].forEach((poolInfo) => {
+      poolsInfoPerInterval[interval].forEach((poolInfo) => {
         poolStats.push({
           poolId: poolInfo.poolId, // mysql row id
           name: poolInfo.name,

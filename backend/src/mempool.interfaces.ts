@@ -24,10 +24,6 @@ export interface PoolInfo {
   poolUniqueId: number;
 }
 
-export interface PoolInfoPerInterval extends PoolInfo {
-  interval: string;
-}
-
 export interface PoolStats extends PoolInfo {
   rank: number;
 }
