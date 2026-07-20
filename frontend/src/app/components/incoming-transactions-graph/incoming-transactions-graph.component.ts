@@ -40,6 +40,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
     renderer: 'svg'
   };
   windowPreference: string;
+  isEmpty: boolean = false;
   chartInstance: any = undefined;
   MA: number[][] = [];
   weightMode: boolean = false;
@@ -65,6 +66,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
     if (!this.data) {
       return;
     }
+    this.isEmpty = !this.data.series?.[0]?.length;
     this.windowPreference = (this.windowPreferenceOverride ? this.windowPreferenceOverride : this.storageService.getValue('graphWindowPreference')) || '2h';
     const windowSize = Math.max(10, Math.floor(this.data.series[0].length / 8));
     this.MA = this.calculateMA(this.data.series[0], windowSize);
@@ -259,8 +261,8 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
       ],
       yAxis: {
         max: (value): number => {
-          let cappedMax = value.max;
-          if (this.outlierCappingEnabled && value.max >= (this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER)) {
+          let cappedMax = Number.isFinite(value.max) ? value.max : 0;
+          if (this.outlierCappingEnabled && cappedMax >= (this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER)) {
             cappedMax = Math.round(this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER);
           }
           // always show the clearing rate line, plus a small margin
