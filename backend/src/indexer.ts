@@ -226,6 +226,7 @@ class Indexer {
       await AccelerationRepository.$indexPastAccelerations();
       await BlocksAuditsRepository.$migrateAuditsV0toV1();
       await BlocksRepository.$migrateBlocks();
+      await blocks.$generateFlagValuesDatabase();
       // do not wait for classify blocks to finish
       void blocks.$classifyBlocks();
       runSuccessful = true;

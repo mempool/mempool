@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 111;
+  private static currentVersion = 112;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -1255,6 +1255,11 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE `compact_cpfp_clusters` ADD template_algo TINYINT UNSIGNED NOT NULL DEFAULT 0');
       await this.updateToSchemaVersion(111);
     }
+
+    if (databaseSchemaVersion < 112) {
+      await this.$executeQuery(this.getCreateFlagsValuesTableQuery(), await this.$checkIfTableExists('flag_values'));
+      await this.updateToSchemaVersion(112);
+    }
   }
 
   /**
@@ -1839,6 +1844,17 @@ class DatabaseMigration {
       INDEX (height),
       INDEX (pool)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
+  }
+
+  private getCreateFlagsValuesTableQuery(): string {
+    return `CREATE TABLE IF NOT EXISTS flag_values (
+      bucket_size enum('1', '36', '72', '144', '432', '720', '1008') NOT NULL,
+      start_height int unsigned NOT NULL,
+      flag_value bigint unsigned NOT NULL,
+      tx_count int unsigned NOT NULL,
+      vsize_total int unsigned NOT NULL,
+      PRIMARY KEY (bucket_size, start_height, flag_value)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8`;
   }
 
   /** @asyncUnsafe */
