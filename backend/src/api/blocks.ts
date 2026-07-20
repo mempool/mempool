@@ -1218,7 +1218,7 @@ class Blocks {
       if (Common.indexingEnabled()) {
         await blocksRepository.$saveBlockInDatabase(blockExtended);
         this.updateTimerProgress(timer, `saved ${this.currentBlockHeight} to database`);
-        mining.newUnsyncedBlockInPoolsStatsCache();
+        indexer.scheduleSingleTask('poolsStats', 30000);
 
         await AccelerationRepository.$indexAccelerationsForBlock(
           blockExtended,
@@ -1412,6 +1412,7 @@ class Blocks {
       await AccelerationRepository.$deleteAccelerationsFrom(forkTail.height);
       chainTips.clearOrphanCacheAboveHeight(forkTail.height);
       mining.invalidatePoolsStatsCache();
+      indexer.scheduleSingleTask('poolsStats', 30000);
       this.updateTimerProgress(timer, `deleted stale block data`);
 
       this.blocks = newBlocks.reverse();

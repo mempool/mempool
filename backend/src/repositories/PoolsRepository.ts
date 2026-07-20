@@ -3,7 +3,10 @@ import poolsParser from '../api/pools-parser';
 import config from '../config';
 import DB from '../database';
 import logger from '../logger';
-import { PoolInfo, PoolTag } from '../mempool.interfaces';
+import { PoolInfo, PoolInfoPerInterval, PoolTag } from '../mempool.interfaces';
+
+// Intervals the pools stats cache is built for. 'all' has no time filter; the rest resolve via Common.getSqlInterval
+export const POOLS_STATS_INTERVALS = ['24h', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', '4y', 'all'];
 
 class PoolsRepository {
   /**
@@ -64,6 +67,38 @@ class PoolsRepository {
       return <PoolInfo[]>rows;
     } catch (e) {
       logger.err(`Cannot generate pools stats. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /** @asyncSafe */
+  public async $getPoolsInfoPerInterval(): Promise<PoolInfoPerInterval[]> {
+    const queries: string[] = [];
+    for (const label of POOLS_STATS_INTERVALS) {
+      const sql = Common.getSqlInterval(label);
+      queries.push(`SELECT
+                '${label}' AS \`interval\`,
+                COUNT(blocks.height) As blockCount,
+                  COUNT(CASE WHEN blocks.tx_count = 1 THEN 1 END) AS emptyBlocks,
+                  pool_id AS poolId,
+                  pools.name AS name,
+                  pools.link AS link,
+                  slug,
+                  AVG(blocks_audits.match_rate) AS avgMatchRate,
+                  AVG((CAST(blocks.fees as SIGNED) - CAST(blocks_audits.expected_fees as SIGNED)) / NULLIF(CAST(blocks_audits.expected_fees as SIGNED), 0)) AS avgFeeDelta,
+                  unique_id as poolUniqueId
+              FROM blocks
+              JOIN pools on pools.id = pool_id
+              LEFT JOIN blocks_audits ON blocks_audits.hash = blocks.hash
+              WHERE blocks.stale = 0 ${sql ? `AND blocks.blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${sql}) AND NOW()` : ''}
+              GROUP BY pool_id`) ;
+    }
+    const query = queries.join('\n UNION ALL \n') + ' \n ORDER BY `interval`, blockCount DESC';
+    try {
+      const [rows] = await DB.query(query);
+      return <PoolInfoPerInterval[]> rows;
+    } catch(e) {
+      logger.err(`Cannot generate pools stats per interval. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
