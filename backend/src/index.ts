@@ -215,6 +215,7 @@ class Server {
 
     if (config.MEMPOOL.ENABLED) {
       void this.runMainUpdateLoop();
+      indexer.scheduleSingleTask('poolsStats', 0);
     }
 
     setInterval(() => { this.healthCheck(); }, 2500);

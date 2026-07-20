@@ -1411,8 +1411,7 @@ class Blocks {
       await cpfpRepository.$deleteClustersFrom(forkTail.height);
       await AccelerationRepository.$deleteAccelerationsFrom(forkTail.height);
       chainTips.clearOrphanCacheAboveHeight(forkTail.height);
-      mining.invalidatePoolsStatsCache();
-      indexer.scheduleSingleTask('poolsStats', 30000);
+      void mining.$rebuildPoolsStatsCache();
       this.updateTimerProgress(timer, `deleted stale block data`);
 
       this.blocks = newBlocks.reverse();

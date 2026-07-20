@@ -138,6 +138,7 @@ class Mining {
     return this.poolsStatsCache[cacheKey].stats;
   }
 
+  /** @asyncSafe */
   public $rebuildPoolsStatsCache(): Promise<void> {
     const syncedAt = Date.now();
     const build = this.$queryAllPoolsStats();
@@ -241,10 +242,6 @@ class Mining {
 
   public invalidatePoolsHistoricalHashrateCache(): void {
     this.poolsHistoricalHashrateCache.clear();
-  }
-
-  public invalidatePoolsStatsCache(): void {
-    this.poolsStatsCache = {};
   }
 
   /**

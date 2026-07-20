@@ -9,7 +9,6 @@ import transactionUtils from './transaction-utils';
 import BlocksRepository from '../repositories/BlocksRepository';
 import redisCache from './redis-cache';
 import blocks from './blocks';
-import indexer from '../indexer';
 
 class PoolsParser {
   miningPools: any[] = [];
@@ -130,8 +129,7 @@ class PoolsParser {
       // update persistent cache with the reindexed data
       void diskCache.$saveCacheToDisk();
       void redisCache.$updateBlocks(blocks.getBlocks());
-      mining.invalidatePoolsStatsCache();
-      indexer.scheduleSingleTask('poolsStats', 30000);
+      void mining.$rebuildPoolsStatsCache();
     }
   }
 
