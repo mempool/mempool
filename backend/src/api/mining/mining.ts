@@ -40,7 +40,7 @@ class Mining {
 
   // Updated as blocks arrive, and resynced with the database occasionally to correct drift
   private static readonly POOLS_STATS_RESYNC_MS = 600000;
-  private poolsStatsCache: Map<string, { syncedAt: number, stats: Promise<PoolsStats> }> = new Map();
+  private poolsStatsCache: Map<string, { unsyncedBlocks: 0, syncedAt: number, stats: Promise<PoolsStats> }> = new Map();
   private poolsHistoricalHashrateCache: Map<string, {syncedAt: number, hashrates: Promise<any[]>}> = new Map();
 
   private genesisData: {
@@ -128,13 +128,13 @@ class Mining {
     const cacheKey = Common.getSqlInterval(interval) ?? 'all';
 
     const cached = this.poolsStatsCache.get(cacheKey);
-    if (cached && Date.now() - cached.syncedAt < Mining.POOLS_STATS_RESYNC_MS) {
+    if (cached && Date.now() - cached.syncedAt < Mining.POOLS_STATS_RESYNC_MS && cached.unsyncedBlocks < 3) {
       return cached.stats;
     }
 
     // Cache the promise, so concurrent requests share one rebuild instead of each querying
     const stats = this.$buildPoolsStats(interval);
-    this.poolsStatsCache.set(cacheKey, { syncedAt: Date.now(), stats });
+    this.poolsStatsCache.set(cacheKey, { unsyncedBlocks: 0, syncedAt: Date.now(), stats });
     stats.catch(() => {
       if (this.poolsStatsCache.get(cacheKey)?.stats === stats) {
         this.poolsStatsCache.delete(cacheKey);
@@ -142,50 +142,6 @@ class Mining {
     });
 
     return stats;
-  }
-
-  /**
-   * Apply a newly indexed block to the in-memory pools stats
-   *
-   * Only the block counters are updated here. avgMatchRate, avgFeeDelta, and the estimated
-   * hashrate are left untouched.
-   */
-  public async $updatePoolsStatsWithBlock(block: BlockExtended): Promise<void> {
-    if (this.poolsStatsCache.size === 0) {
-      return;
-    }
-
-    try {
-      for (const [cacheKey, cached] of this.poolsStatsCache) {
-        let stats: PoolsStats;
-        try {
-          stats = await cached.stats;
-        } catch (e) {
-          continue; // a failed build already evicted itself
-        }
-
-        // `extras.pool.id` is the pool's unique_id, not the `pools` row id held in poolId
-        const pool = stats.pools.find((poolStat) => poolStat.poolUniqueId === block.extras.pool.id);
-        if (!pool) {
-          // First block from this pool in the window, and we don't have the rest of its row
-          this.poolsStatsCache.delete(cacheKey);
-          continue;
-        }
-
-        pool.blockCount++;
-        if (block.tx_count === 1) {
-          pool.emptyBlocks++;
-        }
-        stats.blockCount++;
-
-        // rank follows the block count ordering
-        stats.pools.sort((a, b) => b.blockCount - a.blockCount);
-        stats.pools.forEach((poolStat, index) => poolStat.rank = index + 1);
-      }
-    } catch (e) {
-      logger.warn(`Failed to update pools stats with block ${block.height}, forcing a resync. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
-      this.poolsStatsCache.clear();
-    }
   }
 
   private async $buildPoolsStats(interval: string | null): Promise<PoolsStats> {
@@ -267,6 +223,12 @@ class Mining {
 
   public invalidatePoolsStatsCache(): void {
     this.poolsStatsCache.clear();
+  }
+
+  public newUnsyncedBlockInPoolsStatsCache(): void {
+    this.poolsStatsCache.forEach((stats) => {
+      stats.unsyncedBlocks++;
+    });
   }
 
   /**
