@@ -51,6 +51,7 @@ class Blocks {
   private quarterEpochBlockTime: number | null = null;
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
   private classifyingBlocks: boolean = false;
+  private updatingBlocksMissingCoinbaseBip54: boolean = false;
   private oldestCoreLogTimestamp: number | undefined | null = undefined;
 
   private mainLoopTimeout: number = 120000;
@@ -317,6 +318,12 @@ class Blocks {
       extras.coinbaseAddresses = null;
       extras.coinbaseSignature = null;
       extras.coinbaseSignatureAscii = null;
+    }
+
+    const seq = transactions[0].vin[0].sequence;
+
+    if (block.timestamp >= 1768800991) { // First block to include coinbase bip54 in signet
+      extras.coinbaseBip54 = (block.height > 0 && transactions[0].locktime === block.height - 1 && typeof seq === 'number' && seq !== 0xffffffff);
     }
 
     const header = await bitcoinClient.getBlockHeader(block.id, false);
@@ -929,6 +936,66 @@ class Blocks {
     }
 
     this.classifyingBlocks = false;
+  }
+
+  /** @asyncSafe */
+  public async $updateBlocksMissingCoinbaseBip54(): Promise<void> {
+    if (this.updatingBlocksMissingCoinbaseBip54) {
+      return;
+    }
+
+    this.updatingBlocksMissingCoinbaseBip54 = true;
+
+    if (!Common.indexingEnabled()) {
+      return;
+    }
+
+    let blocksMissingCoinbaseBip54: BlockExtended[];
+    try {
+      blocksMissingCoinbaseBip54 = await BlocksRepository.$getBlocksMissingCoinbaseBip54();
+    } catch (e) {
+      this.updatingBlocksMissingCoinbaseBip54 = false;
+      throw e;
+    }
+
+    if (!blocksMissingCoinbaseBip54.length) {
+      this.updatingBlocksMissingCoinbaseBip54 = false;
+      return;
+    }
+
+    let timer = Date.now();
+    let updatedThisRun = 0;
+    let updatedInTotal = 0;
+    const numToUpdate = blocksMissingCoinbaseBip54.length;
+
+    logger.debug(`Updating blocks missing coinbase bip54 from #${blocksMissingCoinbaseBip54[0].height} to #${blocksMissingCoinbaseBip54[blocksMissingCoinbaseBip54.length - 1].height}`, logger.tags.mining);
+    for (const block of blocksMissingCoinbaseBip54) {
+      try {
+        const coinbaseTx = await bitcoinApi.$getCoinbaseTx(block.id);
+        const seq = coinbaseTx.vin[0].sequence;
+        const coinbaseBip54 = block.height > 0 && coinbaseTx.locktime === block.height - 1 && typeof seq === 'number' && seq !== 0xffffffff;
+        await BlocksRepository.$updateCoinbaseBip54(coinbaseBip54, block.height);
+        updatedInTotal++;
+        updatedThisRun++;
+
+        // Don't update too fast
+        await Common.sleep$(100);
+      } catch (e) {
+        logger.warn(`Failed to update bip54 field in block #${block.height}`, logger.tags.mining);
+      }
+
+      const elapsedSeconds = (Date.now() - timer) / 1000;
+      if (elapsedSeconds > 5) {
+        const perSecond = updatedThisRun / elapsedSeconds;
+        const progress = (updatedInTotal / numToUpdate) * 100;
+        logger.debug(`Updated #${block.height}: ${updatedInTotal} / ${numToUpdate}  (${progress.toFixed(2)}%) | ~${perSecond.toFixed(1)} blocks/s`, logger.tags.mining);
+        timer = Date.now();
+        updatedThisRun = 0;
+      }
+    }
+    logger.debug(`Update of blocks missing coinbase bip54 completed`, logger.tags.mining);
+
+    this.updatingBlocksMissingCoinbaseBip54 = false;
   }
 
   /**
