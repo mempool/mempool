@@ -14,6 +14,9 @@ import { PartnerCodeService } from '@app/services/partner-code.service';
 import { ApiService } from '@app/services/api.service';
 import { isDevMode } from '@angular/core';
 import { ThemeService } from '../../services/theme.service';
+import { StorageService } from '@app/services/storage.service';
+import { AnalyticsService } from '@app/services/analytics.service';
+import { Recommendedfees } from '@interfaces/websocket.interface';
 
 export type PaymentMethod = 'balance' | 'bitcoin' | 'cashapp' | 'applePay' | 'googlePay' | 'cardOnFile';
 
@@ -105,6 +108,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   accelerationSubscription: Subscription;
   difficultySubscription: Subscription;
   estimateSubscription: Subscription;
+  recommendedFeesSubscription: Subscription;
   estimate: AccelerationEstimate;
   estimate$: ReplaySubject<AccelerationEstimate | null> = new ReplaySubject(1);
   maxBidBoost: number; // sats
@@ -119,6 +123,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   userBid = 0;
   selectFeeRateIndex = 1;
   maxRateOptions: RateOption[] = [];
+  recommendedFees: Recommendedfees | null = null;
 
   // square
   loadingCashapp = false;
@@ -150,6 +155,8 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     private enterpriseService: EnterpriseService,
     private partnerCodeService: PartnerCodeService,
     private themeService: ThemeService,
+    private analyticsService: AnalyticsService,
+    private storageService: StorageService,
   ) {
     this.isProdDomain = this.stateService.isProdDomain;
 
@@ -198,6 +205,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
       this.loadedTheme = state.theme;
       this.cd.markForCheck();
     });
+    this.recommendedFeesSubscription = this.stateService.recommendedFees$.subscribe(
+      (recommendedFees) => {
+        this.recommendedFees = recommendedFees;
+      }
+    );
   }
 
   ngOnDestroy(): void {
@@ -210,6 +222,9 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     if (this.themeStateSubscription) {
       this.themeStateSubscription.unsubscribe();
     }
+    if (this.recommendedFeesSubscription) {
+      this.recommendedFeesSubscription.unsubscribe();
+    }
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -218,6 +233,11 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     if (changes.accelerating && this.accelerating) {
       this.moveToStep('success', true);
     }
+  }
+
+  onAccelerateClicked(): void {
+    this.analyticsService.action('/tx/:txid/checkout/' + (this.step === 'quote' ? 'quote' : 'summary'), 'accelerate_clicked', this.anonymizedTxInfo());
+    this.moveToStep('checkout');
   }
 
   moveToStep(step: CheckoutStep, force: boolean = false): void {
@@ -249,14 +269,17 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         this.moveToStep('bitcoin');
       }
     } else if (this._step === 'cashapp') {
+      this.analyticsService.action('/tx/:txid/checkout/checkout', 'cashapp_clicked', this.anonymizedTxInfo());
       this.loadingCashapp = true;
       this.setupSquare();
       this.scrollToElementWithTimeout('confirm-title', 'center', 100);
     } else if (this._step === 'applepay' && this.applePayEnabled) {
+      this.analyticsService.action('/tx/:txid/checkout/checkout', 'applypay_clicked', this.anonymizedTxInfo());
       this.loadingApplePay = true;
       this.setupSquare();
       this.scrollToElementWithTimeout('confirm-title', 'center', 100);
     } else if (this._step === 'googlepay' && this.googlePayEnabled) {
+      this.analyticsService.action('/tx/:txid/checkout/checkout', 'googlepay_clicked', this.anonymizedTxInfo());
       this.loadingGooglePay = true;
       this.setupSquare();
       this.scrollToElementWithTimeout('confirm-title', 'center', 100);
@@ -267,12 +290,15 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     } else if (this._step === 'bitcoin') {
       this.scrollToElementWithTimeout('confirm-title', 'nearest', 100);
     } else if (this._step === 'paid') {
+      this.analyticsService.action('/tx/:txid/checkout', 'acceleration_paid', this.anonymizedTxInfo());
       this.timePaid = Date.now();
       this.timeoutTimer = setTimeout(() => {
         if (this.step === 'paid') {
           this.accelerateError = 'internal_server_error';
         }
       }, 120000);
+    } else if (this._step === 'quote') {
+      this.analyticsService.action('/tx/:txid/checkout/summary', 'details_clicked', this.anonymizedTxInfo());
     }
     this.hasDetails.emit(this._step === 'quote');
   }
@@ -281,6 +307,16 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     this.completed.emit(true);
     this.moveToStep('summary', true);
     this.accelerateError = '';
+  }
+
+  anonymizedTxInfo(): Record<string, unknown> {
+    return {
+      vsize: this.estimate.txSummary.effectiveVsize,
+      fee: this.estimate.txSummary.effectiveFee,
+      userBid: this.userBid,
+      recommended: this.recommendedFees?.fastestFee,
+      cost: this.cost,
+    };
   }
 
   /**
