@@ -1,0 +1,122 @@
+.card-header {
+  border-bottom: 0;
+  font-size: 18px;
+  @media (min-width: 465px) {
+    font-size: 20px;
+  }
+  @media (min-width: 992px) {
+    height: 40px;
+  }
+}
+
+.full-container {
+  display: flex;
+  flex-direction: column;
+  padding: 0px 15px;
+  width: 100%;
+  height: calc(100vh - 225px);
+  min-height: 400px;
+  @media (min-width: 992px) {
+    height: calc(100vh - 150px);
+  }
+}
+
+.chart {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  padding-bottom: 20px;
+  padding-right: 10px;
+  @media (max-width: 992px) {
+    padding-bottom: 25px;
+  }
+  @media (max-width: 767px) {
+    padding-bottom: 25px;
+  }
+}
+
+.no-data {
+  padding: 30px 0;
+}
+
+.threshold-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+  @media (min-width: 768px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    row-gap: 10px;
+  }
+
+  .threshold-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+    label {
+      margin: 0;
+      font-size: 12px;
+      color: var(--title-fg);
+      white-space: nowrap;
+    }
+    input {
+      width: 90px;
+    }
+  }
+
+  .threshold-stats {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+    min-width: 0;
+    .item {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      @media (min-width: 768px) {
+        text-align: right;
+      }
+      .value {
+        font-size: 16px;
+        color: var(--fg);
+        white-space: nowrap;
+      }
+      .label {
+        font-size: 11px;
+        color: var(--transparent-fg);
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
+.formRadioGroup {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  @media (min-width: 991px) {
+    position: relative;
+    top: -100px;
+  }
+  @media (min-width: 830px) and (max-width: 991px) {
+    position: relative;
+    top: 0px;
+  }
+  @media (min-width: 830px) {
+    flex-direction: row;
+    float: right;
+    margin-top: 0px;
+  }
+  .btn-sm {
+    font-size: 9px;
+    @media (min-width: 830px) {
+      font-size: 14px;
+    }
+  }
+}
