@@ -96,7 +96,7 @@ const routes: Routes = [
         component: StartComponent,
         canMatch: [PaymentGuard],
         runGuardsAndResolvers: 'always',
-        data: { preload: true, networkSpecific: true },
+        data: { preload: false, networkSpecific: true },
         loadChildren: () => import('@components/payment/payment.module').then(m => m.PaymentModule),
       },
       {
