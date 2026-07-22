@@ -100,22 +100,6 @@
   top: -1px;
 }
 
-.qr-col {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.qr-wrapper {
-  display: flex;
-  justify-content: center;
-  padding: 10px 10px 5px 10px;
-  background-color: #ffffff;
-  border-radius: 4px;
-  width: fit-content;
-  margin: 0 auto 0 auto;
-}
-
 .details-link {
   margin-top: 20px;
   text-align: center;
@@ -138,14 +122,19 @@
   flex-direction: row;
   align-items: center;
   justify-content: end;
-
+  flex-wrap: wrap;
 
   @media (min-width: 850px) {
     justify-content: start;
   }
 }
 
-.confirmations {
+.confs {
+  display: flex;
+  gap: 2px;
+}
+
+.confirmation {
   fill: var(--green);
   fill-opacity: 0.8;
 
@@ -175,14 +164,52 @@
   }
 }
 
+.amount-side {
+  @media (min-width: 850px) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+.amount-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 1.5rem 1rem;
+  background-color: var(--stat-box-bg);
+
+  .text {
+    font-size: 0.8125rem;
+    letter-spacing: 0.05em;
+    color: var(--transparent-fg);
+  }
+
+  app-amount {
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.1;
+  }
+
+  .fiat {
+    display: block;
+    margin-left: 0;
+    font-size: 1rem;
+    text-align: center;
+    color: var(--transparent-fg);
+  }
+}
+
 @keyframes pulse {
   0% {
-    fill-opacity: 0.25;
+    fill-opacity: 0.30;
   }
   50% {
     fill-opacity: 0.6;
   }
   100% {
-    fill-opacity: 0.25;
+    fill-opacity: 0.30;
   }
 }

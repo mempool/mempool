@@ -18,8 +18,8 @@
     <div class="row">
       @if (isMobile) {
       <div class="col-sm">
-        <ng-container *ngTemplateOutlet="qr"></ng-container>
-        <ng-container *ngTemplateOutlet="trackerBar"></ng-container>
+        <ng-container *ngTemplateOutlet="amountSection"></ng-container>
+        <ng-container *ngTemplateOutlet="trackerPanel"></ng-container>
         <table class="table table-borderless table-striped">
           <tbody>
             <ng-container *ngTemplateOutlet="rows"></ng-container>
@@ -28,15 +28,15 @@
       </div>
       } @else {
       <div class="col-sm">
-        <ng-container *ngTemplateOutlet="trackerBar"></ng-container>
+        <ng-container *ngTemplateOutlet="trackerPanel"></ng-container>
         <table class="table table-borderless table-striped">
           <tbody>
             <ng-container *ngTemplateOutlet="rows"></ng-container>
           </tbody>
         </table>
       </div>
-      <div class="col-sm qr-col">
-        <ng-container *ngTemplateOutlet="qr"></ng-container>
+      <div class="col-sm amount-side">
+        <ng-container *ngTemplateOutlet="amountSection"></ng-container>
       </div>
       }
     </div>
@@ -58,9 +58,17 @@
 
 </div>
 
+<ng-template #amountSection>
+  <div class="amount-col">
+    <span class="text" i18n="transaction.amount|Amount">Amount</span>
+    <app-amount [satoshis]="amount" [blockConversion]="tx.price" [noFiat]="true"></app-amount>
+    <app-fiat class="fiat" [value]="amount" [blockConversion]="tx.price"></app-fiat>
+  </div>
+</ng-template>
+
 <ng-template #rows>
-  <ng-container *ngTemplateOutlet="addressRow"></ng-container>
-  <ng-container *ngTemplateOutlet="amountRow"></ng-container>
+  <ng-container *ngTemplateOutlet="addressRow"></ng-container><!-- 
+  <ng-container *ngTemplateOutlet="amountRow"></ng-container> -->
   <ng-container *ngTemplateOutlet="statusRow"></ng-container>
 </ng-template>
 
@@ -77,6 +85,7 @@
     <ng-container *ngTemplateOutlet="skeletonRow"></ng-container>
   }
 </ng-template>
+
 <ng-template #amountRow>
   @if (tx) {
     <tr>
@@ -92,6 +101,7 @@
     <ng-container *ngTemplateOutlet="skeletonRow"></ng-container>
   }
 </ng-template>
+
 <ng-template #statusRow>
   @if (tx && !replaced) {
     <tr>
@@ -123,33 +133,31 @@
   @if (settled) {
   <span class="settled" i18n="transaction.status.settled|Settled">Settled</span>
   } @else if (isValidView && confsRequired > 1) {
-  <div class="confs-cell">
-    <span i18n="transaction.confirmed|Transaction confirmed state">Confirmed</span>
-    <span>
-      @for (conf of confsRequiredArr; track $index) {
+    <span class="confs-cell">
       <span>
-        <svg width="25px" height="25px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-          <path class="confirmations" [class.pending]="($index + 1) > confirmations"
-            [class.animate]="($index + 1) === (confirmations + 1)" d="M23.05 23.05V488.9H488.9V23.05H23.05z" />
-        </svg>
+        <span>{{ confirmations }} <span i18n="shared.of">of</span> {{ confsRequired }} </span><span i18n="shared.confirmations">Confirmations</span>
       </span>
-      }
+      <ng-container *ngTemplateOutlet="confsProgress"></ng-container>
     </span>
-  </div>
   } @else {
   <span class="skeleton-loader"></span>
   }
 </ng-template>
 
-<ng-template #qr>
-  @if (isValidView) {
-  <div class="qr-wrapper">
-    <app-qrcode [size]="isMobile ? 125 : 200" [data]="destination"></app-qrcode>
-  </div>
-  }
+<ng-template #confsProgress>
+  <span class="confs">
+    @for (conf of confsRequiredArr; track $index) {
+      <span>
+        <svg width="25px" height="25px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+          <path class="confirmation" [class.pending]="($index + 1) > confirmations"
+            [class.animate]="($index + 1) === (confirmations + 1)" d="M23.05 23.05V488.9H488.9V23.05H23.05z" />
+        </svg>
+      </span>
+      }
+  </span>
 </ng-template>
 
-<ng-template #trackerBar>
+<ng-template #trackerPanel>
   @if (replaced) {
   <div class="alert-replaced" role="alert">
     <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>
@@ -167,6 +175,6 @@
 
 <ng-template #skeletonRow>
   <tr>
-    <td><span class="skeleton-loader"></span></td>
+    <td colspan="2"><span class="skeleton-loader"></span></td>
   </tr>
 </ng-template>
