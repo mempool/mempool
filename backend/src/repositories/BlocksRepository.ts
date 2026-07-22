@@ -112,6 +112,9 @@ const BLOCK_DB_FIELDS = `
 class BlocksRepository {
   static version = 1;
 
+  // Work of a block from its difficulty: work = 2^256 / (target + 1) and target = 0xFFFF * 2^208 / difficulty,
+  private static readonly WORK_PER_DIFFICULTY = Math.pow(2, 48) / 0xFFFF;
+
   /**
    * Save indexed block data in the database
    * @asyncSafe
@@ -354,6 +357,67 @@ class BlocksRepository {
       return <number>rows[0].blockCount;
     } catch (e) {
       logger.err(`Cannot count blocks for this pool (using offset). Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Get estimated network hashrate over the last `blockCount` blocks
+   *
+   *
+   * @asyncSafe
+   */
+  public async $getEstimatedHashrates(blockCounts: number[]): Promise<{ tipHeight: number, hashrates: (number | null)[] }> {
+    try {
+      // MAX(height) can't use the height index once it's filtered on stale, but an ordered lookup can
+      const [tipRows]: any = await DB.query(`SELECT height as tipHeight FROM blocks WHERE stale = 0 ORDER BY height DESC LIMIT 1`);
+      const tipHeight = tipRows[0]?.tipHeight;
+      if (tipHeight == null) {
+        return { tipHeight: 0, hashrates: blockCounts.map(() => null) };
+      }
+
+      // A lookup of 0 blocks has no window to measure, and Core reports 0 for it
+      const lookups = blockCounts.map((count) => Math.floor(count));
+      if (lookups.every((lookup) => lookup <= 0)) {
+        return { tipHeight, hashrates: lookups.map(() => 0) };
+      }
+
+      const params: number[] = [];
+      const columns = lookups.map((lookup, i) => {
+        // work spans H-N+1 … H, while time and the contiguity count span H-N … H
+        params.push(tipHeight - lookup + 1, tipHeight - lookup, tipHeight - lookup, tipHeight - lookup);
+        return `
+          SUM(CASE WHEN height >= ? THEN difficulty END) AS work_${i},
+          MAX(CASE WHEN height >= ? THEN UNIX_TIMESTAMP(blockTimestamp) END)
+            - MIN(CASE WHEN height >= ? THEN UNIX_TIMESTAMP(blockTimestamp) END) AS timespan_${i},
+          COUNT(CASE WHEN height >= ? THEN 1 END) AS blocks_${i}`;
+      }).join(',');
+
+      // Bounding by resolved heights keeps this a range scan on the height index over the widest window
+      params.push(tipHeight - Math.max(...lookups), tipHeight);
+      const [rows]: any = await DB.query(
+        `SELECT ${columns} FROM blocks WHERE stale = 0 AND height BETWEEN ? AND ?`,
+        params
+      );
+
+      const row = rows[0];
+      const hashrates = lookups.map((lookup, i) => {
+        if (lookup <= 0) {
+          return 0;
+        }
+        if (row[`blocks_${i}`] !== lookup + 1 || row[`work_${i}`] === null) {
+          return null;
+        }
+        const timespan = row[`timespan_${i}`];
+        if (!timespan) {
+          return 0;
+        }
+        return row[`work_${i}`] * BlocksRepository.WORK_PER_DIFFICULTY / timespan;
+      });
+
+      return { tipHeight, hashrates };
+    } catch (e) {
+      logger.err(`Cannot estimate network hashrate. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }

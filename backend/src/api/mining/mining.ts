@@ -192,15 +192,23 @@ class Mining {
 
   /** @asyncSafe */
   private async $getEstimatedHashrates(): Promise<{ lastEstimatedHashrate: number, lastEstimatedHashrate3d: number, lastEstimatedHashrate1w: number }> {
-    const totalBlock24h: number = await BlocksRepository.$blockCount(null, '24h');
-    const totalBlock3d: number = await BlocksRepository.$blockCount(null, '3d');
-    const totalBlock1w: number = await BlocksRepository.$blockCount(null, '1w');
+    const blockCounts: number[] = [
+      await BlocksRepository.$blockCount(null, '24h'),
+      await BlocksRepository.$blockCount(null, '3d'),
+      await BlocksRepository.$blockCount(null, '1w'),
+    ];
+    const { tipHeight, hashrates } = await BlocksRepository.$getEstimatedHashrates(blockCounts);
 
     try {
+      // Only windows we can't derive from indexed blocks (a missing height) still need Bitcoin Core
+      const [hashrate24h, hashrate3d, hashrate1w] = await Promise.all(hashrates.map((hashrate, i) =>
+        hashrate ?? bitcoinClient.getNetworkHashPs(blockCounts[i], tipHeight)
+      ));
+
       return {
-        lastEstimatedHashrate: await bitcoinClient.getNetworkHashPs(totalBlock24h),
-        lastEstimatedHashrate3d: await bitcoinClient.getNetworkHashPs(totalBlock3d),
-        lastEstimatedHashrate1w: await bitcoinClient.getNetworkHashPs(totalBlock1w),
+        lastEstimatedHashrate: hashrate24h,
+        lastEstimatedHashrate3d: hashrate3d,
+        lastEstimatedHashrate1w: hashrate1w,
       };
     } catch (e) {
       logger.debug('Bitcoin Core is not available, using zeroed value for current hashrate', logger.tags.mining);
