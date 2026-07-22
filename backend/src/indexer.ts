@@ -228,6 +228,7 @@ class Indexer {
       await BlocksRepository.$migrateBlocks();
       // do not wait for classify blocks to finish
       void blocks.$classifyBlocks();
+      void blocks.$updateBlocksMissingCoinbaseBip54();
       runSuccessful = true;
     } catch (e) {
       nextRunDelay = retryDelay;

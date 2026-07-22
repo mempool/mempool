@@ -204,13 +204,22 @@
               <app-mining-pool [slug]="block.extras.pool.slug" [name]="block.extras.pool.name"></app-mining-pool>
             </ng-template>
           </a>
+          <ng-container *ngTemplateOutlet="bip54Badge"></ng-container>
         </td>
         <td *ngIf="!stateService.env.MINING_DASHBOARD && stateService.env.BASE_MODULE === 'mempool'">
           <span placement="bottom" class="badge"
             [class]="block.extras.pool.slug === 'unknown' ? 'bg-secondary' : 'bg-primary'">
             {{ block.extras.pool.name }}
         </span>
+          <ng-container *ngTemplateOutlet="bip54Badge"></ng-container>
         </td>
+        <ng-template #bip54Badge>
+          @if (block.extras.coinbaseBip54) {
+            <span class="bip54-badge badge" i18n="block.bip54" i18n-ngbTooltip="Bip54" ngbTooltip="Coinbase is forward-compatible with BIP-54 (nLockTime = height − 1, nSequence ≠ 0xffffffff).">
+                BIP-54 coinbase
+            </span>
+          }
+        </ng-template>
       </tr>
     </ng-container>
     <ng-template #loadingRest>
