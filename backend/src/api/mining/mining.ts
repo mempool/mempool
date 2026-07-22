@@ -1,6 +1,6 @@
 import { BlockPrice, PoolInfo, PoolStats, RewardStats } from '../../mempool.interfaces';
 import BlocksRepository from '../../repositories/BlocksRepository';
-import PoolsRepository from '../../repositories/PoolsRepository';
+import PoolsRepository, { POOLS_STATS_INTERVALS } from '../../repositories/PoolsRepository';
 import HashratesRepository from '../../repositories/HashratesRepository';
 import bitcoinClient from '../bitcoin/bitcoin-client';
 import logger from '../../logger';
@@ -22,6 +22,14 @@ interface DifficultyBlock {
   difficulty: number,
 }
 
+interface PoolsStats {
+  pools: PoolStats[],
+  blockCount: number,
+  lastEstimatedHashrate: number,
+  lastEstimatedHashrate3d: number,
+  lastEstimatedHashrate1w: number,
+}
+
 class Mining {
   private blocksPriceIndexingRunning = false;
   public lastHashrateIndexingDate: number | null = null;
@@ -29,6 +37,11 @@ class Mining {
 
   public reindexHashrateRequested = false;
   public reindexDifficultyAdjustmentRequested = false;
+
+  // Rebuilt in the background on new blocks/reorgs/pool changes; entries older than this get a lazy refresh
+  private static readonly POOLS_STATS_RESYNC_MS = 600000;
+  private poolsStatsCache: Record<string, { syncedAt: number, stats: Promise<PoolsStats> }> = {};
+  private poolsHistoricalHashrateCache: Map<string, {syncedAt: number, hashrates: Promise<any[]>}> = new Map();
 
   private genesisData: {
     timestamp: number,
@@ -110,51 +123,124 @@ class Mining {
   /**
    * Generate high level overview of the pool ranks and general stats
    */
-  public async $getPoolsStats(interval: string | null): Promise<object> {
-    const poolsStatistics = {};
+  public async $getPoolsStats(interval: string | null): Promise<PoolsStats> {
+    const cacheKey = (interval && Common.getSqlInterval(interval)) ? interval : 'all';
 
-    const poolsInfo: PoolInfo[] = await PoolsRepository.$getPoolsInfo(interval);
-
-    const poolsStats: PoolStats[] = [];
-    let rank = 1;
-    let blockCount = 0;
-
-    poolsInfo.forEach((poolInfo: PoolInfo) => {
-      const poolStat: PoolStats = {
-        poolId: poolInfo.poolId, // mysql row id
-        name: poolInfo.name,
-        link: poolInfo.link,
-        blockCount: poolInfo.blockCount,
-        rank: rank++,
-        emptyBlocks: poolInfo.emptyBlocks,
-        slug: poolInfo.slug,
-        avgMatchRate: poolInfo.avgMatchRate !== null ? Math.round(100 * poolInfo.avgMatchRate) / 100 : null,
-        avgFeeDelta: poolInfo.avgFeeDelta,
-        poolUniqueId: poolInfo.poolUniqueId
-      };
-      poolsStats.push(poolStat);
-      blockCount += poolInfo.blockCount;
-    });
-
-    poolsStatistics['pools'] = poolsStats;
-    poolsStatistics['blockCount'] = blockCount;
-
-    const totalBlock24h: number = await BlocksRepository.$blockCount(null, '24h');
-    const totalBlock3d: number = await BlocksRepository.$blockCount(null, '3d');
-    const totalBlock1w: number = await BlocksRepository.$blockCount(null, '1w');
-
-    try {
-      poolsStatistics['lastEstimatedHashrate'] = await bitcoinClient.getNetworkHashPs(totalBlock24h);
-      poolsStatistics['lastEstimatedHashrate3d'] = await bitcoinClient.getNetworkHashPs(totalBlock3d);
-      poolsStatistics['lastEstimatedHashrate1w'] = await bitcoinClient.getNetworkHashPs(totalBlock1w);
-    } catch (e) {
-      poolsStatistics['lastEstimatedHashrate'] = 0;
-      poolsStatistics['lastEstimatedHashrate3d'] = 0;
-      poolsStatistics['lastEstimatedHashrate1w'] = 0;
-      logger.debug('Bitcoin Core is not available, using zeroed value for current hashrate', logger.tags.mining);
+    const cached = this.poolsStatsCache[cacheKey];
+    if (cached) {
+      if (Date.now() - cached.syncedAt >= Mining.POOLS_STATS_RESYNC_MS) {
+        this.$rebuildPoolsStatsCache().catch(() => {/** */});
+      }
+      return cached.stats;
     }
 
-    return poolsStatistics;
+    this.$rebuildPoolsStatsCache().catch(() => {/** */});
+    return this.poolsStatsCache[cacheKey].stats;
+  }
+
+  /** @asyncSafe */
+  public $rebuildPoolsStatsCache(): Promise<void> {
+    const syncedAt = Date.now();
+    const build = this.$queryAllPoolsStats();
+
+    for (const interval of POOLS_STATS_INTERVALS) {
+      const stats = build.then((byInterval) => byInterval[interval]);
+      this.poolsStatsCache[interval] = { syncedAt, stats };
+      stats.catch(() => {
+        if (this.poolsStatsCache[interval]?.stats === stats) {
+          delete this.poolsStatsCache[interval];
+        }
+      });
+    }
+
+    return build.then(() => undefined, (e) => {
+      logger.err(`Failed to build pools stats cache. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
+    });
+  }
+
+  private async $queryAllPoolsStats(): Promise<Record<string, PoolsStats>> {
+    const poolsInfoPerInterval: Record<string, PoolInfo[]> = await PoolsRepository.$getPoolsInfoPerInterval();
+    const estimatedHashrates = await this.$getEstimatedHashrates();
+
+    const statsByInterval: Record<string, PoolsStats> = {};
+    for (const interval of POOLS_STATS_INTERVALS) {
+      let rank = 1;
+      let blockCount = 0;
+
+      const poolStats: PoolStats[] = [];
+      poolsInfoPerInterval[interval].forEach((poolInfo) => {
+        poolStats.push({
+          poolId: poolInfo.poolId, // mysql row id
+          name: poolInfo.name,
+          link: poolInfo.link,
+          blockCount: poolInfo.blockCount,
+          rank: rank++,
+          emptyBlocks: poolInfo.emptyBlocks,
+          slug: poolInfo.slug,
+          avgMatchRate: poolInfo.avgMatchRate !== null ? Math.round(100 * poolInfo.avgMatchRate) / 100 : null,
+          avgFeeDelta: poolInfo.avgFeeDelta,
+          poolUniqueId: poolInfo.poolUniqueId
+        });
+        blockCount += poolInfo.blockCount;
+      });
+
+      statsByInterval[interval] = { pools: poolStats, blockCount: blockCount, ...estimatedHashrates };
+    }
+
+    return statsByInterval;
+  }
+
+  /** @asyncSafe */
+  private async $getEstimatedHashrates(): Promise<{ lastEstimatedHashrate: number, lastEstimatedHashrate3d: number, lastEstimatedHashrate1w: number }> {
+    const blockCounts: number[] = [
+      await BlocksRepository.$blockCount(null, '24h'),
+      await BlocksRepository.$blockCount(null, '3d'),
+      await BlocksRepository.$blockCount(null, '1w'),
+    ];
+    const { tipHeight, hashrates } = await BlocksRepository.$getEstimatedHashrates(blockCounts);
+
+    try {
+      // Only windows we can't derive from indexed blocks (a missing height) still need Bitcoin Core
+      const [hashrate24h, hashrate3d, hashrate1w] = await Promise.all(hashrates.map((hashrate, i) =>
+        hashrate ?? bitcoinClient.getNetworkHashPs(blockCounts[i], tipHeight)
+      ));
+
+      return {
+        lastEstimatedHashrate: hashrate24h,
+        lastEstimatedHashrate3d: hashrate3d,
+        lastEstimatedHashrate1w: hashrate1w,
+      };
+    } catch (e) {
+      logger.debug('Bitcoin Core is not available, using zeroed value for current hashrate', logger.tags.mining);
+      return { lastEstimatedHashrate: 0, lastEstimatedHashrate3d: 0, lastEstimatedHashrate1w: 0 };
+    }
+  }
+
+  /**
+   * Get weekly hashrate history for all pools
+   */
+  public async $getPoolsHistoricalHashrate(interval: string | null): Promise<any[]> {
+    const cacheKey = Common.getSqlInterval(interval) ?? 'all';
+
+    const cached = this.poolsHistoricalHashrateCache.get(cacheKey);
+    if (cached && Date.now() - cached.syncedAt < Mining.POOLS_STATS_RESYNC_MS) {
+      return cached.hashrates;
+    }
+
+    // Cache the promise, so concurrent requests share one rebuild instead of each querying
+    const hashrates = HashratesRepository.$getPoolsWeeklyHashrate(interval);
+    this.poolsHistoricalHashrateCache.set(cacheKey, { syncedAt: Date.now(), hashrates });
+    hashrates.catch(() => {
+      if (this.poolsHistoricalHashrateCache.get(cacheKey)?.hashrates === hashrates) {
+        this.poolsHistoricalHashrateCache.delete(cacheKey);
+      }
+    });
+
+    return hashrates;
+  }
+
+  public invalidatePoolsHistoricalHashrateCache(): void {
+    this.poolsHistoricalHashrateCache.clear();
   }
 
   /**
@@ -312,6 +398,7 @@ class Mining {
       }
       this.lastWeeklyHashrateIndexingDate = new Date().getUTCDate();
       if (newlyIndexed > 0) {
+        this.invalidatePoolsHistoricalHashrateCache();
         logger.info(`Weekly mining pools hashrates indexing completed: indexed ${newlyIndexed} weeks`, logger.tags.mining);
       } else {
         logger.debug(`Weekly mining pools hashrates indexing completed: indexed ${newlyIndexed} weeks`, logger.tags.mining);

@@ -1218,6 +1218,7 @@ class Blocks {
       if (Common.indexingEnabled()) {
         await blocksRepository.$saveBlockInDatabase(blockExtended);
         this.updateTimerProgress(timer, `saved ${this.currentBlockHeight} to database`);
+        indexer.scheduleSingleTask('poolsStats', 30000);
 
         await AccelerationRepository.$indexAccelerationsForBlock(
           blockExtended,
@@ -1410,6 +1411,7 @@ class Blocks {
       await cpfpRepository.$deleteClustersFrom(forkTail.height);
       await AccelerationRepository.$deleteAccelerationsFrom(forkTail.height);
       chainTips.clearOrphanCacheAboveHeight(forkTail.height);
+      void mining.$rebuildPoolsStatsCache();
       this.updateTimerProgress(timer, `deleted stale block data`);
 
       this.blocks = newBlocks.reverse();
