@@ -59,10 +59,23 @@
 </div>
 
 <ng-template #amountSection>
-  <div class="amount-col">
-    <span class="text" i18n="transaction.amount|Amount">Amount</span>
-    <app-amount [satoshis]="amount" [blockConversion]="tx.price" [noFiat]="true"></app-amount>
-    <app-fiat class="fiat" [value]="amount" [blockConversion]="tx.price"></app-fiat>
+  <div style="position: relative;">
+    @if (viewAmountMode$ | async; as mode) {
+      <div class="toggler">
+        <a href="" (click)="changeMode('btc')" class="toggler-option"
+          [class.inactive]="mode === 'sats'"><small>BTC</small></a>
+        <span style="color: var(--transparent-fg); font-size: 8px"> | </span>
+        <a href="" (click)="changeMode('sats')" class="toggler-option"
+          [class.inactive]="mode !== 'sats'"><small>Sats</small></a>
+      </div>
+      <div class="amount-col">
+        <span class="text" i18n="transaction.amount|Amount">Amount</span>
+        <a class="amount" href="" (click)="changeMode(mode === 'sats' ? 'btc' : 'sats')">
+          <app-amount [satoshis]="amount" [blockConversion]="tx.price" [noFiat]="true"></app-amount>
+        </a>
+        <app-fiat class="fiat" [value]="amount" [blockConversion]="tx.price"></app-fiat>
+      </div>
+    }
   </div>
 </ng-template>
 

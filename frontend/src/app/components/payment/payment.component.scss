@@ -202,6 +202,33 @@
   }
 }
 
+.toggler {
+  font-size: 12px;
+  position: absolute;
+  top: -20px;
+  right: 3px;
+  text-align: right;
+  
+  @media (max-width: 850px) {
+    top: 2px;
+  }
+}
+
+.toggler-option {
+  text-decoration: none;
+}
+
+.inactive {
+  color: var(--transparent-fg);
+}
+
+.amount {
+  text-decoration: none; 
+  color: white;
+  width: 100%;
+  text-align: center;
+}
+
 @keyframes pulse {
   0% {
     fill-opacity: 0.30;
