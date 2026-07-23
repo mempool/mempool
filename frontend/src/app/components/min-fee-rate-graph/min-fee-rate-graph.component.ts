@@ -2,27 +2,26 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, LOCALE_I
 import { EChartsOption } from '@app/graphs/echarts';
 import { Observable, combineLatest } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
-import { ApiService } from '@app/services/api.service';
 import { SeoService } from '@app/services/seo.service';
 import { formatNumber } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from '@app/shared/graphs.utils';
+import { download } from '@app/shared/graphs.utils';
 import { StorageService } from '@app/services/storage.service';
 import { MiningService } from '@app/services/mining.service';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from '@app/services/state.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MinFeeRateDay } from '@app/interfaces/node-api.interface';
+import { DEFAULT_MIN_FEE_RATE_THRESHOLD, MinFeeRateService } from '@app/services/min-fee-rate.service';
+import { chartColors } from '@app/app.constants';
 
-interface MinFeeRateDay {
-  minRate: number;
-  minHeight: number;
-  timestamp: number; // seconds, UTC midnight
-}
+// Days at or below the threshold are highlighted in green; the rest keep the warm
+// default. Both come from the shared chart palette.
+const HIGHLIGHT_COLOR = chartColors[9]; // '#43A047'
+const DEFAULT_BAR_COLOR = chartColors[14]; // '#FB8C00'
 
-const DEFAULT_THRESHOLD = 0.1; // sat/vB — Bitcoin Core 30.0 default -minrelaytxfee
-// Days at or below the threshold are highlighted; days above stay muted.
-const HIGHLIGHT_COLOR = '#1E88E5';
-const MUTED_COLOR = '#5A6474';
+// The series is one point per day, so anything shorter than a month is degenerate.
+const TIMESPANS = ['1m', '3m', '6m', '1y', '2y', '3y', 'all'];
 
 @Component({
   selector: 'app-min-fee-rate-graph',
@@ -55,9 +54,9 @@ export class MinFeeRateGraphComponent implements OnInit {
   chartInstance: any = undefined;
 
   data: MinFeeRateDay[] = [];
-  threshold = DEFAULT_THRESHOLD;
+  threshold = DEFAULT_MIN_FEE_RATE_THRESHOLD;
 
-  // Threshold-dependent stats shown above the chart.
+  // Threshold-dependent stats shown in the header.
   medianRate = 0;
   daysBelow = 0;
   totalDays = 0;
@@ -66,7 +65,7 @@ export class MinFeeRateGraphComponent implements OnInit {
   constructor(
     @Inject(LOCALE_ID) public locale: string,
     private seoService: SeoService,
-    private apiService: ApiService,
+    private minFeeRateService: MinFeeRateService,
     private formBuilder: UntypedFormBuilder,
     private storageService: StorageService,
     private miningService: MiningService,
@@ -76,21 +75,23 @@ export class MinFeeRateGraphComponent implements OnInit {
     private route: ActivatedRoute,
     private cd: ChangeDetectorRef,
   ) {
-    this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y', threshold: DEFAULT_THRESHOLD });
-    this.radioGroupForm.controls.dateSpan.setValue('1y');
+    this.radioGroupForm = this.formBuilder.group({ dateSpan: '1m', threshold: DEFAULT_MIN_FEE_RATE_THRESHOLD });
+    this.radioGroupForm.controls.dateSpan.setValue('1m');
   }
 
   ngOnInit(): void {
     this.seoService.setTitle($localize`:@@mining.min-fee-rate:Minimum Daily Fee Rate`);
     this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.min-fee-rate:See the lowest fee rate that earned block inclusion on fee merit each day, excluding prioritized and accelerated transactions.`);
-    this.miningWindowPreference = this.miningService.getDefaultTimespan('1y');
-    this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference, threshold: DEFAULT_THRESHOLD });
+    // miningWindowPreference is shared across every mining graph, so floor whatever it
+    // holds at the shortest timespan this chart offers.
+    this.miningWindowPreference = this.miningService.getDefaultTimespan('1m');
+    this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference, threshold: DEFAULT_MIN_FEE_RATE_THRESHOLD });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
     this.route
       .fragment
       .subscribe((fragment) => {
-        if (['24h', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', 'all'].indexOf(fragment) > -1) {
+        if (TIMESPANS.indexOf(fragment) > -1) {
           this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
         }
       });
@@ -110,7 +111,7 @@ export class MinFeeRateGraphComponent implements OnInit {
         this.storageService.setValue('miningWindowPreference', timespan);
         this.timespan = timespan;
         this.isLoading = true;
-        return this.apiService.getMinFeeRates$(timespan)
+        return this.minFeeRateService.getMinFeeRates$(timespan)
           .pipe(
             tap((response) => {
               this.data = response.body || [];
@@ -130,23 +131,36 @@ export class MinFeeRateGraphComponent implements OnInit {
   }
 
   updateChart(): void {
-    this.computeStats();
+    const stats = this.minFeeRateService.getStats(this.data, this.threshold);
+    this.totalDays = stats.totalDays;
+    this.medianRate = stats.medianRate;
+    this.daysBelow = stats.daysBelow;
+    this.percentBelow = stats.percentBelow;
     this.prepareChartOptions();
   }
 
-  computeStats(): void {
-    this.totalDays = this.data.length;
-    if (this.totalDays === 0) {
-      this.medianRate = 0;
-      this.daysBelow = 0;
-      this.percentBelow = 0;
-      return;
-    }
-    const rates = this.data.map(d => d.minRate).sort((a, b) => a - b);
-    const mid = Math.floor(rates.length / 2);
-    this.medianRate = rates.length % 2 === 0 ? (rates[mid - 1] + rates[mid]) / 2 : rates[mid];
-    this.daysBelow = rates.filter(r => r <= this.threshold).length;
-    this.percentBelow = (this.daysBelow / this.totalDays) * 100;
+  formatFeeRate(val: number): string {
+    return this.minFeeRateService.formatFeeRate(val);
+  }
+
+  // Buckets are UTC calendar days, so every label is formatted in UTC — otherwise a
+  // UTC-midnight month boundary renders as the previous month west of Greenwich.
+  // The granularity follows the tick itself, not the timespan: ECharts sizes tick
+  // intervals by pixel density, so keying off the timespan would print the same month
+  // name on every one of a run of weekly ticks.
+  private formatAxisDate(value: number): string {
+    const date = new Date(value);
+    const isMonthStart = date.getUTCDate() === 1 && date.getUTCHours() === 0 &&
+      date.getUTCMinutes() === 0 && date.getUTCSeconds() === 0;
+    return date.toLocaleDateString(this.locale, isMonthStart
+      ? { year: 'numeric', month: 'short', timeZone: 'UTC' }
+      : { month: 'short', day: 'numeric', timeZone: 'UTC' });
+  }
+
+  private formatTooltipDate(value: number): string {
+    return new Date(value).toLocaleDateString(this.locale, {
+      year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC',
+    });
   }
 
   prepareChartOptions(): void {
@@ -154,13 +168,16 @@ export class MinFeeRateGraphComponent implements OnInit {
     const hasData = seriesData.length > 0;
 
     this.chartOptions = {
-      color: [HIGHLIGHT_COLOR],
+      color: [DEFAULT_BAR_COLOR],
       animation: false,
+      // Days are UTC calendar buckets, so the time axis must place ticks on UTC
+      // boundaries rather than the viewer's local midnight.
+      useUTC: true,
       grid: {
-        right: 45,
-        left: 75,
-        bottom: 80,
-        top: this.isMobile() ? 10 : 50,
+        right: 25,
+        left: 70,
+        bottom: 50,
+        top: 20,
       },
       tooltip: {
         show: !this.isMobile(),
@@ -180,23 +197,20 @@ export class MinFeeRateGraphComponent implements OnInit {
           if (data.length <= 0) {
             return '';
           }
-          let tooltip = `<b style="color: white; margin-left: 2px">${formatterXAxis(this.locale, this.timespan, parseInt(data[0].axisValue, 10))}</b><br>`;
+          let tooltip = `<b style="color: white; margin-left: 2px">${this.formatTooltipDate(+data[0].data[0])}</b><br>`;
           tooltip += `${data[0].marker} ` + $localize`Min fee rate` + `: ${this.formatFeeRate(data[0].data[1])} sats/vByte<br>`;
           tooltip += `<small>` + $localize`At block: ${data[0].data[2]}` + `</small>`;
           return tooltip;
         }.bind(this)
       },
+      // A time axis rather than a category axis, so days the backend has no data for
+      // render as proportional gaps instead of collapsing into their neighbours, and
+      // ticks land on real calendar boundaries rather than sampled indices.
       xAxis: !hasData ? undefined : {
-        name: formatterXAxisLabel(this.locale, this.timespan),
-        nameLocation: 'middle',
-        nameTextStyle: {
-          padding: [10, 0, 0, 0],
-        },
-        type: 'category',
-        boundaryGap: true,
+        type: 'time',
         axisLine: { onZero: true },
         axisLabel: {
-          formatter: val => formatterXAxisTimeCategory(this.locale, this.timespan, parseInt(val, 10)),
+          formatter: (val: number): string => this.formatAxisDate(val),
           align: 'center',
           fontSize: 11,
           lineHeight: 12,
@@ -206,9 +220,17 @@ export class MinFeeRateGraphComponent implements OnInit {
       },
       yAxis: !hasData ? undefined : {
         position: 'left',
+        name: $localize`:@@mining.min-fee-rate.axis:sat/vB`,
+        nameLocation: 'middle',
+        nameRotate: 90,
+        nameGap: 48,
+        nameTextStyle: {
+          color: 'rgb(110, 112, 121)',
+          fontSize: 12,
+        },
         axisLabel: {
           color: 'rgb(110, 112, 121)',
-          formatter: (val): string => `${this.formatFeeRate(val)} s/vB`,
+          formatter: (val): string => this.formatFeeRate(val),
         },
         splitLine: {
           lineStyle: {
@@ -224,7 +246,6 @@ export class MinFeeRateGraphComponent implements OnInit {
         name: 'Min fee rate',
         data: seriesData,
         type: 'bar',
-        barWidth: '90%',
         large: true,
         markLine: {
           silent: true,
@@ -238,10 +259,11 @@ export class MinFeeRateGraphComponent implements OnInit {
           data: [{
             yAxis: this.threshold,
             label: {
-              show: !this.isMobile(),
-              position: 'insideEndTop',
-              formatter: () => `${this.formatFeeRate(this.threshold)} s/vB`,
+              show: true,
+              position: 'insideStartTop',
+              formatter: (): string => `${this.formatFeeRate(this.threshold)} sat/vB`,
               color: 'var(--fg)',
+              fontSize: 11,
             }
           }],
         }
@@ -252,9 +274,10 @@ export class MinFeeRateGraphComponent implements OnInit {
         dimension: 1,
         pieces: [
           { lte: this.threshold, color: HIGHLIGHT_COLOR },
-          { gt: this.threshold, color: MUTED_COLOR },
+          { gt: this.threshold, color: DEFAULT_BAR_COLOR },
         ],
       },
+      // No slider: the reference chart shows the whole range at once.
       dataZoom: !hasData ? undefined : [{
         type: 'inside',
         realtime: true,
@@ -262,23 +285,6 @@ export class MinFeeRateGraphComponent implements OnInit {
         maxSpan: 100,
         minSpan: 5,
         moveOnMouseMove: false,
-      }, {
-        showDetail: false,
-        show: true,
-        type: 'slider',
-        brushSelect: false,
-        realtime: true,
-        left: 20,
-        right: 15,
-        selectedDataBackground: {
-          lineStyle: {
-            color: '#fff',
-            opacity: 0.45,
-          },
-          areaStyle: {
-            opacity: 0,
-          }
-        },
       }],
     };
   }
@@ -296,27 +302,6 @@ export class MinFeeRateGraphComponent implements OnInit {
         this.router.navigate([url]);
       });
     });
-  }
-
-  // Minimum daily fee rates are often sub-1 sat/vB, so round adaptively: more
-  // decimals below 1 to keep values distinguishable, fewer as they grow.
-  formatFeeRate(val: number): string {
-    if (val >= 100) {
-      return val.toFixed(0);
-    }
-    if (val >= 10) {
-      return val.toFixed(1);
-    }
-    if (val >= 0.1) {
-      return val.toFixed(2);
-    }
-    if (val >= 0.01) {
-      return val.toFixed(3);
-    }
-    if (val > 0) {
-      return val.toFixed(4);
-    }
-    return '0';
   }
 
   isMobile(): boolean {

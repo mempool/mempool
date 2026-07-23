@@ -1,28 +1,41 @@
 <app-indexing-progress></app-indexing-progress>
 
 <div class="full-container">
-  <div class="card-header mb-0 mb-md-4">
-    <div class="d-flex d-md-block align-items-baseline">
-      <span i18n="mining.min-fee-rate-cdf">Share of Days at or Below a Fee Rate</span>
-      <button class="btn p-0 ps-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
-        <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
-      </button>
+  <div class="chart-header">
+    <div class="heading">
+      <div class="title">
+        <span i18n="mining.min-fee-rate-cdf">Share of days at or below a fee rate</span>
+        <button class="btn p-0 ps-2" (click)="onSaveChart()">
+          <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+        </button>
+      </div>
+      <div class="subtitle" i18n="mining.min-fee-rate-cdf.subtitle">Cumulative distribution of the minimum daily fee rate (prioritized transactions excluded)</div>
     </div>
 
-    <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(statsObservable$ | async) as stats">
+    <div class="stat-block" *ngIf="totalDays > 0">
+      <div class="stat">
+        <span class="value highlight">{{ percentBelow | number: '1.1-1' }}%</span>
+        <span class="label" i18n="mining.min-fee-rate.days-below">Days ≤ {{ formatFeeRate(threshold) }} sat/vB</span>
+      </div>
+      <div class="stat">
+        <span class="value">{{ formatFeeRate(medianRate) }}</span>
+        <span class="label" i18n="mining.min-fee-rate.median-day">Median day</span>
+      </div>
+      <div class="stat">
+        <span class="value">{{ totalDays }}</span>
+        <span class="label" i18n="mining.min-fee-rate-cdf.days-total">Days total</span>
+      </div>
+    </div>
+  </div>
+
+  <form [formGroup]="radioGroupForm" class="chart-controls">
+    <div class="threshold-input">
+      <label for="cdf-threshold" i18n="mining.min-fee-rate.threshold">Threshold (sat/vB)</label>
+      <input type="number" id="cdf-threshold" class="form-control form-control-sm" min="0" step="0.01" formControlName="threshold">
+    </div>
+
+    <div class="formRadioGroup" *ngIf="(statsObservable$ | async) as stats">
       <div class="btn-group" role="group" name="radioBasic">
-        <ng-container *ngIf="stats.blockCount >= 144">
-          <input type="radio" class="btn-check" id="minfeeratecdf-24h" [value]="'24h'" fragment="24h" [routerLink]="['/graphs/mining/min-fee-rate-cdf' | relativeUrl]" formControlName="dateSpan">
-          <label class="btn btn-primary btn-sm" for="minfeeratecdf-24h">24h</label>
-        </ng-container>
-        <ng-container *ngIf="stats.blockCount >= 432">
-          <input type="radio" class="btn-check" id="minfeeratecdf-3d" [value]="'3d'" fragment="3d" [routerLink]="['/graphs/mining/min-fee-rate-cdf' | relativeUrl]" formControlName="dateSpan">
-          <label class="btn btn-primary btn-sm" for="minfeeratecdf-3d">3D</label>
-        </ng-container>
-        <ng-container *ngIf="stats.blockCount >= 1008">
-          <input type="radio" class="btn-check" id="minfeeratecdf-1w" [value]="'1w'" fragment="1w" [routerLink]="['/graphs/mining/min-fee-rate-cdf' | relativeUrl]" formControlName="dateSpan">
-          <label class="btn btn-primary btn-sm" for="minfeeratecdf-1w">1W</label>
-        </ng-container>
         <ng-container *ngIf="stats.blockCount >= 4320">
           <input type="radio" class="btn-check" id="minfeeratecdf-1m" [value]="'1m'" fragment="1m" [routerLink]="['/graphs/mining/min-fee-rate-cdf' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="minfeeratecdf-1m">1M</label>
@@ -50,8 +63,8 @@
         <input type="radio" class="btn-check" id="minfeeratecdf-all" [value]="'all'" fragment="all" [routerLink]="['/graphs/mining/min-fee-rate-cdf' | relativeUrl]" formControlName="dateSpan">
         <label class="btn btn-primary btn-sm" for="minfeeratecdf-all">ALL</label>
       </div>
-    </form>
-  </div>
+    </div>
+  </form>
 
   <div *ngIf="!isLoading && totalDays === 0" class="text-center text-muted no-data" i18n="mining.min-fee-rate.no-data">
     No minimum daily fee rate data available yet.
