@@ -19,6 +19,7 @@ import { ETA, EtaService } from '@app/services/eta.service';
 import { getRegex } from '@app/shared/regex.utils';
 import { TrackerStage } from '@components/tracker/tracker-bar.component';
 import { ApiService } from '@app/services/api.service';
+import { StorageService } from '@app/services/storage.service';
 
 @Component({
   selector: 'app-payment',
@@ -69,6 +70,8 @@ export class PaymentComponent implements OnInit, OnDestroy {
   fetchCachedTxSubscription: Subscription;
   txRbfInfoSubscription: Subscription;
   latestReplacement: string;
+  amountMode: string;
+  viewAmountMode$: Observable<'btc' | 'sats' | 'fiat'>;
 
   constructor(
     private route: ActivatedRoute,
@@ -83,12 +86,14 @@ export class PaymentComponent implements OnInit, OnDestroy {
     private seoService: SeoService,
     private miningService: MiningService,
     private etaService: EtaService,
+    private storageService: StorageService,
     private cd: ChangeDetectorRef,
     @Inject(ZONE_SERVICE) private zoneService: any,
   ) {}
 
   ngOnInit(): void {
     this.onResize();
+    this.viewAmountMode$ = this.stateService.viewAmountMode$.asObservable();
 
     if (!this.stateService.isLiquid()) {
       this.miningService.getMiningStats('1m').subscribe(stats => {
@@ -466,5 +471,12 @@ export class PaymentComponent implements OnInit, OnDestroy {
     this.txConfirmedSubscription?.unsubscribe();
     this.txReplacedSubscription?.unsubscribe();
     this.leaveTransaction();
+  }
+
+  changeMode(mode: 'btc' | 'sats'): boolean {
+    this.storageService.setValue('view-amount-mode', mode);
+    this.stateService.viewAmountMode$.next(mode);
+    this.amountMode = mode;
+    return false;
   }
 }
