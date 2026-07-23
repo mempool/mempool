@@ -24,7 +24,7 @@ jobs:
     name: Test built Docker images
     steps:
       - name: Checkout project
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v4
 
       - name: Add SHORT_SHA env property with commit short sha
         run: |
@@ -294,7 +294,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Checkout project
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v4
 
       # For PRs: use package.json version + short sha as TAG
       - name: Set TAG from service package.json for pull requests
