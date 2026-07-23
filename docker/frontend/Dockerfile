@@ -13,7 +13,7 @@ RUN bash meta/scripts/check-install-scripts.sh && npm ci --omit=dev --omit=optio
 
 RUN npm run build
 
-FROM nginx:1.30.1-alpine
+FROM nginx:1.31.3-alpine
 
 WORKDIR /patch
 
