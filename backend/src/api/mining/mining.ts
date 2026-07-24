@@ -1,5 +1,6 @@
 import { BlockPrice, PoolInfo, PoolStats, RewardStats } from '../../mempool.interfaces';
 import BlocksRepository from '../../repositories/BlocksRepository';
+import { MinFeeRateDay } from './min-fee-rate';
 import PoolsRepository from '../../repositories/PoolsRepository';
 import HashratesRepository from '../../repositories/HashratesRepository';
 import bitcoinClient from '../bitcoin/bitcoin-client';
@@ -92,7 +93,7 @@ class Mining {
    * Fixed calendar-day buckets, so no rolling DIV time range is used — only the
    * optional interval window filter.
    */
-  public async $getMinFeeRates(interval: string | null = null): Promise<any> {
+  public async $getMinFeeRates(interval: string | null = null): Promise<MinFeeRateDay[]> {
     return await BlocksRepository.$getMinFeeRatesByDay(
       Common.getSqlInterval(interval)
     );

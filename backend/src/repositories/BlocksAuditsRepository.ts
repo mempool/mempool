@@ -128,10 +128,10 @@ class BlocksAuditRepositories {
    * for audited blocks whose template row is missing.
    * @asyncSafe
    */
-  public async $getBlockAuditExclusions(hash: string): Promise<{ prioritizedTxs: string[], acceleratedTxs: string[] } | null> {
+  public async $getBlockAuditExclusions(hash: string): Promise<{ version: number, prioritizedTxs: string[], acceleratedTxs: string[] } | null> {
     try {
       const [rows]: any[] = await DB.query(
-        `SELECT prioritized_txs as prioritizedTxs, accelerated_txs as acceleratedTxs
+        `SELECT version, prioritized_txs as prioritizedTxs, accelerated_txs as acceleratedTxs
          FROM blocks_audits WHERE hash = ?`,
         [hash]
       );
@@ -139,12 +139,13 @@ class BlocksAuditRepositories {
         return null;
       }
       return {
+        version: rows[0].version,
         prioritizedTxs: JSON.parse(rows[0].prioritizedTxs),
         acceleratedTxs: JSON.parse(rows[0].acceleratedTxs),
       };
     } catch (e) {
       logger.err(`Cannot get block audit exclusions for ${hash}. Reason: ` + (e instanceof Error ? e.message : e));
-      return null;
+      throw e;
     }
   }
 
@@ -352,4 +353,3 @@ class BlocksAuditRepositories {
 }
 
 export default new BlocksAuditRepositories();
-

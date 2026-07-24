@@ -21,14 +21,29 @@
 export const MIN_SUMMARY_VERSION = 2;
 
 /**
- * Whether a block with no audit row yields "unavailable" rather than a value
- * computed without exclusions. Verified in RESEARCH-6639.md §A4: audit rows are
- * only ever written for blocks observed live, in sync, with MEMPOOL.AUDIT=true, and
- * cannot be backfilled. Without an audit we cannot know which txs were boosted, so a
- * min computed anyway would be understated. This mirrors the existing audit-gated
- * Blocks Health chart, which simply has no data on non-auditing instances.
+ * Increment this whenever the algorithm changes. A block is eligible whenever its
+ * stored version is lower; late persisted inputs are tracked separately by snapshots.
  */
-export const REQUIRE_AUDIT = true;
+export const MIN_FEE_RATE_VERSION = 1;
+
+/**
+ * Bitcoin Core 30.0 was released on 2025-10-10 and changed the default
+ * minrelaytxfee to 0.1 sat/vB. The series is intentionally undefined before then.
+ */
+export const MIN_FEE_RATE_START_DATE = '2025-10-10 00:00:00';
+
+/**
+ * Fixed-size, order-independent snapshot of an acceleration set. Keep this exact SQL
+ * fragment shared by both the persisted-state read and the staleness sweep: using two
+ * independently maintained expressions would make every block permanently stale as
+ * soon as they diverged.
+ *
+ * COUNT handles cardinality while this 64-bit XOR detects membership changes. Unlike
+ * GROUP_CONCAT, its result size is independent of the number of accelerations.
+ */
+export const MIN_FEE_RATE_ACCELERATION_FINGERPRINT_SQL =
+  `LPAD(HEX(COALESCE(BIT_XOR(CAST(CONV(SUBSTRING(SHA2(txid, 256), 1, 16), 16, 10) AS UNSIGNED)), 0)), 16, '0')`;
+export const MIN_FEE_RATE_EMPTY_ACCELERATION_FINGERPRINT = '0000000000000000';
 
 /**
  * Whether to skip transactions with a non-positive `rate`. Verified in
@@ -38,64 +53,42 @@ export const REQUIRE_AUDIT = true;
  */
 export const EXCLUDE_ZERO_RATE = true;
 
-/**
- * Persisted state of the per-block metric, stored in blocks.min_fee_rate_status.
- * An explicit status column is used rather than an in-band sentinel in min_fee_rate
- * so the two "unavailable" reasons stay distinct — one is permanent, one is not —
- * and so a real rate column never has to encode a magic value. Precedent: the
- * template_algo status column and the index_version progress sentinel.
- *
- * - Pending (0):              DB default; never computed yet.
- * - Available (1):            min_fee_rate holds a real rate.
- * - UnavailablePermanent (2): no audit row (audits are not backfillable), or an
- *                             audit is present but no tx earned inclusion on fee
- *                             merit — neither can improve, so this is final.
- * - UnavailableRetry (3):     summary version < MIN_SUMMARY_VERSION. $classifyBlocks
- *                             continuously upgrades summaries to version 2, so this
- *                             block may become computable on a later pass.
- *
- * min_fee_rate is non-NULL if and only if status === Available.
- */
-export enum MinFeeRateStatus {
-  Pending = 0,
-  Available = 1,
-  UnavailablePermanent = 2,
-  UnavailableRetry = 3,
-}
-
-export interface MinFeeRateResult {
-  status: MinFeeRateStatus;
-  rate: number | null; // non-null iff status === Available
-}
-
 export interface MinFeeRateInputs {
   transactions: { txid: string; rate?: number }[]; // summary txs, block order, coinbase at index 0
-  summaryVersion: number;
-  hasAudit: boolean;
   prioritizedTxs: string[];
   acceleratedTxs: string[];
   accelerationTxids: string[];
 }
 
+export interface MinFeeRateInputSnapshot {
+  auditVersion: number | null;
+  accelerationCount: number;
+  accelerationFingerprint: string;
+}
+
+export interface MinFeeRateAccelerationState {
+  txids: string[];
+  count: number;
+  fingerprint: string;
+}
+
+export interface MinFeeRateDay {
+  minRate: number;
+  minHeight: number;
+  timestamp: number;
+  usableBlockCount: number;
+}
+
+export function isMinFeeRateVersionStale(storedVersion: number): boolean {
+  return storedVersion < MIN_FEE_RATE_VERSION;
+}
+
 /**
- * Classifies a block's minimum fee-merit effective fee rate into a persistable
- * result. Never returns Pending — that is a DB default, not a compute outcome; every
- * path here resolves to Available, UnavailablePermanent, or UnavailableRetry.
+ * Computes a block's minimum fee-merit effective fee rate. Callers must only invoke
+ * this after successfully loading a trusted summary and an audit row. A null result
+ * is a valid answer for a block with no qualifying non-coinbase transaction.
  */
-export function computeMinFeeRate(inputs: MinFeeRateInputs): MinFeeRateResult {
-  // No audit → we cannot know which txs were boosted out-of-band, and audits are
-  // never backfillable, so this is permanent. Checked before the version gate: a
-  // missing audit stays permanent regardless of summary version.
-  if (REQUIRE_AUDIT && !inputs.hasAudit) {
-    return { status: MinFeeRateStatus.UnavailablePermanent, rate: null };
-  }
-
-  // Untrusted summary version — but $classifyBlocks upgrades summaries to version 2
-  // over time, so retry rather than finalise.
-  if (inputs.summaryVersion < MIN_SUMMARY_VERSION) {
-    return { status: MinFeeRateStatus.UnavailableRetry, rate: null };
-  }
-
+export function computeMinFeeRate(inputs: MinFeeRateInputs): number | null {
   const excluded = new Set<string>([
     ...inputs.prioritizedTxs,
     ...inputs.acceleratedTxs,
@@ -117,11 +110,5 @@ export function computeMinFeeRate(inputs: MinFeeRateInputs): MinFeeRateResult {
     }
   }
 
-  // Audit was present and no tx earned inclusion on fee merit — this is the genuine
-  // answer for the block and will not improve, so it is permanent.
-  if (min === null) {
-    return { status: MinFeeRateStatus.UnavailablePermanent, rate: null };
-  }
-
-  return { status: MinFeeRateStatus.Available, rate: min };
+  return min;
 }

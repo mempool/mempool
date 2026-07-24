@@ -25,6 +25,7 @@ export async function cleanupTestData(): Promise<void> {
   const tables = [
     'blocks_audits',
     'blocks_summaries',
+    'accelerations',
     'blocks_prices',
     'blocks_templates',
     'cpfp_clusters',
@@ -187,4 +188,3 @@ export async function insertTestBlock(blockData: {
     ]
   );
 }
-

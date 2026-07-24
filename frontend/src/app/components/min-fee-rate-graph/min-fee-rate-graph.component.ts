@@ -121,7 +121,7 @@ export class MinFeeRateGraphComponent implements OnInit {
             }),
             map((response) => {
               return {
-                blockCount: parseInt(response.headers.get('x-total-count'), 10),
+                dayCount: parseInt(response.headers.get('x-total-count'), 10),
               };
             }),
           );

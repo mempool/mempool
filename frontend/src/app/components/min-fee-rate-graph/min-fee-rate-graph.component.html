@@ -36,27 +36,27 @@
 
     <div class="formRadioGroup" *ngIf="(statsObservable$ | async) as stats">
       <div class="btn-group" role="group" name="radioBasic">
-        <ng-container *ngIf="stats.blockCount >= 4320">
+        <ng-container *ngIf="stats.dayCount >= 30">
           <input type="radio" class="btn-check" id="minfeerate-1m" [value]="'1m'" fragment="1m" [routerLink]="['/graphs/mining/min-fee-rate' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="minfeerate-1m">1M</label>
         </ng-container>
-        <ng-container *ngIf="stats.blockCount >= 12960">
+        <ng-container *ngIf="stats.dayCount >= 90">
           <input type="radio" class="btn-check" id="minfeerate-3m" [value]="'3m'" fragment="3m" [routerLink]="['/graphs/mining/min-fee-rate' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="minfeerate-3m">3M</label>
         </ng-container>
-        <ng-container *ngIf="stats.blockCount >= 25920">
+        <ng-container *ngIf="stats.dayCount >= 180">
           <input type="radio" class="btn-check" id="minfeerate-6m" [value]="'6m'" fragment="6m" [routerLink]="['/graphs/mining/min-fee-rate' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="minfeerate-6m">6M</label>
         </ng-container>
-        <ng-container *ngIf="stats.blockCount >= 52560">
+        <ng-container *ngIf="stats.dayCount >= 365">
           <input type="radio" class="btn-check" id="minfeerate-1y" [value]="'1y'" fragment="1y" [routerLink]="['/graphs/mining/min-fee-rate' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="minfeerate-1y">1Y</label>
         </ng-container>
-        <ng-container *ngIf="stats.blockCount >= 105120">
+        <ng-container *ngIf="stats.dayCount >= 730">
           <input type="radio" class="btn-check" id="minfeerate-2y" [value]="'2y'" fragment="2y" [routerLink]="['/graphs/mining/min-fee-rate' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="minfeerate-2y">2Y</label>
         </ng-container>
-        <ng-container *ngIf="stats.blockCount >= 157680">
+        <ng-container *ngIf="stats.dayCount >= 1095">
           <input type="radio" class="btn-check" id="minfeerate-3y" [value]="'3y'" fragment="3y" [routerLink]="['/graphs/mining/min-fee-rate' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="minfeerate-3y">3Y</label>
         </ng-container>

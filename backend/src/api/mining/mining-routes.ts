@@ -272,10 +272,10 @@ class MiningRoutes {
   private async $getMinFeeRates(req: Request, res: Response) {
     try {
       const minFeeRates = await mining.$getMinFeeRates(req.params.interval);
-      const blockCount = await BlocksRepository.$blockCount(null, null);
+      const dayCount = await BlocksRepository.$getMinFeeRateDayCount();
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
-      res.header('X-total-count', blockCount.toString());
+      res.header('X-total-count', dayCount.toString());
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(minFeeRates);
     } catch (e) {

@@ -1257,16 +1257,19 @@ class DatabaseMigration {
     }
 
     if (databaseSchemaVersion < 112 && isBitcoin === true) {
-      // Per-block minimum fee-merit effective fee rate (issue #6639). The value lives
-      // in min_fee_rate; min_fee_rate_status tracks the computation state so the two
-      // "unavailable" reasons stay distinct instead of being encoded as a magic value:
-      //   0 PENDING               - never computed (default)
-      //   1 AVAILABLE             - min_fee_rate holds a real rate
-      //   2 UNAVAILABLE_PERMANENT - no audit row, or no fee-merit tx: cannot improve
-      //   3 UNAVAILABLE_RETRY     - summary version < 2: may become computable later
-      // min_fee_rate is non-NULL iff status = 1. See MinFeeRateStatus in min-fee-rate.ts.
-      await this.$executeQuery('ALTER TABLE `blocks` ADD min_fee_rate DOUBLE UNSIGNED NULL DEFAULT NULL');
-      await this.$executeQuery('ALTER TABLE `blocks` ADD min_fee_rate_status TINYINT UNSIGNED NOT NULL DEFAULT 0');
+      // Per-block minimum fee-merit effective fee rate (issue #6639). The computation
+      // version handles algorithm changes; input snapshots let the bounded pull sweep
+      // detect late audits and acceleration-set changes without producer-side writes.
+      await this.$executeQuery(`
+        ALTER TABLE blocks
+          ADD min_fee_rate DOUBLE UNSIGNED NULL DEFAULT NULL,
+          ADD min_fee_rate_version TINYINT UNSIGNED NOT NULL DEFAULT 0,
+          ADD min_fee_rate_audit_version INT UNSIGNED NULL DEFAULT NULL,
+          ADD min_fee_rate_acceleration_count SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+          ADD min_fee_rate_acceleration_fingerprint CHAR(64) NOT NULL DEFAULT '',
+          ADD min_fee_rate_computed_at TIMESTAMP NULL DEFAULT NULL,
+          ADD INDEX min_fee_rate_backfill (stale, min_fee_rate_version, min_fee_rate_computed_at)
+      `);
       await this.updateToSchemaVersion(112);
     }
   }

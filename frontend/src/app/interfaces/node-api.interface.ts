@@ -534,4 +534,5 @@ export interface MinFeeRateDay {
   minRate: number;
   minHeight: number;
   timestamp: number; // unix seconds, UTC midnight
+  usableBlockCount: number;
 }
