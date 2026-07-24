@@ -13,6 +13,16 @@ import config from '../config';
 import chainTips from '../api/chain-tips';
 import blocks from '../api/blocks';
 import BlocksAuditsRepository from './BlocksAuditsRepository';
+import AccelerationRepository from './AccelerationRepository';
+import {
+  computeMinFeeRate,
+  MinFeeRateDay,
+  MinFeeRateInputSnapshot,
+  MIN_FEE_RATE_ACCELERATION_FINGERPRINT_SQL,
+  MIN_FEE_RATE_START_DATE,
+  MIN_FEE_RATE_VERSION,
+  MIN_SUMMARY_VERSION,
+} from '../api/mining/min-fee-rate';
 import transactionUtils from '../api/transaction-utils';
 import { parseDATUMTemplateCreator, parseDMNDTemplateCreator } from '../utils/bitcoin-script';
 import poolsUpdater from '../tasks/pools-updater';
@@ -1425,6 +1435,258 @@ class BlocksRepository {
       throw e;
     }
     return blocksMigrated;
+  }
+
+  /**
+   * Blocks whose persisted metric is older than the current algorithm. A trusted
+   * summary is required, but a missing audit is persisted as an incomplete snapshot
+   * so the pull sweep can detect when replication later imports it.
+   */
+  public async $getBlocksNeedingMinFeeRate(limit: number): Promise<{ height: number, hash: string }[]> {
+    try {
+      const [blocks]: any[] = await DB.query(`
+        SELECT blocks.height, blocks.hash
+        FROM blocks
+        JOIN blocks_summaries ON blocks_summaries.id = blocks.hash
+        WHERE blocks.min_fee_rate_version < ${MIN_FEE_RATE_VERSION}
+          AND blocks.stale = 0
+          AND blocks_summaries.version >= ${MIN_SUMMARY_VERSION}
+          AND CONVERT_TZ(blocks.blockTimestamp, @@session.time_zone, '+00:00') >= ?
+        ORDER BY blocks.height DESC
+        LIMIT ?
+      `, [MIN_FEE_RATE_START_DATE, limit]);
+      return blocks;
+    } catch (e) {
+      logger.err(`Cannot get blocks needing min_fee_rate. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Blocks whose audit version or acceleration set no longer matches the input
+   * snapshot stored with the current result. The indexed block-side predicate keeps
+   * this pull sweep bounded to current, canonical results.
+   */
+  public async $getBlocksWithChangedMinFeeRateInputs(limit: number): Promise<{ height: number, hash: string }[]> {
+    try {
+      const [blocks]: any[] = await DB.query(`
+        SELECT blocks.height, blocks.hash
+        FROM blocks
+        JOIN blocks_summaries ON blocks_summaries.id = blocks.hash
+        LEFT JOIN blocks_audits ON blocks_audits.hash = blocks.hash
+        LEFT JOIN accelerations ON accelerations.height = blocks.height
+        WHERE blocks.min_fee_rate_version = ${MIN_FEE_RATE_VERSION}
+          AND blocks.stale = 0
+          AND blocks_summaries.version >= ${MIN_SUMMARY_VERSION}
+          AND CONVERT_TZ(blocks.blockTimestamp, @@session.time_zone, '+00:00') >= ?
+        GROUP BY
+          blocks.height,
+          blocks.hash,
+          blocks.min_fee_rate_audit_version,
+          blocks.min_fee_rate_acceleration_count,
+          blocks.min_fee_rate_acceleration_fingerprint,
+          blocks.min_fee_rate_computed_at,
+          blocks_audits.version
+        HAVING
+          NOT (blocks.min_fee_rate_audit_version <=> blocks_audits.version)
+          OR blocks.min_fee_rate_acceleration_count <> COUNT(accelerations.txid)
+          OR blocks.min_fee_rate_acceleration_fingerprint <>
+            ${MIN_FEE_RATE_ACCELERATION_FINGERPRINT_SQL}
+        ORDER BY blocks.min_fee_rate_computed_at ASC, blocks.height DESC
+        LIMIT ?
+      `, [MIN_FEE_RATE_START_DATE, limit]);
+      return blocks;
+    } catch (e) {
+      logger.err(`Cannot get blocks with changed min_fee_rate inputs. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /** Persist a result and the exact input snapshot used to compute it. */
+  public async $updateMinFeeRate(
+    height: number,
+    hash: string,
+    rate: number | null,
+    snapshot: MinFeeRateInputSnapshot
+  ): Promise<void> {
+    try {
+      await DB.query(
+        `UPDATE blocks SET
+          min_fee_rate = ?,
+          min_fee_rate_version = ?,
+          min_fee_rate_audit_version = ?,
+          min_fee_rate_acceleration_count = ?,
+          min_fee_rate_acceleration_fingerprint = ?,
+          min_fee_rate_computed_at = CURRENT_TIMESTAMP
+        WHERE height = ? AND hash = ?`,
+        [
+          rate,
+          MIN_FEE_RATE_VERSION,
+          snapshot.auditVersion,
+          snapshot.accelerationCount,
+          snapshot.accelerationFingerprint,
+          height,
+          hash,
+        ]
+      );
+    } catch (e) {
+      logger.err(`Cannot update min_fee_rate for block ${height} (${hash}). Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Minimum fee-merit effective fee rate per UTC calendar day (issue #6639).
+   * Unlike the rolling DIV-bucket mining charts, this buckets on the fixed UTC day so
+   * the "minimum daily fee rate" is stable regardless of the selected interval.
+   * The current UTC day is excluded because its partial MIN is biased upward.
+   * @asyncSafe
+   */
+  public async $getMinFeeRatesByDay(interval: string | null): Promise<MinFeeRateDay[]> {
+    try {
+      let query = `
+        WITH eligible AS (
+          SELECT
+            height,
+            min_fee_rate,
+            DATE(CONVERT_TZ(blockTimestamp, @@session.time_zone, '+00:00')) AS utcDay
+          FROM blocks
+          WHERE stale = 0
+            AND min_fee_rate_version = ${MIN_FEE_RATE_VERSION}
+            AND min_fee_rate IS NOT NULL
+            AND CONVERT_TZ(blockTimestamp, @@session.time_zone, '+00:00') >= ?
+            AND CONVERT_TZ(blockTimestamp, @@session.time_zone, '+00:00') < UTC_DATE()`;
+
+      if (interval !== null) {
+        query += `
+            AND CONVERT_TZ(blockTimestamp, @@session.time_zone, '+00:00')
+              >= DATE_SUB(UTC_DATE(), INTERVAL ${interval})`;
+      }
+
+      query += `
+        ),
+        ranked AS (
+          SELECT
+            height,
+            min_fee_rate,
+            utcDay,
+            ROW_NUMBER() OVER (
+              PARTITION BY utcDay
+              ORDER BY min_fee_rate ASC, height ASC
+            ) AS dailyRank,
+            COUNT(*) OVER (PARTITION BY utcDay) AS usableBlockCount
+          FROM eligible
+        )
+        SELECT
+          CAST(min_fee_rate AS DOUBLE) AS minRate,
+          height AS minHeight,
+          TIMESTAMPDIFF(SECOND, '1970-01-01 00:00:00', utcDay) AS timestamp,
+          usableBlockCount
+        FROM ranked
+        WHERE dailyRank = 1
+        ORDER BY utcDay`;
+
+      const [rows]: any = await DB.query(query, [MIN_FEE_RATE_START_DATE]);
+      return rows;
+    } catch (e) {
+      logger.err(`Cannot generate min fee rates by day. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Count complete UTC days that have at least one usable metric value. This is the
+   * same unit used by the graph's timespan selector.
+   */
+  public async $getMinFeeRateDayCount(): Promise<number> {
+    try {
+      const [rows]: any[] = await DB.query(`
+        SELECT COUNT(DISTINCT DATE(CONVERT_TZ(blockTimestamp, @@session.time_zone, '+00:00'))) AS count
+        FROM blocks
+        WHERE stale = 0
+          AND min_fee_rate_version = ${MIN_FEE_RATE_VERSION}
+          AND min_fee_rate IS NOT NULL
+          AND CONVERT_TZ(blockTimestamp, @@session.time_zone, '+00:00') >= ?
+          AND CONVERT_TZ(blockTimestamp, @@session.time_zone, '+00:00') < UTC_DATE()
+      `, [MIN_FEE_RATE_START_DATE]);
+      return rows[0]?.count || 0;
+    } catch (e) {
+      logger.err(`Cannot count minimum fee rate days. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Backfill blocks.min_fee_rate from persisted tables only (blocks_summaries +
+   * blocks_audits + accelerations), so live and historical blocks share one path.
+   * Each run processes at most one algorithm-version batch and one smaller
+   * low-priority input-change sweep; neither queue is drained in one invocation.
+   *
+   * A missing audit produces a null result plus an incomplete input snapshot. A late
+   * audit or changed acceleration fingerprint then makes the block queryable by the
+   * pull sweep without requiring writes from either producer.
+   * @asyncSafe
+   */
+  public async $backfillMinFeeRate(): Promise<number> {
+    const batchSize = 250;
+    const sweepBatchSize = 25;
+    let blocksProcessed = 0;
+    try {
+      let timer = Date.now() / 1000;
+      const startedAt = Date.now() / 1000;
+
+      const processBatch = async (batch: { height: number, hash: string }[]): Promise<void> => {
+        for (const row of batch) {
+          const summary = await BlocksSummariesRepository.$getByBlockId(row.hash);
+          const audit = await BlocksAuditsRepository.$getBlockAuditExclusions(row.hash);
+
+          // The summary was present in the selector. If it cannot be loaded now,
+          // abort without writing so the block remains eligible for a later pass.
+          if (!summary || summary.version === undefined || summary.version < MIN_SUMMARY_VERSION) {
+            throw new Error(`Trusted block summary ${row.hash} could not be read`);
+          }
+
+          const accelerationState = await AccelerationRepository.$getMinFeeRateAccelerationStateAtHeight(row.height);
+
+          const rate = audit ? computeMinFeeRate({
+            transactions: summary.transactions,
+            prioritizedTxs: audit.prioritizedTxs,
+            acceleratedTxs: audit.acceleratedTxs,
+            accelerationTxids: accelerationState.txids,
+          }) : null;
+
+          await this.$updateMinFeeRate(row.height, row.hash, rate, {
+            auditVersion: audit?.version ?? null,
+            accelerationCount: accelerationState.count,
+            accelerationFingerprint: accelerationState.fingerprint,
+          });
+
+          const elapsedSeconds = (Date.now() / 1000) - timer;
+          if (elapsedSeconds > 5) {
+            const runningFor = (Date.now() / 1000) - startedAt;
+            const blockPerSeconds = blocksProcessed / elapsedSeconds;
+            logger.debug(`Backfilling min_fee_rate | ~${blockPerSeconds.toFixed(2)} blocks/sec | height: ${row.height} | total: ${blocksProcessed} | elapsed: ${runningFor.toFixed(2)} seconds`);
+            timer = Date.now() / 1000;
+          }
+
+          blocksProcessed++;
+        }
+      };
+
+      const versionBatch = await this.$getBlocksNeedingMinFeeRate(batchSize);
+      await processBatch(versionBatch);
+
+      const changedInputsBatch = await this.$getBlocksWithChangedMinFeeRateInputs(sweepBatchSize);
+      await processBatch(changedInputsBatch);
+
+      if (blocksProcessed > 0) {
+        logger.notice(`Backfilling min_fee_rate completed: processed ${blocksProcessed} blocks`);
+      }
+    } catch (e) {
+      logger.err(`Backfilling min_fee_rate failed. Trying again later. Reason: ${(e instanceof Error ? e.message : e)}`);
+      throw e;
+    }
+    return blocksProcessed;
   }
 }
 

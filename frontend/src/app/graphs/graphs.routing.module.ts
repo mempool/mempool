@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { BlockHealthGraphComponent } from '@components/block-health-graph/block-health-graph.component';
 import { BlockFeeRatesGraphComponent } from '@components/block-fee-rates-graph/block-fee-rates-graph.component';
+import { MinFeeRateGraphComponent } from '@components/min-fee-rate-graph/min-fee-rate-graph.component';
+import { MinFeeRateCdfGraphComponent } from '@components/min-fee-rate-cdf-graph/min-fee-rate-cdf-graph.component';
 import { BlockFeesGraphComponent } from '@components/block-fees-graph/block-fees-graph.component';
 import { BlockFeesSubsidyGraphComponent } from '@components/block-fees-subsidy-graph/block-fees-subsidy-graph.component';
 import { BlockRewardsGraphComponent } from '@components/block-rewards-graph/block-rewards-graph.component';
@@ -148,6 +150,16 @@ const routes: Routes = [
             path: 'mining/block-fee-rates',
             data: { networks: ['bitcoin'] },
             component: BlockFeeRatesGraphComponent,
+          },
+          {
+            path: 'mining/min-fee-rate',
+            data: { networks: ['bitcoin'] },
+            component: MinFeeRateGraphComponent,
+          },
+          {
+            path: 'mining/min-fee-rate-cdf',
+            data: { networks: ['bitcoin'] },
+            component: MinFeeRateCdfGraphComponent,
           },
           {
             path: 'mining/block-sizes-weights',

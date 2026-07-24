@@ -12,6 +12,11 @@ import bitcoinApi from '../api/bitcoin/bitcoin-api-factory';
 import transactionUtils from '../api/transaction-utils';
 import { BlockExtended, MempoolTransactionExtended } from '../mempool.interfaces';
 import { makeBlockTemplate } from '../api/mini-miner';
+import {
+  MinFeeRateAccelerationState,
+  MIN_FEE_RATE_ACCELERATION_FINGERPRINT_SQL,
+  MIN_FEE_RATE_EMPTY_ACCELERATION_FINGERPRINT,
+} from '../api/mining/min-fee-rate';
 
 export interface PublicAcceleration {
   txid: string,
@@ -91,6 +96,42 @@ class AccelerationRepository {
       return null;
     }
     return null;
+  }
+
+  /**
+   * Returns every acceleration txid plus a stable snapshot of the set for a block.
+   * Reads straight from the accelerations table (not gated by MEMPOOL_SERVICES), since
+   * the min fee rate pull sweep uses this to detect late input changes.
+   * @asyncSafe
+   */
+  public async $getMinFeeRateAccelerationStateAtHeight(height: number): Promise<MinFeeRateAccelerationState> {
+    try {
+      const [rows]: any[] = await DB.query(`
+        SELECT
+          accelerations.txid,
+          snapshot.count,
+          snapshot.fingerprint
+        FROM (
+          SELECT
+            COUNT(*) AS count,
+            ${MIN_FEE_RATE_ACCELERATION_FINGERPRINT_SQL} AS fingerprint
+          FROM accelerations
+          WHERE height = ?
+        ) AS snapshot
+        LEFT JOIN accelerations ON accelerations.height = ?
+        ORDER BY accelerations.txid
+      `, [height, height]);
+      return {
+        // One row per txid keeps the exclusion set independent of aggregate-size
+        // limits. The LEFT JOIN also yields one snapshot row for an empty set.
+        txids: rows.flatMap(row => row.txid == null ? [] : [row.txid]),
+        count: rows[0]?.count || 0,
+        fingerprint: rows[0]?.fingerprint || MIN_FEE_RATE_EMPTY_ACCELERATION_FINGERPRINT,
+      };
+    } catch (e) {
+      logger.err(`Cannot get min fee rate acceleration state at height ${height}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
   }
 
   public async $getAccelerationInfo(poolSlug: string | null = null, height: number | null = null, interval: string | null = null): Promise<PublicAcceleration[]> {

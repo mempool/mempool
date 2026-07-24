@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 111;
+  private static currentVersion = 112;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -1254,6 +1254,23 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 111 && isBitcoin === true) {
       await this.$executeQuery('ALTER TABLE `compact_cpfp_clusters` ADD template_algo TINYINT UNSIGNED NOT NULL DEFAULT 0');
       await this.updateToSchemaVersion(111);
+    }
+
+    if (databaseSchemaVersion < 112 && isBitcoin === true) {
+      // Per-block minimum fee-merit effective fee rate (issue #6639). The computation
+      // version handles algorithm changes; input snapshots let the bounded pull sweep
+      // detect late audits and acceleration-set changes without producer-side writes.
+      await this.$executeQuery(`
+        ALTER TABLE blocks
+          ADD min_fee_rate DOUBLE UNSIGNED NULL DEFAULT NULL,
+          ADD min_fee_rate_version TINYINT UNSIGNED NOT NULL DEFAULT 0,
+          ADD min_fee_rate_audit_version INT UNSIGNED NULL DEFAULT NULL,
+          ADD min_fee_rate_acceleration_count SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+          ADD min_fee_rate_acceleration_fingerprint CHAR(64) NOT NULL DEFAULT '',
+          ADD min_fee_rate_computed_at TIMESTAMP NULL DEFAULT NULL,
+          ADD INDEX min_fee_rate_backfill (stale, min_fee_rate_version, min_fee_rate_computed_at)
+      `);
+      await this.updateToSchemaVersion(112);
     }
   }
 

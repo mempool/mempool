@@ -29,6 +29,7 @@ class MiningRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fees', this.$getBlockFeesTimespan)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/rewards/:interval', this.$getHistoricalBlockRewards)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fee-rates/:interval', this.$getHistoricalBlockFeeRates)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/min-fee-rate/:interval', this.$getMinFeeRates)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/sizes-weights/:interval', this.$getHistoricalBlockSizeAndWeight)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty-adjustments/:interval', this.$getDifficultyAdjustments)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/predictions/:interval', this.$getHistoricalBlocksHealth)
@@ -265,6 +266,20 @@ class MiningRoutes {
       res.json(blockFeeRates);
     } catch (e) {
       handleError(req, res, 500, 'Failed to get historical block fee rates');
+    }
+  }
+
+  private async $getMinFeeRates(req: Request, res: Response) {
+    try {
+      const minFeeRates = await mining.$getMinFeeRates(req.params.interval);
+      const dayCount = await BlocksRepository.$getMinFeeRateDayCount();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.header('X-total-count', dayCount.toString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      res.json(minFeeRates);
+    } catch (e) {
+      handleError(req, res, 500, 'Failed to get minimum daily fee rates');
     }
   }
 

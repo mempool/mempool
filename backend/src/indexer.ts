@@ -19,7 +19,7 @@ export interface CoreIndex {
   best_block_height: number;
 }
 
-type TaskName = 'blocksPrices' | 'coinStatsIndex';
+type TaskName = 'blocksPrices' | 'coinStatsIndex' | 'minFeeRate';
 
 class Indexer {
   private runIndexer = true;
@@ -160,6 +160,15 @@ class Indexer {
           await mining.$indexCoinStatsIndex();
         } catch (e) {
           logger.debug(`failed to index coinstatsindex: ` + (e instanceof Error ? e.message : e));
+        }
+      } break;
+
+      case 'minFeeRate': {
+        logger.debug(`Backfilling min_fee_rate now`, logger.tags.mining);
+        try {
+          await BlocksRepository.$backfillMinFeeRate();
+        } catch (e) {
+          logger.debug(`failed to backfill min_fee_rate: ` + (e instanceof Error ? e.message : e));
         }
       } break;
     }

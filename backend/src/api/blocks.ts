@@ -620,6 +620,11 @@ class Blocks {
       });
       this.updateTimerProgress(timer, `saved audit results for ${this.currentBlockHeight}`);
     }
+
+    // min_fee_rate is derived from the audit + summary rows written just above, so it
+    // reacts to new blocks rather than waiting for a sequential indexing pass — running
+    // it from the indexer chain would leave it starved behind block summary indexing.
+    indexer.scheduleSingleTask('minFeeRate', 10000);
   }
 
   /**
