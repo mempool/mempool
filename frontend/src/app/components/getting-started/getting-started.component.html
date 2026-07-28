@@ -1,0 +1,208 @@
+<div class="container-xl getting-started" *ngIf="!syncProgress && !loadError">
+  <h1 i18n="getting-started.title">Getting started</h1>
+  <p class="description" i18n="getting-started.loading">
+    Loading sync status...
+  </p>
+</div>
+
+<div class="container-xl getting-started" *ngIf="!syncProgress && loadError">
+  <h1 i18n="getting-started.title">Getting started</h1>
+  <p class="description" i18n="getting-started.error">
+    Couldn't reach your node. Retrying…
+  </p>
+</div>
+
+<div class="container-xl getting-started" *ngIf="syncProgress">
+  <h1 i18n="getting-started.title">Getting started</h1>
+  <p class="description" i18n="getting-started.description">
+    Your node is completing its initial setup. Each stage will begin
+    automatically when the previous one is ready.
+  </p>
+
+  <!-- Stage 1 — Bitcoin Core IBD / indexing -->
+  <section
+    class="sync-section"
+    [class.is-waiting]="bitcoinStatus === 'waiting'"
+  >
+    <div class="sync-header">
+      <div class="sync-heading">
+        <span class="sync-label" i18n="getting-started.bitcoin-core.label"
+          >Bitcoin Core IBD / indexing</span
+        >
+        <span class="sync-description">{{ bitcoinDescription }}</span>
+      </div>
+      <ng-container
+        *ngTemplateOutlet="statusBadge; context: { $implicit: bitcoinStatus }"
+      ></ng-container>
+    </div>
+
+    <ng-container *ngIf="bitcoinStatus === 'active'">
+      <div
+        class="sync-bar"
+        role="progressbar"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        [attr.aria-valuenow]="syncProgress.bitcoind.verificationprogress * 100"
+      >
+        <div
+          class="sync-bar-fill"
+          [style.width]="syncProgress.bitcoind.verificationprogress * 100 + '%'"
+        ></div>
+      </div>
+
+      <div class="sync-stats">
+        <div class="item">
+          <div class="card-text">
+            {{ syncProgress.bitcoind.blocks | number
+            }}<span class="secondary" i18n="getting-started.blocks.of">
+              of {{ syncProgress.bitcoind.headers | number }}</span
+            >
+          </div>
+          <div class="symbol" i18n="getting-started.blocks.synced">
+            Blocks synced
+          </div>
+        </div>
+        <div
+          class="item has-tooltip"
+          i18n-ngbTooltip="getting-started.validation.tooltip"
+          ngbTooltip="How much of the chain's transaction history has been downloaded and verified."
+          placement="top"
+        >
+          <div class="card-text">
+            {{
+              syncProgress.bitcoind.verificationprogress * 100
+                | number: "1.1-1"
+            }}%
+          </div>
+          <div class="symbol" i18n="getting-started.validation.label">
+            Validation progress
+          </div>
+        </div>
+        <div
+          class="item has-tooltip"
+          i18n-ngbTooltip="getting-started.eta.tooltip"
+          ngbTooltip="The actual time can vary."
+          placement="top"
+        >
+          <div class="card-text">
+            {{ formatETA(syncProgress.bitcoind.estimatedTimeRemaining) }}
+          </div>
+          <div class="symbol" i18n="getting-started.eta.label">
+            Time remaining
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </section>
+
+  <!-- Stage 2 — Electrs / Electrum indexing -->
+  <section
+    class="sync-section"
+    *ngIf="syncProgress.electrs"
+    [class.is-waiting]="electrsStatus === 'waiting'"
+  >
+    <div class="sync-header">
+      <div class="sync-heading">
+        <span class="sync-label" i18n="getting-started.electrs.label"
+          >Electrs / Electrum indexing</span
+        >
+        <span class="sync-description">{{ electrsDescription }}</span>
+      </div>
+      <ng-container
+        *ngTemplateOutlet="statusBadge; context: { $implicit: electrsStatus }"
+      ></ng-container>
+    </div>
+
+    <div
+      class="scan-loader has-tooltip"
+      *ngIf="electrsStatus === 'active'"
+      i18n-ngbTooltip="getting-started.electrs.hint.tooltip"
+      ngbTooltip="Initial indexing can take several hours on mainnet."
+      placement="top"
+    >
+      <div class="scan-segment"></div>
+    </div>
+  </section>
+
+  <!-- Stage 3 — Mempool backend indexing -->
+  <section
+    class="sync-section"
+    *ngIf="syncProgress.mempool"
+    [class.is-waiting]="mempoolStatus === 'waiting'"
+  >
+    <div class="sync-header">
+      <div class="sync-heading">
+        <span class="sync-label" i18n="getting-started.mempool.label"
+          >Mempool &amp; block indexing</span
+        >
+        <span class="sync-description">{{ mempoolDescription }}</span>
+      </div>
+      <ng-container
+        *ngTemplateOutlet="statusBadge; context: { $implicit: mempoolStatus }"
+      ></ng-container>
+    </div>
+
+    <ng-container *ngIf="mempoolStatus === 'active'">
+      <ng-container
+        *ngIf="syncProgress.mempool.progress != null; else mempoolScan"
+      >
+        <div
+          class="sync-bar"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuenow]="syncProgress.mempool.progress"
+        >
+          <div
+            class="sync-bar-fill"
+            [style.width]="syncProgress.mempool.progress + '%'"
+          ></div>
+        </div>
+
+        <div
+          class="sync-stats"
+          *ngIf="syncProgress.mempool.estimatedTimeRemaining != null"
+        >
+          <div
+            class="item has-tooltip"
+            i18n-ngbTooltip="getting-started.eta.tooltip"
+            ngbTooltip="The actual time can vary."
+            placement="top"
+          >
+            <div class="card-text">
+              {{ formatETA(syncProgress.mempool.estimatedTimeRemaining) }}
+            </div>
+            <div class="symbol" i18n="getting-started.eta.label">
+              Time remaining
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #mempoolScan>
+        <div class="scan-loader"><div class="scan-segment"></div></div>
+      </ng-template>
+    </ng-container>
+  </section>
+
+  <a
+    class="btn btn-sm btn-primary return-dashboard"
+    [routerLink]="['/' | relativeUrl]"
+    i18n="getting-started.return-dashboard"
+    >Return to dashboard</a
+  >
+</div>
+
+<ng-template #statusBadge let-status>
+  <span class="status-badge" [ngClass]="status" [ngSwitch]="status">
+    <span *ngSwitchCase="'complete'" i18n="getting-started.status.complete"
+      >Complete</span
+    >
+    <span
+      *ngSwitchCase="'active'"
+      class="pulse"
+      i18n="getting-started.status.in-progress"
+      >In progress</span
+    >
+    <span *ngSwitchDefault i18n="getting-started.status.waiting">Waiting</span>
+  </span>
+</ng-template>

@@ -103,6 +103,11 @@ class BitcoinApi implements AbstractBitcoinApi {
     return this.bitcoindClient.getBlockCount();
   }
 
+  // bitcoind has no separate address index — its block tip is the index tip.
+  $getElectrsHeightTip(): Promise<number> {
+    return this.$getBlockHeightTip();
+  }
+
   $getBlockHashTip(): Promise<string> {
     return this.bitcoindClient.getBestBlockHash();
   }
