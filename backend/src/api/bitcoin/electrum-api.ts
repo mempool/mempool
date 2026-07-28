@@ -232,6 +232,15 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     return this.electrumClient.blockchainScripthash_listunspent(scriptHash);
   }
 
+  // The electrum backend serves blocks from bitcoind, so the inherited $getBlockHeightTip()
+  // reports Core's height. electrs' own indexed tip comes from the electrum protocol:
+  // blockchain.headers.subscribe returns the server's current header.
+  /** @asyncUnsafe */
+  async $getElectrsHeightTip(): Promise<number> {
+    const header: IElectrumApi.BlockHeader = await this.electrumClient.blockchainHeaders_subscribe();
+    return header.height;
+  }
+
   /** @asyncUnsafe */
   async $getTransactionMerkleProof(txId: string): Promise<IEsploraApi.MerkleProof> {
     const tx = await this.$getRawTransaction(txId);
