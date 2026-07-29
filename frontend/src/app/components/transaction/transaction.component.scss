@@ -94,6 +94,14 @@
   margin-bottom: 0px;
 }
 
+.payjoin-summary {
+  border-left: 4px solid var(--primary);
+
+  p {
+    margin: 0;
+  }
+}
+
 .graph-container {
   position: relative;
   width: 100%;

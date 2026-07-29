@@ -5,6 +5,29 @@ export interface PayjoinOwnership {
   outputs: PayjoinOwner[];
 }
 
+export function calculatePayjoinActualAmount(
+  inputValues: Array<number | null | undefined>,
+  outputValues: Array<number | null | undefined>,
+  ownership: PayjoinOwnership,
+): number | null {
+  if (inputValues.length !== ownership.inputs.length || outputValues.length !== ownership.outputs.length) {
+    return null;
+  }
+
+  const recipientInputValues = inputValues.filter((_, index) => ownership.inputs[index] === 'recipient');
+  const recipientOutputValues = outputValues.filter((_, index) => ownership.outputs[index] === 'recipient');
+  const values = [...recipientInputValues, ...recipientOutputValues];
+  if (values.some((value) => !Number.isSafeInteger(value) || value < 0)) {
+    return null;
+  }
+
+  const recipientInputs = recipientInputValues.reduce((total, value) => total + (value as number), 0);
+  const recipientOutputs = recipientOutputValues.reduce((total, value) => total + (value as number), 0);
+  const actualAmount = recipientOutputs - recipientInputs;
+
+  return Number.isSafeInteger(actualAmount) && actualAmount > 0 ? actualAmount : null;
+}
+
 const OWNERSHIP_CODES: Record<string, PayjoinOwner> = {
   s: 'sender',
   r: 'recipient',

@@ -1,4 +1,4 @@
-import { parsePayjoinOwnership } from './payjoin-ownership';
+import { calculatePayjoinActualAmount, parsePayjoinOwnership } from './payjoin-ownership';
 
 describe('parsePayjoinOwnership', () => {
   it('parses ownership for a nine-input, two-output Payjoin', () => {
@@ -32,5 +32,22 @@ describe('parsePayjoinOwnership', () => {
   it('rejects missing or malformed values', () => {
     expect(parsePayjoinOwnership(null, 2, 2)).toBeNull();
     expect(parsePayjoinOwnership('1:sr', 2, 2)).toBeNull();
+  });
+
+  it('calculates the recipient net gain as the actual amount sent', () => {
+    const ownership = parsePayjoinOwnership('1:ssr:rs', 3, 2);
+
+    expect(calculatePayjoinActualAmount(
+      [80_000, 30_000, 20_000],
+      [70_000, 59_000],
+      ownership!,
+    )).toBe(50_000);
+  });
+
+  it('rejects missing values and non-positive recipient gains', () => {
+    const ownership = parsePayjoinOwnership('1:sr:rs', 2, 2);
+
+    expect(calculatePayjoinActualAmount([80_000, null], [50_000, 49_000], ownership!)).toBeNull();
+    expect(calculatePayjoinActualAmount([80_000, 50_000], [50_000, 79_000], ownership!)).toBeNull();
   });
 });
