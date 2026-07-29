@@ -218,7 +218,7 @@
       </div>
       <div class="box payjoin-summary">
         <p i18n="transaction.payjoin-actual-amount|Payjoin identification and actual amount sent">
-          This transaction is a Payjoin. The actual amount sent was <strong><app-amount [satoshis]="payjoinActualAmount" [forceBtc]="true" [ignoreViewMode]="true" [noFiat]="true"></app-amount></strong>.
+          This transaction is a Payjoin. The actual amount sent was <strong>&lrm;{{ payjoinActualAmount / 100000000 | number : '1.8-8' }} BTC</strong>.
         </p>
       </div>
     </ng-container>
