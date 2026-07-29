@@ -96,9 +96,14 @@
 
 .payjoin-summary {
   border-left: 4px solid var(--primary);
+  margin-bottom: 1.5rem;
 
   p {
     margin: 0;
+  }
+
+  .payjoin-amount app-amount {
+    display: inline-block;
   }
 }
 
