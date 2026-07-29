@@ -18,6 +18,7 @@ import { ADDRESS_SIMILARITY_THRESHOLD, AddressMatch, AddressSimilarity, AddressT
 import { processInputSignatures, Sighash, SigInfo, SighashLabels, parseTaproot } from '@app/shared/transaction.utils';
 import { ActivatedRoute } from '@angular/router';
 import { SighashFlag } from '@app/shared/transaction.utils';
+import { PayjoinOwnership } from '@app/shared/payjoin-ownership';
 
 @Component({
   selector: 'app-transactions-list',
@@ -40,6 +41,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   @Input() paginated = false;
   @Input() inputIndex: number;
   @Input() outputIndex: number;
+  @Input() payjoinOwnership: PayjoinOwnership | null = null;
   @Input() addresses: string[] = [];
   @Input() acceleratedTxids: Set<string> | null = null;
   @Input() rowLimit = 12;

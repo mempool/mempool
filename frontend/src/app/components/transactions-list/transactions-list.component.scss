@@ -346,6 +346,19 @@ h2 {
 	}
 }
 
+.payjoin-owner {
+	margin-top: 4px;
+	color: #fff;
+
+	&.sender {
+		background-color: #2196f3;
+	}
+
+	&.recipient {
+		background-color: #9c27b0;
+	}
+}
+
 .scriptmessage.opreturn-msg {
 	max-width: 20px;
 	@media (min-width: 476px) {
