@@ -1,4 +1,4 @@
-import { calculatePayjoinActualAmount, parsePayjoinOwnership } from './payjoin-ownership';
+import { calculatePayjoinActualAmount, calculatePayjoinDetails, parsePayjoinOwnership } from './payjoin-ownership';
 
 describe('parsePayjoinOwnership', () => {
   it('parses ownership for a nine-input, two-output Payjoin', () => {
@@ -44,10 +44,37 @@ describe('parsePayjoinOwnership', () => {
     )).toBe(50_000);
   });
 
+  it('reconciles participant totals, the actual amount, and the network fee', () => {
+    const ownership = parsePayjoinOwnership('1:ssr:rs', 3, 2);
+
+    expect(calculatePayjoinDetails(
+      [80_000, 30_000, 20_000],
+      [70_000, 59_000],
+      ownership!,
+    )).toEqual({
+      senderInputs: 110_000,
+      recipientInputs: 20_000,
+      totalInputs: 130_000,
+      senderOutputs: 59_000,
+      recipientOutputs: 70_000,
+      totalOutputs: 129_000,
+      fee: 1_000,
+      senderNetDebit: 51_000,
+      recipientNetGain: 50_000,
+      actualAmount: 50_000,
+    });
+  });
+
   it('rejects missing values and non-positive recipient gains', () => {
     const ownership = parsePayjoinOwnership('1:sr:rs', 2, 2);
 
     expect(calculatePayjoinActualAmount([80_000, null], [50_000, 49_000], ownership!)).toBeNull();
     expect(calculatePayjoinActualAmount([80_000, 50_000], [50_000, 79_000], ownership!)).toBeNull();
+  });
+
+  it('rejects calculations that do not balance to a non-negative fee', () => {
+    const ownership = parsePayjoinOwnership('1:sr:rs', 2, 2);
+
+    expect(calculatePayjoinDetails([50_000, 20_000], [60_000, 20_000], ownership!)).toBeNull();
   });
 });

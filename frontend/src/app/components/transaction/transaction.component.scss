@@ -102,9 +102,117 @@
     margin: 0;
   }
 
-  .payjoin-amount app-amount {
+  app-amount {
     display: inline-block;
   }
+}
+
+.payjoin-calculations {
+  margin-top: 1rem;
+
+  summary {
+    list-style: none;
+    width: max-content;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+
+  .show-when-open {
+    display: none;
+  }
+
+  &[open] {
+    .show-when-closed {
+      display: none;
+    }
+
+    .show-when-open {
+      display: inline;
+    }
+  }
+}
+
+.payjoin-calculation-content {
+  border-top: 1px solid rgba(127, 127, 127, 0.25);
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+.payjoin-ledger {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+
+  @media (max-width: 767.98px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.payjoin-calculation-content h3 {
+  font-size: 1rem;
+  margin: 0 0 0.5rem;
+}
+
+.payjoin-values {
+  margin: 0;
+}
+
+.payjoin-value-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  padding: 0.35rem 0;
+
+  dt {
+    font-weight: normal;
+  }
+
+  dd {
+    font-weight: 600;
+    margin: 0;
+    text-align: right;
+  }
+
+  &.total {
+    border-top: 1px solid rgba(127, 127, 127, 0.25);
+    margin-top: 0.25rem;
+    padding-top: 0.6rem;
+  }
+}
+
+.payjoin-math {
+  margin-top: 1.5rem;
+}
+
+.payjoin-equation {
+  border-top: 1px solid rgba(127, 127, 127, 0.25);
+  padding: 0.75rem 0;
+}
+
+.payjoin-equation-title {
+  font-weight: 600;
+}
+
+.payjoin-equation-description {
+  color: var(--transparent-fg);
+  font-size: 0.85rem;
+  margin-top: 0.15rem;
+}
+
+.payjoin-equation-values {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+
+.payjoin-fee-note {
+  color: var(--transparent-fg);
+  font-size: 0.85rem;
+  padding-top: 0.25rem;
 }
 
 .graph-container {

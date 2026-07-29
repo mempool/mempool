@@ -212,14 +212,105 @@
 
     <app-transactions-list #txList [transactions]="[tx]" [cached]="isCached" [errorUnblinded]="errorUnblinded" [inputIndex]="inputIndex" [outputIndex]="outputIndex" [payjoinOwnership]="payjoinOwnership" [transactionPage]="true"></app-transactions-list>
 
-    <ng-container *ngIf="payjoinActualAmount !== null">
+    <ng-container *ngIf="payjoinCalculation as calculation">
       <div class="title text-start">
         <h2 i18n="transaction.payjoin|Payjoin transaction summary">Payjoin</h2>
       </div>
       <div class="box payjoin-summary">
         <p i18n="transaction.payjoin-actual-amount|Payjoin identification and actual amount sent">
-          This transaction is a Payjoin. Actual amount sent: <strong class="payjoin-amount"><app-amount [satoshis]="payjoinActualAmount" [noFiat]="true"></app-amount></strong>
+          This transaction is a Payjoin. Actual amount sent: <strong class="payjoin-amount"><app-amount [satoshis]="calculation.actualAmount" [noFiat]="true"></app-amount></strong>
         </p>
+
+        <details class="payjoin-calculations">
+          <summary class="btn btn-outline-info btn-sm payjoin-calculation-toggle">
+            <span class="show-when-closed" i18n="transaction.payjoin-see-calculations|Show Payjoin calculations">See calculations</span>
+            <span class="show-when-open" i18n="transaction.payjoin-hide-calculations|Hide Payjoin calculations">Hide calculations</span>
+          </summary>
+
+          <div class="payjoin-calculation-content">
+            <div class="payjoin-ledger">
+              <section>
+                <h3 i18n="transaction.payjoin-inputs-contributed|Payjoin inputs contributed heading">Inputs contributed</h3>
+                <dl class="payjoin-values">
+                  <div class="payjoin-value-row">
+                    <dt i18n="transaction.payjoin-sender-inputs|Payjoin sender input total">Sender inputs</dt>
+                    <dd><app-amount [satoshis]="calculation.senderInputs" [noFiat]="true"></app-amount></dd>
+                  </div>
+                  <div class="payjoin-value-row">
+                    <dt i18n="transaction.payjoin-recipient-inputs|Payjoin recipient input total">Recipient inputs</dt>
+                    <dd><app-amount [satoshis]="calculation.recipientInputs" [noFiat]="true"></app-amount></dd>
+                  </div>
+                  <div class="payjoin-value-row total">
+                    <dt i18n="transaction.payjoin-total-inputs|Payjoin total inputs">Total inputs</dt>
+                    <dd><app-amount [satoshis]="calculation.totalInputs" [noFiat]="true"></app-amount></dd>
+                  </div>
+                </dl>
+              </section>
+
+              <section>
+                <h3 i18n="transaction.payjoin-outputs-created|Payjoin outputs created heading">Outputs created</h3>
+                <dl class="payjoin-values">
+                  <div class="payjoin-value-row">
+                    <dt i18n="transaction.payjoin-sender-outputs|Payjoin sender output total">Sender outputs</dt>
+                    <dd><app-amount [satoshis]="calculation.senderOutputs" [noFiat]="true"></app-amount></dd>
+                  </div>
+                  <div class="payjoin-value-row">
+                    <dt i18n="transaction.payjoin-recipient-outputs|Payjoin recipient output total">Recipient outputs</dt>
+                    <dd><app-amount [satoshis]="calculation.recipientOutputs" [noFiat]="true"></app-amount></dd>
+                  </div>
+                  <div class="payjoin-value-row total">
+                    <dt i18n="transaction.payjoin-total-outputs|Payjoin total outputs">Total outputs</dt>
+                    <dd><app-amount [satoshis]="calculation.totalOutputs" [noFiat]="true"></app-amount></dd>
+                  </div>
+                </dl>
+              </section>
+            </div>
+
+            <section class="payjoin-math">
+              <h3 i18n="transaction.payjoin-calculation-heading|Payjoin calculation heading">How the amount is calculated</h3>
+
+              <div class="payjoin-equation">
+                <div class="payjoin-equation-title" i18n="transaction.payjoin-recipient-net-gain|Payjoin recipient net gain">Recipient net gain (actual amount sent)</div>
+                <div class="payjoin-equation-description" i18n="transaction.payjoin-recipient-net-gain-formula|Payjoin recipient net gain formula">Recipient outputs − recipient inputs</div>
+                <div class="payjoin-equation-values">
+                  <app-amount [satoshis]="calculation.recipientOutputs" [noFiat]="true"></app-amount>
+                  <span aria-hidden="true">−</span>
+                  <app-amount [satoshis]="calculation.recipientInputs" [noFiat]="true"></app-amount>
+                  <span aria-hidden="true">=</span>
+                  <strong><app-amount [satoshis]="calculation.recipientNetGain" [noFiat]="true"></app-amount></strong>
+                </div>
+              </div>
+
+              <div class="payjoin-equation">
+                <div class="payjoin-equation-title" i18n="transaction.payjoin-sender-net-debit|Payjoin sender net debit">Sender net debit</div>
+                <div class="payjoin-equation-description" i18n="transaction.payjoin-sender-net-debit-formula|Payjoin sender net debit formula">Sender inputs − sender outputs</div>
+                <div class="payjoin-equation-values">
+                  <app-amount [satoshis]="calculation.senderInputs" [noFiat]="true"></app-amount>
+                  <span aria-hidden="true">−</span>
+                  <app-amount [satoshis]="calculation.senderOutputs" [noFiat]="true"></app-amount>
+                  <span aria-hidden="true">=</span>
+                  <strong><app-amount [satoshis]="calculation.senderNetDebit" [noFiat]="true"></app-amount></strong>
+                </div>
+              </div>
+
+              <div class="payjoin-equation">
+                <div class="payjoin-equation-title" i18n="transaction.payjoin-network-fee|Payjoin network fee">Network fee</div>
+                <div class="payjoin-equation-description" i18n="transaction.payjoin-network-fee-formula|Payjoin network fee formula">Sender net debit − recipient net gain</div>
+                <div class="payjoin-equation-values">
+                  <app-amount [satoshis]="calculation.senderNetDebit" [noFiat]="true"></app-amount>
+                  <span aria-hidden="true">−</span>
+                  <app-amount [satoshis]="calculation.recipientNetGain" [noFiat]="true"></app-amount>
+                  <span aria-hidden="true">=</span>
+                  <strong><app-amount [satoshis]="calculation.fee" [noFiat]="true"></app-amount></strong>
+                </div>
+              </div>
+            </section>
+
+            <p class="payjoin-fee-note" i18n="transaction.payjoin-fee-note|Payjoin fee attribution limitation">
+              The transaction reveals the total network fee, but not how the sender and recipient agreed to split it.
+            </p>
+          </div>
+        </details>
       </div>
     </ng-container>
 
