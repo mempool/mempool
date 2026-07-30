@@ -111,6 +111,9 @@
           <td class="td-width" i18n="transaction.features|Transaction features" id="acceleratePreviewAnchor">Features</td>
           <td>
             <app-tx-features [tx]="tx"></app-tx-features>
+            @if (isPayjoin) {
+              <span class="badge badge-success ml-1" i18n="tx-features.tag.payjoin|Payjoin">Payjoin</span>
+            }
           </td>
         </tr>
       }

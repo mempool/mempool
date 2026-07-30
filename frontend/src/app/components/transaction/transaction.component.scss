@@ -163,10 +163,6 @@
     h3 {
       color: #2196f3;
     }
-
-    .payjoin-net {
-      border-left-color: #2196f3;
-    }
   }
 
   &.recipient {
@@ -174,10 +170,6 @@
 
     h3 {
       color: #9c27b0;
-    }
-
-    .payjoin-net {
-      border-left-color: #9c27b0;
     }
   }
 
@@ -259,7 +251,6 @@
 
 .payjoin-net {
   background: var(--box-bg);
-  border-left: 3px solid;
   margin-top: auto;
   padding: 0.75rem;
 }
