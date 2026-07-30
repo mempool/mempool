@@ -219,9 +219,9 @@
   }
 
   &.total {
-    border-top: 1px solid rgba(127, 127, 127, 0.25);
-    margin-top: 0.25rem;
-    padding-top: 0.6rem;
+    border-bottom: 1px solid rgba(127, 127, 127, 0.25);
+    margin-bottom: 0.25rem;
+    padding-bottom: 0.6rem;
   }
 
   &.breakdown {
@@ -260,17 +260,6 @@
   font-size: 0.75rem;
 }
 
-.payjoin-math {
-  background: var(--stat-box-bg);
-  margin-top: 1.5rem;
-  padding: 1rem;
-  text-align: center;
-
-  .payjoin-equation-values {
-    justify-content: center;
-  }
-}
-
 .payjoin-equation-description {
   color: var(--transparent-fg);
   font-size: 0.85rem;
@@ -283,12 +272,6 @@
   flex-wrap: wrap;
   gap: 0.35rem;
   margin-top: 0.35rem;
-}
-
-.payjoin-fee-note {
-  color: var(--transparent-fg);
-  font-size: 0.85rem;
-  padding-top: 0.25rem;
 }
 
 .graph-container {

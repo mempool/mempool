@@ -234,25 +234,25 @@
 
                 <h4 i18n="transaction.payjoin-contributed|Payjoin contributed heading">Contributed</h4>
                 <dl class="payjoin-values">
-                  <div class="payjoin-value-row breakdown" *ngFor="let input of calculation.senderInputValues">
-                    <dt i18n="transaction.payjoin-input-number|Payjoin input number">Input {{ input.index + 1 }}</dt>
-                    <dd><app-amount [satoshis]="input.value" [noFiat]="true"></app-amount></dd>
-                  </div>
                   <div class="payjoin-value-row total">
                     <dt i18n="transaction.payjoin-total-contributed|Payjoin total contributed">Total contributed</dt>
                     <dd><app-amount [satoshis]="calculation.senderInputs" [noFiat]="true"></app-amount></dd>
+                  </div>
+                  <div class="payjoin-value-row breakdown" *ngFor="let input of calculation.senderInputValues">
+                    <dt i18n="transaction.payjoin-input-number|Payjoin input number">Input {{ input.index + 1 }}</dt>
+                    <dd><app-amount [satoshis]="input.value" [noFiat]="true"></app-amount></dd>
                   </div>
                 </dl>
 
                 <h4 i18n="transaction.payjoin-returned-to-sender|Payjoin outputs returned to sender heading">Returned to sender</h4>
                 <dl class="payjoin-values">
-                  <div class="payjoin-value-row breakdown" *ngFor="let output of calculation.senderOutputValues">
-                    <dt i18n="transaction.payjoin-output-number|Payjoin output number">Output {{ output.index + 1 }}</dt>
-                    <dd><app-amount [satoshis]="output.value" [noFiat]="true"></app-amount></dd>
-                  </div>
                   <div class="payjoin-value-row total">
                     <dt i18n="transaction.payjoin-total-returned|Payjoin total returned to sender">Total returned</dt>
                     <dd><app-amount [satoshis]="calculation.senderOutputs" [noFiat]="true"></app-amount></dd>
+                  </div>
+                  <div class="payjoin-value-row breakdown" *ngFor="let output of calculation.senderOutputValues">
+                    <dt i18n="transaction.payjoin-output-number|Payjoin output number">Output {{ output.index + 1 }}</dt>
+                    <dd><app-amount [satoshis]="output.value" [noFiat]="true"></app-amount></dd>
                   </div>
                 </dl>
 
@@ -274,25 +274,25 @@
 
                 <h4 i18n="transaction.payjoin-contributed|Payjoin contributed heading">Contributed</h4>
                 <dl class="payjoin-values">
-                  <div class="payjoin-value-row breakdown" *ngFor="let input of calculation.recipientInputValues">
-                    <dt i18n="transaction.payjoin-input-number|Payjoin input number">Input {{ input.index + 1 }}</dt>
-                    <dd><app-amount [satoshis]="input.value" [noFiat]="true"></app-amount></dd>
-                  </div>
                   <div class="payjoin-value-row total">
                     <dt i18n="transaction.payjoin-total-contributed|Payjoin total contributed">Total contributed</dt>
                     <dd><app-amount [satoshis]="calculation.recipientInputs" [noFiat]="true"></app-amount></dd>
+                  </div>
+                  <div class="payjoin-value-row breakdown" *ngFor="let input of calculation.recipientInputValues">
+                    <dt i18n="transaction.payjoin-input-number|Payjoin input number">Input {{ input.index + 1 }}</dt>
+                    <dd><app-amount [satoshis]="input.value" [noFiat]="true"></app-amount></dd>
                   </div>
                 </dl>
 
                 <h4 i18n="transaction.payjoin-outputs-to-recipient|Payjoin outputs to recipient heading">Outputs to recipient</h4>
                 <dl class="payjoin-values">
-                  <div class="payjoin-value-row breakdown" *ngFor="let output of calculation.recipientOutputValues">
-                    <dt i18n="transaction.payjoin-output-number|Payjoin output number">Output {{ output.index + 1 }}</dt>
-                    <dd><app-amount [satoshis]="output.value" [noFiat]="true"></app-amount></dd>
-                  </div>
                   <div class="payjoin-value-row total">
                     <dt i18n="transaction.payjoin-total-to-recipient|Payjoin total outputs to recipient">Total to recipient</dt>
                     <dd><app-amount [satoshis]="calculation.recipientOutputs" [noFiat]="true"></app-amount></dd>
+                  </div>
+                  <div class="payjoin-value-row breakdown" *ngFor="let output of calculation.recipientOutputValues">
+                    <dt i18n="transaction.payjoin-output-number|Payjoin output number">Output {{ output.index + 1 }}</dt>
+                    <dd><app-amount [satoshis]="output.value" [noFiat]="true"></app-amount></dd>
                   </div>
                 </dl>
 
@@ -313,21 +313,6 @@
               </section>
             </div>
 
-            <section class="payjoin-math">
-              <h3 i18n="transaction.payjoin-network-fee|Payjoin network fee">Network fee</h3>
-              <div class="payjoin-equation-description" i18n="transaction.payjoin-network-fee-formula|Payjoin network fee formula">Sender net debit − recipient net gain</div>
-              <div class="payjoin-equation-values">
-                <app-amount [satoshis]="calculation.senderNetDebit" [noFiat]="true"></app-amount>
-                <span aria-hidden="true">−</span>
-                <app-amount [satoshis]="calculation.recipientNetGain" [noFiat]="true"></app-amount>
-                <span aria-hidden="true">=</span>
-                <strong><app-amount [satoshis]="calculation.fee" [noFiat]="true"></app-amount></strong>
-              </div>
-            </section>
-
-            <p class="payjoin-fee-note" i18n="transaction.payjoin-fee-note|Payjoin fee attribution limitation">
-              The transaction reveals the total network fee, but not how the sender and recipient agreed to split it.
-            </p>
           </div>
         </details>
       </div>
