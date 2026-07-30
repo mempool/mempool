@@ -193,6 +193,24 @@
   }
 }
 
+@media (min-width: 768px) {
+  @supports (grid-template-rows: subgrid) {
+    .payjoin-parties {
+      row-gap: 0;
+    }
+
+    .payjoin-party {
+      display: grid;
+      grid-row: span 6;
+      grid-template-rows: subgrid;
+
+      .payjoin-net {
+        margin-top: 0;
+      }
+    }
+  }
+}
+
 .payjoin-calculation-content h3 {
   font-size: 1rem;
   margin: 0 0 0.5rem;
