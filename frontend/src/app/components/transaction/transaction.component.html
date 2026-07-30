@@ -217,8 +217,8 @@
         <h2 i18n="transaction.payjoin|Payjoin transaction summary">Payjoin</h2>
       </div>
       <div class="box payjoin-summary">
-        <p i18n="transaction.payjoin-actual-amount|Payjoin identification and actual amount sent">
-          This transaction is a Payjoin. Actual amount sent: <strong class="payjoin-amount"><app-amount [satoshis]="calculation.actualAmount" [noFiat]="true"></app-amount></strong>
+        <p i18n="transaction.payjoin-actual-amount|Payjoin identification and actual amount received">
+          This transaction is a Payjoin. Actual amount received: <strong class="payjoin-amount"><app-amount [satoshis]="calculation.actualAmount" [noFiat]="true"></app-amount></strong>
         </p>
 
         <details class="payjoin-calculations">
@@ -307,7 +307,7 @@
                 <div class="payjoin-net">
                   <div class="payjoin-net-title">
                     <span i18n="transaction.payjoin-recipient-net-gain|Payjoin recipient net gain">Net gain</span>
-                    <span class="payjoin-actual-label" i18n="transaction.payjoin-actual-amount-label|Payjoin actual amount label">Actual amount sent</span>
+                    <span class="payjoin-actual-label" i18n="transaction.payjoin-actual-amount-label|Payjoin actual amount received label">Actual amount received</span>
                   </div>
                   <div class="payjoin-equation-description" i18n="transaction.payjoin-recipient-net-gain-formula|Payjoin recipient net gain formula">Outputs to recipient − contributed</div>
                   <div class="payjoin-equation-values">
