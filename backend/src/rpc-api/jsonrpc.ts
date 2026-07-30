@@ -2,6 +2,15 @@ const http = require('http');
 const https = require('https');
 import { readFileSync } from 'fs';
 
+const RETRY_SAFE_RPCS = new Set([
+  'getbestblockhash',       'getblock',           'getblockchaininfo',    'getblockcount',
+  'getblockhash',           'getblockheader',     'getblockstats',        'getchaintips',
+  'getdifficulty',          'getindexinfo',       'getmempoolancestors',  'getmempoolentry',
+  'getmempoolinfo',         'getnetworkhashps',   'getnetworkinfo',       'getrawmempool',
+  'getrawtransaction',      'gettxout',           'gettxoutsetinfo',
+  'decoderawtransaction',   'testmempoolaccept',  'validateaddress',
+]);
+
 const JsonRPC = function (opts) {
   // @ts-ignore
   this.opts = opts || {};
@@ -69,6 +78,8 @@ JsonRPC.prototype.call = function (method, params) {
       requestOptions.auth = this.opts.user + ':' + this.opts.pass;
     }
 
+    const retrySafe = (Array.isArray(method) ? method.map((m) => m.method) : [method]).every((m) => RETRY_SAFE_RPCS.has(String(m).toLowerCase()));
+
     const attempt = (canRetry: boolean) => {
       // Now we'll make a request to the server
       let cbCalled = false;
@@ -102,7 +113,7 @@ JsonRPC.prototype.call = function (method, params) {
         clearTimeout(reqTimeout);
         // bitcoind may close an idle keep-alive socket at the same moment we reuse it;
         // retry once on a fresh connection, only for that specific race
-        if (canRetry && err.code === 'ECONNRESET' && request.reusedSocket) {
+        if (canRetry && retrySafe && err.code === 'ECONNRESET' && request.reusedSocket) {
           attempt(false);
           return;
         }
@@ -166,8 +177,7 @@ JsonRPC.prototype.call = function (method, params) {
                 reject(err);
               }
             } else if (decodedResponse.hasOwnProperty('result')) {
-              // @ts-ignore
-              resolve(decodedResponse.result, response.headers);
+              resolve(decodedResponse.result);
             } else {
               if (reject) {
                 err = new Error(decodedResponse.error.message || '');
