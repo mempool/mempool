@@ -52,9 +52,22 @@ describe('parsePayjoinOwnership', () => {
       [70_000, 59_000],
       ownership!,
     )).toEqual({
+      senderInputValues: [
+        { index: 0, value: 80_000 },
+        { index: 1, value: 30_000 },
+      ],
+      recipientInputValues: [
+        { index: 2, value: 20_000 },
+      ],
       senderInputs: 110_000,
       recipientInputs: 20_000,
       totalInputs: 130_000,
+      senderOutputValues: [
+        { index: 1, value: 59_000 },
+      ],
+      recipientOutputValues: [
+        { index: 0, value: 70_000 },
+      ],
       senderOutputs: 59_000,
       recipientOutputs: 70_000,
       totalOutputs: 129_000,

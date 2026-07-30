@@ -5,10 +5,19 @@ export interface PayjoinOwnership {
   outputs: PayjoinOwner[];
 }
 
+export interface PayjoinIndexedValue {
+  index: number;
+  value: number;
+}
+
 export interface PayjoinCalculation {
+  senderInputValues: PayjoinIndexedValue[];
+  recipientInputValues: PayjoinIndexedValue[];
   senderInputs: number;
   recipientInputs: number;
   totalInputs: number;
+  senderOutputValues: PayjoinIndexedValue[];
+  recipientOutputValues: PayjoinIndexedValue[];
   senderOutputs: number;
   recipientOutputs: number;
   totalOutputs: number;
@@ -34,10 +43,17 @@ export function calculatePayjoinDetails(
 
   const inputs = inputValues as number[];
   const outputs = outputValues as number[];
-  const senderInputs = inputs.reduce((total, value, index) => total + (ownership.inputs[index] === 'sender' ? value : 0), 0);
-  const recipientInputs = inputs.reduce((total, value, index) => total + (ownership.inputs[index] === 'recipient' ? value : 0), 0);
-  const senderOutputs = outputs.reduce((total, value, index) => total + (ownership.outputs[index] === 'sender' ? value : 0), 0);
-  const recipientOutputs = outputs.reduce((total, value, index) => total + (ownership.outputs[index] === 'recipient' ? value : 0), 0);
+  const indexedInputs = inputs.map((value, index) => ({ index, value }));
+  const indexedOutputs = outputs.map((value, index) => ({ index, value }));
+  const senderInputValues = indexedInputs.filter(({ index }) => ownership.inputs[index] === 'sender');
+  const recipientInputValues = indexedInputs.filter(({ index }) => ownership.inputs[index] === 'recipient');
+  const senderOutputValues = indexedOutputs.filter(({ index }) => ownership.outputs[index] === 'sender');
+  const recipientOutputValues = indexedOutputs.filter(({ index }) => ownership.outputs[index] === 'recipient');
+  const sumValues = (indexedValues: PayjoinIndexedValue[]) => indexedValues.reduce((total, { value }) => total + value, 0);
+  const senderInputs = sumValues(senderInputValues);
+  const recipientInputs = sumValues(recipientInputValues);
+  const senderOutputs = sumValues(senderOutputValues);
+  const recipientOutputs = sumValues(recipientOutputValues);
   const totalInputs = senderInputs + recipientInputs;
   const totalOutputs = senderOutputs + recipientOutputs;
   const fee = totalInputs - totalOutputs;
@@ -66,9 +82,13 @@ export function calculatePayjoinDetails(
   }
 
   return {
+    senderInputValues,
+    recipientInputValues,
     senderInputs,
     recipientInputs,
     totalInputs,
+    senderOutputValues,
+    recipientOutputValues,
     senderOutputs,
     recipientOutputs,
     totalOutputs,
