@@ -626,6 +626,16 @@ class Blocks {
       });
       this.updateTimerProgress(timer, `saved audit results for ${this.currentBlockHeight}`);
     }
+
+    // min_fee_rate has a single writer. Computing it here from the CPFP pass above would
+    // be cheaper, but that pass applies pool accelerations to the block template, which
+    // raises the rate assigned to non-accelerated members of an accelerated package. The
+    // backfill rebuilds the template without them, so the same block would end up with
+    // two different stored answers depending on which path saw it first, and neither path
+    // would ever re-normalize the other's.
+    if (config.MEMPOOL.NETWORK === 'mainnet') {
+      indexer.scheduleSingleTask('minFeeRate', 10000);
+    }
   }
 
   /**

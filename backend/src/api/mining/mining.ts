@@ -1,5 +1,6 @@
 import { BlockPrice, PoolInfo, PoolStats, RewardStats } from '../../mempool.interfaces';
 import BlocksRepository from '../../repositories/BlocksRepository';
+import { MinFeeRateDay } from './min-fee-rate';
 import PoolsRepository, { POOLS_STATS_INTERVALS } from '../../repositories/PoolsRepository';
 import HashratesRepository from '../../repositories/HashratesRepository';
 import bitcoinClient from '../bitcoin/bitcoin-client';
@@ -97,6 +98,17 @@ class Mining {
       this.getTimeRange(interval),
       Common.getSqlInterval(interval),
       precise
+    );
+  }
+
+  /**
+   * Get the minimum fee-merit effective fee rate per UTC day (issue #6639).
+   * Fixed calendar-day buckets, so no rolling DIV time range is used — only the
+   * optional interval window filter.
+   */
+  public async $getMinFeeRates(interval: string | null = null): Promise<MinFeeRateDay[]> {
+    return await BlocksRepository.$getMinFeeRatesByDay(
+      Common.getSqlInterval(interval)
     );
   }
 
