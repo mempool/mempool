@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators, PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights,
-  RbfTree, BlockAudit, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo, TestMempoolAcceptResult, WalletAddress, Treasury, SubmitPackageResult, ChainTip, StaleTip } from '@interfaces/node-api.interface';
+  RbfTree, BlockAudit, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo, TestMempoolAcceptResult, WalletAddress, Treasury, SubmitPackageResult, ChainTip, StaleTip, MinFeeRateDay } from '@interfaces/node-api.interface';
 import { BehaviorSubject, Observable, catchError, filter, map, of, shareReplay, switchMap, take, tap } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 import { Transaction } from '@interfaces/electrs.interface';
@@ -389,6 +389,13 @@ export class ApiService {
   getHistoricalBlockFeeRates$(interval: string | undefined) : Observable<any> {
     return this.httpClient.get<any[]>(
       this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/fee-rates` +
+      (interval !== undefined ? `/${interval}` : ''), { observe: 'response' }
+    );
+  }
+
+  getMinFeeRates$(interval: string | undefined) : Observable<HttpResponse<MinFeeRateDay[]>> {
+    return this.httpClient.get<MinFeeRateDay[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/blocks/min-fee-rate` +
       (interval !== undefined ? `/${interval}` : ''), { observe: 'response' }
     );
   }
