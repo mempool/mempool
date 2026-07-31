@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 113;
+  private static currentVersion = 114;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -1264,6 +1264,34 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 113) {
       await this.$executeQuery('ALTER TABLE `blocks` ADD coinbase_bip_54 TINYINT(1) NULL DEFAULT NULL');
       await this.updateToSchemaVersion(113);
+    }
+
+    if (databaseSchemaVersion < 114) {
+      // The DDL is mainnet only: the route serving this metric returns 400 everywhere
+      // else, so the other networks would pay for an index on `blocks` that nothing
+      // reads. The version bump is not, otherwise they would sit below currentVersion
+      // and re-run migration initialization on every startup. Trade-off: a database
+      // first built on another network and later repointed at mainnet reaches 114
+      // without the columns, and has to be migrated by hand.
+      if (config.MEMPOOL.NETWORK === 'mainnet') {
+        // Per-block minimum fee-merit effective fee rate (issue #6639). Columns and index
+        // are separate statements to keep the column add on ALGORITHM=INSTANT; combining
+        // them would rebuild the whole blocks table during startup migration.
+        await this.$executeQuery(`
+          ALTER TABLE blocks
+            ADD min_fee_rate DOUBLE UNSIGNED NULL DEFAULT NULL,
+            ADD min_fee_rate_version TINYINT UNSIGNED NOT NULL DEFAULT 0
+        `);
+        // Covering index for the daily aggregation. blockTimestamp leads because the
+        // query filters on it alone: it has to see every block in a day, computed or
+        // not, to decide the day is complete, so a version-first index would leave that
+        // range scan unseekable. The rest is read from the index, never from the row.
+        await this.$executeQuery(`
+          ALTER TABLE blocks
+            ADD INDEX min_fee_rate_series (blockTimestamp, stale, min_fee_rate_version, min_fee_rate, height)
+        `);
+      }
+      await this.updateToSchemaVersion(114);
     }
   }
 
