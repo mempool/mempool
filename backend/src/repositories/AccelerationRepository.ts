@@ -12,6 +12,7 @@ import bitcoinApi from '../api/bitcoin/bitcoin-api-factory';
 import transactionUtils from '../api/transaction-utils';
 import { BlockExtended, MempoolTransactionExtended } from '../mempool.interfaces';
 import { makeBlockTemplate } from '../api/mini-miner';
+import BlocksRepository from './BlocksRepository';
 
 export interface PublicAcceleration {
   txid: string,
@@ -58,6 +59,32 @@ class AccelerationRepository {
     } catch (e: any) {
       logger.err(`Cannot save acceleration (${acceleration.txSummary.txid}) into db. Reason: ` + (e instanceof Error ? e.message : e));
       // We don't throw, not a critical issue if we miss some accelerations
+    }
+    // Separate from the insert above so a failure here is not reported as a failed
+    // acceleration save. The block's min_fee_rate excludes accelerated transactions, so a
+    // late-arriving acceleration invalidates an already-computed value.
+    try {
+      await BlocksRepository.$invalidateMinFeeRateAtHeight(block.height);
+    } catch (e) {
+      logger.err(`Cannot invalidate min_fee_rate at height ${block.height}. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+  }
+
+  /**
+   * Reads straight from the accelerations table rather than going through
+   * MEMPOOL_SERVICES, so the min fee rate exclusion set matches what was persisted.
+   * @asyncSafe
+   */
+  public async $getAcceleratedTxidsAtHeight(height: number): Promise<string[]> {
+    try {
+      const [rows]: any[] = await DB.query(
+        `SELECT txid FROM accelerations WHERE height = ?`,
+        [height]
+      );
+      return rows.map(row => row.txid);
+    } catch (e) {
+      logger.err(`Cannot get accelerated txids at height ${height}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
     }
   }
 
