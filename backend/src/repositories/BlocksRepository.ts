@@ -1,5 +1,5 @@
 import bitcoinApi, { bitcoinCoreApi } from '../api/bitcoin/bitcoin-api-factory';
-import { BlockExtended, BlockExtension, BlockPrice, EffectiveFeeStats } from '../mempool.interfaces';
+import { BlockExtended, BlockExtension, BlockPrice, EffectiveFeeStats, MempoolTransactionExtended } from '../mempool.interfaces';
 import DB from '../database';
 import logger from '../logger';
 import { Common } from '../api/common';
@@ -13,6 +13,16 @@ import config from '../config';
 import chainTips from '../api/chain-tips';
 import blocks from '../api/blocks';
 import BlocksAuditsRepository from './BlocksAuditsRepository';
+import AccelerationRepository from './AccelerationRepository';
+import {
+  computeMinFeeRate,
+  MIN_FEE_RATE_BATCH_SIZE,
+  MinFeeRateDay,
+  MinFeeRateTx,
+  MIN_FEE_RATE_START_TIMESTAMP,
+  MIN_FEE_RATE_VERSION,
+} from '../api/mining/min-fee-rate';
+import { makeBlockTemplate } from '../api/mini-miner';
 import transactionUtils from '../api/transaction-utils';
 import { parseDATUMTemplateCreator, parseDMNDTemplateCreator } from '../utils/bitcoin-script';
 import poolsUpdater from '../tasks/pools-updater';
@@ -113,6 +123,8 @@ const BLOCK_DB_FIELDS = `
 
 class BlocksRepository {
   static version = 1;
+
+  private minFeeRateStartHeight: number | null = null;
 
   /**
    * Save indexed block data in the database
@@ -1470,6 +1482,312 @@ class BlocksRepository {
       logger.err(`Couldn't update coinbaseBip54 field for block ${hash}. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
+  }
+  /**
+   * First canonical block at or after the metric's start date. Cached because it never
+   * moves, and it keeps the backfill queue off the blocks that predate the series.
+   * @asyncSafe
+   */
+  private async $getMinFeeRateStartHeight(): Promise<number> {
+    if (this.minFeeRateStartHeight === null) {
+      try {
+        const [rows]: any[] = await DB.query(
+          `SELECT MIN(height) AS height FROM blocks WHERE blockTimestamp >= FROM_UNIXTIME(?) AND stale = 0`,
+          [MIN_FEE_RATE_START_TIMESTAMP]
+        );
+        if (rows[0]?.height == null) {
+          // No in-range block yet; don't cache, the next block may be the first one.
+          return Number.MAX_SAFE_INTEGER;
+        }
+        this.minFeeRateStartHeight = rows[0].height;
+      } catch (e) {
+        logger.err(`Cannot resolve min_fee_rate start height. Reason: ` + (e instanceof Error ? e.message : e));
+        throw e;
+      }
+    }
+    return this.minFeeRateStartHeight as number;
+  }
+
+  /** Blocks whose persisted metric is older than the current algorithm. */
+  /** @asyncSafe */
+  private async $getBlocksNeedingMinFeeRate(limit: number): Promise<{ height: number, hash: string }[]> {
+    try {
+      const startHeight = await this.$getMinFeeRateStartHeight();
+      const [rows]: any[] = await DB.query(`
+        SELECT height, hash
+        FROM blocks
+        WHERE min_fee_rate_version < ${MIN_FEE_RATE_VERSION}
+          AND height >= ?
+          AND blockTimestamp >= FROM_UNIXTIME(?)
+          AND stale = 0
+        ORDER BY height DESC
+        LIMIT ?
+      `, [startHeight, MIN_FEE_RATE_START_TIMESTAMP, limit]);
+      return rows;
+    } catch (e) {
+      logger.err(`Cannot get blocks needing min_fee_rate. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Queue a block for recomputation. Called when its acceleration set changes after the
+   * metric was already computed, so the stored value no longer matches its inputs.
+   * @asyncSafe
+   */
+  public async $invalidateMinFeeRateAtHeight(height: number): Promise<void> {
+    try {
+      await DB.query(
+        `UPDATE blocks SET min_fee_rate_version = 0 WHERE height = ? AND stale = 0`,
+        [height]
+      );
+    } catch (e) {
+      logger.err(`Cannot invalidate min_fee_rate at height ${height}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /** @asyncSafe */
+  private async $updateMinFeeRate(height: number, hash: string, rate: number | null): Promise<void> {
+    try {
+      await DB.query(
+        `UPDATE blocks SET
+          min_fee_rate = ?,
+          min_fee_rate_version = ?
+        WHERE height = ? AND hash = ?`,
+        [rate, MIN_FEE_RATE_VERSION, height, hash]
+      );
+    } catch (e) {
+      logger.err(`Cannot update min_fee_rate for block ${height} (${hash}). Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Shared prelude for both daily queries: the scoped window, the height gaps inside it,
+   * and the per-day aggregate. `startDay` is a SQL expression, not a value, because the
+   * interval variant computes it from NOW().
+   */
+  private minFeeRateDaysCte(startDay: string, extraDayColumns = ''): string {
+    return `
+      WITH scoped AS (
+        SELECT
+          height,
+          min_fee_rate,
+          min_fee_rate_version,
+          FLOOR(UNIX_TIMESTAMP(blockTimestamp) / 86400) AS utcDay
+        FROM blocks
+        WHERE stale = 0
+          AND blockTimestamp >= FROM_UNIXTIME((${startDay} - 1) * 86400)
+      ),
+      gaps AS (
+        SELECT height AS gapAfter
+        FROM (
+          SELECT height, LEAD(height) OVER (ORDER BY height) AS nextHeight
+          FROM scoped
+        ) sequence
+        WHERE nextHeight IS NULL OR nextHeight <> height + 1
+      ),
+      days AS (
+        SELECT
+          utcDay,
+          COUNT(*) AS blockCount,
+          MIN(height) AS firstHeight,
+          MAX(height) AS lastHeight,
+          SUM(min_fee_rate_version = ${MIN_FEE_RATE_VERSION}) AS computed${extraDayColumns}
+        FROM scoped
+        GROUP BY utcDay
+      )`;
+  }
+
+  /** A day is complete when every block in it is computed and no height is missing. */
+  private static readonly MIN_FEE_RATE_DAY_IS_COMPLETE = `
+    computed = blockCount
+    AND NOT EXISTS (
+      SELECT 1 FROM gaps
+      WHERE gapAfter BETWEEN days.firstHeight - 1 AND days.lastHeight
+    )`;
+
+  /**
+   * Minimum fee-merit effective fee rate per UTC calendar day (issue #6639).
+   * Unlike the rolling DIV-bucket mining charts, this buckets on the fixed UTC day so
+   * the "minimum daily fee rate" is stable regardless of the selected interval.
+   *
+   * A day is only published once its minimum can no longer move: every non-stale block
+   * in it carries the current metric version, and no height is missing from the chain
+   * across the day's span. A day short of even one block reports a minimum that is too
+   * high, and nothing in the response would let a caller tell it apart from a real one.
+   *
+   * Completeness is a property of the height sequence, not of each day's own range.
+   * Block timestamps are not monotonic in height, so a late block can land in the
+   * previous UTC day and leave two days interleaved rather than partitioned; both are
+   * fully indexed, and testing each day's heights for contiguity would withhold both.
+   * @asyncSafe
+   */
+  public async $getMinFeeRatesByDay(interval: string | null): Promise<MinFeeRateDay[]> {
+    try {
+      // The requested interval is snapped to a UTC day boundary: a raw
+      // DATE_SUB(NOW(), ...) cuts the oldest bucket at the current time of day and still
+      // reports it as a whole day. The scan starts one day earlier than that, so the
+      // first published day's predecessor height is in scope for the gap test.
+      const startDay = interval === null
+        ? `FLOOR(? / 86400)`
+        : `GREATEST(
+             FLOOR(? / 86400),
+             FLOOR(UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL ${interval})) / 86400)
+           )`;
+
+      const query = `${this.minFeeRateDaysCte(startDay)},
+        complete AS (
+          SELECT utcDay FROM days WHERE ${BlocksRepository.MIN_FEE_RATE_DAY_IS_COMPLETE}
+        ),
+        ranked AS (
+          SELECT
+            height,
+            min_fee_rate,
+            utcDay,
+            ROW_NUMBER() OVER (
+              PARTITION BY utcDay
+              ORDER BY min_fee_rate ASC, height ASC
+            ) AS dailyRank
+          FROM scoped
+          WHERE min_fee_rate_version = ${MIN_FEE_RATE_VERSION}
+            AND min_fee_rate IS NOT NULL
+        )
+        SELECT
+          CAST(ranked.min_fee_rate AS DOUBLE) AS minRate,
+          CAST(ranked.height AS SIGNED) AS minHeight,
+          CAST(ranked.utcDay * 86400 AS SIGNED) AS timestamp
+        FROM ranked
+        JOIN complete ON complete.utcDay = ranked.utcDay
+        WHERE ranked.dailyRank = 1
+          AND ranked.utcDay >= ${startDay}
+          AND ranked.utcDay < FLOOR(? / 86400)
+        ORDER BY ranked.utcDay`;
+
+      const [rows]: any = await DB.query(query, [
+        MIN_FEE_RATE_START_TIMESTAMP,
+        MIN_FEE_RATE_START_TIMESTAMP,
+        this.currentUtcDayStart(),
+      ]);
+      return rows;
+    } catch (e) {
+      logger.err(`Cannot generate min fee rates by day. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Days available across the whole history, which is what the graph's timespan buttons
+   * guard against. Counts exactly what $getMinFeeRatesByDay would publish, so the count
+   * can never promise a period the series does not cover.
+   * @asyncSafe
+   */
+  public async $getMinFeeRateDayCount(): Promise<number> {
+    try {
+      const [rows]: any[] = await DB.query(`${this.minFeeRateDaysCte(`FLOOR(? / 86400)`, `,
+          COUNT(min_fee_rate) AS rated`)}
+        SELECT COUNT(*) AS count
+        FROM days
+        WHERE ${BlocksRepository.MIN_FEE_RATE_DAY_IS_COMPLETE}
+          AND rated > 0
+          AND utcDay >= FLOOR(? / 86400)
+          AND utcDay < FLOOR(? / 86400)
+      `, [MIN_FEE_RATE_START_TIMESTAMP, MIN_FEE_RATE_START_TIMESTAMP, this.currentUtcDayStart()]);
+      return rows[0]?.count || 0;
+    } catch (e) {
+      logger.err(`Cannot count minimum fee rate days. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  private currentUtcDayStart(): number {
+    return Math.floor(Date.now() / 86400000) * 86400;
+  }
+
+  /**
+   * Backfill blocks.min_fee_rate. Transactions come with `vin`, so makeBlockTemplate can
+   * be run directly and the value does not depend on which CPFP producer originally
+   * indexed the block.
+   *
+   * accelerations are deliberately passed as [] to makeBlockTemplate: an acceleration is
+   * an out-of-band payment, so letting it raise the template rate of its CPFP package
+   * would hide exactly what this metric measures.
+   *
+   * On a Core backend the transactions come straight from getblock, without the sigops
+   * that extendMempoolTransaction derives on the esplora path, so a sigop-heavy block can
+   * yield a slightly different rate than the same block on an esplora-backed instance.
+   *
+   * One batch per run; the queue is not drained in a single invocation. A single block's
+   * RPC/compute failure is logged and skipped rather than aborting the rest of the batch.
+   *
+   * Returns how many blocks the queue handed out, not how many succeeded: the caller uses
+   * it to decide whether more work is waiting, and a batch full of skipped blocks still
+   * means the queue is not empty.
+   * @asyncSafe
+   */
+  public async $backfillMinFeeRate(): Promise<number> {
+    let blocksClaimed = 0;
+    let blocksProcessed = 0;
+    let processedThisWindow = 0;
+    try {
+      let timer = Date.now() / 1000;
+      const startedAt = Date.now() / 1000;
+
+      const batch = await this.$getBlocksNeedingMinFeeRate(MIN_FEE_RATE_BATCH_SIZE);
+      blocksClaimed = batch.length;
+      for (const row of batch) {
+        try {
+          let transactions: MempoolTransactionExtended[] | undefined;
+          if (config.MEMPOOL.BACKEND === 'esplora') {
+            transactions = (await bitcoinApi.$getTxsForBlock(row.hash, true)).map(tx => transactionUtils.extendMempoolTransaction(tx));
+          }
+          if (!transactions) {
+            const block = await bitcoinClient.getBlock(row.hash, 2);
+            transactions = block.tx.map(tx => {
+              tx.fee *= 100_000_000;
+              return tx;
+            });
+          }
+          if (!transactions?.length) {
+            throw new Error(`missing transaction data`);
+          }
+
+          const acceleratedTxids = new Set(await AccelerationRepository.$getAcceleratedTxidsAtHeight(row.height));
+
+          const template = makeBlockTemplate(transactions, [], 1, Infinity, Infinity);
+          const templateMap = new Map(template.map(tx => [tx.txid, tx]));
+          const orderedTxs: MinFeeRateTx[] = transactions.map(tx => ({
+            txid: tx.txid,
+            effectiveFeePerVsize: templateMap.get(tx.txid)?.effectiveFeePerVsize ?? 0,
+          }));
+
+          await this.$updateMinFeeRate(row.height, row.hash, computeMinFeeRate(orderedTxs, acceleratedTxids));
+
+          blocksProcessed++;
+          processedThisWindow++;
+        } catch (e) {
+          logger.err(`Cannot backfill min_fee_rate for block ${row.height} (${row.hash}), skipping. Reason: ` + (e instanceof Error ? e.message : e));
+        }
+
+        const elapsedSeconds = (Date.now() / 1000) - timer;
+        if (elapsedSeconds > 5) {
+          const runningFor = (Date.now() / 1000) - startedAt;
+          const blockPerSeconds = processedThisWindow / elapsedSeconds;
+          logger.debug(`Backfilling min_fee_rate | ~${blockPerSeconds.toFixed(2)} blocks/sec | height: ${row.height} | total: ${blocksProcessed} | elapsed: ${runningFor.toFixed(2)} seconds`);
+          timer = Date.now() / 1000;
+          processedThisWindow = 0;
+        }
+      }
+
+      if (blocksProcessed > 0) {
+        logger.notice(`Backfilling min_fee_rate completed: processed ${blocksProcessed} blocks`);
+      }
+    } catch (e) {
+      logger.err(`Backfilling min_fee_rate failed. Trying again later. Reason: ${(e instanceof Error ? e.message : e)}`);
+      throw e;
+    }
+    return blocksClaimed;
   }
 }
 
