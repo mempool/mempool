@@ -19,7 +19,7 @@ export interface CoreIndex {
   best_block_height: number;
 }
 
-type TaskName = 'blocksPrices' | 'coinStatsIndex';
+type TaskName = 'blocksPrices' | 'coinStatsIndex' | 'poolsStats';
 
 class Indexer {
   private runIndexer = true;
@@ -160,6 +160,15 @@ class Indexer {
           await mining.$indexCoinStatsIndex();
         } catch (e) {
           logger.debug(`failed to index coinstatsindex: ` + (e instanceof Error ? e.message : e));
+        }
+      } break;
+
+      case 'poolsStats': {
+        logger.debug('Syncing pools stats');
+        try {
+          await mining.$rebuildPoolsStatsCache();
+        } catch (e) {
+          logger.debug('failed to sync pools stats cace: ' + (e instanceof Error ? e.message : e));
         }
       } break;
     }

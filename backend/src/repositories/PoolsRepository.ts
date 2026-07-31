@@ -5,6 +5,9 @@ import DB from '../database';
 import logger from '../logger';
 import { PoolInfo, PoolTag } from '../mempool.interfaces';
 
+// Intervals the pools stats cache is built for. 'all' has no time filter; the rest resolve via Common.getSqlInterval
+export const POOLS_STATS_INTERVALS = ['24h', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', '4y', 'all'];
+
 class PoolsRepository {
   /**
    * Get all pools tagging info
@@ -64,6 +67,65 @@ class PoolsRepository {
       return <PoolInfo[]>rows;
     } catch (e) {
       logger.err(`Cannot generate pools stats. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /** @asyncSafe */
+  public async $getPoolsInfoPerInterval(): Promise<Record<string, PoolInfo[]>> {
+    const feeDelta = `(CAST(blocks.fees as SIGNED) - CAST(blocks_audits.expected_fees as SIGNED)) / NULLIF(CAST(blocks_audits.expected_fees as SIGNED), 0)`;
+    const columns = POOLS_STATS_INTERVALS.map((label) => {
+      const sql = Common.getSqlInterval(label);
+      const inWindow = sql ? `blocks.blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${sql}) AND NOW()` : '1';
+      return `
+        COUNT(CASE WHEN ${inWindow} THEN blocks.height END) AS \`blockCount_${label}\`,
+        COUNT(CASE WHEN ${inWindow} AND blocks.tx_count = 1 THEN 1 END) AS \`emptyBlocks_${label}\`,
+        AVG(CASE WHEN ${inWindow} THEN blocks_audits.match_rate END) AS \`avgMatchRate_${label}\`,
+        AVG(CASE WHEN ${inWindow} THEN ${feeDelta} END) AS \`avgFeeDelta_${label}\``;
+    }).join(',');
+
+    const query = `SELECT
+        pool_id AS poolId,
+        pools.name AS name,
+        pools.link AS link,
+        pools.slug AS slug,
+        pools.unique_id AS poolUniqueId,
+        ${columns}
+      FROM blocks
+      JOIN pools on pools.id = pool_id
+      LEFT JOIN blocks_audits ON blocks_audits.hash = blocks.hash
+      WHERE blocks.stale = 0
+      GROUP BY pool_id`;
+
+    try {
+      const [rows]: any[] = await DB.query(query);
+
+
+      const result: Record<string, PoolInfo[]> = {};
+      for (const row of rows) {
+        for (const label of POOLS_STATS_INTERVALS) {
+          if (!result[label]) {
+            result[label] = [];
+          }
+          const blockCount = row[`blockCount_${label}`];
+          if (blockCount > 0) {
+            result[label].push({
+              poolId: row.poolId,
+              name: row.name,
+              link: row.link,
+              slug: row.slug,
+              poolUniqueId: row.poolUniqueId,
+              blockCount: blockCount,
+              emptyBlocks: row[`emptyBlocks_${label}`],
+              avgMatchRate: row[`avgMatchRate_${label}`],
+              avgFeeDelta: row[`avgFeeDelta_${label}`],
+            });
+          }
+        }
+      }
+      return result;
+    } catch(e) {
+      logger.err(`Cannot generate pools stats per interval. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
