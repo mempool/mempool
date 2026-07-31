@@ -19,9 +19,28 @@ import { VbytesPipe } from '@app/shared/pipes/bytes-pipe/vbytes.pipe';
 interface GogglesRollup {
   bucketSize: string;
   startHeight: number;
+  avgTimestamp: number;
   txCount: number;
   vSizeTotal: number;
 }
+
+interface GogglesDatum {
+  value: number;
+  startHeight: number;
+  bucketSize: number;
+  txCount: number;
+  vSizeTotal: number;
+  timestampMs: number;
+}
+
+const INTERVAL_PRESETS: Record<string, number[]> = {
+  '24h': [1],
+  '6m': [1008, 4032],
+  '1y': [1008, 4032],
+  '2y': [1008, 4032],
+  '3y': [1008, 4032],
+  'all': [1008, 4032],
+};
 
 @Component({
   selector: 'app-block-goggles-graph',
@@ -46,6 +65,7 @@ export class BlockGogglesGraphComponent implements OnInit {
   miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
   unitGroupForm: UntypedFormGroup;
+  bucketGroupForm: UntypedFormGroup;
   count = $localize`:@@8177873832400820695:Count`;
 
   chartOptions: EChartsOption = {};
@@ -62,9 +82,10 @@ export class BlockGogglesGraphComponent implements OnInit {
   // active goggles filter; empty op/mask means no filter, so the backend returns total tx counts
   goggle$ = new BehaviorSubject<{ op?: FilterMode, mask?: bigint }>({});
 
-  private intervals = ['24h', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', 'all'];
+  private intervals = Object.keys(INTERVAL_PRESETS);
 
-  // totals depend only on the timespan, so cache them per interval across filter changes
+  private bucketDateByHeight = new Map<number, string>();
+
   private totalsCache: Record<string, GogglesRollup[]> = {};
 
   constructor(
@@ -83,13 +104,18 @@ export class BlockGogglesGraphComponent implements OnInit {
     this.radioGroupForm.controls.dateSpan.setValue('1y');
     this.unitGroupForm = this.formBuilder.group({ unitType: 'txCount'});
     this.unitGroupForm.controls.unitType.setValue('txCount');
+    this.bucketGroupForm = this.formBuilder.group({ bucketSize: 1008});
+    this.bucketGroupForm.controls.bucketSize.setValue(1008);
   }
 
   ngOnInit(): void {
     if (this.widget) {
-      this.miningWindowPreference = '1m';
+      this.miningWindowPreference = '6m';
     } else {
       this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
+    }
+    if (!this.intervals.includes(this.miningWindowPreference)) {
+      this.miningWindowPreference = '1y';
     }
 
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
@@ -120,21 +146,31 @@ export class BlockGogglesGraphComponent implements OnInit {
         startWith(this.unitGroupForm.controls.unitType.value),
         distinctUntilChanged(),
       ),
+      this.bucketGroupForm.get('bucketSize').valueChanges.pipe(
+        startWith(this.bucketGroupForm.controls.bucketSize.value),
+        distinctUntilChanged(),
+      ),
     ]).pipe(
-      switchMap(([timespan, goggle, unitType]) => {
+      switchMap(([timespan, goggle, unitType, bucketSize]) => {
         if (!this.widget) {
           this.storageService.setValue('miningWindowPreference', timespan);
         }
         this.timespan = timespan;
         this.isLoading = true;
-        const filtered$ = this.apiService.getHistoricalTxCountByFlags$(timespan, goggle.op, goggle.mask?.toString());
-        // when filtering, fetch unfiltered totals (cached per interval) to compute each bucket's share
+        // reconcile the bucket size with the interval (e.g. 24h is per-block only) and keep the UI radio in sync
+        const allowedBuckets = this.bucketSizesForInterval(timespan);
+        const effectiveBucket = allowedBuckets.includes(bucketSize) ? bucketSize : allowedBuckets[0];
+        if (effectiveBucket !== this.bucketGroupForm.controls.bucketSize.value) {
+          this.bucketGroupForm.controls.bucketSize.setValue(effectiveBucket, { emitEvent: false });
+        }
+        const cacheKey = `${timespan}:${effectiveBucket}`;
+        const filtered$ = this.apiService.getHistoricalTxCountByFlags$(timespan, effectiveBucket.toString(), goggle.op, goggle.mask?.toString());
         const totals$ = goggle.mask
-          ? (this.totalsCache[timespan]
-              ? of(this.totalsCache[timespan])
-              : this.apiService.getHistoricalTxCountByFlags$(timespan).pipe(
+          ? (this.totalsCache[cacheKey]
+              ? of(this.totalsCache[cacheKey])
+              : this.apiService.getHistoricalTxCountByFlags$(timespan, effectiveBucket.toString()).pipe(
                   map((res) => res.body || []),
-                  tap((body) => { this.totalsCache[timespan] = body; }),
+                  tap((body) => { this.totalsCache[cacheKey] = body; }),
                 ))
           : of(null);
         const unit = of(unitType);
@@ -146,17 +182,23 @@ export class BlockGogglesGraphComponent implements OnInit {
             const totalRows: GogglesRollup[] = filtered ? (totalsBody || []) : body;
             const matchedRows: GogglesRollup[] = filtered ? body : [];
             const unitIsTx = unit === 'txCount';
-            // dims: [startHeight, plotted (avg per block once rolled up), bucketSize, txCount, vSizeTotal]
-            const toSeries = (rows: GogglesRollup[]): number[][] => rows.map((row) => {
+            const matchedByHeight = new Map<number, GogglesRollup>();
+            for (const row of matchedRows) {
+              matchedByHeight.set(row.startHeight, row);
+            }
+            const sorted = [...totalRows].sort((a, b) => a.startHeight - b.startHeight);
+            const categories = sorted.map((row) => row.startHeight);
+            this.bucketDateByHeight = new Map(sorted.map((row) => [row.startHeight, this.formatBucketDate(Number(row.avgTimestamp) * 1000)]));
+            const toSeries = (matched = false): GogglesDatum[] => sorted.map((row) => {
               const bucketSize = parseInt(row.bucketSize, 10) || 1;
-              // vsize_total is a BIGINT sum and arrives as a string, so coerce before it reaches the chart/tooltip
-              const txCount = Number(row.txCount);
-              const vSizeTotal = Number(row.vSizeTotal);
+              const source = matched ? matchedByHeight.get(row.startHeight) : row;
+              const txCount = source ? Number(source.txCount) : 0;
+              const vSizeTotal = source ? Number(source.vSizeTotal) : 0;
               const selected = unitIsTx ? txCount : vSizeTotal;
               const plotted = bucketSize > 1 ? selected / bucketSize : selected;
-              return [row.startHeight, plotted, bucketSize, txCount, vSizeTotal];
+              return { value: plotted, startHeight: row.startHeight, bucketSize, txCount, vSizeTotal, timestampMs: Number(row.avgTimestamp) * 1000 };
             });
-            this.prepareChartOptions(toSeries(totalRows), toSeries(matchedRows));
+            this.prepareChartOptions(categories, toSeries(), filtered ? toSeries(true) : []);
             this.isLoading = false;
             this.cd.markForCheck();
           }),
@@ -164,13 +206,12 @@ export class BlockGogglesGraphComponent implements OnInit {
             const body: GogglesRollup[] = response.body || [];
             const headerCount = parseInt(response.headers.get('x-total-count'), 10);
             return {
-              // fall back high so the whole range selector stays available
               blockCount: Number.isFinite(headerCount) ? headerCount : Number.MAX_SAFE_INTEGER,
               txCount: body.reduce((acc, row) => acc + row.txCount, 0),
             };
           }),
           catchError(err => {
-            this.prepareChartOptions([], [], err);
+            this.prepareChartOptions([], [], [], err);
             this.isLoading = false;
             this.cd.markForCheck();
             return of({ blockCount: Number.MAX_SAFE_INTEGER, txCount: 0 });
@@ -193,11 +234,12 @@ export class BlockGogglesGraphComponent implements OnInit {
   }
 
   // builds the URL fragment: just the interval when no filter is active ("1m"), or "interval=1m&op=and&mask=5" when filtering
-  getFragment(interval?: string, unitType?: string): string {
+  getFragment(interval?: string, unitType?: string, bucketSize?: number): string {
     const timespan = interval ?? this.radioGroupForm.controls.dateSpan.value;
     const unit = unitType ?? this.unitGroupForm.controls.unitType.value;
+    const bucket = bucketSize ?? this.bucketGroupForm.controls.bucketSize.value;
     const { op, mask } = this.goggle$.value;
-    return mask ? `interval=${timespan}&unit=${unit}&op=${op}&mask=${mask.toString()}` : `interval=${timespan}&unit=${unit}`;
+    return mask ? `interval=${timespan}&unit=${unit}&op=${op}&mask=${mask.toString()}&bucket=${bucket}` : `interval=${timespan}&unit=${unit}&bucket=${bucket}`;
   }
 
   // restores state from a fragment in either form, letting block-filters pick up restored filters via activeGoggles$
@@ -209,19 +251,23 @@ export class BlockGogglesGraphComponent implements OnInit {
     const rawInterval = params.get('interval') ?? '';
     const interval = this.intervals.includes(rawInterval) ? rawInterval : this.radioGroupForm.controls.dateSpan.value;
     const unit = ['vb', 'txCount'].includes(params.get('unit')) ? params.get('unit') : 'txCount';
+    const allowedBuckets = this.bucketSizesForInterval(interval);
+    const rawBucket = parseInt(params.get('bucket'), 10);
+    const bucket = allowedBuckets.includes(rawBucket) ? rawBucket : allowedBuckets[0];
     const maskParam = params.get('mask') ?? '';
     const mask = maskParam && /^\d+$/.test(maskParam) ? BigInt(maskParam) : 0n;
     const op = (['and', 'or', 'nor'].includes(params.get('op')) ? params.get('op') : 'and') as FilterMode;
 
     this.radioGroupForm.controls.dateSpan.setValue(interval, { emitEvent: false });
     this.unitGroupForm.controls.unitType.setValue(unit, { emitEvent: false });
+    this.bucketGroupForm.controls.bucketSize.setValue(bucket, { emitEvent: false });
     // skip if already applied, otherwise the navigation in onFilterChanged would loop back here
     if ((mask > 0n && (this.goggle$.value.mask ?? 0n) !== mask) || this.goggle$.value.op !== op) {
       this.stateService.activeGoggles$.next({ mode: op, filters: toFilters(mask).map(f => f.key), gradient: 'fee' });
     }
   }
 
-  prepareChartOptions(totalData: number[][], matchedData: number[][], error?): void {
+  prepareChartOptions(categories: number[], totalData: GogglesDatum[], matchedData: GogglesDatum[], error?): void {
     const filtered = !!this.goggle$.value.mask;
     let title: object;
     if (totalData.length === 0 ) {
@@ -275,13 +321,13 @@ export class BlockGogglesGraphComponent implements OnInit {
           if (!params || params.length <= 0) {
             return '';
           }
-          // dims: [startHeight, plotted, bucketSize, txCount, vSizeTotal]
           const baseline = params.find(p => p.seriesIndex === 0) || params[0];
           const matched = params.find(p => p.seriesIndex === 1);
-          const startHeight = baseline.data[0];
-          const bucketSize = baseline.data[2] || 1;
-          const baseTxCount = baseline.data[3];
-          const baseVSize = baseline.data[4];
+          const startHeight = baseline.data.startHeight;
+          const bucketSize = baseline.data.bucketSize || 1;
+          const baseTxCount = baseline.data.txCount;
+          const baseVSize = baseline.data.vSizeTotal;
+          const timestampMs = baseline.data.timestampMs;
           const filtered = !!this.goggle$.value.mask;
           const unitIsTxCount = this.unitGroupForm.controls.unitType.value === 'txCount';
           const rolledUp = bucketSize > 1;
@@ -292,11 +338,13 @@ export class BlockGogglesGraphComponent implements OnInit {
           const fmtPct = (v): string => formatNumber(v, this.locale, '1.0-2') + '%';
 
           let tooltip = '';
+          const dateStr = new Date(timestampMs).toLocaleDateString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
+          tooltip += `<b style="color: white; margin-left: 2px">${dateStr}</b><br>`;
           if (rolledUp) {
             const endHeight = startHeight + bucketSize - 1;
-            tooltip += `<b style="color: white; margin-left: 2px">` + $localize`Blocks ${startHeight}–${endHeight}` + `</b><br>`;
+            tooltip += $localize`Blocks ${startHeight}–${endHeight}` + `<br>`;
           } else {
-            tooltip += `<b style="color: white; margin-left: 2px">` + $localize`Block: ${startHeight}` + `</b><br>`;
+            tooltip += $localize`Block: ${startHeight}` + `<br>`;
           }
 
           // baseline (unfiltered total) metric, labelled/formatted for the active unit
@@ -313,8 +361,8 @@ export class BlockGogglesGraphComponent implements OnInit {
           }
 
           if (filtered && matched) {
-            const matchedTxCount = matched.data[3];
-            const matchedVSize = matched.data[4];
+            const matchedTxCount = matched.data.txCount;
+            const matchedVSize = matched.data.vSizeTotal;
             const m = matched.marker;
             if (unitIsTxCount) {
               tooltip += rolledUp
@@ -336,18 +384,17 @@ export class BlockGogglesGraphComponent implements OnInit {
         }.bind(this)
       },
       xAxis: totalData.length === 0 ? undefined : {
-        name: this.widget ? undefined : $localize`Block height`,
+        name: this.widget ? undefined : $localize`Date`,
         nameLocation: 'middle',
         nameTextStyle: {
           padding: [10, 0, 0, 0],
         },
-        type: 'value',
-        min: 'dataMin',
-        max: 'dataMax',
+        type: 'category',
+        data: categories,
         axisLine: { onZero: false },
         splitLine: { show: false },
         axisLabel: {
-          formatter: (val): string => `${val}`,
+          formatter: (value): string => this.bucketDateByHeight.get(Number(value)) ?? '',
           align: 'center',
           fontSize: 11,
           lineHeight: 12,
@@ -384,7 +431,6 @@ export class BlockGogglesGraphComponent implements OnInit {
           data: totalData,
           type: 'bar',
           barWidth: '100%',
-          large: true,
           itemStyle: { color: '#1E88E5' }, // blue: total tx count
         },
         ...(filtered && matchedData.length > 0 ? [{
@@ -395,7 +441,6 @@ export class BlockGogglesGraphComponent implements OnInit {
           type: 'bar',
           barWidth: '100%',
           barGap: '-100%', // overlay directly on top of the total bars
-          large: true,
           itemStyle: { color: '#8E24AA' },
         }] : []),
       ],
@@ -436,7 +481,7 @@ export class BlockGogglesGraphComponent implements OnInit {
 
     this.chartInstance.on('click', (e) => {
       this.zone.run(() => {
-        const url = new RelativeUrlPipe(this.stateService).transform(`/block/${e.data[0]}`);
+        const url = new RelativeUrlPipe(this.stateService).transform(`/block/${e.data.startHeight}`);
         this.router.navigate([url]);
       });
     });
@@ -444,6 +489,20 @@ export class BlockGogglesGraphComponent implements OnInit {
 
   isMobile(): boolean {
     return (window.innerWidth <= 767.98);
+  }
+
+  private formatBucketDate(timestampMs: number): string {
+    return new Date(timestampMs).toLocaleDateString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  // the bucket sizes a given interval can be viewed at (24h is per-block only; longer ranges are week/month)
+  bucketSizesForInterval(interval: string): number[] {
+    return INTERVAL_PRESETS[interval] ?? [1008, 4032];
+  }
+
+  // for the template: the bucket options for the currently selected interval (used to show/hide the selector)
+  get availableBucketSizes(): number[] {
+    return this.bucketSizesForInterval(this.radioGroupForm.controls.dateSpan.value);
   }
 
   onSaveChart(): void {

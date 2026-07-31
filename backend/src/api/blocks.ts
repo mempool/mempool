@@ -40,7 +40,7 @@ import CpfpRepository from '../repositories/CpfpRepository';
 import { parseDATUMTemplateCreator, parseDMNDTemplateCreator } from '../utils/bitcoin-script';
 import database from '../database';
 import { getBlockFirstSeenFromLogs, getOldestLogTimestampFromLogs, scanLogsForBlocksFirstSeen } from '../utils/file-read';
-import FlagValueRepository from '../repositories/FlagValueRepository';
+import FlagValueRepository, { INDEXING_PRESETS } from '../repositories/FlagValueRepository';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -700,13 +700,6 @@ class Blocks {
       return;
     }
 
-    const INDEXING_PRESETS = [
-      {name: 'per block', bucketSize: 1,  retentionSpan: 1008}, // block span of 1 week
-      {name: 'per 36 blocks', bucketSize: 36, retentionSpan: 25920}, // block span of 6 months
-      {name: 'per 144 blocks', bucketSize: 144, retentionSpan: 155520}, // block span of 3 years
-      {name: 'per 720 blocks', bucketSize: 720, retentionSpan: -1}, // All history
-    ];
-
     try {
       const tipOfSummaries = await BlocksSummariesRepository.$getTipIndexed();
       if (!tipOfSummaries) {
@@ -759,6 +752,7 @@ class Blocks {
           }
 
           const dataPerFlag: Record<string, Record<string, number>> = {};
+          let sumTimestamps = 0;
           for (const block of blocks) {
             const txData = JSON.parse(block.transactions).map((tx) => ({flags: tx.flags, vsize: tx.vsize}));
             for (const data of txData) {
@@ -771,11 +765,13 @@ class Blocks {
               dataPerFlag[data.flags].txCount = dataPerFlag[data.flags].txCount + 1;
               dataPerFlag[data.flags].vSizeTotal = dataPerFlag[data.flags].vSizeTotal + data.vsize;
             }
+            sumTimestamps += block.timestamp;
             blocksComputedInTotal++;
             blocksComputedThisRun++;
           }
 
-          await FlagValueRepository.$saveBatchFlagValues(preset.bucketSize, bucketStart, dataPerFlag);
+          const avgTimestamp = sumTimestamps / blocks.length;
+          await FlagValueRepository.$saveBatchFlagValues(preset.bucketSize, bucketStart, dataPerFlag, avgTimestamp);
           newlyIndexedBuckets++;
           const elapsedSeconds = (Date.now() / 1000) - timer;
           if (elapsedSeconds > 5) {

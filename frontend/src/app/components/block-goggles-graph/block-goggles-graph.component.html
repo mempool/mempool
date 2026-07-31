@@ -15,22 +15,6 @@
           <input type="radio" class="btn-check" id="goggles-24h" [value]="'24h'" [fragment]="getFragment('24h')" [routerLink]="['/graphs/goggles' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="goggles-24h">24h</label>
         </ng-container>
-        <ng-container *ngIf="stats.blockCount >= 432">
-          <input type="radio" class="btn-check" id="goggles-3d" [value]="'3d'" [fragment]="getFragment('3d')" [routerLink]="['/graphs/goggles' | relativeUrl]" formControlName="dateSpan">
-          <label class="btn btn-primary btn-sm" for="goggles-3d">3D</label>
-        </ng-container>
-        <ng-container *ngIf="stats.blockCount >= 1008">
-          <input type="radio" class="btn-check" id="goggles-1w" [value]="'1w'" [fragment]="getFragment('1w')" [routerLink]="['/graphs/goggles' | relativeUrl]" formControlName="dateSpan">
-          <label class="btn btn-primary btn-sm" for="goggles-1w">1W</label>
-        </ng-container>
-        <ng-container *ngIf="stats.blockCount >= 4320">
-          <input type="radio" class="btn-check" id="goggles-1m" [value]="'1m'" [fragment]="getFragment('1m')" [routerLink]="['/graphs/goggles' | relativeUrl]" formControlName="dateSpan">
-          <label class="btn btn-primary btn-sm" for="goggles-1m">1M</label>
-        </ng-container>
-        <ng-container *ngIf="stats.blockCount >= 12960">
-          <input type="radio" class="btn-check" id="goggles-3m" [value]="'3m'" [fragment]="getFragment('3m')" [routerLink]="['/graphs/goggles' | relativeUrl]" formControlName="dateSpan">
-          <label class="btn btn-primary btn-sm" for="goggles-3m">3M</label>
-        </ng-container>
         <ng-container *ngIf="stats.blockCount >= 25920">
           <input type="radio" class="btn-check" id="goggles-6m" [value]="'6m'" [fragment]="getFragment('6m')" [routerLink]="['/graphs/goggles' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="goggles-6m">6M</label>
@@ -58,6 +42,14 @@
         <label class="btn btn-primary btn-sm" for="goggles-vBytes">vBytes</label>
         <input type="radio" class="btn-check" id="goggles-txCount" [value]="'txCount'" [fragment]="getFragment(undefined, 'txCount')" [routerLink]="['/graphs/goggles' | relativeUrl]" formControlName="unitType">
         <label class="btn btn-primary btn-sm" for="goggles-txCount">{{count}}</label>
+      </div>
+    </form>
+    <form [formGroup]="bucketGroupForm" class="formRadioGroup" *ngIf="availableBucketSizes.length > 1">
+      <div class="btn-group" role="group" name="radioBasic">
+        <input type="radio" class="btn-check" id="bucket-week" [value]="1008" [fragment]="getFragment(undefined, undefined, 1008)" [routerLink]="['/graphs/goggles' | relativeUrl]" formControlName="bucketSize">
+        <label class="btn btn-primary btn-sm" for="bucket-week">Week</label>
+        <input type="radio" class="btn-check" id="bucket-month" [value]="4032" [fragment]="getFragment(undefined, undefined, 4032)" [routerLink]="['/graphs/goggles' | relativeUrl]" formControlName="bucketSize">
+        <label class="btn btn-primary btn-sm" for="bucket-month">Month</label>
       </div>
     </form>
   </div>

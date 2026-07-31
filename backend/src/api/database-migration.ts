@@ -1848,8 +1848,9 @@ class DatabaseMigration {
 
   private getCreateFlagsValuesTableQuery(): string {
     return `CREATE TABLE IF NOT EXISTS flag_values (
-      bucket_size enum('1', '36', '72', '144', '432', '720', '1008') NOT NULL,
+      bucket_size enum('1', '1008', '4032') NOT NULL,
       start_height int unsigned NOT NULL,
+      avg_timestamp timestamp NOT NULL,
       flag_value bigint unsigned NOT NULL,
       tx_count int unsigned NOT NULL,
       vsize_total int unsigned NOT NULL,

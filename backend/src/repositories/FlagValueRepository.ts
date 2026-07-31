@@ -2,6 +2,21 @@ import { Common } from '../api/common';
 import DB from '../database';
 import logger from '../logger';
 
+export const INDEXING_PRESETS = [
+  {name: 'per block', bucketSize: 1,  retentionSpan: 144}, // block span of ~1 day
+  {name: 'per week', bucketSize: 1008, retentionSpan: -1}, // all
+  {name: 'per month', bucketSize: 4032, retentionSpan: -1}, // all
+];
+
+export const INTERVAL_PRESETS = {
+  '24h': {retentionSpan: 144, bucketSizes: [1]},
+  '6m': {retentionSpan: 24192, bucketSizes: [1008, 4032]},
+  '1y': {retentionSpan: 48384, bucketSizes: [1008, 4032]},
+  '2y': {retentionSpan: 96768, bucketSizes: [1008, 4032]},
+  '3y': {retentionSpan: 145152, bucketSizes: [1008, 4032]},
+  'all': {retentionSpan: -1, bucketSizes: [1008, 4032]},
+};
+
 class FlagValuesRepository {
   /**
    * Get the latest indexed day from the database
@@ -36,17 +51,18 @@ class FlagValuesRepository {
     return [];
   }
 
-  public async $saveBatchFlagValues(bucketSize: number, startHeight: number, dataPerFlag: Record<string, Record<string, number>>): Promise<void> {
+  public async $saveBatchFlagValues(bucketSize: number, startHeight: number, dataPerFlag: Record<string, Record<string, number>>, avgTimestamp: number): Promise<void> {
     const params: any[] = [];
     const distinctFlags = Object.keys(dataPerFlag);
+    const avgDate = new Date(Math.round(avgTimestamp) * 1000);
     for (const flag of distinctFlags) {
-      params.push([bucketSize.toString(), startHeight, BigInt(flag), dataPerFlag[flag].txCount, dataPerFlag[flag].vSizeTotal]);
+      params.push([bucketSize.toString(), startHeight, avgDate, BigInt(flag), dataPerFlag[flag].txCount, dataPerFlag[flag].vSizeTotal]);
     }
     try {
       await DB.query(`
-        INSERT INTO flag_values (bucket_size, start_height, flag_value, tx_count, vsize_total) VALUES ?
+        INSERT INTO flag_values (bucket_size, start_height, avg_timestamp, flag_value, tx_count, vsize_total) VALUES ?
         ON DUPLICATE KEY UPDATE
-        tx_count = VALUES(tx_count), vsize_total = VALUES(vsize_total)
+        avg_timestamp = VALUES(avg_timestamp), tx_count = VALUES(tx_count), vsize_total = VALUES(vsize_total)
         `, [params]);
     } catch (e) {
       logger.debug(`Cannot save flag batched values. Reason: ${e instanceof Error ? e.message : e}`);
@@ -54,7 +70,7 @@ class FlagValuesRepository {
     }
   }
 
-  public async $queryTxCountBasedOnMask(mask: bigint, bucketSize: number, op: 'and' | 'or' | 'nor' | undefined, startHeight: number): Promise<{bucketSize: string, startHeight: number, txCount: number, vSizeTotal: number}[]> {
+  public async $queryTxCountBasedOnMask(mask: bigint, bucketSize: number, op: 'and' | 'or' | 'nor' | undefined, startHeight: number): Promise<{bucketSize: string, startHeight: number, avgTimestamp: number, txCount: number, vSizeTotal: number}[]> {
     let flagPredicate = '';
     let params: any[]= [];
     switch (op) {
@@ -78,7 +94,7 @@ class FlagValuesRepository {
     }
     try {
       const [rows]: any[] = await DB.query(`
-        SELECT bucket_size as bucketSize, start_height as startHeight,
+        SELECT bucket_size as bucketSize, start_height as startHeight, UNIX_TIMESTAMP(avg_timestamp) as avgTimestamp,
           SUM(tx_count) as txCount, SUM(vsize_total) as vSizeTotal
         FROM flag_values
         WHERE bucket_size = ? AND start_height >= ? ${flagPredicate}
@@ -102,17 +118,10 @@ class FlagValuesRepository {
   }
 
   public async $deleteFlagValuesFromHeight(height: number): Promise<void> {
-    const startHeights = {
-      '1': height,
-      '36': Math.floor(height / 36) * 36,
-      '144': Math.floor(height / 144) * 144,
-      '720': Math.floor(height / 720) * 720
-    };
-    const bucketSizes = Object.keys(startHeights);
-
     try {
-      for (const bucketSize of bucketSizes) {
-        await DB.query(`DELETE FROM flag_values WHERE start_height >= ? AND bucket_size = ?`, [startHeights[bucketSize], bucketSize]);
+      for (const preset of INDEXING_PRESETS) {
+        const startHeight = Math.floor(height / preset.bucketSize) * preset.bucketSize;
+        await DB.query(`DELETE FROM flag_values WHERE start_height >= ? AND bucket_size = ?`, [startHeight, preset.bucketSize.toString()]);
       }
     } catch (e) {
       logger.err(`Cannot delete flag values above ${height}. Reason: ` + (e instanceof Error ? e.message : e));

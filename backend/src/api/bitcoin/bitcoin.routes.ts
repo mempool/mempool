@@ -23,7 +23,7 @@ import { calculateMempoolTxCpfp } from '../cpfp';
 import { handleError } from '../../utils/api';
 import poolsUpdater from '../../tasks/pools-updater';
 import chainTips from '../chain-tips';
-import FlagValueRepository from '../../repositories/FlagValueRepository';
+import FlagValueRepository, { INTERVAL_PRESETS } from '../../repositories/FlagValueRepository';
 
 const TXID_REGEX = /^[a-f0-9]{64}$/i;
 const BLOCK_HASH_REGEX = /^[a-f0-9]{64}$/i;
@@ -73,8 +73,9 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'internal/blocks/definition/current', this.getCurrentBlockDefinitionHash)
       .get(config.MEMPOOL.API_URL_PREFIX + 'internal/blocks/:definitionHash', this.getBlocksByDefinitionHash)
 
-      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval', this.getTxCountPerFlagValue)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval/:op/:mask', this.getTxCountPerFlagValue)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval/', this.getTxCountPerFlagValue)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval/:bucketSize', this.getTxCountPerFlagValue)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval/:bucketSize/:op/:mask', this.getTxCountPerFlagValue)
       ;
 
       if (config.MEMPOOL.BACKEND !== 'esplora') {
@@ -1143,45 +1144,46 @@ class BitcoinRoutes {
         handleError(req, res, 404, `Block summaries indexing is required for this API`);
         return;
       }
-      const presets = {
-        '24h': {bucketSize: 1, retentionSpan: 144},
-        '3d': {bucketSize: 1, retentionSpan: 432},
-        '1w': {bucketSize: 1, retentionSpan: 1008},
-        '1m': {bucketSize: 36, retentionSpan: 4032},
-        '3m': {bucketSize: 36, retentionSpan: 12096},
-        '6m': {bucketSize: 36, retentionSpan: 24192},
-        '1y': {bucketSize: 144, retentionSpan: 48384},
-        '2y': {bucketSize: 144, retentionSpan: 96768},
-        '3y': {bucketSize: 144, retentionSpan: 145152},
-        'all': {bucketSize: 720},
-      };
-      const intervals = Object.keys(presets);
+
+      const presets = INTERVAL_PRESETS;
       const operations = ['and', 'or', 'nor', undefined];
-      if (!intervals.includes(req.params.interval)) {
-        handleError(req, res, 400, `Invalid interval, must be ${intervals.toString()}`);
+      const intervals = Object.keys(presets);
+      const interval = req.params.interval;
+
+      if (!intervals.includes(interval)) {
+        handleError(req, res, 400, `Invalid interval, must be one of ${intervals.toString()}`);
         return;
       }
+
+      const validBucketSizes = presets[interval].bucketSizes;
+      const bucketSize: number = parseInt(req.params.bucketSize);
+      if (bucketSize && !validBucketSizes.includes(bucketSize)) {
+        handleError(req, res, 400, `Invalid bucket size, must be ${validBucketSizes.toString()}`);
+        return;
+      }
+
       if (!operations.includes(req.params.op)) {
         handleError(req, res, 400, `Invalid operation, must be 'and', 'or', 'nor' or undefined.`);
         return;
       }
+
       if (req.params.mask && !JUST_NUMBERS_REGEX.test(req.params.mask)) {
         handleError(req, res, 400, `Invalid mask value, must be a positive integer`);
         return;
       }
+
       const op = (req.params.op) as 'and' | 'or' | 'nor' | undefined;
       const mask = BigInt(req.params.mask ?? 0n);
-      const interval = req.params.interval;
 
-      const { tip }  = await FlagValueRepository.$getTipAndTailIndexedByBucketSize(presets[interval].bucketSize) || { tip: undefined };
+      const { tip }  = await FlagValueRepository.$getTipAndTailIndexedByBucketSize(bucketSize) || { tip: undefined };
 
       if (!tip) {
         handleError(req, res, 400, `Failed to get latest indexed flag values for ${interval}`);
         return;
       }
 
-      const startHeight = presets[interval].retentionSpan !== undefined ? (tip - presets[interval].retentionSpan) : -1;
-      const txsCount = await FlagValueRepository.$queryTxCountBasedOnMask(mask, presets[interval].bucketSize, op, startHeight);
+      const startHeight = presets[interval].retentionSpan !== -1 ? (tip - presets[interval].retentionSpan) : -1;
+      const txsCount = await FlagValueRepository.$queryTxCountBasedOnMask(mask, bucketSize, op, startHeight);
       res.header('X-total-count', tip.toString());
       res.send(txsCount);
     } catch (e: any) {
