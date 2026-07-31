@@ -1,6 +1,7 @@
 import logger from '../../logger';
 import { MempoolTransactionExtended } from '../../mempool.interfaces';
 import { GraphTx, getSameBlockRelatives, initializeRelatives, makeBlockTemplate, mempoolComparator, removeAncestors, setAncestorScores } from '../mini-miner';
+import { findOutOfBandTransactions } from '../prioritization';
 
 const BLOCK_WEIGHT_UNITS = 4_000_000;
 const MAX_RELATIVE_GRAPH_SIZE = 200;
@@ -49,41 +50,27 @@ class AccelerationCosts {
     for (const tx of template) {
       txMap[tx.txid] = tx;
     }
+    const acceleratedTxids = new Set<string>(Object.keys(accMap));
 
     // Identify and exclude accelerated and otherwise prioritized transactions
-    const excludeMap = {};
+    const excludeMap = findOutOfBandTransactions(
+      blockTxs.map(blockTx => txMap[blockTx.txid]),
+      acceleratedTxids,
+    );
+
+    // Total block weight and the smallest accelerated CPFP cluster's package weight are
+    // pricing inputs, not exclusion inputs, so they're kept out of the shared helper.
     let totalWeight = 0;
     let minAcceleratedPackage = Infinity;
-    let lastEffectiveRate = 0;
-    // Iterate over the mined template from bottom to top.
-    // Transactions should appear in ascending order of mining priority.
-    for (const blockTx of [...blockTxs].reverse()) {
-      const txid = blockTx.txid;
-      const tx = txMap[txid];
+    for (const blockTx of blockTxs) {
+      const tx = txMap[blockTx.txid];
       totalWeight += tx.weight;
-      const isAccelerated = accMap[txid] != null;
-      // If a cluster has a in-band effective fee rate than the previous cluster,
-      // it must have been prioritized out-of-band (in order to have a higher mining priority)
-      // so exclude from the analysis.
-      const isPrioritized = tx.effectiveFeePerVsize < lastEffectiveRate;
-      if (isPrioritized || isAccelerated) {
+      if (accMap[blockTx.txid] != null) {
         let packageWeight = 0;
-        // exclude this whole CPFP cluster
         for (const clusterTxid of tx.cluster) {
           packageWeight += txMap[clusterTxid].weight;
-          if (!excludeMap[clusterTxid]) {
-            excludeMap[clusterTxid] = true;
-          }
         }
-        // keep track of the smallest accelerated CPFP cluster for later
-        if (isAccelerated) {
-          minAcceleratedPackage = Math.min(minAcceleratedPackage, packageWeight);
-        }
-      }
-      if (!isPrioritized) {
-        if (!isAccelerated) {
-          lastEffectiveRate = tx.effectiveFeePerVsize;
-        }
+        minAcceleratedPackage = Math.min(minAcceleratedPackage, packageWeight);
       }
     }
 
@@ -106,7 +93,7 @@ class AccelerationCosts {
     for (let offset = spareWeight; offset < BLOCK_WEIGHT_UNITS && txIndex >= 0; txIndex--) {
       const txid = blockTxs[txIndex].txid;
       const tx = txMap[txid];
-      if (excludeMap[txid]) {
+      if (excludeMap.has(txid)) {
         // skip prioritized transactions and their ancestors
         continue;
       }
