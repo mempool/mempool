@@ -1,5 +1,6 @@
 import express from 'express';
 import { Application, Request, Response, NextFunction } from 'express';
+import * as fs from 'fs';
 import * as http from 'http';
 import * as WebSocket from 'ws';
 import bitcoinApi from './api/bitcoin/bitcoin-api-factory';
@@ -66,6 +67,10 @@ class Server {
 
   constructor() {
     this.app = express();
+
+    if (cluster.isPrimary && config.MEMPOOL.UNIX_SOCKET_PATH) {
+      this.clearStaleUnixSocket(config.MEMPOOL.UNIX_SOCKET_PATH);
+    }
 
     if (!config.MEMPOOL.SPAWN_CLUSTER_PROCS) {
       void this.startServer();
@@ -247,6 +252,17 @@ class Server {
     }
 
     void poolsUpdater.$startService();
+  }
+
+  clearStaleUnixSocket(path: string): void {
+    try {
+      if (fs.existsSync(path)) {
+        fs.unlinkSync(path);
+        logger.notice(`Removed stale unix socket ${path}`);
+      }
+    } catch (e) {
+      logger.err(`Failed to remove stale unix socket ${path}. Reason: ${e instanceof Error ? e.message : e}`);
+    }
   }
 
   /** @asyncSafe */
