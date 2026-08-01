@@ -113,12 +113,11 @@ class Indexer {
       }
     }
     this.tasksScheduled[task] = setTimeout(async () => {
+      delete this.tasksScheduled[task];
       try {
         await this.runSingleTask(task);
       } catch (e) {
         logger.err(`Unexpected error in scheduled task ${task}: ` + (e instanceof Error ? e.message : e));
-      } finally {
-        clearTimeout(this.tasksScheduled[task]);
       }
     }, timeout);
   }
