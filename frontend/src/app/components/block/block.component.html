@@ -110,7 +110,7 @@
             <ng-container *ngTemplateOutlet="restOfTable"></ng-container>
           </tbody>
         </table>
-        <div class="col-sm chart-container" *ngIf="webGlEnabled && !showComparison">
+        <div class="col-sm chart-container block-graph-wrapper" *ngIf="webGlEnabled && !showComparison">
           <app-block-overview-graph
             #blockGraphActual
             [isLoading]="!stateService.isBrowser || isLoadingOverview"
