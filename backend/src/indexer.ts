@@ -143,7 +143,8 @@ class Indexer {
             latestPriceId = await PricesRepository.$getLatestPriceId();
           } catch (e) {
             logger.debug('failed to fetch latest price id from db: ' + (e instanceof Error ? e.message : e));
-          }          if (priceUpdater.historyInserted === false || latestPriceId === null) {
+          }
+          if (priceUpdater.historyInserted === false || latestPriceId === null) {
             logger.debug(`Blocks prices indexer is waiting for the price updater to complete`, logger.tags.mining);
             this.scheduleSingleTask(task, 10000);
           } else {
