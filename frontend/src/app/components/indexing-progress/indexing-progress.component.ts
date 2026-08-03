@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 @Component({
   selector: 'app-indexing-progress',
   templateUrl: './indexing-progress.component.html',
+  styleUrl: 'indexing-progress.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false,
 })
