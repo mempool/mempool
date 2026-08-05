@@ -32,6 +32,23 @@ export interface CpfpInfo {
   acceleratedBy?: number[];
   acceleratedAt?: number;
   feeDelta?: number;
+  cluster?: {
+    txs: CpfpClusterTx[];
+    chunks: CpfpClusterChunk[];
+    chunkIndex: number;
+  };
+}
+
+export interface CpfpClusterTx {
+  txid: string;
+  fee: number;
+  weight: number;
+  parents: number[];
+}
+
+export interface CpfpClusterChunk {
+  txs: number[];
+  feerate: number;
 }
 
 export interface RbfInfo {
@@ -207,6 +224,8 @@ export interface BlockExtension {
     id: number;
     name: string;
     slug: string;
+    minerName?: string;
+    minerSlug?: string;
     minerNames: string[] | null;
   }
   orphans?: {
@@ -430,11 +449,13 @@ export interface Acceleration {
 export interface AccelerationHistoryParams {
   status?: string; // Single status or comma separated list of status
   timeframe?: string;
-  poolUniqueId?: number;
+  minedByPoolUniqueId?: number;
   blockHash?: string;
   blockHeight?: number;
   page?: number;
   pageLength?: number;
+  from?: number;
+  to?: number;
 }
 
 export interface AccelerationInfo {

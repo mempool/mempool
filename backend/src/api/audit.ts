@@ -6,11 +6,28 @@ import transactionUtils from './transaction-utils';
 
 const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first seen after which it is assumed to have propagated to all miners
 
+export interface AuditResult {
+  unseen: string[];
+  censored: string[];
+  added: string[];
+  prioritized: string[];
+  fresh: string[];
+  sigop: string[];
+  fullrbf: string[];
+  accelerated: string[];
+  matchRate: number;
+  similarity: number;
+}
+
 class Audit {
-  auditBlock(height: number, transactions: MempoolTransactionExtended[], projectedBlocks: MempoolBlockWithTransactions[], mempool: { [txId: string]: MempoolTransactionExtended })
-   : { unseen: string[], censored: string[], added: string[], prioritized: string[], fresh: string[], sigop: string[], fullrbf: string[], accelerated: string[], score: number, similarity: number } {
+  auditBlock(
+    height: number,
+    transactions: MempoolTransactionExtended[],
+    projectedBlocks: MempoolBlockWithTransactions[],
+    mempool: { [txId: string]: MempoolTransactionExtended }
+  ): AuditResult {
     if (!projectedBlocks?.[0]?.transactionIds || !mempool) {
-      return { unseen: [], censored: [], added: [], prioritized: [], fresh: [], sigop: [], fullrbf: [], accelerated: [], score: 1, similarity: 1 };
+      return { unseen: [], censored: [], added: [], prioritized: [], fresh: [], sigop: [], fullrbf: [], accelerated: [], matchRate: 100, similarity: 1 };
     }
 
     const matches: string[] = []; // present in both mined block and template
@@ -176,6 +193,8 @@ class Audit {
     }
     const similarity = projectedWeight ? matchedWeight / projectedWeight : 1;
 
+    const matchRate = Math.round(score * 100 * 100) / 100;
+
     return {
       unseen,
       censored: Object.keys(isCensored),
@@ -185,7 +204,7 @@ class Audit {
       sigop: [],
       fullrbf: rbf,
       accelerated,
-      score,
+      matchRate,
       similarity,
     };
   }

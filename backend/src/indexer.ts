@@ -113,12 +113,11 @@ class Indexer {
       }
     }
     this.tasksScheduled[task] = setTimeout(async () => {
+      delete this.tasksScheduled[task];
       try {
         await this.runSingleTask(task);
       } catch (e) {
         logger.err(`Unexpected error in scheduled task ${task}: ` + (e instanceof Error ? e.message : e));
-      } finally {
-        clearTimeout(this.tasksScheduled[task]);
       }
     }, timeout);
   }
@@ -139,12 +138,13 @@ class Indexer {
     switch (task) {
       case 'blocksPrices': {
         if (!['testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK) && config.FIAT_PRICE.ENABLED) {
-          let lastestPriceId;
+          let latestPriceId;
           try {
-            lastestPriceId = await PricesRepository.$getLatestPriceId();
+            latestPriceId = await PricesRepository.$getLatestPriceId();
           } catch (e) {
             logger.debug('failed to fetch latest price id from db: ' + (e instanceof Error ? e.message : e));
-          }          if (priceUpdater.historyInserted === false || lastestPriceId === null) {
+          }
+          if (priceUpdater.historyInserted === false || latestPriceId === null) {
             logger.debug(`Blocks prices indexer is waiting for the price updater to complete`, logger.tags.mining);
             this.scheduleSingleTask(task, 10000);
           } else {

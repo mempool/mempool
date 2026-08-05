@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators, PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights,
   RbfTree, BlockAudit, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo, TestMempoolAcceptResult, WalletAddress, Treasury, SubmitPackageResult, ChainTip, StaleTip } from '@interfaces/node-api.interface';
-import { BehaviorSubject, Observable, catchError, filter, map, of, shareReplay, take, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, filter, map, of, shareReplay, switchMap, take, tap } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 import { Transaction } from '@interfaces/electrs.interface';
 import { Conversion } from '@app/services/price.service';
 import { StorageService } from '@app/services/storage.service';
 import { WebsocketResponse } from '@interfaces/websocket.interface';
 import { TxAuditStatus } from '@components/transaction/transaction.component';
+import { MinersService } from '@app/services/miners.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +25,8 @@ export class ApiService {
   constructor(
     private httpClient: HttpClient,
     private stateService: StateService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private minersService: MinersService,
   ) {
     this.apiBaseUrl = ''; // use relative URL by default
     if (!stateService.isBrowser) { // except when inside AU SSR process
@@ -172,8 +174,10 @@ export class ApiService {
     return this.httpClient.get<ChainTip[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/chain-tips');
   }
 
-  getStaleTips$(): Observable<StaleTip[]> {
-    return this.httpClient.get<StaleTip[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/stale-tips');
+  getStaleTips$(height?: number): Observable<StaleTip[]> {
+    return this.httpClient.get<StaleTip[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/stale-tips' + (height !== undefined ? `/${height}` : ``)).pipe(
+      switchMap((staleTips) => this.minersService.applyStaleTipsMinerDetails$(staleTips))
+    );
   }
 
   liquidPegs$(): Observable<CurrentPegs> {
@@ -308,6 +312,8 @@ export class ApiService {
     return this.httpClient.get<BlockExtended[]>(
         this.apiBaseUrl + this.apiBasePath + `/api/v1/mining/pool/${slug}/blocks` +
         (fromHeight !== undefined ? `/${fromHeight}` : '')
+      ).pipe(
+        switchMap((blocks) => this.minersService.applyBlocksMinerDetails$(blocks))
       );
   }
 
@@ -315,11 +321,15 @@ export class ApiService {
     return this.httpClient.get<BlockExtended[]>(
       this.apiBaseUrl + this.apiBasePath + `/api/v1/blocks` +
       (from !== undefined ? `/${from}` : ``)
+    ).pipe(
+      switchMap((blocks) => this.minersService.applyBlocksMinerDetails$(blocks))
     );
   }
 
   getBlock$(hash: string): Observable<BlockExtended> {
-    return this.httpClient.get<BlockExtended>(this.apiBaseUrl + this.apiBasePath + '/api/v1/block/' + hash);
+    return this.httpClient.get<BlockExtended>(this.apiBaseUrl + this.apiBasePath + '/api/v1/block/' + hash).pipe(
+      switchMap((block) => this.minersService.applyBlockMinerDetails$(block))
+    );
   }
 
   getBlockDataFromTimestamp$(timestamp: number): Observable<any> {

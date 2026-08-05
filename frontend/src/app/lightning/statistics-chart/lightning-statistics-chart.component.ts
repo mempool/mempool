@@ -200,7 +200,7 @@ export class LightningStatisticsChartComponent implements OnInit, OnChanges {
         }
       },
       legend: this.widget || data.channel_count.length === 0 ? undefined : {
-        padding: 10,
+        top: 'top',
         data: [
           {
             name: $localize`:@@807cf11e6ac1cde912496f764c176bdfdd6b7e19:Channels`,

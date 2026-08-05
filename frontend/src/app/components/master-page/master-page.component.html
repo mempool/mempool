@@ -22,7 +22,7 @@
     <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
       @if (enterpriseInfo) {
         <div class="subdomain_container">
-          <img [src]="enterpriseInfo.logoUrl" [alt]="enterpriseInfo.title" class="subdomain_logo" [class.custom_logo]="!enterpriseInfo?.dualLogo" [class.rounded]="enterpriseInfo.rounded_corner">
+          <img [src]="enterpriseInfo.logoUrl" [alt]="enterpriseInfo.title" class="subdomain_logo" [class.custom_logo]="!enterpriseInfo?.dualLogo" [class.rounded]="enterpriseInfo.rounded_corner" (error)="$any($event.target).onerror = null; $any($event.target).src = '/resources/enterprise-big.png'">
         </div>
         @if (enterpriseInfo.dualLogo) {
           <div class="vertical-line"></div>
@@ -43,7 +43,7 @@
     <ng-container *ngIf="{ val: connectionState$ | async } as connectionState">
       @if (enterpriseInfo) {
         <div class="subdomain_container">
-          <img [src]="enterpriseInfo.logoUrl" [alt]="enterpriseInfo.title" class="subdomain_logo mobile_logo" [class.custom_logo]="!enterpriseInfo?.dualLogo" [class.rounded]="enterpriseInfo.rounded_corner">
+          <img [src]="enterpriseInfo.logoUrl" [alt]="enterpriseInfo.title" class="subdomain_logo mobile_logo" [class.custom_logo]="!enterpriseInfo?.dualLogo" [class.rounded]="enterpriseInfo.rounded_corner" (error)="$any($event.target).onerror = null; $any($event.target).src = '/resources/enterprise-big.png'">
         </div>
         @if (enterpriseInfo.dualLogo) {
           <div class="vertical-line"></div>

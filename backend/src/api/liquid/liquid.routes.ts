@@ -6,6 +6,8 @@ import icons from './icons';
 import { handleError } from '../../utils/api';
 import PricesRepository from '../../repositories/PricesRepository';
 
+const PROXY_PATH_SEGMENT_REGEX = /^(?!\.{1,2}$)[^\p{Cc}/?#\\]{1,256}$/u;
+
 class LiquidRoutes {
   public initRoutes(app: Application) {
     app
@@ -68,8 +70,13 @@ class LiquidRoutes {
   }
 
   private async $getAssetGroup(req: Request, res: Response) {
+    if (!PROXY_PATH_SEGMENT_REGEX.test(req.params.id)) {
+      handleError(req, res, 400, 'Invalid asset group id');
+      return;
+    }
+
     try {
-      const response = await axios.get(`${config.EXTERNAL_DATA_SERVER.LIQUID_API}/assets/group/${parseInt(req.params.id, 10)}`,
+      const response = await axios.get(`${config.EXTERNAL_DATA_SERVER.LIQUID_API}/assets/group/${encodeURIComponent(req.params.id)}`,
         { responseType: 'stream', timeout: 10000 });
       response.data.pipe(res);
     } catch (e) {

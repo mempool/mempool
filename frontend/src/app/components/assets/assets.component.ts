@@ -1,13 +1,11 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AssetsService } from '@app/services/assets.service';
-import { environment } from '@environments/environment';
 import { UntypedFormGroup } from '@angular/forms';
-import { filter, map, switchMap, take } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, Observable } from 'rxjs';
-import { AssetExtended } from '@interfaces/electrs.interface';
+import { Observable } from 'rxjs';
 import { SeoService } from '@app/services/seo.service';
-import { StateService } from '@app/services/state.service';
+import { AssetRegistryItem } from '@interfaces/electrs.interface';
 
 @Component({
   selector: 'app-assets',
@@ -17,16 +15,14 @@ import { StateService } from '@app/services/state.service';
   standalone: false,
 })
 export class AssetsComponent implements OnInit {
-  nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
   paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 4 : 6;
   ellipses = window.matchMedia('(max-width: 670px)').matches ? false : true;
 
-  assets: AssetExtended[];
-  assetsCache: AssetExtended[];
   searchForm: UntypedFormGroup;
-  assets$: Observable<AssetExtended[]>;
+  assets$: Observable<AssetRegistryItem[]>;
 
   page = 1;
+  totalAssets = 0;
   error: any;
 
   itemsPerPage: number;
@@ -38,46 +34,23 @@ export class AssetsComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private seoService: SeoService,
-    private stateService: StateService,
   ) { }
 
   ngOnInit() {
     this.seoService.setTitle($localize`:@@ee8f8008bae6ce3a49840c4e1d39b4af23d4c263:Assets`);
     this.itemsPerPage = Math.max(Math.round(this.contentSpace / this.fiveItemsPxSize) * 5, 10);
 
-    this.assets$ = combineLatest([
-      this.assetsService.getAssetsJson$,
-      this.route.queryParams,
-    ])
+    this.assets$ = this.route.queryParams
       .pipe(
-        take(1),
-        switchMap(([assets, qp]) => {
-          this.assets = assets.array;
-
-          return this.route.queryParams
-            .pipe(
-              filter((queryParams) => {
-                const newPage = parseInt(queryParams.page, 10);
-                if (newPage !== this.page) {
-                  return true;
-                }
-                return false;
-              }),
-              map((queryParams) => {
-                if (queryParams.page) {
-                  const newPage = parseInt(queryParams.page, 10);
-                  this.page = newPage;
-                } else {
-                  this.page = 1;
-                }
-                return '';
-              })
-            );
-        }),
-        map(() => {
+        switchMap((queryParams) => {
+          this.page = queryParams.page ? parseInt(queryParams.page, 10) : 1;
           const start = (this.page - 1) * this.itemsPerPage;
-          return this.assets.slice(start, this.itemsPerPage + start);
-        })
+          return this.assetsService.getLiquidAssetsPage$(start, this.itemsPerPage);
+        }),
+        map((result) => {
+          this.totalAssets = result.total;
+          return result.assets;
+        }),
       );
   }
 

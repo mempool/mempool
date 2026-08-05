@@ -1,0 +1,236 @@
+:host {
+  position: relative;
+  display: block;
+  --cluster-ancestor-color: var(--info);
+  --cluster-descendant-color: var(--primary);
+  --cluster-direct-color: white;
+}
+
+.graph-container {
+  position: relative;
+  width: 100%;
+  background: var(--stat-box-bg);
+  padding: 10px 0;
+  overflow-x: auto;
+  text-align: center;
+
+  svg {
+    display: inline-block;
+  }
+
+  &.preview {
+    padding: 0;
+    overflow: hidden;
+    pointer-events: none;
+    border-radius: 4px;
+    background-color: transparent;
+    box-shadow: var(--cluster-preview-shadow, none);
+    cursor: var(--cluster-preview-cursor, default);
+    transition: box-shadow 150ms ease;
+
+    svg {
+      display: block;
+      width: 100%;
+      -webkit-mask:
+        linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%),
+        linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+      -webkit-mask-composite: source-in;
+      mask:
+        linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%),
+        linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+      mask-composite: intersect;
+    }
+
+    .node-rect {
+      stroke-width: 2;
+    }
+
+    .edge-line {
+      stroke-width: 0.5;
+      opacity: 0.55;
+    }
+  }
+}
+
+.chunk-border {
+  stroke-dasharray: 6 4;
+  stroke: var(--fg);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  fill: none;
+
+  &.inactive {
+    opacity: 0.35;
+  }
+}
+
+.chunk-label {
+  font-size: 11px;
+  fill: var(--fg);
+
+  &.inactive {
+    opacity: 0.4;
+  }
+}
+
+.edge-hitarea {
+  cursor: pointer;
+}
+
+.edge-line {
+  stroke-width: 2;
+  transition: stroke 150ms;
+  pointer-events: none;
+
+  &.ancestor {
+    stroke: var(--cluster-ancestor-color);
+  }
+
+  &.descendant {
+    stroke: var(--cluster-descendant-color);
+  }
+
+  &.direct {
+    stroke: var(--cluster-direct-color);
+  }
+}
+
+.edge-arrow-ancestor-path {
+  fill: var(--cluster-ancestor-color);
+}
+
+.edge-arrow-descendant-path {
+  fill: var(--cluster-descendant-color);
+}
+
+.edge-arrow-direct-path {
+  fill: var(--cluster-direct-color);
+}
+
+.node-group {
+  cursor: pointer;
+
+  &.inactive-fill {
+    opacity: 0.45;
+  }
+}
+
+.node-rect {
+  stroke: transparent;
+  stroke-width: 4;
+  transition: stroke 150ms;
+
+  &.current {
+    stroke: var(--cluster-direct-color);
+  }
+
+  &.ancestor {
+    stroke: var(--cluster-ancestor-color);
+  }
+
+  &.descendant {
+    stroke: var(--cluster-descendant-color);
+  }
+
+  &.hovered {
+    stroke: var(--cluster-direct-color);
+  }
+}
+
+.node-label {
+  font-size: 12px;
+  fill: white;
+  pointer-events: none;
+  font-weight: 700;
+}
+
+.cluster-tooltip,
+.cluster-mobile-panel {
+  background: color-mix(in srgb, var(--active-bg) 95%, transparent);
+  border-radius: 4px;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
+  color: var(--tooltip-grey);
+  padding: 8px 12px;
+  text-align: left;
+
+  .tx-id-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .this-tx-badge {
+    font-size: 0.75em;
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    border-radius: 3px;
+    padding: 1px 6px;
+  }
+
+  .tooltip-body {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  table.stats {
+    border-collapse: collapse;
+
+    th, td {
+      padding: 1px 0;
+      font-weight: normal;
+      vertical-align: baseline;
+    }
+
+    th {
+      text-align: left;
+      padding-right: 10px;
+      opacity: 0.7;
+    }
+
+    .unit {
+      opacity: 0.7;
+      font-size: 0.85em;
+    }
+  }
+
+  .legend {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.85em;
+    padding-left: 10px;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+
+    > div {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+  }
+
+  .swatch {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+
+    &.ancestor { background: var(--cluster-ancestor-color); }
+    &.descendant { background: var(--cluster-descendant-color); }
+  }
+}
+
+.cluster-tooltip {
+  position: absolute;
+  pointer-events: none;
+  max-width: 360px;
+  white-space: nowrap;
+}
+
+.cluster-mobile-panel {
+  margin-top: 8px;
+  white-space: normal;
+}

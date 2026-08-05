@@ -330,7 +330,7 @@
 </ng-template>
 
 <ng-template type="why-block-timestamps-dont-always-increase">
-  <p>Block validation rules do not strictly require that a block's timestamp be more recent than the timestamp of the block preceding it. Without a central authority, it's impossible to know what the exact correct time is. Instead, the Bitcoin protocol requires that a block's timestamp meet certain requirements. One of those requirements is that a block's timestamp cannot be older than the median timestamp of the 12 blocks that came before it. See more details <a href="https://en.bitcoin.it/wiki/Block_timestamp" target="_blank">here</a>.</p><p>As a result, timestamps are only accurate to within an hour or so, which sometimes results in blocks with timestamps that appear out of order.</p>
+  <p>Block validation rules do not strictly require that a block's timestamp be more recent than the timestamp of the block preceding it. Without a central authority, it's impossible to know what the exact correct time is. Instead, the Bitcoin protocol requires that a block's timestamp meet certain requirements. One of those requirements is that <a href="https://en.bitcoin.it/wiki/Block_timestamp" target="_blank">a block's timestamp cannot be older than the median timestamp of the 12 blocks that came before it</a>.</p><p>As a result, timestamps are only accurate to within an hour or so, which sometimes results in blocks with timestamps that appear out of order.</p>
 </ng-template>
 
 <ng-template type="why-dont-fee-ranges-match">
@@ -464,6 +464,45 @@
       </dl>
     </dd>
   </dl>
+</ng-template>
+
+<ng-template type="how-does-the-taproot-tree-work">
+  <p>Taproot outputs can commit to many spending scripts. Each script is a leaf in a Merkle tree, called the Taproot Tree, and the Taproot output key commits to the root of that tree.</p>
+  <p>This makes Taproot addresses more private: an external observer does not know all script paths, because scripts are only revealed if coins are spent using them.</p>
+  <p>The Taproot Tree widget shows the script paths already known from on-chain spends, and highlights branches where additional spending scripts may exist but have not been published.</p>
+  <div class="taproot-faq-widget" *ngIf="faqTaprootInfo?.published as taprootInfo">
+    <app-taproot-address-scripts [address]="faqTaprootAddress" network="mainnet" [scripts]="taprootInfo.scripts"></app-taproot-address-scripts>
+  </div>
+  <p><a [href]="('/address/' | relativeUrl:'mainnet') + faqTaprootAddress">View an example on the address page</a>.</p>
+</ng-template>
+
+<ng-template type="how-can-i-share-or-verify-taproot-scripts">
+  <p>A third party may need to verify unpublished script paths for a Taproot address. One option is to reveal each script by spending coins through every path on-chain, but this hurts privacy and may not be possible if a script is timelocked, for example.</p>
+  <p>Alternatively, you can share the Taproot data privately with the third party, using the Taproot Tree widget to fill in scripts that are not already known from on-chain spends. On the <a [href]="('/address/' | relativeUrl:'mainnet') + faqTaprootAddress">address page</a>, use the <fa-icon [icon]="['fas', 'code-fork']" [fixedWidth]="true"></fa-icon> icon to open a form where unpublished Taproot leaves can be passed.</p>
+  <p>The following formats are supported:</p>
+  <ul>
+    <li><code>PSBT</code>: hex or base64-encoded PSBT involving this address. It should include input <code>PSBT_IN_TAP_LEAF_SCRIPT</code> records, output <code>PSBT_OUT_TAP_TREE</code> and <code>PSBT_OUT_TAP_INTERNAL_KEY</code> records, or both.</li>
+    <li><code>Taptree</code>: hex or base64-encoded <code>PSBT_OUT_TAP_TREE</code> value. If the internal key of the address is not known from an on-chain spend, provide it in the <code>Internal Key</code> field.</li>
+    <li><code>Tapleaves</code>: comma-separated <code>PSBT_IN_TAP_LEAF_SCRIPT</code> records, in the format <code>&lt;control-block&gt;:&lt;script&gt;&lt;leaf-version&gt;</code>.</li>
+  </ul>
+  <p>You can also embed the data directly in the URL fragment. Click the links below for examples:</p>
+  <ul>
+    <li><a [href]="('/address/' | relativeUrl:'mainnet') + faqTaprootAddress + '#psbt=cHNidP8BAF4CAAAAAaw0pDKziErd65x14VlMyr0dk40sbfnsamlaosoIMs/uAAAAAAD9////ARwUAAAAAAAAIlEgnvbZpjy+K9OYazdE0ZpDDp7aT7dUorK7Vj6Y0E7uqqkAAAAAAAEAXgIAAAABgLeH7oKnqJhBXimT6kZD0aqj5ruNbph8lB9VAPQr3sIAAAAAAP3///8BvBQAAAAAAAAiUSBJJVwiFU5hOZBwUBPCN2A/wOQ9ck4K4MpzwtCbYVTCpQAAAAABASu8FAAAAAAAACJRIEklXCIVTmE5kHBQE8I3YD/A5D1yTgrgynPC0JthVMKlQhXAitqBVHimnBwQrybUyzcOpT3P3sL9AwCmrjUQQVEzwSbXHdkZm5ahJwmj+qvwMlpwzuB/N8Mh7VP8L72/Mr/zS0cgYOUxvHsj4UVhjenSGpJA6c8ZCaMud7aI827GeQFQDVisIC7fwMbkFmsdVJfZx6cuftTIP+A1lv5c5e33MR3e3fOxulKcwEIVwIragVR4ppwcEK8m1Ms3DqU9z97C/QMApq41EEFRM8EmHxKGqo8QrcKRJ/V/AofE38r3/E00jTURzyXSM2o8QowjIKtG8b1oXpx2jMog5bmllytOHrq5r9qCAS/9CgnTQOs5rMABFyCK2oFUeKacHBCvJtTLNw6lPc/ewv0DAKauNRBBUTPBJgAA'"><code>/address/&lt;address&gt;#psbt=&lt;PSBT&gt;</code></a></li>
+    <li><a [href]="('/address/' | relativeUrl:'mainnet') + faqTaprootAddress + '#taptree=01c0462060e531bc7b23e145618de9d21a9240e9cf1909a32e77b688f36ec67901500d58ac202edfc0c6e4166b1d5497d9c7a72e7ed4c83fe03596fe5ce5edf7311ddeddf3b1ba529c01c02220ab46f1bd685e9c768cca20e5b9a5972b4e1ebab9afda82012ffd0a09d340eb39ac'"><code>/address/&lt;address&gt;#taptree=&lt;taptree&gt;</code></a></li>
+    <li><a [href]="('/address/' | relativeUrl:'mainnet') + faqTaprootAddress + '#tapleaf=c08ada815478a69c1c10af26d4cb370ea53dcfdec2fd0300a6ae3510415133c126d71dd9199b96a12709a3faabf0325a70cee07f37c321ed53fc2fbdbf32bff34b:2060e531bc7b23e145618de9d21a9240e9cf1909a32e77b688f36ec67901500d58ac202edfc0c6e4166b1d5497d9c7a72e7ed4c83fe03596fe5ce5edf7311ddeddf3b1ba529cc0'"><code>/address/&lt;address&gt;#tapleaf=&lt;control-block&gt;:&lt;script&gt;&lt;leaf-version&gt;</code></a></li>
+  </ul>
+  <div class="taproot-faq-widget" *ngIf="faqTaprootInfo?.full as taprootInfo">
+    <app-taproot-address-scripts [address]="faqTaprootAddress" network="mainnet" [scripts]="taprootInfo.scripts"></app-taproot-address-scripts>
+  </div>
+  <p>The provided tapleaves are cryptographically verified against the address before being added to the Taproot Tree widget. Verification happens entirely in the browser, using the following process for each leaf derived from passed data:</p>
+  <ul>
+    <li>Script, leaf version, Merkle branch and internal key are extracted.</li>
+    <li>Script and leaf version are used to compute the TapLeaf hash.</li>
+    <li>Tapleaf hash and Merkle branch are used to compute the Taproot Merkle root.</li>
+    <li>Taproot Merkle root and internal key are used to compute the Taproot output key.</li>
+    <li>Taproot output key is used to derive the Taproot address.</li>
+    <li>The leaf is added to the Taproot Tree if the derived address matches.</li>
+  </ul>
 </ng-template>
 
 <ng-template type="what-are-sigops">

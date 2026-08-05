@@ -114,31 +114,29 @@ class Mining {
     const poolsStatistics = {};
 
     const poolsInfo: PoolInfo[] = await PoolsRepository.$getPoolsInfo(interval);
-    const emptyBlocks: any[] = await BlocksRepository.$countEmptyBlocks(null, interval);
 
     const poolsStats: PoolStats[] = [];
     let rank = 1;
+    let blockCount = 0;
 
     poolsInfo.forEach((poolInfo: PoolInfo) => {
-      const emptyBlocksCount = emptyBlocks.filter((emptyCount) => emptyCount.poolId === poolInfo.poolId);
       const poolStat: PoolStats = {
         poolId: poolInfo.poolId, // mysql row id
         name: poolInfo.name,
         link: poolInfo.link,
         blockCount: poolInfo.blockCount,
         rank: rank++,
-        emptyBlocks: emptyBlocksCount.length > 0 ? emptyBlocksCount[0]['count'] : 0,
+        emptyBlocks: poolInfo.emptyBlocks,
         slug: poolInfo.slug,
         avgMatchRate: poolInfo.avgMatchRate !== null ? Math.round(100 * poolInfo.avgMatchRate) / 100 : null,
         avgFeeDelta: poolInfo.avgFeeDelta,
         poolUniqueId: poolInfo.poolUniqueId
       };
       poolsStats.push(poolStat);
+      blockCount += poolInfo.blockCount;
     });
 
     poolsStatistics['pools'] = poolsStats;
-
-    const blockCount: number = await BlocksRepository.$blockCount(null, interval);
     poolsStatistics['blockCount'] = blockCount;
 
     const totalBlock24h: number = await BlocksRepository.$blockCount(null, '24h');
@@ -151,6 +149,8 @@ class Mining {
       poolsStatistics['lastEstimatedHashrate1w'] = await bitcoinClient.getNetworkHashPs(totalBlock1w);
     } catch (e) {
       poolsStatistics['lastEstimatedHashrate'] = 0;
+      poolsStatistics['lastEstimatedHashrate3d'] = 0;
+      poolsStatistics['lastEstimatedHashrate1w'] = 0;
       logger.debug('Bitcoin Core is not available, using zeroed value for current hashrate', logger.tags.mining);
     }
 

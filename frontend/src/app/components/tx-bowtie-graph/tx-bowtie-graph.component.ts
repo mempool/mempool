@@ -78,7 +78,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   zeroValueWidth = 60;
   zeroValueThickness = 20;
   hasLine: boolean;
-  assetsMinimal: any;
+  assetsMinimal: any = {};
   nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
 
   outspendsSubscription: Subscription;
@@ -116,12 +116,6 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.initGraph();
 
-    if (this.network === 'liquid' || this.network === 'liquidtestnet') {
-      this.assetsService.getAssetsMinimalJson$.subscribe((assets) => {
-        this.assetsMinimal = assets;
-      });
-    }
-
     this.outspendsSubscription = merge(
       this.refreshOutspends$
         .pipe(
@@ -156,9 +150,20 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void {
     this.initGraph();
+    this.loadLiquidAssetData();
     if (!this.cached) {
       this.refreshOutspends$.next(this.tx.txid);
     }
+  }
+
+  private loadLiquidAssetData(): void {
+    if (!this.isLiquid || !this.tx) {
+      return;
+    }
+
+    this.assetsService.getLiquidAssetsMinimalData([this.tx]).then((assets) => {
+      this.assetsMinimal = assets;
+    }).catch(() => {});
   }
 
   initGraph(): void {

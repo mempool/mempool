@@ -14,7 +14,7 @@ import chainTips from '../api/chain-tips';
 import blocks from '../api/blocks';
 import BlocksAuditsRepository from './BlocksAuditsRepository';
 import transactionUtils from '../api/transaction-utils';
-import { parseDATUMTemplateCreator } from '../utils/bitcoin-script';
+import { parseDATUMTemplateCreator, parseDMNDTemplateCreator } from '../utils/bitcoin-script';
 import poolsUpdater from '../tasks/pools-updater';
 
 interface DatabaseBlock {
@@ -306,39 +306,6 @@ class BlocksRepository {
   }
 
   /**
-   * Get empty blocks for one or all pools
-   * @asyncSafe
-   */
-  public async $countEmptyBlocks(poolId: number | null, interval: string | null = null): Promise<any> {
-    interval = Common.getSqlInterval(interval);
-
-    const params: any[] = [];
-    let query = `SELECT count(height) as count, pools.id as poolId
-      FROM blocks
-      JOIN pools on pools.id = blocks.pool_id
-      WHERE tx_count = 1 AND stale = 0`;
-
-    if (poolId) {
-      query += ` AND pool_id = ?`;
-      params.push(poolId);
-    }
-
-    if (interval) {
-      query += ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
-    }
-
-    query += ` GROUP by pools.id`;
-
-    try {
-      const [rows] = await DB.query(query, params);
-      return rows;
-    } catch (e) {
-      logger.err('Cannot count empty blocks. Reason: ' + (e instanceof Error ? e.message : e));
-      throw e;
-    }
-  }
-
-  /**
    * Return most recent block height
    * @asyncSafe
    */
@@ -360,17 +327,26 @@ class BlocksRepository {
     interval = Common.getSqlInterval(interval);
 
     const params: any[] = [];
-    let query = `SELECT count(height) as blockCount
-      FROM blocks 
-      WHERE stale = 0`;
-
-    if (poolId) {
-      query += ` AND pool_id = ?`;
+    let query;
+    if (!poolId && !interval) {
+      // optimized query to get full indexed block count
+      query = `SELECT CAST(COALESCE(MAX(height) - MIN(height) + 1, 0) AS SIGNED) as blockCount FROM blocks`;
+    } else if (!poolId) {
+      // optimized query for indexed count within an interval
+      query = `SELECT GREATEST(0, COALESCE(
+        CAST((SELECT height FROM blocks WHERE stale = 0 AND blockTimestamp <= NOW() ORDER BY blockTimestamp DESC LIMIT 1) AS SIGNED) -
+        CAST((SELECT height FROM blocks WHERE stale = 0 AND blockTimestamp >= DATE_SUB(NOW(), INTERVAL ${interval}) ORDER BY blockTimestamp ASC LIMIT 1) AS SIGNED) + 1
+      , 0)) as blockCount`;
+    } else {
+      // for specific pools, we do still have to actually count the blocks
+      query = `SELECT count(*) as blockCount
+        FROM blocks
+        WHERE stale = 0 AND pool_id = ?`;
       params.push(poolId);
-    }
 
-    if (interval) {
-      query += ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+      if (interval) {
+        query += ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+      }
     }
 
     try {
@@ -576,7 +552,33 @@ class BlocksRepository {
   }
 
   /**
+   * Get the canonical block hash at a given height
+   * @asyncSafe
+   */
+  public async $getCanonicalBlockHashByHeight(height: number): Promise<string | null> {
+    try {
+      const [rows]: any[] = await DB.query(`
+        SELECT hash
+        FROM blocks
+        WHERE height = ? AND stale = 0
+        LIMIT 1`,
+        [height]
+      );
+
+      if (rows.length <= 0) {
+        return null;
+      }
+
+      return rows[0].hash;
+    } catch (e) {
+      logger.err(`Cannot get canonical block hash at height ${height}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
    * Get one block by hash
+   * @asyncSafe
    */
   public async $getBlockByHash(hash: string): Promise<BlockExtended | null> {
     try {
@@ -677,6 +679,7 @@ class BlocksRepository {
       const start = new Date().getTime();
       const tip = await bitcoinApi.$getBlockHashTip();
       let firstBadBlockHeight: number | null = null;
+      let firstBadBlockTimestamp: number | null = null;
       const [blocks]: any[] = await DB.query(`
         SELECT
           height,
@@ -687,6 +690,9 @@ class BlocksRepository {
         FROM blocks
         ORDER BY height DESC
       `);
+      if (!blocks || blocks.length === 0) {
+        throw new Error('Cannot validate chain: no indexed blocks in database'); 
+      }
       const blocksByHash = {};
       const blocksByHeight = {};
       let minHeight = Infinity;
@@ -703,7 +709,11 @@ class BlocksRepository {
       // ensure that indexed blocks are correctly classified as stale or canonical
       // iterate back to genesis, resetting canonical status where necessary
       let hash = tip;
-      const tipHeight = blocksByHash[hash].height || (await bitcoinApi.$getBlock(hash))?.height;
+      const indexedTip = blocksByHash[hash];
+      const tipHeight = indexedTip?.height ?? (await bitcoinApi.$getBlock(hash))?.height;
+      if (typeof tipHeight !== 'number') {
+         throw new Error(`Cannot validate chain: could not resolve tip block height for ${hash} from index or node`);
+      }
 
       // stop at the last canonical block we're supposed to have indexed already
       let lastIndexedBlockHeight = minHeight;
@@ -725,6 +735,7 @@ class BlocksRepository {
           // block is marked stale, but shouldn't be
           await this.$setCanonicalBlockAtHeight(block.hash, height);
           firstBadBlockHeight = height;
+          firstBadBlockTimestamp = block.timestamp;
         }
         hash = block?.previous_block_hash;
         if (!hash) {
@@ -741,7 +752,9 @@ class BlocksRepository {
 
       if (firstBadBlockHeight != null) {
         logger.warn(`Chain divergence detected at block ${firstBadBlockHeight}`);
-        await HashratesRepository.$deleteHashratesFromTimestamp(blocksByHash[firstBadBlockHeight].timestamp - 604800);
+        if (firstBadBlockTimestamp != null) {
+          await HashratesRepository.$deleteHashratesFromTimestamp(firstBadBlockTimestamp - 604800);
+        }
         await DifficultyAdjustmentsRepository.$deleteAdjustementsFromHeight(firstBadBlockHeight);
         return false;
       }
@@ -1245,6 +1258,10 @@ class BlocksRepository {
     blk.previousblockhash = dbBlk.previousblockhash;
     blk.mediantime = dbBlk.mediantime;
     blk.indexVersion = dbBlk.index_version;
+    blk.stale = dbBlk.stale;
+    if (dbBlk.stale) {
+      blk.canonical = await this.$getCanonicalBlockHashByHeight(dbBlk.height) || undefined;
+    }
     // BlockExtension
     extras.totalFees = dbBlk.totalFees;
     extras.medianFee = dbBlk.medianFee;
@@ -1333,6 +1350,8 @@ class BlocksRepository {
 
     if (extras.pool.name === 'OCEAN') {
       extras.pool.minerNames = parseDATUMTemplateCreator(extras.coinbaseRaw);
+    } else if (extras.pool.name === 'DMND') {
+      extras.pool.minerNames = parseDMNDTemplateCreator(extras.coinbaseRaw);
     }
 
     blk.extras = <BlockExtension>extras;

@@ -713,7 +713,7 @@ function isNonStandardLegacySigops(tx: Transaction, height?: number, network?: s
 // A witness program is any valid scriptpubkey that consists of a 1-byte push opcode
 // followed by a data push between 2 and 40 bytes.
 // https://github.com/bitcoin/bitcoin/blob/2c79abc7ad4850e9e3ba32a04c530155cda7f980/src/script/script.cpp#L224-L240
-function isWitnessProgram(scriptpubkey: string): false | { version: number, program: string } {
+export function isWitnessProgram(scriptpubkey: string): false | { version: number, program: string } {
   if (scriptpubkey.length < 8 || scriptpubkey.length > 84) {
     return false;
   }
@@ -935,7 +935,15 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
   // fast but bad heuristic to detect possible coinjoins
   // (at least 5 inputs and 5 outputs, less than half of which are unique amounts, with no address reuse)
   const addressReuse = Object.keys(reusedOutputAddresses).reduce((acc, key) => Math.max(acc, (reusedInputAddresses[key] || 0) + (reusedOutputAddresses[key] || 0)), 0) > 1;
-  if (!addressReuse && tx.vin.length >= 5 && tx.vout.length >= 5 && (Object.keys(inValues).length + Object.keys(outValues).length) <= (tx.vin.length + tx.vout.length) / 2 ) {
+  const tokenRelated = (flags & (TransactionFlags.inscription | TransactionFlags.op_return)) !== 0n;
+  if (!addressReuse &&
+      tx.vin.length >= 5 &&
+      tx.vout.length >= 5 &&
+      (Object.keys(inValues).length + Object.keys(outValues).length) <= (tx.vin.length + tx.vout.length) / 2 &&
+      !tokenRelated &&
+      tx.vin.length / tx.vout.length < 5 &&
+      tx.vin.length / tx.vout.length > 0.2
+      ) {
     flags |= TransactionFlags.coinjoin;
   }
   // more than 5:1 input:output ratio
@@ -1448,6 +1456,11 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: PsbtKeyValueMa
 export type PsbtKeyValue = { keyData: Uint8Array; value: Uint8Array; };
 export type PsbtKeyValueMap = Map<number, PsbtKeyValue[]>;
 
+export const PSBT_GLOBAL = {
+  UNSIGNED_TX: 0x00,
+  GENERIC_SIGNED_MESSAGE: 0x09,
+};
+
 export const PSBT_IN = {
   NON_WITNESS_UTXO: 0x00,
   WITNESS_UTXO: 0x01,
@@ -1593,9 +1606,10 @@ function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: PsbtKe
  * @param rawTx - The unsigned transaction as Uint8Array
  * @param inputs - Array of input maps containing key-value pairs for each input
  * @param outputs - Array of output maps containing key-value pairs for each output
+ * @param globals - Global key-value pairs for the PSBT
  * @returns PSBT buffer as Uint8Array
  */
-export function encodePsbt(rawTx: Uint8Array, inputs: PsbtKeyValueMap[], outputs: PsbtKeyValueMap[]): Uint8Array {
+export function encodePsbt(rawTx: Uint8Array, inputs: PsbtKeyValueMap[], outputs: PsbtKeyValueMap[], globals: PsbtKeyValueMap = new Map()): Uint8Array {
   const result: number[] = [];
 
   // Magic bytes: "psbt" in ASCII
@@ -1625,7 +1639,15 @@ export function encodePsbt(rawTx: Uint8Array, inputs: PsbtKeyValueMap[], outputs
 
   // GLOBAL MAP
   // Add unsigned transaction (key type 0x00)
-  writeKeyValue(0x00, new Uint8Array(), rawTx);
+  writeKeyValue(PSBT_GLOBAL.UNSIGNED_TX, new Uint8Array(), rawTx);
+  for (const [keyType, items] of globals) {
+    if (keyType === PSBT_GLOBAL.UNSIGNED_TX) {
+      throw new Error('PSBT global map must not include UNSIGNED_TX (0x00); provide it via rawTx');
+    }
+    for (const record of items) {
+      writeKeyValue(keyType, record.keyData, record.value);
+    }
+  }
 
   // End global map
   result.push(0x00);

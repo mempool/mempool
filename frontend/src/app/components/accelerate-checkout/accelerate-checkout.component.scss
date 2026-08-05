@@ -1,3 +1,7 @@
+hr {
+  border-color: var(--secondary)
+}
+
 .close-button {
   position: absolute;
   top: 0.5em;
@@ -20,6 +24,10 @@
   background-color: var(--secondary);
   border-radius: 10px;
   cursor: pointer;
+}
+
+.purple-filter {
+  filter: brightness(0) saturate(100%) invert(30%) sepia(90%) saturate(5000%) hue-rotate(260deg);
 }
 
 .default-slot:not(:only-child) {
@@ -159,8 +167,14 @@
   background: var(--bg);
   margin-top: 0.5rem;
   padding: 0.5rem;
-  @media (max-width: 575px) {
-    padding-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
+.payment-options {
+  display: flex;
+  flex-direction: row;
+  @media (max-width: 640px) {
+    flex-direction: column;
   }
 }
 

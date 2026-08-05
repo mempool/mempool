@@ -4,7 +4,7 @@
 
   <div class="clearfix"></div>
 
-  <div class="chain-tips" [ngStyle]="{ 'min-height': '295px', 'opacity': isLoading ? '0.75' : '1' }">
+  <div class="chain-tips" infiniteScroll [alwaysCallback]="true" [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50" (scrolled)="loadMore()" [ngStyle]="{ 'min-height': '295px', 'opacity': isLoading ? '0.75' : '1' }">
     <ng-container *ngIf="chainTips$ | async as chainTips">
       <div *ngFor="let chainTip of chainTips" class="chain-tip">
         <p class="info">
@@ -17,7 +17,7 @@
               <span *ngSwitchCase="'invalid'" class="badge bg-info" i18n="chain-tips.invalid">Invalid</span>
               <span *ngSwitchDefault>{{ chainTip.status }}</span>
             </span>
-            <span class="badge bg-secondary depth-badge" i18n="chain-tips.depth">Depth {{ chainTip.branchlen + 1 }}</span>
+            <span class="badge bg-secondary depth-badge" i18n="chain-tips.depth">Depth {{ chainTip.branchlen }}</span>
           </span>
         </p>
         <div class="stale-tip-wrapper">
@@ -57,8 +57,14 @@
               <div class="animated" *ngIf="chainTip.stale?.extras?.pool != undefined">
                 <a class="badge" [class.miner-name]="chainTip.stale.extras.pool.minerNames?.length > 1 && chainTip.stale.extras.pool.minerNames[1] != ''" [routerLink]="[('/mining/pool/' + chainTip.stale.extras.pool.slug) | relativeUrl]">
                   <ng-container *ngIf="chainTip.stale.extras.pool.minerNames?.length > 1 && chainTip.stale.extras.pool.minerNames[1] != ''; else staleBlockCentralisedPool">
-                    <app-mining-pool [slug]="chainTip.stale.extras.pool.slug" [name]="chainTip.stale.extras.pool.name" [logoStyle]="'filter: grayscale(100%) brightness(1.5);'" [showName]="false"></app-mining-pool>
-                    {{ chainTip.stale.extras.pool.minerNames[1] }}
+                    <ng-container *ngIf="chainTip.stale.extras.pool.minerSlug && chainTip.stale.extras.pool.minerName; else minerName">
+                      <app-mining-pool [slug]="chainTip.stale.extras.pool.minerSlug" [name]="chainTip.stale.extras.pool.minerName" [showName]="false"></app-mining-pool>
+                      {{ chainTip.stale.extras.pool.minerName }}
+                    </ng-container>
+                    <ng-template #minerName>
+                      <app-mining-pool [slug]="chainTip.stale.extras.pool.slug" [name]="chainTip.stale.extras.pool.name" [logoStyle]="'filter: grayscale(100%) brightness(1.5);'" [showName]="false"></app-mining-pool>
+                      {{ chainTip.stale.extras.pool.minerNames[1] }}
+                    </ng-template>
                   </ng-container>
                   <ng-template #staleBlockCentralisedPool>
                     <app-mining-pool [slug]="chainTip.stale.extras.pool.slug" [name]="chainTip.stale.extras.pool.name"></app-mining-pool>
@@ -103,8 +109,14 @@
               <div class="animated" *ngIf="chainTip.canonical?.extras?.pool != undefined">
                 <a class="badge" [class.miner-name]="chainTip.canonical.extras.pool.minerNames?.length > 1 && chainTip.canonical.extras.pool.minerNames[1] != ''" [routerLink]="[('/mining/pool/' + chainTip.canonical.extras.pool.slug) | relativeUrl]">
                   <ng-container *ngIf="chainTip.canonical.extras.pool.minerNames?.length > 1 && chainTip.canonical.extras.pool.minerNames[1] != ''; else canonicalBlockCentralisedPool">
-                    <app-mining-pool [slug]="chainTip.canonical.extras.pool.slug" [name]="chainTip.canonical.extras.pool.name" [logoStyle]="'filter: grayscale(100%) brightness(1.5);'" [showName]="false"></app-mining-pool>
-                    {{ chainTip.canonical.extras.pool.minerNames[1] }}
+                    <ng-container *ngIf="chainTip.canonical.extras.pool.minerSlug && chainTip.canonical.extras.pool.minerName; else minerName">
+                      <app-mining-pool [slug]="chainTip.canonical.extras.pool.minerSlug" [name]="chainTip.canonical.extras.pool.minerName" [showName]="false"></app-mining-pool>
+                      {{ chainTip.canonical.extras.pool.minerName }}
+                    </ng-container>
+                    <ng-template #minerName>
+                      <app-mining-pool [slug]="chainTip.canonical.extras.pool.slug" [name]="chainTip.canonical.extras.pool.name" [logoStyle]="'filter: grayscale(100%) brightness(1.5);'" [showName]="false"></app-mining-pool>
+                      {{ chainTip.canonical.extras.pool.minerNames[1] }}
+                    </ng-template>
                   </ng-container>
                   <ng-template #canonicalBlockCentralisedPool>
                     <app-mining-pool [slug]="chainTip.canonical.extras.pool.slug" [name]="chainTip.canonical.extras.pool.name"></app-mining-pool>
@@ -116,10 +128,19 @@
         </div>
       </div>
 
-      <div class="no-chain-tips" *ngIf="!chainTips?.length">
+      <div class="no-chain-tips" *ngIf="!chainTips?.length && !isLoading && !error">
         <p i18n="chain-tips.no-stale-blocks-yet">This node hasn't seen any stale blocks yet!</p>
       </div>
     </ng-container>
+
+    <div *ngIf="isLoadingMore" class="text-center loading-more">
+      <div class="spinner-border" role="status"></div>
+    </div>
+
+    <div *ngIf="error && !isLoading && !isLoadingMore" class="alert alert-danger text-center loading-more" role="alert">
+      <span i18n="chain-tips.load-error">Failed to load more stale chain tips.</span>
+      <button type="button" class="btn btn-sm btn-danger ms-2" (click)="retryLoadMore()" i18n="chain-tips.retry">Retry</button>
+    </div>
   </div>
   
 </div>

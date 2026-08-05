@@ -1,0 +1,32 @@
+name: Validate server config
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - "nginx.conf"
+      - "http-basic.conf"
+      - "nginx-mempool.conf"
+      - "production/nginx/**"
+      - ".github/nginx-check/**"
+      - ".github/workflows/server-config.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  check_config:
+    runs-on: "ubuntu-latest"
+
+    name: Validate nginx config
+    steps:
+      - name: Checkout
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+
+      - name: Validate the production nginx config
+        run: |
+          docker run --rm $(docker build -q -f .github/nginx-check/Dockerfile.production production)
+
+      - name: Validate the docker frontend nginx config
+        run: |
+          docker run --rm $(docker build -q -f .github/nginx-check/Dockerfile.docker .)

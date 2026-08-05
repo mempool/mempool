@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable, catchError, filter, from, of, shareReplay, switchMap, take, tap } from 'rxjs';
-import { Transaction, Address, Outspend, Recent, Asset, ScriptHash, AddressTxSummary, Utxo } from '@interfaces/electrs.interface';
+import { Transaction, Address, Outspend, Recent, Asset, ScriptHash, AddressTxSummary, Utxo, AssetRegistryItem } from '@interfaces/electrs.interface';
 import { StateService } from '@app/services/state.service';
 import { BlockExtended } from '@interfaces/node-api.interface';
 import { calcScriptHash$ } from '@app/bitcoin.utils';
@@ -226,6 +226,25 @@ export class ElectrsApiService {
 
   getAsset$(assetId: string): Observable<Asset> {
     return this.httpClient.get<Asset>(this.apiBaseUrl + this.apiBasePath + '/api/asset/' + assetId);
+  }
+
+  getLiquidAssetsRegistry$(startIndex: number, limit: number): Observable<HttpResponse<AssetRegistryItem[]>> {
+    const params = new HttpParams()
+      .set('start_index', startIndex)
+      .set('limit', limit)
+      .set('sort_field', 'name')
+      .set('sort_dir', 'asc');
+
+    return this.httpClient.get<AssetRegistryItem[]>(this.apiBaseUrl + this.apiBasePath + '/api/assets/registry', { params, observe: 'response' });
+  }
+
+  getLiquidAssetsRegistrySearch$(query: string): Observable<AssetRegistryItem[]> {
+    const params = new HttpParams().set('q', query);
+    return this.httpClient.get<AssetRegistryItem[]>(this.apiBaseUrl + this.apiBasePath + '/api/assets/registry/search', { params });
+  }
+
+  getLiquidAssetRegistry$(assetId: string): Observable<AssetRegistryItem> {
+    return this.httpClient.get<AssetRegistryItem>(this.apiBaseUrl + this.apiBasePath + '/api/assets/registry/' + assetId);
   }
 
   getAssetTransactions$(assetId: string): Observable<Transaction[]> {

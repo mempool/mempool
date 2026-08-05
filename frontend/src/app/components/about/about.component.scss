@@ -101,42 +101,30 @@
     }
   }
 
-  .alliances {
-    margin-bottom: 100px;
-    a {
-      &:nth-child(3) {
-        position: relative;
-        top: 10px;
-      }
+  .alliances-logos {
+    align-items: center;
+    margin-bottom: 80px;
+    justify-content: center;
+  }
+  .alliance-logo {
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    margin-top: 25px;
+    @media (min-width: 768px) {
+      margin-top: 45px;
     }
-    img {
-      display: inline-block;
-      margin: 15px auto;
-      height: 62px;
-      @media (min-width: 425px) {
-        margin: 15px 60px;
-      }
-      @media (min-width: 576px) {
-        margin: 15px 120px;
-      }
-      @media (min-width: 850px) {
-        margin: 50px 30px 0px;
-      }
-    }
-    .liquid {
-      top: 7px;
-      position: relative;
-    }
-    .copa {
-      height: auto;
-      top: 23px;
-      position: relative;
+  }
+  .stratum-v2-logo {
+    object-fit: contain;
+    @media (max-width: 767px) {
       width: 300px;
     }
-    .sv {
-      height: 85px;
-      width: auto;
+  }
+  .copa {
+    @media (min-width: 992px) {
       position: relative;
+      top: 15px;
     }
   }
 

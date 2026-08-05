@@ -23,12 +23,12 @@ jobs:
     
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
         with:
           path: ${{ matrix.node }}/integration
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
         with:
           node-version: ${{ matrix.node }}
           registry-url: "https://registry.npmjs.org"
@@ -36,7 +36,7 @@ jobs:
           cache-dependency-path: '${{ matrix.node }}/integration/backend/package-lock.json'
 
       - name: Cache node modules
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ${{ matrix.node }}/integration/backend/node_modules
           key: ${{ runner.os }}-backend-integration-node-${{ matrix.node }}-${{ hashFiles('${{ matrix.node }}/integration/backend/package-lock.json') }}
@@ -50,7 +50,7 @@ jobs:
         working-directory: ${{ matrix.node }}/integration
 
       - name: Cache Rust dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: |
             ~/.cargo/bin/
@@ -69,7 +69,7 @@ jobs:
           toolchain: ${{ steps.gettoolchain.outputs.toolchain }}
 
       - name: Install dependencies
-        run: npm ci
+        run: bash meta/scripts/check-install-scripts.sh && npm ci
         working-directory: ${{ matrix.node }}/integration/backend
 
       - name: Build backend

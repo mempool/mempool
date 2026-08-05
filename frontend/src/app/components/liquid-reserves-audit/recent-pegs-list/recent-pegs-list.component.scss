@@ -4,6 +4,10 @@
   margin-top: 13px;
 }
 
+.widget table {
+  overflow-anchor: none;
+}
+
 tr, td, th {
   border: 0px;
   padding-top: 0.65rem;

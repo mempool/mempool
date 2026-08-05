@@ -8,6 +8,7 @@ heat()
 }
 
 heatURLs=(
+       '/api/fee-estimates'
        '/api/v1/fees/recommended'
        '/api/v1/accelerations'
 )
