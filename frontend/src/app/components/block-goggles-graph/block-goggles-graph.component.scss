@@ -4,8 +4,42 @@
   @media (min-width: 465px) {
     font-size: 20px;
   }
-  @media (min-width: 992px) {
+  @media (min-width: 1340px) {
     height: 40px;
+  }
+}
+
+.graph-toolbar {
+  @media (min-width: 1340px) {
+    display: contents;
+  }
+  @media (max-width: 1339px) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+  }
+}
+
+.full-container .card-header .graph-toolbar .formRadioGroup {
+  @media (max-width: 1339px) {
+    position: static;
+    float: none;
+    flex-direction: row;
+    margin: 0;
+  }
+}
+
+.full-container .card-header .graph-toolbar .interval-group {
+  @media (max-width: 829px) {
+    width: 100%;
+    .btn-group {
+      display: flex;
+      width: 100%;
+      .btn {
+        flex: 1;
+      }
+    }
   }
 }
 

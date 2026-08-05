@@ -6,7 +6,7 @@ import { ActiveFilter, FilterMode, toFilters, toFlags } from '@app/shared/filter
 import { ApiService } from '@app/services/api.service';
 import { formatNumber } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { download } from '@app/shared/graphs.utils';
+import { download, formatterXAxis, formatterXAxisLabel, formatterXAxisTimeCategory } from '@app/shared/graphs.utils';
 import { StorageService } from '@app/services/storage.service';
 import { MiningService } from '@app/services/mining.service';
 import { selectPowerOfTen } from '@app/bitcoin.utils';
@@ -15,6 +15,7 @@ import { StateService } from '@app/services/state.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpResponse } from '@angular/common/http';
 import { VbytesPipe } from '@app/shared/pipes/bytes-pipe/vbytes.pipe';
+import { SeoService } from '@app/services/seo.service';
 
 interface GogglesRollup {
   bucketSize: string;
@@ -31,6 +32,8 @@ interface GogglesDatum {
   txCount: number;
   vSizeTotal: number;
   timestampMs: number;
+  baseTxCount?: number;
+  baseVSize?: number;
 }
 
 const INTERVAL_PRESETS: Record<string, number[]> = {
@@ -66,7 +69,11 @@ export class BlockGogglesGraphComponent implements OnInit {
   radioGroupForm: UntypedFormGroup;
   unitGroupForm: UntypedFormGroup;
   bucketGroupForm: UntypedFormGroup;
+  modeGroupForm: UntypedFormGroup;
   count = $localize`:@@8177873832400820695:Count`;
+  allLabel = $localize`All transactions`;
+  transactionsLabel = $localize`Transactions`;
+  matchedLabel = $localize`Matched`;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -84,9 +91,13 @@ export class BlockGogglesGraphComponent implements OnInit {
 
   private intervals = Object.keys(INTERVAL_PRESETS);
 
-  private bucketDateByHeight = new Map<number, string>();
+  private bucketTimestampByHeight = new Map<number, number>();
 
   private totalsCache: Record<string, GogglesRollup[]> = {};
+
+  private relativeMode = false;
+
+  private prefs: { unit: string, bucket: number, mode: string } = { unit: 'txCount', bucket: 1008, mode: 'abs' };
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -99,6 +110,8 @@ export class BlockGogglesGraphComponent implements OnInit {
     private zone: NgZone,
     private route: ActivatedRoute,
     private cd: ChangeDetectorRef,
+    private seoService: SeoService,
+    private vbytesPipe: VbytesPipe,
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1y' });
     this.radioGroupForm.controls.dateSpan.setValue('1y');
@@ -106,12 +119,17 @@ export class BlockGogglesGraphComponent implements OnInit {
     this.unitGroupForm.controls.unitType.setValue('txCount');
     this.bucketGroupForm = this.formBuilder.group({ bucketSize: 1008});
     this.bucketGroupForm.controls.bucketSize.setValue(1008);
+    this.modeGroupForm = this.formBuilder.group({ mode: 'abs' });
+    this.modeGroupForm.controls.mode.setValue('abs');
   }
 
   ngOnInit(): void {
+    let firstRun = true;
     if (this.widget) {
       this.miningWindowPreference = '6m';
     } else {
+      this.seoService.setTitle($localize`Mempool Goggles`);
+      this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.goggles:See Bitcoin transactions matching Mempool Goggles filters visualized over time.`);
       this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
     }
     if (!this.intervals.includes(this.miningWindowPreference)) {
@@ -120,8 +138,25 @@ export class BlockGogglesGraphComponent implements OnInit {
 
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
-    this.unitGroupForm = this.formBuilder.group({ unitType: 'txCount'});
-    this.unitGroupForm.controls.unitType.setValue('txCount');
+    let storedPrefs: any = {};
+    try {
+      storedPrefs = JSON.parse(this.storageService.getValue('goggles_prefs')) ?? {};
+    } catch {
+      storedPrefs = {};
+    }
+    if (['vb', 'txCount'].includes(storedPrefs.unit)) {
+      this.prefs.unit = storedPrefs.unit;
+    }
+    if ([1008, 4032].includes(storedPrefs.bucket)) {
+      this.prefs.bucket = storedPrefs.bucket;
+    }
+    if (['abs', 'rel'].includes(storedPrefs.mode)) {
+      this.prefs.mode = storedPrefs.mode;
+    }
+    this.unitGroupForm = this.formBuilder.group({ unitType: this.prefs.unit });
+    this.unitGroupForm.controls.unitType.setValue(this.prefs.unit);
+    this.bucketGroupForm.controls.bucketSize.setValue(this.prefs.bucket, { emitEvent: false });
+    this.modeGroupForm.controls.mode.setValue(this.prefs.mode, { emitEvent: false });
 
     if (!this.widget) {
       this.route
@@ -150,11 +185,16 @@ export class BlockGogglesGraphComponent implements OnInit {
         startWith(this.bucketGroupForm.controls.bucketSize.value),
         distinctUntilChanged(),
       ),
+      this.modeGroupForm.get('mode').valueChanges.pipe(
+        startWith(this.modeGroupForm.controls.mode.value),
+        distinctUntilChanged(),
+      ),
     ]).pipe(
-      switchMap(([timespan, goggle, unitType, bucketSize]) => {
-        if (!this.widget) {
+      switchMap(([timespan, goggle, unitType, bucketSize, mode]) => {
+        if (!this.widget && !firstRun && timespan !== this.timespan) {
           this.storageService.setValue('miningWindowPreference', timespan);
         }
+        firstRun = false;
         this.timespan = timespan;
         this.isLoading = true;
         // reconcile the bucket size with the interval (e.g. 24h is per-block only) and keep the UI radio in sync
@@ -163,6 +203,18 @@ export class BlockGogglesGraphComponent implements OnInit {
         if (effectiveBucket !== this.bucketGroupForm.controls.bucketSize.value) {
           this.bucketGroupForm.controls.bucketSize.setValue(effectiveBucket, { emitEvent: false });
         }
+        const effectiveMode = goggle.mask ? mode : 'abs';
+        if (effectiveMode !== this.modeGroupForm.controls.mode.value) {
+          this.modeGroupForm.controls.mode.setValue(effectiveMode, { emitEvent: false });
+        }
+        this.prefs.unit = unitType;
+        if (allowedBuckets.length > 1) {
+          this.prefs.bucket = effectiveBucket;
+        }
+        if (goggle.mask) {
+          this.prefs.mode = effectiveMode;
+        }
+        this.storageService.setValue('goggles_prefs', JSON.stringify(this.prefs));
         const cacheKey = `${timespan}:${effectiveBucket}`;
         const filtered$ = this.apiService.getHistoricalTxCountByFlags$(timespan, effectiveBucket.toString(), goggle.op, goggle.mask?.toString());
         const totals$ = goggle.mask
@@ -182,13 +234,14 @@ export class BlockGogglesGraphComponent implements OnInit {
             const totalRows: GogglesRollup[] = filtered ? (totalsBody || []) : body;
             const matchedRows: GogglesRollup[] = filtered ? body : [];
             const unitIsTx = unit === 'txCount';
+            this.relativeMode = filtered && effectiveMode === 'rel';
             const matchedByHeight = new Map<number, GogglesRollup>();
             for (const row of matchedRows) {
               matchedByHeight.set(row.startHeight, row);
             }
             const sorted = [...totalRows].sort((a, b) => a.startHeight - b.startHeight);
             const categories = sorted.map((row) => row.startHeight);
-            this.bucketDateByHeight = new Map(sorted.map((row) => [row.startHeight, this.formatBucketDate(Number(row.avgTimestamp) * 1000)]));
+            this.bucketTimestampByHeight = new Map(sorted.map((row) => [row.startHeight, Number(row.avgTimestamp) * 1000]));
             const toSeries = (matched = false): GogglesDatum[] => sorted.map((row) => {
               const bucketSize = parseInt(row.bucketSize, 10) || 1;
               const source = matched ? matchedByHeight.get(row.startHeight) : row;
@@ -196,7 +249,18 @@ export class BlockGogglesGraphComponent implements OnInit {
               const vSizeTotal = source ? Number(source.vSizeTotal) : 0;
               const selected = unitIsTx ? txCount : vSizeTotal;
               const plotted = bucketSize > 1 ? selected / bucketSize : selected;
-              return { value: plotted, startHeight: row.startHeight, bucketSize, txCount, vSizeTotal, timestampMs: Number(row.avgTimestamp) * 1000 };
+              const datum: GogglesDatum = { value: plotted, startHeight: row.startHeight, bucketSize, txCount, vSizeTotal, timestampMs: Number(row.avgTimestamp) * 1000 };
+              if (matched) {
+                datum.baseTxCount = Number(row.txCount);
+                datum.baseVSize = Number(row.vSizeTotal);
+                if (this.relativeMode) {
+                  const base = unitIsTx ? datum.baseTxCount : datum.baseVSize;
+                  datum.value = base > 0 ? selected / base * 100 : 0;
+                }
+              } else if (this.relativeMode) {
+                datum.value = 100;
+              }
+              return datum;
             });
             this.prepareChartOptions(categories, toSeries(), filtered ? toSeries(true) : []);
             this.isLoading = false;
@@ -233,13 +297,11 @@ export class BlockGogglesGraphComponent implements OnInit {
     }
   }
 
-  // builds the URL fragment: just the interval when no filter is active ("1m"), or "interval=1m&op=and&mask=5" when filtering
-  getFragment(interval?: string, unitType?: string, bucketSize?: number): string {
+  // builds the URL fragment: just the interval when no filter is active ("1y"), or "interval=1y&op=and&mask=5" when filtering
+  getFragment(interval?: string): string {
     const timespan = interval ?? this.radioGroupForm.controls.dateSpan.value;
-    const unit = unitType ?? this.unitGroupForm.controls.unitType.value;
-    const bucket = bucketSize ?? this.bucketGroupForm.controls.bucketSize.value;
     const { op, mask } = this.goggle$.value;
-    return mask ? `interval=${timespan}&unit=${unit}&op=${op}&mask=${mask.toString()}&bucket=${bucket}` : `interval=${timespan}&unit=${unit}&bucket=${bucket}`;
+    return mask ? `interval=${timespan}&op=${op}&mask=${mask.toString()}` : timespan;
   }
 
   // restores state from a fragment in either form, letting block-filters pick up restored filters via activeGoggles$
@@ -247,20 +309,18 @@ export class BlockGogglesGraphComponent implements OnInit {
     if (!fragment) {
       return;
     }
+    if (this.intervals.includes(fragment)) {
+      this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
+      return;
+    }
     const params = new URLSearchParams(fragment);
     const rawInterval = params.get('interval') ?? '';
     const interval = this.intervals.includes(rawInterval) ? rawInterval : this.radioGroupForm.controls.dateSpan.value;
-    const unit = ['vb', 'txCount'].includes(params.get('unit')) ? params.get('unit') : 'txCount';
-    const allowedBuckets = this.bucketSizesForInterval(interval);
-    const rawBucket = parseInt(params.get('bucket'), 10);
-    const bucket = allowedBuckets.includes(rawBucket) ? rawBucket : allowedBuckets[0];
     const maskParam = params.get('mask') ?? '';
     const mask = maskParam && /^\d+$/.test(maskParam) ? BigInt(maskParam) : 0n;
     const op = (['and', 'or', 'nor'].includes(params.get('op')) ? params.get('op') : 'and') as FilterMode;
 
     this.radioGroupForm.controls.dateSpan.setValue(interval, { emitEvent: false });
-    this.unitGroupForm.controls.unitType.setValue(unit, { emitEvent: false });
-    this.bucketGroupForm.controls.bucketSize.setValue(bucket, { emitEvent: false });
     // skip if already applied, otherwise the navigation in onFilterChanged would loop back here
     if ((mask > 0n && (this.goggle$.value.mask ?? 0n) !== mask) || this.goggle$.value.op !== op) {
       this.stateService.activeGoggles$.next({ mode: op, filters: toFilters(mask).map(f => f.key), gradient: 'fee' });
@@ -269,6 +329,7 @@ export class BlockGogglesGraphComponent implements OnInit {
 
   prepareChartOptions(categories: number[], totalData: GogglesDatum[], matchedData: GogglesDatum[], error?): void {
     const filtered = !!this.goggle$.value.mask;
+    const perBlock = totalData.length > 0 && totalData[0].bucketSize === 1;
     let title: object;
     if (totalData.length === 0 ) {
       title = {
@@ -321,70 +382,57 @@ export class BlockGogglesGraphComponent implements OnInit {
           if (!params || params.length <= 0) {
             return '';
           }
-          const baseline = params.find(p => p.seriesIndex === 0) || params[0];
-          const matched = params.find(p => p.seriesIndex === 1);
-          const startHeight = baseline.data.startHeight;
-          const bucketSize = baseline.data.bucketSize || 1;
-          const baseTxCount = baseline.data.txCount;
-          const baseVSize = baseline.data.vSizeTotal;
-          const timestampMs = baseline.data.timestampMs;
+          const baseline = params.find(p => p.seriesId === 'total');
+          const matched = params.find(p => p.seriesId === 'matched');
+          const anchor = baseline || matched;
+          if (!anchor) {
+            return '';
+          }
+          const startHeight = anchor.data.startHeight;
+          const bucketSize = anchor.data.bucketSize || 1;
+          const timestampMs = anchor.data.timestampMs;
+          const baseTxCount = baseline ? baseline.data.txCount : (matched ? matched.data.baseTxCount : 0);
+          const baseVSize = baseline ? baseline.data.vSizeTotal : (matched ? matched.data.baseVSize : 0);
           const filtered = !!this.goggle$.value.mask;
           const unitIsTxCount = this.unitGroupForm.controls.unitType.value === 'txCount';
           const rolledUp = bucketSize > 1;
 
           const fmtCount = (v): string => formatNumber(v, this.locale, '1.0-0');
           const fmtAvg = (v): string => formatNumber(v, this.locale, '1.0-2');
-          const fmtVSize = (v): string => new VbytesPipe().transform(v, 2, 'vB', undefined, true);
+          const fmtVSize = (v): string => this.vbytesPipe.transform(v, 2, 'vB', undefined, true);
           const fmtPct = (v): string => formatNumber(v, this.locale, '1.0-2') + '%';
 
           let tooltip = '';
-          const dateStr = new Date(timestampMs).toLocaleDateString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
-          tooltip += `<b style="color: white; margin-left: 2px">${dateStr}</b><br>`;
-          if (rolledUp) {
-            const endHeight = startHeight + bucketSize - 1;
-            tooltip += $localize`Blocks ${startHeight}–${endHeight}` + `<br>`;
-          } else {
-            tooltip += $localize`Block: ${startHeight}` + `<br>`;
-          }
+          tooltip += `<b style="color: white; margin-left: 2px">${formatterXAxis(this.locale, this.timespan, timestampMs)}</b><br>`;
 
-          // baseline (unfiltered total) metric, labelled/formatted for the active unit
-          if (unitIsTxCount) {
-            tooltip += `${baseline.marker} ` + (rolledUp ? $localize`Total transactions` : $localize`Transactions`) + `: ${fmtCount(baseTxCount)}<br>`;
-            if (rolledUp) {
-              tooltip += `${baseline.marker} ` + $localize`Avg txs per block` + `: ${fmtAvg(baseTxCount / bucketSize)}<br>`;
-            }
-          } else {
-            tooltip += `${baseline.marker} ` + (rolledUp ? $localize`Total size` : $localize`Size`) + `: ${fmtVSize(baseVSize)}<br>`;
-            if (rolledUp) {
-              tooltip += `${baseline.marker} ` + $localize`Avg size per block` + `: ${fmtVSize(baseVSize / bucketSize)}<br>`;
-            }
+          const fmtVal = (v): string => unitIsTxCount
+            ? (rolledUp ? fmtAvg(v / bucketSize) : fmtCount(v))
+            : fmtVSize(rolledUp ? v / bucketSize : v);
+
+          if (baseline) {
+            tooltip += `${baseline.marker} ${baseline.seriesName}: ${fmtVal(unitIsTxCount ? baseTxCount : baseVSize)}<br>`;
           }
 
           if (filtered && matched) {
-            const matchedTxCount = matched.data.txCount;
-            const matchedVSize = matched.data.vSizeTotal;
-            const m = matched.marker;
-            if (unitIsTxCount) {
-              tooltip += rolledUp
-                ? `${m} ` + $localize`Avg matched per block` + `: ${fmtAvg(matchedTxCount / bucketSize)}<br>`
-                : `${m} ` + $localize`Matched transactions` + `: ${fmtCount(matchedTxCount)}<br>`;
-              if (matchedTxCount > 0) {
-                tooltip += `${m} ` + $localize`Share of all txs` + `: ${fmtPct(matchedTxCount / baseTxCount * 100)}<br>`;
-              }
-            } else {
-              tooltip += rolledUp
-                ? `${m} ` + $localize`Avg matched vSize per block` + `: ${fmtVSize(matchedVSize / bucketSize)}<br>`
-                : `${m} ` + $localize`Matched vSize` + `: ${fmtVSize(matchedVSize)}<br>`;
-              if (matchedVSize > 0) {
-                tooltip += `${m} ` + $localize`Share of block vSize` + `: ${fmtPct(matchedVSize / (baseVSize) * 100)}<br>`;
-              }
+            const matchedVal = unitIsTxCount ? matched.data.txCount : matched.data.vSizeTotal;
+            const base = unitIsTxCount ? baseTxCount : baseVSize;
+            tooltip += `${matched.marker} ${matched.seriesName}: ${fmtVal(matchedVal)}<br>`;
+            if (base > 0) {
+              tooltip += `${matched.marker} ` + $localize`Share` + `: ${fmtPct(matchedVal / base * 100)}<br>`;
             }
+          }
+
+          if (rolledUp) {
+            const midHeight = startHeight + Math.floor(bucketSize / 2);
+            tooltip += `<small>` + $localize`Around block: ${midHeight}` + `</small>`;
+          } else {
+            tooltip += `<small>` + $localize`At block: ${startHeight}` + `</small>`;
           }
           return tooltip;
         }.bind(this)
       },
       xAxis: totalData.length === 0 ? undefined : {
-        name: this.widget ? undefined : $localize`Date`,
+        name: this.widget ? undefined : formatterXAxisLabel(this.locale, this.timespan),
         nameLocation: 'middle',
         nameTextStyle: {
           padding: [10, 0, 0, 0],
@@ -394,7 +442,10 @@ export class BlockGogglesGraphComponent implements OnInit {
         axisLine: { onZero: false },
         splitLine: { show: false },
         axisLabel: {
-          formatter: (value): string => this.bucketDateByHeight.get(Number(value)) ?? '',
+          formatter: (value): string => {
+            const ts = this.bucketTimestampByHeight.get(Number(value));
+            return ts !== undefined ? formatterXAxisTimeCategory(this.locale, this.timespan, ts) : '';
+          },
           align: 'center',
           fontSize: 11,
           lineHeight: 12,
@@ -407,8 +458,11 @@ export class BlockGogglesGraphComponent implements OnInit {
         axisLabel: {
           color: 'rgb(110, 112, 121)',
           formatter: (val): string => {
+            if (this.relativeMode) {
+              return `${val}%`;
+            }
             if (this.unitGroupForm.controls.unitType.value === 'vb') {
-              return new VbytesPipe().transform(val, 0, 'vB', undefined, true);
+              return this.vbytesPipe.transform(val, 0, 'vB', undefined, true);
             }
             const selectedPowerOfTen: any = selectPowerOfTen(val);
             const newVal = Math.round(val / selectedPowerOfTen.divider);
@@ -424,23 +478,48 @@ export class BlockGogglesGraphComponent implements OnInit {
         },
         type: 'value',
       },
+      legend: (this.widget || totalData.length === 0 || !filtered) ? undefined : {
+        top: 'top',
+        data: [
+          {
+            name: this.allLabel,
+            inactiveColor: 'rgb(110, 112, 121)',
+            textStyle: { color: 'var(--fg)' },
+            icon: 'roundRect',
+          },
+          {
+            name: this.matchedLabel,
+            inactiveColor: 'rgb(110, 112, 121)',
+            textStyle: { color: 'var(--fg)' },
+            icon: 'roundRect',
+          },
+        ],
+        selected: JSON.parse(this.storageService.getValue('goggles_legend') || 'null') ?? {
+          [this.allLabel]: true,
+          [this.matchedLabel]: true,
+        },
+      },
       series: totalData.length === 0 ? undefined : [
         {
+          id: 'total',
           zlevel: 0,
-          name: filtered ? $localize`All transactions` : $localize`Transactions`,
+          name: filtered ? this.allLabel : this.transactionsLabel,
           data: totalData,
           type: 'bar',
           barWidth: '100%',
+          cursor: perBlock ? 'pointer' : 'default',
           itemStyle: { color: '#1E88E5' }, // blue: total tx count
         },
         ...(filtered && matchedData.length > 0 ? [{
+          id: 'matched',
           zlevel: 1,
           z: 3,
-          name: $localize`Matched`,
+          name: this.matchedLabel,
           data: matchedData,
           type: 'bar',
           barWidth: '100%',
           barGap: '-100%', // overlay directly on top of the total bars
+          cursor: perBlock ? 'pointer' : 'default',
           itemStyle: { color: '#8E24AA' },
         }] : []),
       ],
@@ -480,19 +559,22 @@ export class BlockGogglesGraphComponent implements OnInit {
     this.chartInstance = ec;
 
     this.chartInstance.on('click', (e) => {
+      if (e.data.bucketSize > 1) {
+        return;
+      }
       this.zone.run(() => {
         const url = new RelativeUrlPipe(this.stateService).transform(`/block/${e.data.startHeight}`);
         this.router.navigate([url]);
       });
     });
+
+    this.chartInstance.on('legendselectchanged', (e) => {
+      this.storageService.setValue('goggles_legend', JSON.stringify(e.selected));
+    });
   }
 
   isMobile(): boolean {
     return (window.innerWidth <= 767.98);
-  }
-
-  private formatBucketDate(timestampMs: number): string {
-    return new Date(timestampMs).toLocaleDateString(this.locale, { year: 'numeric', month: 'short', day: 'numeric' });
   }
 
   // the bucket sizes a given interval can be viewed at (24h is per-block only; longer ranges are week/month)
@@ -505,21 +587,62 @@ export class BlockGogglesGraphComponent implements OnInit {
     return this.bucketSizesForInterval(this.radioGroupForm.controls.dateSpan.value);
   }
 
+  get isFiltered(): boolean {
+    return !!this.goggle$.value.mask;
+  }
+
   onSaveChart(): void {
     // @ts-ignore
     const prevBottom = this.chartOptions.grid.bottom;
+    const prevTitle = this.chartOptions.title;
     const now = new Date();
+    const { op, mask } = this.goggle$.value;
+    const filters = mask ? toFilters(mask).map(f => f.label) : [];
+    if (this.chartOptions.legend) {
+      const currentLegend = this.chartInstance.getOption().legend;
+      if (currentLegend?.[0]?.selected) {
+        // @ts-ignore
+        this.chartOptions.legend.selected = currentLegend[0].selected;
+      }
+    }
     // @ts-ignore
-    this.chartOptions.grid.bottom = 40;
+    this.chartOptions.grid.bottom = 90;
     this.chartOptions.backgroundColor = 'var(--active-bg)';
+    const unitIsVb = this.unitGroupForm.controls.unitType.value === 'vb';
+    const base = this.relativeMode
+      ? (unitIsVb ? $localize`Share of block vBytes` : $localize`Share of block transactions`)
+      : (unitIsVb ? $localize`Transaction vBytes per block` : $localize`Transaction count per block`);
+    const bucket = this.bucketGroupForm.controls.bucketSize.value;
+    const bucketSuffix = bucket === 1008
+      ? ' ' + $localize`(weekly average)`
+      : bucket === 4032
+        ? ' ' + $localize`(monthly average)`
+        : '';
+    let text = base + bucketSuffix;
+    if (filters.length) {
+      const matchText = op === 'or'
+        ? $localize`matching any of`
+        : op === 'nor'
+          ? $localize`matching none of`
+          : $localize`matching all of`;
+      text = `${base}${bucketSuffix} ${matchText}: ${filters.join(', ')}`;
+    }
+    this.chartOptions.title = {
+      text,
+      textStyle: { color: 'white', fontSize: 14, fontWeight: 'normal' },
+      left: 'center',
+      bottom: 15,
+    };
     this.chartInstance.setOption(this.chartOptions);
     download(this.chartInstance.getDataURL({
       pixelRatio: 2,
       excludeComponents: ['dataZoom'],
-    }), `block-goggles-${this.timespan}-${Math.round(now.getTime() / 1000)}.svg`);
+    }), `block-goggles-${this.timespan}${mask ? `-${op}-${mask.toString()}` : ''}-${Math.round(now.getTime() / 1000)}.svg`);
     // @ts-ignore
     this.chartOptions.grid.bottom = prevBottom;
     this.chartOptions.backgroundColor = 'none';
+    this.chartOptions.title = prevTitle ?? { text: '' };
     this.chartInstance.setOption(this.chartOptions);
+    this.chartOptions.title = prevTitle;
   }
 }
