@@ -168,7 +168,7 @@ class Indexer {
         try {
           await mining.$rebuildPoolsStatsCache();
         } catch (e) {
-          logger.debug('failed to sync pools stats cace: ' + (e instanceof Error ? e.message : e));
+          logger.debug('failed to sync pools stats cache: ' + (e instanceof Error ? e.message : e));
         }
       } break;
     }
