@@ -190,22 +190,36 @@ class Mining {
     return statsByInterval;
   }
 
+  /**
+   * Estimated network hashrate over the last `blockCount` blocks.
+   * Core rejects a lookup of 0 blocks, and one failed window must not zero the others.
+   *
+   * @asyncSafe
+   */
+  private async $getEstimatedHashrate(blockCount: number): Promise<number> {
+    if (blockCount <= 0) {
+      return 0;
+    }
+
+    try {
+      return await bitcoinClient.getNetworkHashPs(blockCount);
+    } catch (e) {
+      logger.debug(`Bitcoin Core is not available, using zeroed value for current hashrate over ${blockCount} blocks`, logger.tags.mining);
+      return 0;
+    }
+  }
+
   /** @asyncSafe */
   private async $getEstimatedHashrates(): Promise<{ lastEstimatedHashrate: number, lastEstimatedHashrate3d: number, lastEstimatedHashrate1w: number }> {
     const totalBlock24h: number = await BlocksRepository.$blockCount(null, '24h');
     const totalBlock3d: number = await BlocksRepository.$blockCount(null, '3d');
     const totalBlock1w: number = await BlocksRepository.$blockCount(null, '1w');
 
-    try {
-      return {
-        lastEstimatedHashrate: await bitcoinClient.getNetworkHashPs(totalBlock24h),
-        lastEstimatedHashrate3d: await bitcoinClient.getNetworkHashPs(totalBlock3d),
-        lastEstimatedHashrate1w: await bitcoinClient.getNetworkHashPs(totalBlock1w),
-      };
-    } catch (e) {
-      logger.debug('Bitcoin Core is not available, using zeroed value for current hashrate', logger.tags.mining);
-      return { lastEstimatedHashrate: 0, lastEstimatedHashrate3d: 0, lastEstimatedHashrate1w: 0 };
-    }
+    return {
+      lastEstimatedHashrate: await this.$getEstimatedHashrate(totalBlock24h),
+      lastEstimatedHashrate3d: await this.$getEstimatedHashrate(totalBlock3d),
+      lastEstimatedHashrate1w: await this.$getEstimatedHashrate(totalBlock1w),
+    };
   }
 
   /**
