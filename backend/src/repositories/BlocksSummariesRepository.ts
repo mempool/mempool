@@ -235,7 +235,7 @@ class BlocksSummariesRepository {
 
   public async $getSummariesBetweenHeights(startHeight: number, lastHeight: number): Promise<{height: number, transactions: string, timestamp: number}[]> {
     try {
-      const [rows]: any[] = await DB.query(`SELECT bs.height, bs.transactions, UNIX_TIMESTAMP(b.blockTimestamp) as timestamp FROM blocks_summaries bs JOIN blocks b ON bs.id = b.hash WHERE bs.height > ? AND bs.height <= ? AND b.stale = 0 AND bs.version >= 1 ORDER BY height ASC`, [startHeight, lastHeight]);
+      const [rows]: any[] = await DB.query(`SELECT bs.height, bs.transactions, UNIX_TIMESTAMP(b.blockTimestamp) as timestamp FROM blocks_summaries bs JOIN blocks b ON bs.id = b.hash WHERE bs.height > ? AND bs.height <= ? AND b.stale = 0 AND bs.version >= 1 ORDER BY height DESC`, [startHeight, lastHeight]);
 
       if (rows !== null && rows.length > 0) {
         return rows;

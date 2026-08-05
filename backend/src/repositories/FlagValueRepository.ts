@@ -1,4 +1,3 @@
-import { Common } from '../api/common';
 import DB from '../database';
 import logger from '../logger';
 
