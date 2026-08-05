@@ -38,10 +38,14 @@ class Mining {
   public reindexHashrateRequested = false;
   public reindexDifficultyAdjustmentRequested = false;
 
-  // Rebuilt in the background on new blocks/reorgs/pool changes; entries older than this get a lazy refresh
+  // Rebuilt in the background on new blocks/reorgs/pool changes; snapshots older than this get a lazy refresh.
+  // The resolved snapshot and the in-flight rebuild are kept apart so requests never wait on a rebuild,
+  // and so a failed rebuild leaves the previous snapshot in place instead of emptying the cache.
   private static readonly POOLS_STATS_RESYNC_MS = 600000;
-  private poolsStatsCache: Record<string, { syncedAt: number, stats: Promise<PoolsStats> }> = {};
-  private poolsHistoricalHashrateCache: Map<string, {syncedAt: number, hashrates: Promise<any[]>}> = new Map();
+  private poolsStatsCache: { syncedAt: number, byInterval: Record<string, PoolsStats> } | null = null;
+  private poolsStatsRebuild: Promise<Record<string, PoolsStats>> | null = null;
+  private poolsHistoricalHashrateCache: Map<string, { syncedAt: number, hashrates: any[] }> = new Map();
+  private poolsHistoricalHashrateRebuilds: Map<string, Promise<any[]>> = new Map();
 
   private genesisData: {
     timestamp: number,
@@ -122,40 +126,58 @@ class Mining {
 
   /**
    * Generate high level overview of the pool ranks and general stats
+   *
+   * Only rejects on a cold start with no snapshot to fall back on
+   *
+   * @asyncUnsafe
    */
   public async $getPoolsStats(interval: string | null): Promise<PoolsStats> {
     const cacheKey = (interval && Common.getSqlInterval(interval)) ? interval : 'all';
 
-    const cached = this.poolsStatsCache[cacheKey];
+    const cached = this.poolsStatsCache;
     if (cached) {
       if (Date.now() - cached.syncedAt >= Mining.POOLS_STATS_RESYNC_MS) {
-        this.$rebuildPoolsStatsCache().catch(() => {/** */});
+        void this.$rebuildPoolsStatsCache();
       }
-      return cached.stats;
+      // stale data beats waiting on a rebuild, and beats a 500 if that rebuild fails
+      return cached.byInterval[cacheKey];
     }
 
-    this.$rebuildPoolsStatsCache().catch(() => {/** */});
-    return this.poolsStatsCache[cacheKey].stats;
+    // nothing cached yet, so this request has to wait for the first build
+    return (await this.$refreshPoolsStats())[cacheKey];
   }
 
   /** @asyncSafe */
   public $rebuildPoolsStatsCache(): Promise<void> {
-    const syncedAt = Date.now();
-    const build = this.$queryAllPoolsStats();
-
-    for (const interval of POOLS_STATS_INTERVALS) {
-      const stats = build.then((byInterval) => byInterval[interval]);
-      this.poolsStatsCache[interval] = { syncedAt, stats };
-      stats.catch(() => {
-        if (this.poolsStatsCache[interval]?.stats === stats) {
-          delete this.poolsStatsCache[interval];
-        }
-      });
-    }
-
-    return build.then(() => undefined, (e) => {
+    return this.$refreshPoolsStats().then(() => undefined, (e) => {
       logger.err(`Failed to build pools stats cache. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
     });
+  }
+
+  /**
+   * Runs one rebuild at a time, and only replaces the cached snapshot once the new one resolves.
+   * Callers must handle the rejection.
+   */
+  private $refreshPoolsStats(): Promise<Record<string, PoolsStats>> {
+    if (this.poolsStatsRebuild) {
+      return this.poolsStatsRebuild;
+    }
+
+    const rebuild = this.$queryAllPoolsStats().then((byInterval) => {
+      this.poolsStatsCache = { syncedAt: Date.now(), byInterval };
+      return byInterval;
+    });
+    this.poolsStatsRebuild = rebuild;
+
+    // release the slot either way, so a failed rebuild does not block the next attempt
+    const releaseSlot = (): void => {
+      if (this.poolsStatsRebuild === rebuild) {
+        this.poolsStatsRebuild = null;
+      }
+    };
+    rebuild.then(releaseSlot, releaseSlot);
+
+    return rebuild;
   }
 
   private async $queryAllPoolsStats(): Promise<Record<string, PoolsStats>> {
@@ -229,24 +251,52 @@ class Mining {
     const cacheKey = Common.getSqlInterval(interval) ?? 'all';
 
     const cached = this.poolsHistoricalHashrateCache.get(cacheKey);
-    if (cached && Date.now() - cached.syncedAt < Mining.POOLS_STATS_RESYNC_MS) {
+    if (cached) {
+      if (Date.now() - cached.syncedAt >= Mining.POOLS_STATS_RESYNC_MS) {
+        this.$refreshPoolsHistoricalHashrate(cacheKey, interval).catch((e) => {
+          logger.err(`Failed to refresh pools historical hashrate. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
+        });
+      }
       return cached.hashrates;
     }
 
-    // Cache the promise, so concurrent requests share one rebuild instead of each querying
-    const hashrates = HashratesRepository.$getPoolsWeeklyHashrate(interval);
-    this.poolsHistoricalHashrateCache.set(cacheKey, { syncedAt: Date.now(), hashrates });
-    hashrates.catch(() => {
-      if (this.poolsHistoricalHashrateCache.get(cacheKey)?.hashrates === hashrates) {
-        this.poolsHistoricalHashrateCache.delete(cacheKey);
-      }
-    });
+    return this.$refreshPoolsHistoricalHashrate(cacheKey, interval);
+  }
 
-    return hashrates;
+  /**
+   * Runs one rebuild at a time per interval, and only replaces the cached snapshot once it resolves.
+   * Callers must handle the rejection.
+   */
+  private $refreshPoolsHistoricalHashrate(cacheKey: string, interval: string | null): Promise<any[]> {
+    const running = this.poolsHistoricalHashrateRebuilds.get(cacheKey);
+    if (running) {
+      return running;
+    }
+
+    const rebuild = HashratesRepository.$getPoolsWeeklyHashrate(interval).then((hashrates) => {
+      // an invalidation while this was in flight means the result is already stale, so drop it
+      if (this.poolsHistoricalHashrateRebuilds.get(cacheKey) === rebuild) {
+        this.poolsHistoricalHashrateCache.set(cacheKey, { syncedAt: Date.now(), hashrates });
+      }
+      return hashrates;
+    });
+    this.poolsHistoricalHashrateRebuilds.set(cacheKey, rebuild);
+
+    // release the slot either way, so a failed rebuild does not block the next attempt
+    const releaseSlot = (): void => {
+      if (this.poolsHistoricalHashrateRebuilds.get(cacheKey) === rebuild) {
+        this.poolsHistoricalHashrateRebuilds.delete(cacheKey);
+      }
+    };
+    rebuild.then(releaseSlot, releaseSlot);
+
+    return rebuild;
   }
 
   public invalidatePoolsHistoricalHashrateCache(): void {
     this.poolsHistoricalHashrateCache.clear();
+    // in-flight rebuilds started before the invalidation must not write their result back
+    this.poolsHistoricalHashrateRebuilds.clear();
   }
 
   /**
