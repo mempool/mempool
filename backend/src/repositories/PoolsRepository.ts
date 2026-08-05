@@ -123,6 +123,12 @@ class PoolsRepository {
           }
         }
       }
+
+      // rank is assigned from this order, and unique_id breaks ties so it stays stable across rebuilds
+      for (const pools of Object.values(result)) {
+        pools.sort((a, b) => b.blockCount - a.blockCount || a.poolUniqueId - b.poolUniqueId);
+      }
+
       return result;
     } catch(e) {
       logger.err(`Cannot generate pools stats per interval. Reason: ` + (e instanceof Error ? e.message : e));
