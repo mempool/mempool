@@ -1156,8 +1156,9 @@ class BitcoinRoutes {
       }
 
       const validBucketSizes = presets[interval].bucketSizes;
-      const bucketSize: number = parseInt(req.params.bucketSize);
-      if (bucketSize && !validBucketSizes.includes(bucketSize)) {
+      const rawBucketSize = req.params.bucketSize;
+      const bucketSize: number = rawBucketSize === undefined ? validBucketSizes[0] : Number(rawBucketSize);
+      if (!Number.isInteger(bucketSize) || !validBucketSizes.includes(bucketSize)) {
         handleError(req, res, 400, `Invalid bucket size, must be ${validBucketSizes.toString()}`);
         return;
       }
