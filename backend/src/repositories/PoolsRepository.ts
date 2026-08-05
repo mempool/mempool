@@ -100,13 +100,14 @@ class PoolsRepository {
     try {
       const [rows]: any[] = await DB.query(query);
 
-
+      // every interval needs an array even with no rows, or callers iterate undefined
       const result: Record<string, PoolInfo[]> = {};
+      for (const label of POOLS_STATS_INTERVALS) {
+        result[label] = [];
+      }
+
       for (const row of rows) {
         for (const label of POOLS_STATS_INTERVALS) {
-          if (!result[label]) {
-            result[label] = [];
-          }
           const blockCount = row[`blockCount_${label}`];
           if (blockCount > 0) {
             result[label].push({
