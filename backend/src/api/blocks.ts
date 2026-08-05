@@ -781,6 +781,8 @@ class Blocks {
             timer = Date.now() / 1000;
             blocksComputedThisRun = 0;
           }
+
+          await Common.sleep$(250); // Don't index flag values too fast
         }
         logger.debug(`Successfully indexed #${blocksComputedInTotal} blocks ${preset.name} in ${((Date.now() / 1000) - startedAt).toFixed(2)} seconds`, logger.tags.goggles);
       }
