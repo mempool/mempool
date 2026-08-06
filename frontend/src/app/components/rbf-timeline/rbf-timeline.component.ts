@@ -1,12 +1,12 @@
-import { Component, Input, OnInit, OnChanges, Inject, LOCALE_ID, HostListener } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, OnDestroy, Inject, LOCALE_ID, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { RbfTree, RbfTransaction } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { ApiService } from '@app/services/api.service';
-import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { Transaction } from '@interfaces/electrs.interface';
-import { calculateRbfDiff, RbfDiff } from '@app/shared/rbf-diff.utils';
+import { forkJoin, of, Subject } from 'rxjs';
+import { catchError, takeUntil } from 'rxjs/operators';
+import { Transaction, Vout } from '@interfaces/electrs.interface';
+import { calculateRbfDiff } from '@app/shared/rbf-diff.utils';
 
 type Connector = 'pipe' | 'corner';
 
@@ -18,49 +18,36 @@ interface TimelineCell {
 }
 
 /**
- * Represents a single replacement edge in the RBF tree (parent replaced child).
- * Used to let users navigate and diff any adjacent pair in a branching tree.
+ * One output of the replacement, aligned across the Previous and Current tables.
+ * Every row renders on both sides so the two tables stay in step; the side that
+ * doesn't exist gets a placeholder.
  */
-interface RbfEdge {
-  oldTxid: string;      // the replaced (older) transaction
-  newTxid: string;      // the replacement (newer) transaction
-  oldTxidShort: string; // first 8 chars for display
-  newTxidShort: string; // first 8 chars for display
+interface OutputDiffRow {
+  previous: Vout | null;
+  current: Vout | null;
+  addressChanged: boolean;
+  // value reduced by exactly the fee bump — not a real change to the output
+  feeAdjusted: boolean;
 }
 
 /**
- * Represents a single row in the comparison table
- * Each row shows: label, previous value, current value, and optional highlighting
+ * Everything the diff tables render. A field is only flagged when it actually
+ * changed, so unchanged rows never reach the template.
  */
-interface ComparisonRow {
-  label: string;                    // e.g., "Version", "Locktime", "Fee"
-  previous: string | number | null; // Value from old transaction
-  current: string | number | null;  // Value from new transaction
-  changed: boolean;                 // Whether the value changed
-  changeType?: 'positive' | 'negative' | 'neutral'; // For styling
-  i18nKey?: string;                 // For internationalization
-  percentage?: number | null;       // Pre-calculated percentage change
-  isAmount?: boolean;               // Whether this row displays an amount (for app-amount component)
-  unit?: string;                    // Unit label for metrics (e.g., 'WU', 'vB')
-}
-
-/**
- * Represents a comparison section (metadata, metrics, inputs, outputs)
- */
-interface ComparisonSection {
-  title: string;
-  rows: ComparisonRow[];
-  hasChanges: boolean; // Whether any row in this section changed
-}
-
-/**
- * Complete comparison table data structure
- */
-interface ComparisonTableData {
-  metadata: ComparisonSection;  // Version, Locktime
-  metrics: ComparisonSection;   // Fee, Weight, vSize
-  inputs: ComparisonSection;    // Input changes summary
-  outputs: ComparisonSection;   // Output changes summary
+interface RbfDiffView {
+  versionChanged: boolean;
+  locktimeChanged: boolean;
+  feeChanged: boolean;
+  feePercent: number | null;
+  feeIncreased: boolean;
+  weightChanged: boolean;
+  weightPercent: number | null;
+  weightIncreased: boolean;
+  inputCountChanged: boolean;
+  addedInputs: number;
+  removedInputs: number;
+  outputCountChanged: boolean;
+  outputRows: OutputDiffRow[];
 }
 
 function isTimelineCell(val: RbfTree | TimelineCell): boolean {
@@ -73,10 +60,13 @@ function isTimelineCell(val: RbfTree | TimelineCell): boolean {
   styleUrls: ['./rbf-timeline.component.scss'],
   standalone: false,
 })
-export class RbfTimelineComponent implements OnInit, OnChanges {
+export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
   @Input() replacements: RbfTree;
   @Input() txid: string;
   @Input() rowLimit: number = 5; // If explicitly set to 0, all timelines rows will be displayed by default
+  // Owned by the parent so the toggle can live beside the section heading, the
+  // same way the transaction flow diagram is driven from transaction.component
+  @Input() showDiff: boolean = false;
   rows: TimelineCell[][] = [];
   timelineExpanded: boolean = this.rowLimit === 0;
 
@@ -88,15 +78,19 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
   // RBF Diff state
   selectedOldTx: Transaction | null = null;
   selectedNewTx: Transaction | null = null;
-  rbfDiff: RbfDiff | null = null;
-  showDiff: boolean = false;
   diffLoading: boolean = false;
   diffError: boolean = false;
-  comparisonData: ComparisonTableData | null = null;
+  diffView: RbfDiffView | null = null;
 
-  // Edge navigation for branching RBF trees
-  allEdges: RbfEdge[] = [];
-  selectedEdgeIndex: number = 0;
+  // The pair currently being diffed. Any two nodes in the tree can be compared,
+  // not just adjacent ones, so both ends are tracked independently.
+  diffOldTxid: string | null = null;
+  diffNewTxid: string | null = null;
+  // First half of a two-click selection, waiting for the user to pick the other end
+  pendingAnchorTxid: string | null = null;
+
+  private nodeIndex = new Map<string, RbfTree>();
+  private destroy$ = new Subject<void>();
 
   constructor(
     private router: Router,
@@ -111,15 +105,33 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.rows = this.buildTimelines(this.replacements);
-    this.updateEdges();
+    this.indexNodes();
+    this.resolveDefaultPair(true);
   }
 
   ngOnChanges(changes): void {
     this.rows = this.buildTimelines(this.replacements);
-    this.updateEdges();
-    if (changes.txid && !changes.txid.firstChange && changes.txid.previousValue !== changes.txid.currentValue) {
+    this.indexNodes();
+    const txidChanged = changes.txid && changes.txid.previousValue !== changes.txid.currentValue;
+    const previousPair = `${this.diffOldTxid}:${this.diffNewTxid}`;
+    this.resolveDefaultPair(txidChanged);
+    if (changes.showDiff) {
+      this.pendingAnchorTxid = null;
+      this.clearDiffResult();
+      if (this.showDiff) {
+        this.loadDiff();
+      }
+    } else if (this.showDiff && `${this.diffOldTxid}:${this.diffNewTxid}` !== previousPair) {
+      this.loadDiff();
+    }
+    if (txidChanged && !changes.txid.firstChange) {
       setTimeout(() => { this.scrollToSelected(); });
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   // converts a tree of RBF events into a format that can be more easily rendered in HTML
@@ -283,15 +295,171 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
     this.hoverInfo = null;
   }
 
+  // Builds a txid -> node lookup so the template can resolve the diff pair in
+  // constant time instead of walking the tree on every change detection cycle
+  private indexNodes(): void {
+    this.nodeIndex.clear();
+    const walk = (node: RbfTree): void => {
+      if (!node) { return; }
+      this.nodeIndex.set(node.tx.txid, node);
+      node.replaces.forEach(walk);
+    };
+    walk(this.replacements);
+  }
+
+  // The tree always has at least one replacement edge if the root replaced anything
+  private get hasReplacements(): boolean {
+    return !!this.replacements?.replaces?.length;
+  }
+
+  // While a pick is in progress the previous pair's colours are dropped: leaving
+  // a stale red and green on the timeline alongside the dashed anchor reads as if
+  // three transactions were selected at once.
+  get highlightedOldTxid(): string | null {
+    return this.showDiff && !this.pendingAnchorTxid ? this.diffOldTxid : null;
+  }
+
+  get highlightedNewTxid(): string | null {
+    return this.showDiff && !this.pendingAnchorTxid ? this.diffNewTxid : null;
+  }
+
   /**
-   * Fetches full transaction details for two transactions and computes their structural diff
-   * @param oldTxid - The original transaction ID
-   * @param newTxid - The replacement transaction ID
+   * True when the user has picked one end of a comparison and we're waiting for
+   * the other. The tables are hidden in this state so the hint is unambiguous.
    */
-  compareTxs(oldTxid: string, newTxid: string): void {
+  get awaitingSecondPick(): boolean {
+    return this.showDiff && this.pendingAnchorTxid !== null;
+  }
+
+  get pendingAnchorShort(): string {
+    return this.pendingAnchorTxid ? this.pendingAnchorTxid.substring(0, 8) : '';
+  }
+
+  // Walks forward in time from `from` via replacedBy, looking for `target`
+  private replacedByChainReaches(from: RbfTree, targetTxid: string): boolean {
+    const seen = new Set<string>();
+    let cursor: RbfTree | undefined = from;
+    while (cursor?.replacedBy && !seen.has(cursor.tx.txid)) {
+      seen.add(cursor.tx.txid);
+      if (cursor.replacedBy.txid === targetTxid) {
+        return true;
+      }
+      cursor = this.nodeIndex.get(cursor.replacedBy.txid);
+    }
+    return false;
+  }
+
+  /**
+   * Works out which of two freely-picked nodes is the older one. Ancestry in the
+   * replacement chain decides it; nodes on separate branches have no such
+   * relationship, so those fall back to the timestamps.
+   */
+  private orderPair(a: RbfTree, b: RbfTree): [string, string] {
+    if (this.replacedByChainReaches(a, b.tx.txid)) {
+      return [a.tx.txid, b.tx.txid];
+    }
+    if (this.replacedByChainReaches(b, a.tx.txid)) {
+      return [b.tx.txid, a.tx.txid];
+    }
+    return (a.time ?? 0) <= (b.time ?? 0)
+      ? [a.tx.txid, b.tx.txid]
+      : [b.tx.txid, a.tx.txid];
+  }
+
+  private resolveDefaultPair(force: boolean = false): void {
+    // a websocket refresh shouldn't throw away whichever pair the user picked
+    if (!force && this.diffOldTxid && this.diffNewTxid
+        && this.nodeIndex.has(this.diffOldTxid) && this.nodeIndex.has(this.diffNewTxid)) {
+      return;
+    }
+    this.pendingAnchorTxid = null;
+    this.diffOldTxid = null;
+    this.diffNewTxid = null;
+    // default to the transaction being viewed against what it replaced, falling
+    // back to the tip of the tree when nothing is selected (the replacements list)
+    const current = (this.txid ? this.nodeIndex.get(this.txid) : null) ?? null;
+    const node = current?.replaces.length
+      ? current
+      : (current?.replacedBy ? this.nodeIndex.get(current.replacedBy.txid) : null)
+        ?? (this.hasReplacements ? this.replacements : null);
+    if (node?.replaces.length) {
+      this.diffOldTxid = node.replaces[0].tx.txid;
+      this.diffNewTxid = node.tx.txid;
+    }
+  }
+
+  /**
+   * With the diff open, nodes stop being links and become comparison endpoints.
+   * The first click anchors one end, the second picks the other — which is what
+   * makes it possible to compare transactions that aren't next to each other.
+   */
+  onNodeClick(event: MouseEvent, node: RbfTree): void {
+    if (!this.showDiff) {
+      return;
+    }
+    // routerLink is already null while the diff is open, so this only has to
+    // suppress the anchor's own default behaviour
+    event.preventDefault();
+    if (!this.pendingAnchorTxid) {
+      this.pendingAnchorTxid = node.tx.txid;
+      this.clearDiffResult();
+      return;
+    }
+    if (this.pendingAnchorTxid === node.tx.txid) {
+      // clicking the anchor again cancels the selection
+      this.pendingAnchorTxid = null;
+      this.loadDiff();
+      return;
+    }
+    const anchor = this.nodeIndex.get(this.pendingAnchorTxid);
+    this.pendingAnchorTxid = null;
+    if (!anchor) {
+      return;
+    }
+    [this.diffOldTxid, this.diffNewTxid] = this.orderPair(anchor, node);
+    this.loadDiff();
+  }
+
+  /**
+   * Clicking the line joining two dots compares exactly those two — the quick
+   * path for the common case of two consecutive replacements.
+   */
+  onEdgeClick(event: MouseEvent, node: RbfTree | undefined): void {
+    if (!this.showDiff || !node?.replacedBy) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    this.pendingAnchorTxid = null;
+    this.diffOldTxid = node.tx.txid;
+    this.diffNewTxid = node.replacedBy.txid;
+    this.loadDiff();
+  }
+
+  private clearDiffResult(): void {
+    this.diffLoading = false;
+    this.diffError = false;
+    this.selectedOldTx = null;
+    this.selectedNewTx = null;
+    this.diffView = null;
+  }
+
+  private loadDiff(): void {
+    if (!this.diffOldTxid || !this.diffNewTxid) {
+      return;
+    }
+    this.compareTxs(this.diffOldTxid, this.diffNewTxid);
+  }
+
+  /**
+   * Fetches both transactions from the RBF cache and computes their structural diff.
+   * @param oldTxid - the replaced transaction
+   * @param newTxid - the replacement
+   */
+  private compareTxs(oldTxid: string, newTxid: string): void {
     this.diffError = false;
     this.diffLoading = true;
-    this.comparisonData = null;
+    this.diffView = null;
     forkJoin({
       oldTx: this.apiService.getRbfCachedTx$(oldTxid).pipe(
         catchError(() => of(null))
@@ -299,7 +467,9 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
       newTx: this.apiService.getRbfCachedTx$(newTxid).pipe(
         catchError(() => of(null))
       ),
-    }).subscribe((result) => {
+    }).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((result) => {
       this.diffLoading = false;
       if (!result.oldTx || !result.newTx) {
         this.diffError = true;
@@ -307,345 +477,47 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
       }
       this.selectedOldTx = result.oldTx;
       this.selectedNewTx = result.newTx;
-      this.rbfDiff = calculateRbfDiff(result.oldTx, result.newTx);
-      this.prepareComparisonTable();
-      this.showDiff = true;
+      this.diffView = this.buildDiffView(result.oldTx, result.newTx);
     });
   }
 
-  closeDiff(): void {
-    this.showDiff = false;
-    this.diffLoading = false;
-    this.diffError = false;
-    this.selectedOldTx = null;
-    this.selectedNewTx = null;
-    this.rbfDiff = null;
-    this.comparisonData = null;
-  }
-
   /**
-   * Prepares the RBF diff data into a block-audit-style comparison table structure
-   * FIXED: Only includes changed rows, calculates deltas in TypeScript, correct units
+   * Reduces the structural diff to just what the tables render. Rows for
+   * unchanged fields are left out entirely rather than rendered as noise.
    */
-  prepareComparisonTable(): void {
-    if (!this.rbfDiff || !this.selectedOldTx || !this.selectedNewTx) {
-      return;
-    }
+  private buildDiffView(oldTx: Transaction, newTx: Transaction): RbfDiffView {
+    const diff = calculateRbfDiff(oldTx, newTx);
 
-    // ========================================
-    // METADATA SECTION - Only add if changed
-    // ========================================
-    const metadataRows: ComparisonRow[] = [];
+    // Most important first: a replaced destination is the reason to look at all
+    const outputRows: OutputDiffRow[] = [
+      ...diff.outputs.modified
+        .filter(m => m.changeType !== 'value')
+        .map(m => ({ previous: m.old, current: m.new, addressChanged: true, feeAdjusted: false })),
+      ...diff.outputs.modified
+        .filter(m => m.changeType === 'value')
+        .map(m => ({ previous: m.old, current: m.new, addressChanged: false, feeAdjusted: false })),
+      ...diff.outputs.removed
+        .map(out => ({ previous: out, current: null, addressChanged: false, feeAdjusted: false })),
+      ...diff.outputs.added
+        .map(out => ({ previous: null, current: out, addressChanged: false, feeAdjusted: false })),
+      ...diff.outputs.feeAdjusted
+        .map(adj => ({ previous: adj.old, current: adj.new, addressChanged: false, feeAdjusted: true })),
+    ];
 
-    if (this.rbfDiff.transaction.versionChanged) {
-      metadataRows.push({
-        label: 'Version',
-        i18nKey: 'transaction.version',
-        previous: this.rbfDiff.transaction.oldVersion,
-        current: this.rbfDiff.transaction.newVersion,
-        changed: true,
-        changeType: 'neutral'
-      });
-    }
-
-    if (this.rbfDiff.transaction.locktimeChanged) {
-      metadataRows.push({
-        label: 'Locktime',
-        i18nKey: 'transaction.locktime',
-        previous: this.rbfDiff.transaction.oldLocktime,
-        current: this.rbfDiff.transaction.newLocktime,
-        changed: true,
-        changeType: 'neutral'
-      });
-    }
-
-    // ========================================
-    // METRICS SECTION - Only metrics that changed
-    // ========================================
-    const metricsRows: ComparisonRow[] = [];
-
-    // Fee (always changed if in this section)
-    if (this.rbfDiff.metrics.feeDelta !== null) {
-      const oldFee = this.selectedOldTx.fee;
-      const newFee = this.selectedNewTx.fee;
-      const feePercentage = oldFee > 0 ? ((newFee - oldFee) / oldFee) * 100 : null;
-
-      metricsRows.push({
-        label: 'Fee',
-        i18nKey: 'transaction.fee',
-        previous: oldFee,
-        current: newFee,
-        changed: true,
-        changeType: this.rbfDiff.metrics.feeDelta > 0 ? 'negative' : 'positive',
-        percentage: feePercentage,
-        isAmount: true
-      });
-    }
-
-    // Weight (with percentage)
-    if (this.rbfDiff.metrics.weightDelta !== null) {
-      const oldWeight = this.selectedOldTx.weight;
-      const newWeight = this.selectedNewTx.weight;
-      const weightPercentage = oldWeight > 0 ? ((newWeight - oldWeight) / oldWeight) * 100 : null;
-
-      metricsRows.push({
-        label: 'Weight',
-        i18nKey: 'transaction.weight',
-        previous: oldWeight,
-        current: newWeight,
-        changed: true,
-        changeType: this.rbfDiff.metrics.weightDelta > 0 ? 'negative' : 'positive',
-        percentage: weightPercentage,
-        isAmount: false,
-        unit: 'WU'
-      });
-    }
-
-    // Virtual size (with percentage) - FIXED: unit is vB
-    if (this.rbfDiff.metrics.vsizeDelta !== null) {
-      const oldVsize = this.selectedOldTx.size;
-      const newVsize = this.selectedNewTx.size;
-      const vsizePercentage = oldVsize > 0 ? ((newVsize - oldVsize) / oldVsize) * 100 : null;
-
-      metricsRows.push({
-        label: 'Virtual size',
-        i18nKey: 'transaction.vsize',
-        previous: oldVsize,
-        current: newVsize,
-        changed: true,
-        changeType: this.rbfDiff.metrics.vsizeDelta > 0 ? 'negative' : 'positive',
-        percentage: vsizePercentage,
-        isAmount: false,
-        unit: 'vB'
-      });
-    }
-
-    // ========================================
-    // INPUTS SECTION - FIXED: Delta formatting in TypeScript
-    // ========================================
-    const inputsRows: ComparisonRow[] = [];
-
-    const oldInputCount = this.selectedOldTx.vin.length;
-    const newInputCount = this.selectedNewTx.vin.length;
-    const inputDelta = newInputCount - oldInputCount;
-
-    // Total Inputs - ONLY add if count changed, with formatted delta
-    if (inputDelta !== 0) {
-      const sign = inputDelta > 0 ? '+' : '';
-      const formattedCurrent = `${newInputCount} (${sign}${inputDelta})`;
-
-      inputsRows.push({
-        label: 'Total Inputs',
-        i18nKey: 'transaction.inputs-count',
-        previous: oldInputCount,
-        current: formattedCurrent,
-        changed: true,
-        changeType: 'neutral'
-      });
-    }
-
-    // Added Inputs
-    if (this.rbfDiff.inputs.added.length > 0) {
-      inputsRows.push({
-        label: 'Added Inputs',
-        i18nKey: 'rbf-diff.inputs-added',
-        previous: null,
-        current: this.rbfDiff.inputs.added.length,
-        changed: true,
-        changeType: 'positive'
-      });
-    }
-
-    // Removed Inputs
-    if (this.rbfDiff.inputs.removed.length > 0) {
-      inputsRows.push({
-        label: 'Removed Inputs',
-        i18nKey: 'rbf-diff.inputs-removed',
-        previous: this.rbfDiff.inputs.removed.length,
-        current: null,
-        changed: true,
-        changeType: 'negative'
-      });
-    }
-
-    // ========================================
-    // OUTPUTS SECTION - FIXED: Delta formatting in TypeScript
-    // ========================================
-    const outputsRows: ComparisonRow[] = [];
-
-    const oldOutputCount = this.selectedOldTx.vout.length;
-    const newOutputCount = this.selectedNewTx.vout.length;
-    const outputDelta = newOutputCount - oldOutputCount;
-
-    // Total Outputs - ONLY add if count changed, with formatted delta
-    if (outputDelta !== 0) {
-      const sign = outputDelta > 0 ? '+' : '';
-      const formattedCurrent = `${newOutputCount} (${sign}${outputDelta})`;
-
-      outputsRows.push({
-        label: 'Total Outputs',
-        i18nKey: 'transaction.outputs-count',
-        previous: oldOutputCount,
-        current: formattedCurrent,
-        changed: true,
-        changeType: 'neutral'
-      });
-    }
-
-    // Added Outputs
-    if (this.rbfDiff.outputs.added.length > 0) {
-      outputsRows.push({
-        label: 'Added Outputs',
-        i18nKey: 'rbf-diff.outputs-added',
-        previous: null,
-        current: this.rbfDiff.outputs.added.length,
-        changed: true,
-        changeType: 'positive'
-      });
-    }
-
-    // Removed Outputs
-    if (this.rbfDiff.outputs.removed.length > 0) {
-      outputsRows.push({
-        label: 'Removed Outputs',
-        i18nKey: 'rbf-diff.outputs-removed',
-        previous: this.rbfDiff.outputs.removed.length,
-        current: null,
-        changed: true,
-        changeType: 'negative'
-      });
-    }
-
-    // Modified Outputs
-    if (this.rbfDiff.outputs.modified.length > 0) {
-      outputsRows.push({
-        label: 'Modified Outputs',
-        i18nKey: 'rbf-diff.outputs-modified',
-        previous: null,
-        current: this.rbfDiff.outputs.modified.length,
-        changed: true,
-        changeType: 'neutral'
-      });
-    }
-
-    // Fee-Adjusted Outputs
-    if (this.rbfDiff.outputs.feeAdjusted.length > 0) {
-      outputsRows.push({
-        label: 'Fee-Adjusted Outputs',
-        i18nKey: 'rbf-diff.outputs-fee-adjusted',
-        previous: null,
-        current: this.rbfDiff.outputs.feeAdjusted.length,
-        changed: true,
-        changeType: 'neutral'
-      });
-    }
-
-    // ========================================
-    // CONSTRUCT FINAL DATA - hasChanges based on row count
-    // ========================================
-    this.comparisonData = {
-      metadata: {
-        title: 'Transaction Metadata',
-        rows: metadataRows,
-        hasChanges: metadataRows.length > 0
-      },
-      metrics: {
-        title: 'Metrics',
-        rows: metricsRows,
-        hasChanges: metricsRows.length > 0
-      },
-      inputs: {
-        title: 'Inputs',
-        rows: inputsRows,
-        hasChanges: inputsRows.length > 0
-      },
-      outputs: {
-        title: 'Outputs',
-        rows: outputsRows,
-        hasChanges: outputsRows.length > 0
-      }
+    return {
+      versionChanged: diff.transaction.versionChanged,
+      locktimeChanged: diff.transaction.locktimeChanged,
+      feeChanged: diff.metrics.feeDelta !== null,
+      feePercent: oldTx.fee > 0 ? ((newTx.fee - oldTx.fee) / oldTx.fee) * 100 : null,
+      feeIncreased: newTx.fee > oldTx.fee,
+      weightChanged: diff.metrics.weightDelta !== null,
+      weightPercent: oldTx.weight > 0 ? ((newTx.weight - oldTx.weight) / oldTx.weight) * 100 : null,
+      weightIncreased: newTx.weight > oldTx.weight,
+      inputCountChanged: oldTx.vin.length !== newTx.vin.length,
+      addedInputs: diff.inputs.added.length,
+      removedInputs: diff.inputs.removed.length,
+      outputCountChanged: oldTx.vout.length !== newTx.vout.length,
+      outputRows,
     };
-  }
-
-  /**
-   * Type-safe helper to convert comparison row values to numbers
-   * Used for app-amount component which requires strict number type
-   */
-  asNumber(value: unknown): number {
-    if (typeof value === 'number' && !Number.isNaN(value)) {
-      return value;
-    }
-    if (typeof value === 'string') {
-      const parsed = Number(value);
-      if (!Number.isNaN(parsed)) {
-        return parsed;
-      }
-    }
-    throw new TypeError(`asNumber: Expected a numeric value or numeric string, received ${typeof value}`);
-  }
-
-  /**
-   * Extracts all parent→child replacement edges from the RBF tree using BFS.
-   * BFS ordering means users see all direct replacements at each level before
-   * going deeper into branches — more intuitive for dropdown navigation.
-   */
-  private extractEdges(tree: RbfTree): RbfEdge[] {
-    if (!tree) { return []; }
-    const edges: RbfEdge[] = [];
-    const queue: RbfTree[] = [tree];
-    while (queue.length > 0) {
-      const node = queue.shift();
-      for (const child of node.replaces) {
-        edges.push({
-          oldTxid: child.tx.txid,
-          newTxid: node.tx.txid,
-          oldTxidShort: child.tx.txid.substring(0, 8),
-          newTxidShort: node.tx.txid.substring(0, 8),
-        });
-        queue.push(child);
-      }
-    }
-    return edges;
-  }
-
-  /**
-   * Rebuilds the edge list and sets the default selected edge
-   * to the one where the current tx is the replacement (newTxid).
-   */
-  private updateEdges(): void {
-    this.allEdges = this.extractEdges(this.replacements);
-    const currentEdgeIndex = this.allEdges.findIndex(e => e.newTxid === this.txid);
-    this.selectedEdgeIndex = currentEdgeIndex >= 0 ? currentEdgeIndex : 0;
-  }
-
-  /**
-   * Selects an edge by index and loads the diff for that pair.
-   */
-  selectEdge(index: number): void {
-    if (index < 0 || index >= this.allEdges.length) { return; }
-    this.selectedEdgeIndex = index;
-    const edge = this.allEdges[index];
-    this.compareTxs(edge.oldTxid, edge.newTxid);
-  }
-
-  get highlightedOldTxid(): string | null {
-    return this.showDiff && this.allEdges.length > 0
-      ? this.allEdges[this.selectedEdgeIndex]?.oldTxid
-      : null;
-  }
-
-  get highlightedNewTxid(): string | null {
-    return this.showDiff && this.allEdges.length > 0
-      ? this.allEdges[this.selectedEdgeIndex]?.newTxid
-      : null;
-  }
-
-  // Toggles the structural diff visibility
-  toggleStructuralDiff(): void {
-    if (this.showDiff) {
-      this.closeDiff();
-    } else if (this.allEdges.length > 0) {
-      this.selectEdge(this.selectedEdgeIndex);
-    }
   }
 }
