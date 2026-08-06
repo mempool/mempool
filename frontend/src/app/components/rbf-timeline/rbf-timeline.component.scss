@@ -15,10 +15,10 @@
       display: none;
     }
 
-    /* Fade just for the timeline (doesn't affect the diff) */
-    &::before,
-    &::after {
+    // scoped to the timeline so the gradients don't overlay the diff tables below
+    &::after, &::before {
       content: '';
+      display: block;
       position: absolute;
       top: 0;
       bottom: 0;
@@ -38,22 +38,27 @@
     }
   }
 
-  /* Align ALL (toggle, diff button, diff) to the same width as timeline-wrapper */
-  .toggle-wrapper,
-  .diff-button-wrapper,
-  .rbf-diff-section {
-    width: calc(100% - 2em);
-    margin-left: auto;
-    margin-right: auto;
+  .fade-out {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 70px;
+      top: -70px;
+      background: linear-gradient(to bottom, var(--fade-out-box-bg-start), var(--fade-out-box-bg-end));
+      z-index: 1;
+    }
   }
 
   .toggle-wrapper {
+    width: 100%;
     text-align: center;
     margin: 1.25em 0 0;
   }
 
-  .intervals,
-  .nodes {
+  .intervals, .nodes {
     min-width: 100%;
     display: flex;
     flex-direction: row;
@@ -61,16 +66,13 @@
     align-items: flex-start;
     text-align: center;
 
-    .node,
-    .node-spacer,
-    .connector {
+    .node, .node-spacer, .connector {
       width: 6em;
       min-width: 6em;
       flex-grow: 1;
     }
 
-    .interval,
-    .interval-spacer {
+    .interval, .interval-spacer {
       width: 8em;
       min-width: 5em;
       max-width: 8em;
@@ -92,9 +94,16 @@
     }
   }
 
-  .node,
-  .interval-spacer {
+  .node, .interval-spacer {
     position: relative;
+
+    &.diff-selectable {
+      cursor: pointer;
+
+      &:hover .track {
+        background: var(--info);
+      }
+    }
 
     .track {
       position: absolute;
@@ -109,7 +118,6 @@
       &.left {
         right: 50%;
       }
-
       &.right {
         left: 50%;
       }
@@ -118,13 +126,11 @@
         background: var(--info);
       }
     }
-
     &.first-node {
       .track.left {
         display: none;
       }
     }
-
     &:last-child {
       .track.right {
         display: none;
@@ -135,7 +141,6 @@
   .nodes {
     position: relative;
     margin-top: 1em;
-
     .node {
       .shape-border {
         display: block;
@@ -158,8 +163,7 @@
           transition: background-color 300ms, border 300ms;
         }
 
-        &.rbf,
-        &.rbf .shape {
+        &.rbf, &.rbf .shape {
           border-radius: 50%;
         }
       }
@@ -178,23 +182,8 @@
 
       .shape-border:hover {
         padding: 0px;
-
         .shape {
           background: var(--info);
-        }
-      }
-
-      &.diff-old {
-        .shape-border {
-          background: var(--red);
-          opacity: 0.85;
-        }
-      }
-
-      &.diff-new {
-        .shape-border {
-          background: var(--green);
-          opacity: 0.85;
         }
       }
 
@@ -210,13 +199,34 @@
 
           &:hover {
             padding: 4px;
-
             .shape {
               border-width: 1px;
-              border-color: var(--info);
+              border-color: var(--info)
             }
           }
         }
+      }
+
+      // the pair currently being diffed, matching the Previous / Current
+      // column accents in .rbf-diff-section
+      &.diff-old .shape-border,
+      &.diff-old.selected .shape-border,
+      &.diff-old.mined .shape-border {
+        background: var(--red);
+      }
+
+      &.diff-new .shape-border,
+      &.diff-new.selected .shape-border,
+      &.diff-new.mined .shape-border {
+        background: var(--green);
+      }
+
+      // first half of a two-click comparison, waiting for the other end
+      &.diff-pending .shape-border,
+      &.diff-pending.selected .shape-border,
+      &.diff-pending.mined .shape-border {
+        background: var(--tertiary);
+        outline: 2px dashed var(--fg);
       }
     }
 
@@ -224,19 +234,16 @@
       position: relative;
       height: 10px;
 
-      .corner,
-      .pipe {
+      .corner, .pipe {
         position: absolute;
         left: -10px;
         width: 20px;
         height: 108px;
         bottom: 50%;
         border-right: solid 10px var(--primary);
-
         &.fullrbf {
           border-right: solid 10px var(--info);
         }
-
         &.last-pipe {
           height: 150px;
           bottom: -42px;
@@ -246,7 +253,6 @@
       .corner {
         border-bottom: solid 10px var(--primary);
         border-bottom-right-radius: 10px;
-
         &.fullrbf {
           border-bottom: solid 10px var(--info);
         }
@@ -254,48 +260,50 @@
     }
   }
 
-  .diff-button-wrapper {
+  .diff-hint {
+    width: 100%;
     text-align: center;
-    margin: 0.75em 0 0;
-  }
+    margin: 0.5em 0 0;
+    font-size: 0.85rem;
+    color: var(--transparent-fg);
 
-  .edge-navigator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin: 0.75rem auto 0;
-    width: calc(100% - 2em);
-
-    .edge-select {
-      width: auto;
-      min-width: 220px;
-      text-align: center;
-      font-family: monospace;
-      font-size: 0.85rem;
-    }
-
-    .edge-counter {
-      font-size: 0.85rem;
-      color: var(--fg-alt);
-      white-space: nowrap;
+    code {
+      background: transparent;
+      padding: 0;
+      color: var(--link-color);
     }
   }
 
   .diff-loading {
-    margin: 1rem auto 0;
-    width: calc(100% - 2em);
+    width: 100%;
     padding: 1rem 0;
   }
 }
 
 .rbf-diff-section {
-  margin-top: 1rem;
+  width: calc(100% - 2em);
+  margin: 1rem auto 0;
   padding-top: 0.5rem;
-  border-top: 1px solid var(--box-border);
+  border-top: 1px solid var(--border-subtle);
+
+  // Bootstrap's .col-sm doesn't shrink below its content, and a full address is
+  // wide enough to push both columns past the container and wrap them onto
+  // separate lines. Bounding the cells keeps the two tables side by side.
+  .col-sm {
+    min-width: 0;
+  }
 
   table {
     margin-bottom: 0;
+    // fixed layout so a long address can never widen the table; the colgroup in
+    // the template sets the column split, since the colspan'd header row would
+    // otherwise be the one deciding it
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  col.label-col {
+    width: 38%;
   }
 
   .previous-box {
@@ -318,6 +326,7 @@
     align-items: baseline;
     gap: 0.35rem;
     white-space: nowrap;
+    overflow: hidden;
 
     code {
       margin: 0;
@@ -349,5 +358,33 @@
 
   .difference.negative {
     color: var(--red);
+  }
+
+  // a replaced destination is a warning, not a neutral delta. The label carries
+  // the colour so the address itself still reads as an ordinary link.
+  tr.address-changed td:first-child {
+    color: var(--red);
+  }
+
+  .address-changed .changed-indicator {
+    color: var(--red);
+  }
+
+  .output-address {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    font-size: 0.9rem;
+  }
+
+  .output-script-type {
+    font-size: 0.9rem;
+    color: var(--transparent-fg);
+  }
+
+  .output-value {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--transparent-fg);
   }
 }
