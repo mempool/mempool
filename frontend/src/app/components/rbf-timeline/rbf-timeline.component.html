@@ -21,16 +21,29 @@
               [class.selected]="txid === cell.replacement.tx.txid"
               [class.mined]="cell.replacement.tx.mined"
               [class.first-node]="cell.first"
+              [class.diff-old]="highlightedOldTxid === cell.replacement.tx.txid"
+              [class.diff-new]="highlightedNewTxid === cell.replacement.tx.txid"
+              [class.diff-pending]="pendingAnchorTxid === cell.replacement.tx.txid"
             >
               <div class="track left" [class.fullrbf]="cell.replacement?.tx?.fullRbf"></div>
               <div class="track right" [class.fullrbf]="cell.fullRbf"></div>
+              <!-- with the diff open the node picks the pair to compare, so the
+                   link is disabled rather than navigating away mid-comparison.
+                   Dropping routerLink also drops the href, so the role, tab stop
+                   and keyboard handlers are restored explicitly. -->
               <a class="shape-border"
                 [class.rbf]="cell.replacement.tx.rbf"
-                [routerLink]="['/tx/' | relativeUrl, cell.replacement.tx.txid]"
+                [routerLink]="showDiff ? null : ['/tx/' | relativeUrl, cell.replacement.tx.txid]"
+                [attr.role]="showDiff ? 'button' : null"
+                [attr.tabindex]="showDiff ? 0 : null"
+                (click)="onNodeClick($event, cell.replacement);"
+                (keydown.enter)="onNodeClick($event, cell.replacement);"
+                (keydown.space)="onNodeClick($event, cell.replacement);"
                 (pointerover)="onHover($event, cell.replacement);"
                 (pointerout)="onBlur($event);"
               >
                 <div class="shape"></div>
+                <span class="visually-hidden" *ngIf="showDiff" i18n="rbf-diff.select-transaction">Select this transaction to compare</span>
               </a>
               <span class="fee-rate"><app-fee-rate [fee]="cell.replacement.tx.fee" [weight]="cell.replacement.tx.vsize * 4" [unitStyle]="{ display: 'block', marginTop: '-0.5em'}"></app-fee-rate></span>
             </div>
@@ -43,8 +56,17 @@
             </ng-container>
           </ng-template>
           <ng-container *ngIf="i < timeline.length - 1">
-            <div class="interval-spacer" *ngIf="cell.replacement?.interval != null; else intervalSpacer">
+            <!-- the segment joining two dots: with the diff open it compares that
+                 pair directly, so it needs to be reachable by keyboard too -->
+            <div class="interval-spacer" *ngIf="cell.replacement?.interval != null; else intervalSpacer"
+              [class.diff-selectable]="showDiff && cell.replacement?.replacedBy"
+              [attr.role]="showDiff && cell.replacement?.replacedBy ? 'button' : null"
+              [attr.tabindex]="showDiff && cell.replacement?.replacedBy ? 0 : null"
+              (click)="onEdgeClick($event, cell.replacement)"
+              (keydown.enter)="onEdgeClick($event, cell.replacement)"
+              (keydown.space)="onEdgeClick($event, cell.replacement)">
               <div class="track" [class.fullrbf]="cell.fullRbf"></div>
+              <span class="visually-hidden" *ngIf="showDiff && cell.replacement?.replacedBy" i18n="rbf-diff.compare-pair">Compare these two transactions</span>
             </div>
           </ng-container>
         </ng-container>
@@ -61,6 +83,205 @@
       <button class="btn btn-sm btn-primary graph-toggle" (click)="toggleTimeline(false);"><span i18n="show-less">Show less</span></button>
     </ng-template>
   </div>
+
+  <!-- How to drive the comparison, shown only while the diff is open -->
+  <div class="diff-hint" *ngIf="showDiff">
+    <ng-container *ngIf="!awaitingSecondPick" i18n="rbf-diff.pick-hint">Click the line between two transactions to compare them, or click any two transactions to compare those.</ng-container>
+    <ng-container *ngIf="awaitingSecondPick" i18n="rbf-diff.pick-second">Comparing from <code>{{ pendingAnchorShort }}&hellip;</code> &mdash; now click the transaction to compare it with.</ng-container>
+  </div>
+
+  <!-- RBF Diff Loading -->
+  <div class="diff-loading text-center" *ngIf="showDiff && diffLoading">
+    <div class="spinner-border spinner-border-sm text-primary" role="status">
+      <span class="visually-hidden" i18n="loading">Loading...</span>
+    </div>
+  </div>
+
+  <!-- RBF Diff Error -->
+  <div class="diff-error alert alert-danger" *ngIf="diffError" i18n="rbf-diff.load-error">
+    Failed to load transaction diff.
+  </div>
+
+  <!-- RBF Structural Diff Content -->
+  <div class="rbf-diff-section" *ngIf="showDiff && !diffLoading && diffView && selectedOldTx && selectedNewTx">
+    <div class="row">
+      <!-- Left Column: Previous Transaction -->
+      <div class="col-sm">
+        <table class="table table-borderless table-striped previous-box">
+          <colgroup><col class="label-col"><col></colgroup>
+          <tbody>
+            <tr class="diff-head previous">
+              <td colspan="2">
+                <div class="diff-head-content">
+                  <span i18n="rbf-diff.previous-tx">Previous Transaction</span>
+                  <span class="txid-separator">:</span>
+                  <code>{{ selectedOldTx.txid.substring(0, 12) }}...{{ selectedOldTx.txid.substring(selectedOldTx.txid.length - 8) }}</code>
+                </div>
+              </td>
+            </tr>
+
+            <ng-container *ngTemplateOutlet="diffRows; context: { $implicit: 'previous', tx: selectedOldTx, diff: diffView }"></ng-container>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Right Column: Current Transaction -->
+      <div class="col-sm">
+        <table class="table table-borderless table-striped current-box">
+          <colgroup><col class="label-col"><col></colgroup>
+          <tbody>
+            <tr class="diff-head current">
+              <td colspan="2">
+                <div class="diff-head-content">
+                  <span i18n="rbf-diff.current-tx">Current Transaction</span>
+                  <span class="txid-separator">:</span>
+                  <code>{{ selectedNewTx.txid.substring(0, 12) }}...{{ selectedNewTx.txid.substring(selectedNewTx.txid.length - 8) }}</code>
+                </div>
+              </td>
+            </tr>
+
+            <ng-container *ngTemplateOutlet="diffRows; context: { $implicit: 'current', tx: selectedNewTx, diff: diffView }"></ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!--
+    One row set, rendered once per side so the two tables always line up.
+    The side's transaction comes in through the outlet context, and every label
+    is static so Angular extracts it for translation at build time.
+  -->
+  <ng-template #diffRows let-side let-tx="tx" let-diff="diff">
+    <tr *ngIf="diff.versionChanged">
+      <td i18n="transaction.version">Version</td>
+      <td>
+        {{ tx.version }}
+        <ng-container *ngIf="side === 'current'">
+          <ng-container *ngTemplateOutlet="changedDot"></ng-container>
+        </ng-container>
+      </td>
+    </tr>
+
+    <tr *ngIf="diff.locktimeChanged">
+      <td i18n="transaction.locktime">Locktime</td>
+      <td>
+        {{ tx.locktime }}
+        <ng-container *ngIf="side === 'current'">
+          <ng-container *ngTemplateOutlet="changedDot"></ng-container>
+        </ng-container>
+      </td>
+    </tr>
+
+    <tr *ngIf="diff.feeChanged">
+      <td i18n="transaction.fee|Transaction fee">Fee</td>
+      <td>
+        <app-amount [satoshis]="tx.fee" [noFiat]="true" [forceSats]="true"></app-amount>
+        <span *ngIf="side === 'current' && diff.feePercent !== null" class="difference"
+          [class.positive]="!diff.feeIncreased" [class.negative]="diff.feeIncreased">
+          {{ diff.feePercent > 0 ? '+' : '' }}{{ diff.feePercent | number: '1.0-1' }}%
+        </span>
+      </td>
+    </tr>
+
+    <tr *ngIf="diff.feeChanged || diff.weightChanged">
+      <td i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
+      <td>
+        <app-fee-rate [fee]="tx.fee" [weight]="tx.weight"></app-fee-rate>
+      </td>
+    </tr>
+
+    <tr *ngIf="diff.weightChanged">
+      <td>
+        <span *only-weight i18n="transaction.weight|Transaction Weight">Weight</span>
+        <span *only-vsize i18n="transaction.vsize|Transaction Virtual Size">Virtual size</span>
+      </td>
+      <td>
+        <span *only-weight [innerHTML]="'&lrm;' + (tx.weight | wuBytes: 2)"></span>
+        <span *only-vsize [innerHTML]="'&lrm;' + (tx.weight / 4 | vbytes: 2)"></span>
+        <span *ngIf="side === 'current' && diff.weightPercent !== null" class="difference"
+          [class.positive]="!diff.weightIncreased" [class.negative]="diff.weightIncreased">
+          {{ diff.weightPercent > 0 ? '+' : '' }}{{ diff.weightPercent | number: '1.0-1' }}%
+        </span>
+      </td>
+    </tr>
+
+    <tr *ngIf="diff.inputCountChanged">
+      <td i18n="rbf-diff.inputs-count">Total inputs</td>
+      <td>
+        {{ tx.vin.length }}
+        <ng-container *ngIf="side === 'current'">
+          <ng-container *ngTemplateOutlet="changedDot"></ng-container>
+        </ng-container>
+      </td>
+    </tr>
+
+    <tr *ngIf="diff.addedInputs > 0">
+      <td i18n="rbf-diff.inputs-added">Added inputs</td>
+      <td>
+        <ng-container *ngIf="side === 'current'; else notApplicable">{{ diff.addedInputs }}</ng-container>
+      </td>
+    </tr>
+
+    <tr *ngIf="diff.removedInputs > 0">
+      <td i18n="rbf-diff.inputs-removed">Removed inputs</td>
+      <td>
+        <ng-container *ngIf="side === 'previous'; else notApplicable">{{ diff.removedInputs }}</ng-container>
+      </td>
+    </tr>
+
+    <tr *ngIf="diff.outputCountChanged">
+      <td i18n="rbf-diff.outputs-count">Total outputs</td>
+      <td>
+        {{ tx.vout.length }}
+        <ng-container *ngIf="side === 'current'">
+          <ng-container *ngTemplateOutlet="changedDot"></ng-container>
+        </ng-container>
+      </td>
+    </tr>
+
+    <!--
+      The point of the whole feature: which output went where. A replaced
+      destination is styled as a warning; a value reduced by exactly the fee
+      bump is not flagged as a change at all.
+    -->
+    <tr *ngFor="let row of diff.outputRows" [class.address-changed]="row.addressChanged">
+      <td>
+        <span *ngIf="row.addressChanged" i18n="rbf-diff.output-address-changed">Output (address changed)</span>
+        <span *ngIf="!row.addressChanged && row.feeAdjusted" i18n="rbf-diff.output-fee-adjusted">Output (fee adjusted)</span>
+        <span *ngIf="!row.addressChanged && !row.feeAdjusted" i18n="transaction.output">Output</span>
+      </td>
+      <td>
+        <ng-container *ngIf="(side === 'previous' ? row.previous : row.current) as out; else notApplicable">
+          <!-- app-truncate only ellipsizes when its flex container is bounded, so
+               this stays block-level rather than inline -->
+          <span class="output-address" *ngIf="out.scriptpubkey_address; else scriptType">
+            <app-truncate [text]="out.scriptpubkey_address" [lastChars]="8"
+              [link]="['/address/' | relativeUrl, out.scriptpubkey_address]"></app-truncate>
+          </span>
+          <ng-template #scriptType>
+            <span class="output-script-type">{{ out.scriptpubkey_type | scriptpubkeyType }}</span>
+          </ng-template>
+          <span class="output-value">
+            <app-amount [satoshis]="out.value" [noFiat]="true"></app-amount>
+            <ng-container *ngIf="side === 'current' && row.addressChanged">
+              <ng-container *ngTemplateOutlet="changedDot"></ng-container>
+            </ng-container>
+          </span>
+        </ng-container>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template #changedDot>
+    <span class="changed-indicator" role="img" i18n-aria-label="rbf-diff.changed-value" aria-label="Changed value">&#9679;</span>
+  </ng-template>
+
+  <ng-template #notApplicable>
+    <span class="text-muted null-placeholder" i18n-aria-label="rbf-diff.not-applicable" aria-label="Not applicable">&mdash;</span>
+  </ng-template>
+
+
 
   <ng-template #nodeSpacer>
     <div class="node-spacer"></div>

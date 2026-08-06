@@ -3,26 +3,6 @@
   width: 100%;
   padding: 1em 0;
 
-  &::after, &::before {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 2em;
-    z-index: 2;
-  }
-
-  &::before {
-    left: 0;
-    background: linear-gradient(to right, var(--box-bg), var(--box-bg), transparent);
-  }
-
-  &::after {
-    right: 0;
-    background: linear-gradient(to left, var(--box-bg), var(--box-bg), transparent);
-  }
-
   .timeline-wrapper {
     position: relative;
     width: calc(100% - 2em);
@@ -30,9 +10,47 @@
     overflow-x: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
-  
+
     &::-webkit-scrollbar {
       display: none;
+    }
+
+    // scoped to the timeline so the gradients don't overlay the diff tables below
+    &::after, &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2em;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    &::before {
+      left: 0;
+      background: linear-gradient(to right, var(--box-bg), var(--box-bg), transparent);
+    }
+
+    &::after {
+      right: 0;
+      background: linear-gradient(to left, var(--box-bg), var(--box-bg), transparent);
+    }
+
+    // On a phone the wrapper is barely wider than a couple of nodes, so a 2em
+    // band of solid background reads as the line being cut rather than fading.
+    @media (max-width: 575.98px) {
+      &::before, &::after {
+        width: 1em;
+      }
+
+      &::before {
+        background: linear-gradient(to right, var(--box-bg), transparent);
+      }
+
+      &::after {
+        background: linear-gradient(to left, var(--box-bg), transparent);
+      }
     }
   }
 
@@ -94,6 +112,15 @@
 
   .node, .interval-spacer {
     position: relative;
+
+    &.diff-selectable {
+      cursor: pointer;
+
+      &:hover .track {
+        background: var(--info);
+      }
+    }
+
     .track {
       position: absolute;
       height: 10px;
@@ -195,6 +222,28 @@
           }
         }
       }
+
+      // the pair currently being diffed, matching the Previous / Current
+      // column accents in .rbf-diff-section
+      &.diff-old .shape-border,
+      &.diff-old.selected .shape-border,
+      &.diff-old.mined .shape-border {
+        background: var(--red);
+      }
+
+      &.diff-new .shape-border,
+      &.diff-new.selected .shape-border,
+      &.diff-new.mined .shape-border {
+        background: var(--green);
+      }
+
+      // first half of a two-click comparison, waiting for the other end
+      &.diff-pending .shape-border,
+      &.diff-pending.selected .shape-border,
+      &.diff-pending.mined .shape-border {
+        background: var(--tertiary);
+        outline: 2px dashed var(--fg);
+      }
     }
 
     .connector {
@@ -225,5 +274,149 @@
         }
       }
     }
+  }
+
+  .diff-hint {
+    width: calc(100% - 2em);
+    margin: 0.5em auto 0;
+    padding: 0 0.5em;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--transparent-fg);
+
+    code {
+      background: transparent;
+      padding: 0;
+      color: var(--link-color);
+    }
+  }
+
+  .diff-loading {
+    width: 100%;
+    padding: 1rem 0;
+  }
+}
+
+.rbf-diff-section {
+  width: calc(100% - 2em);
+  margin: 1rem auto 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-subtle);
+
+  // Bootstrap's .col-sm doesn't shrink below its content, and a full address is
+  // wide enough to push both columns past the container and wrap them onto
+  // separate lines. Bounding the cells keeps the two tables side by side.
+  .col-sm {
+    min-width: 0;
+  }
+
+  table {
+    margin-bottom: 0;
+    // fixed layout so a long address can never widen the table; the colgroup in
+    // the template sets the column split, since the colspan'd header row would
+    // otherwise be the one deciding it
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  col.label-col {
+    width: 38%;
+  }
+
+  // styles.scss applies `tr { white-space: nowrap }` to every table, which makes a
+  // long label like "Output (address changed)" spill out of its column and land on
+  // top of the address next to it. Labels wrap inside their own column instead.
+  tbody tr td:first-child {
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+
+  @media (max-width: 575.98px) {
+    // the tables stack below this width, so the label can afford to be wider
+    col.label-col {
+      width: 45%;
+    }
+  }
+
+  .previous-box {
+    border-top: 3px solid var(--red);
+  }
+
+  .current-box {
+    border-top: 3px solid var(--green);
+  }
+
+  .diff-head td {
+    font-weight: 600;
+    text-align: left;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .diff-head-content {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    white-space: nowrap;
+    overflow: hidden;
+
+    code {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--link-color);
+      background: transparent;
+      padding: 0;
+      opacity: 0.9;
+    }
+  }
+
+  td:last-child {
+    text-align: left;
+  }
+
+  .null-placeholder {
+    opacity: 0.5;
+  }
+
+  .changed-indicator {
+    margin-left: 0.5rem;
+    font-size: 0.6rem;
+    color: var(--green);
+  }
+
+  .difference.positive {
+    color: var(--green);
+  }
+
+  .difference.negative {
+    color: var(--red);
+  }
+
+  // a replaced destination is a warning, not a neutral delta. The label carries
+  // the colour so the address itself still reads as an ordinary link.
+  tr.address-changed td:first-child {
+    color: var(--red);
+  }
+
+  .address-changed .changed-indicator {
+    color: var(--red);
+  }
+
+  .output-address {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    font-size: 0.9rem;
+  }
+
+  .output-script-type {
+    font-size: 0.9rem;
+    color: var(--transparent-fg);
+  }
+
+  .output-value {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--transparent-fg);
   }
 }
