@@ -24,7 +24,7 @@ export interface RbfDiff {
   metrics: {
     feeDelta: number | null;      // null if unchanged
     weightDelta: number | null;   // null if unchanged
-    vsizeDelta: number | null;    // null if unchanged
+    // vsize is weight / 4, so it is covered by weightDelta and not tracked separately
   };
 }
 
@@ -140,10 +140,15 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
     }
   }
 
-  // Pass 3: match any still-unmatched outputs as best-effort (address changed)
+  // Pass 3: match any still-unmatched outputs as best-effort (address changed).
+  // Prefer a leftover of equal value — a pure destination swap keeps the amount —
+  // then one at the same index, before falling back to document order.
   for (const oldItem of oldOutputs) {
     if (oldItem.matched) { continue; }
-    const match = newOutputs.find((newItem) => !newItem.matched);
+    const match =
+      newOutputs.find((newItem) => !newItem.matched && newItem.out.value === oldItem.out.value) ??
+      newOutputs.find((newItem) => !newItem.matched && newItem.index === oldItem.index) ??
+      newOutputs.find((newItem) => !newItem.matched);
     if (!match) { continue; }
     oldItem.matched = true;
     match.matched = true;
@@ -165,7 +170,6 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
 
   // METRICS (only include if changed)
   const weightDelta = newTx.weight - oldTx.weight;
-  const vsizeDelta = newTx.size - oldTx.size;
 
   return {
     transaction: {
@@ -191,7 +195,6 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
     metrics: {
       feeDelta: feeDelta !== 0 ? feeDelta : null,
       weightDelta: weightDelta !== 0 ? weightDelta : null,
-      vsizeDelta: vsizeDelta !== 0 ? vsizeDelta : null,
     },
   };
 }

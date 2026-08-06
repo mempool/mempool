@@ -148,6 +148,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   hideFlow: boolean = this.stateService.hideFlow.value;
   overrideFlowPreference: boolean = null;
   flowEnabled: boolean;
+  showRbfDiff: boolean = false;
   isDetailsOpen: boolean = false;
   tooltipPosition: { x: number, y: number };
   isMobile: boolean;
