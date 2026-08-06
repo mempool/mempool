@@ -40,6 +40,7 @@ import CpfpRepository from '../repositories/CpfpRepository';
 import { parseDATUMTemplateCreator, parseDMNDTemplateCreator } from '../utils/bitcoin-script';
 import database from '../database';
 import { getBlockFirstSeenFromLogs, getOldestLogTimestampFromLogs, scanLogsForBlocksFirstSeen } from '../utils/file-read';
+import FlagValueRepository, { INDEXING_PRESETS } from '../repositories/FlagValueRepository';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -54,6 +55,7 @@ class Blocks {
   private oldestCoreLogTimestamp: number | undefined | null = undefined;
 
   private mainLoopTimeout: number = 120000;
+  private indexingFlagValues: boolean = false;
 
   constructor() { }
 
@@ -687,6 +689,125 @@ class Blocks {
       logger.err(`Blocks summaries indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
       throw e;
     }
+  }
+
+  /**
+   * [INDEXING] Index all blocks flag values for the goggles graph rendering
+   *
+   *  @asyncSafe
+   */
+  public async $generateFlagValuesDatabase(): Promise<void> {
+    if (this.indexingFlagValues) {
+      return;
+    }
+
+    if (Common.blocksSummariesIndexingEnabled() === false || Common.isLiquid()) {
+      return;
+    }
+
+    this.indexingFlagValues = true;
+
+    const tipOfSummaries = await BlocksSummariesRepository.$getTipIndexed();
+    if (!tipOfSummaries) {
+      this.indexingFlagValues = false;
+      return;
+    }
+
+    let newlyIndexedBuckets = 0;
+
+    for (const preset of INDEXING_PRESETS) {
+
+      let seedHeight = preset.retentionSpan > -1 ? tipOfSummaries - preset.retentionSpan : 0;
+      if (config.MEMPOOL.INDEXING_BLOCKS_AMOUNT > 0) {
+        seedHeight = Math.max(seedHeight, tipOfSummaries - config.MEMPOOL.INDEXING_BLOCKS_AMOUNT + 1);
+      }
+      const firstBucket = Math.floor((tipOfSummaries + 1) / preset.bucketSize) * preset.bucketSize - preset.bucketSize;
+      const lastBucket = Math.max(0, Math.floor(seedHeight / preset.bucketSize) * preset.bucketSize);
+
+      // Deletion of flag values out of retention span
+      const tipAndTailOfFlagValues = await FlagValueRepository.$getTipAndTailIndexedByBucketSize(preset.bucketSize);
+      if (tipAndTailOfFlagValues && lastBucket > tipAndTailOfFlagValues.tail) { // Drop buckets that fell out of block span
+        logger.debug(`Deleting all the flag values ${preset.name} below height #${lastBucket}`, logger.tags.goggles);
+        await FlagValueRepository.$deleteFlagValuesBelowHeight(lastBucket, preset.bucketSize);
+      }
+
+      if (firstBucket < lastBucket) {
+        continue; // no complete bucket in range
+      }
+
+      const indexedBuckets = await FlagValueRepository.$getIndexedStartHeights(preset.bucketSize, firstBucket, lastBucket);
+      const isBucketIndexed = {};
+      // We map the buckets that are already indexed to skip them
+      for (const startHeight of indexedBuckets) {
+        isBucketIndexed[startHeight] = true;
+      }
+
+      logger.debug(`Processing and indexing flag values from #${firstBucket} to #${lastBucket} ${preset.name}`, logger.tags.goggles);
+
+      let timer = Date.now() / 1000;
+      const startedAt = Date.now() / 1000;
+      let blocksComputedInTotal = 0;
+      let blocksComputedThisRun = 0;
+      const blocksToCompute = firstBucket + preset.bucketSize - lastBucket;
+      for (let bucketStart = firstBucket; bucketStart >= lastBucket; bucketStart -= preset.bucketSize) {
+        if (isBucketIndexed[bucketStart]) {
+          continue; // already indexed
+        }
+        try {
+          const blocks = await BlocksSummariesRepository.$getSummariesBetweenHeights(bucketStart + preset.bucketSize - 1, bucketStart - 1);
+
+          if (!blocks || blocks.length < preset.bucketSize) {
+            continue; // Incomplete bucket
+          }
+
+          // Flag values processing
+          const dataPerFlag: Record<string, Record<string, number>> = {};
+          let sumTimestamps = 0;
+          for (const block of blocks) {
+            const txData = JSON.parse(block.transactions).map((tx) => ({flags: tx.flags, vsize: tx.vsize}));
+            for (const data of txData) {
+              if (dataPerFlag[data.flags] === undefined || Object.keys(dataPerFlag[data.flags]).length === 0) {
+                dataPerFlag[data.flags] = {
+                  txCount: 0,
+                  vSizeTotal: 0
+                };
+              }
+              dataPerFlag[data.flags].txCount = dataPerFlag[data.flags].txCount + 1;
+              dataPerFlag[data.flags].vSizeTotal = dataPerFlag[data.flags].vSizeTotal + data.vsize;
+            }
+            sumTimestamps += block.timestamp;
+            blocksComputedInTotal++;
+            blocksComputedThisRun++;
+          }
+
+          const avgTimestamp = sumTimestamps / blocks.length;
+          await FlagValueRepository.$saveBatchFlagValues(preset.bucketSize, bucketStart, dataPerFlag, avgTimestamp);
+
+          // Logging
+          newlyIndexedBuckets++;
+          const elapsedSeconds = (Date.now() / 1000) - timer;
+          if (elapsedSeconds > 5) {
+            const runningFor = (Date.now() / 1000) - startedAt;
+            const blocksPerSecond = blocksComputedThisRun / elapsedSeconds;
+            const completion = (blocksComputedInTotal / blocksToCompute) * 100;
+            logger.debug(`Indexing flag values ${preset.name} | ${blocksComputedInTotal}/${blocksToCompute} (${completion.toFixed(2)}%) | ~${blocksPerSecond.toFixed(2)} blocks/sec | elapsed: ${runningFor.toFixed(2)} seconds`,logger.tags.goggles);
+            timer = Date.now() / 1000;
+            blocksComputedThisRun = 0;
+          }
+
+          await Common.sleep$(250); // Don't index flag values too fast
+        } catch (e) {
+          logger.err(`Failed to index flag values between #${bucketStart} and #${bucketStart + preset.bucketSize - 1}. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.goggles);
+        }
+      }
+      logger.debug(`Successfully indexed #${blocksComputedInTotal} blocks ${preset.name} in ${((Date.now() / 1000) - startedAt).toFixed(2)} seconds`, logger.tags.goggles);
+    }
+    if (newlyIndexedBuckets > 0) {
+      logger.notice(`Flag values indexing completed: indexed ${newlyIndexedBuckets} buckets`, logger.tags.goggles);
+    } else {
+      logger.debug(`Flag values indexing completed: indexed ${newlyIndexedBuckets} buckets`, logger.tags.goggles);
+    }
+    this.indexingFlagValues = false;
   }
 
   /** @asyncUnsafe */
@@ -1409,6 +1530,7 @@ class Blocks {
       await DifficultyAdjustmentsRepository.$deleteAdjustementsFromHeight(forkTail.height);
       await cpfpRepository.$deleteClustersFrom(forkTail.height);
       await AccelerationRepository.$deleteAccelerationsFrom(forkTail.height);
+      await FlagValueRepository.$deleteFlagValuesFromHeight(forkTail.height);
       chainTips.clearOrphanCacheAboveHeight(forkTail.height);
       this.updateTimerProgress(timer, `deleted stale block data`);
 
@@ -1769,7 +1891,7 @@ class Blocks {
     if (transactions?.length != null) {
       const { cpfpSummary } = await detectTemplateAlgorithm(height, transactions, [], true);
 
-      if (!stale) {
+      if (!stale && Common.cpfpIndexingEnabled() === true) {
         await this.$saveCpfp(hash, height, cpfpSummary);
       }
 
