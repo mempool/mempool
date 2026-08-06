@@ -701,11 +701,11 @@ class Blocks {
       return;
     }
 
-    this.indexingFlagValues = true;
-
     if (Common.blocksSummariesIndexingEnabled() === false || Common.isLiquid()) {
       return;
     }
+
+    this.indexingFlagValues = true;
 
     const tipOfSummaries = await BlocksSummariesRepository.$getTipIndexed();
     if (!tipOfSummaries) {
@@ -749,12 +749,12 @@ class Blocks {
       let blocksComputedInTotal = 0;
       let blocksComputedThisRun = 0;
       const blocksToCompute = firstBucket + preset.bucketSize - lastBucket;
-      for (let bucketStart = firstBucket; bucketStart > lastBucket; bucketStart -= preset.bucketSize) {
+      for (let bucketStart = firstBucket; bucketStart >= lastBucket; bucketStart -= preset.bucketSize) {
         if (isBucketIndexed[bucketStart]) {
           continue; // already indexed
         }
         try {
-          const blocks = await BlocksSummariesRepository.$getSummariesBetweenHeights(bucketStart - 1, bucketStart - preset.bucketSize - 1);
+          const blocks = await BlocksSummariesRepository.$getSummariesBetweenHeights(bucketStart + preset.bucketSize - 1, bucketStart - 1);
 
           if (!blocks || blocks.length < preset.bucketSize) {
             continue; // Incomplete bucket
@@ -797,7 +797,7 @@ class Blocks {
 
           await Common.sleep$(250); // Don't index flag values too fast
         } catch (e) {
-          logger.err(`Failed to index flag values between #${bucketStart - 1} and #${bucketStart - preset.bucketSize}. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.goggles);
+          logger.err(`Failed to index flag values between #${bucketStart} and #${bucketStart + preset.bucketSize - 1}. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.goggles);
         }
       }
       logger.debug(`Successfully indexed #${blocksComputedInTotal} blocks ${preset.name} in ${((Date.now() / 1000) - startedAt).toFixed(2)} seconds`, logger.tags.goggles);
