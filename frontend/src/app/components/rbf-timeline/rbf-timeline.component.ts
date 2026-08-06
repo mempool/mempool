@@ -4,7 +4,7 @@ import { RbfTree, RbfTransaction } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { ApiService } from '@app/services/api.service';
 import { forkJoin, of, Subject } from 'rxjs';
-import { catchError, takeUntil } from 'rxjs/operators';
+import { catchError, switchMap, takeUntil } from 'rxjs/operators';
 import { Transaction, Vout } from '@interfaces/electrs.interface';
 import { calculateRbfDiff } from '@app/shared/rbf-diff.utils';
 
@@ -91,6 +91,9 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
 
   private nodeIndex = new Map<string, RbfTree>();
   private destroy$ = new Subject<void>();
+  // Comparisons go through one stream so a slower earlier request can never land
+  // on top of a newer selection. A null request cancels whatever is in flight.
+  private diffRequest$ = new Subject<{ oldTxid: string, newTxid: string } | null>();
 
   constructor(
     private router: Router,
@@ -101,6 +104,27 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
     if (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he')) {
       this.dir = 'rtl';
     }
+    // subscribed here rather than in ngOnInit because ngOnChanges runs first and
+    // can already have queued a comparison
+    this.diffRequest$.pipe(
+      switchMap((request) => request ? forkJoin({
+        oldTx: this.apiService.getRbfCachedTx$(request.oldTxid).pipe(catchError(() => of(null))),
+        newTx: this.apiService.getRbfCachedTx$(request.newTxid).pipe(catchError(() => of(null))),
+      }) : of(null)),
+      takeUntil(this.destroy$),
+    ).subscribe((result) => {
+      if (!result) {
+        return; // cancelled by a newer selection
+      }
+      this.diffLoading = false;
+      if (!result.oldTx || !result.newTx) {
+        this.diffError = true;
+        return;
+      }
+      this.selectedOldTx = result.oldTx;
+      this.selectedNewTx = result.newTx;
+      this.diffView = this.buildDiffView(result.oldTx, result.newTx);
+    });
   }
 
   ngOnInit(): void {
@@ -375,16 +399,30 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
     this.pendingAnchorTxid = null;
     this.diffOldTxid = null;
     this.diffNewTxid = null;
-    // default to the transaction being viewed against what it replaced, falling
-    // back to the tip of the tree when nothing is selected (the replacements list)
+
     const current = (this.txid ? this.nodeIndex.get(this.txid) : null) ?? null;
-    const node = current?.replaces.length
-      ? current
-      : (current?.replacedBy ? this.nodeIndex.get(current.replacedBy.txid) : null)
-        ?? (this.hasReplacements ? this.replacements : null);
-    if (node?.replaces.length) {
-      this.diffOldTxid = node.replaces[0].tx.txid;
-      this.diffNewTxid = node.tx.txid;
+
+    // the viewed transaction is itself a replacement: diff it against what it replaced
+    if (current?.replaces.length) {
+      this.diffOldTxid = current.replaces[0].tx.txid;
+      this.diffNewTxid = current.tx.txid;
+      return;
+    }
+
+    // the viewed transaction was replaced: keep it as the old endpoint. Using the
+    // parent's first child instead would open the diff on a sibling whenever the
+    // replacement swallowed several transactions at once.
+    const parent = current?.replacedBy ? this.nodeIndex.get(current.replacedBy.txid) : null;
+    if (current && parent) {
+      this.diffOldTxid = current.tx.txid;
+      this.diffNewTxid = parent.tx.txid;
+      return;
+    }
+
+    // nothing selected (the replacements list): fall back to the tip of the tree
+    if (this.hasReplacements) {
+      this.diffOldTxid = this.replacements.replaces[0].tx.txid;
+      this.diffNewTxid = this.replacements.tx.txid;
     }
   }
 
@@ -393,7 +431,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
    * The first click anchors one end, the second picks the other — which is what
    * makes it possible to compare transactions that aren't next to each other.
    */
-  onNodeClick(event: MouseEvent, node: RbfTree): void {
+  onNodeClick(event: Event, node: RbfTree): void {
     if (!this.showDiff) {
       return;
     }
@@ -424,7 +462,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
    * Clicking the line joining two dots compares exactly those two — the quick
    * path for the common case of two consecutive replacements.
    */
-  onEdgeClick(event: MouseEvent, node: RbfTree | undefined): void {
+  onEdgeClick(event: Event, node: RbfTree | undefined): void {
     if (!this.showDiff || !node?.replacedBy) {
       return;
     }
@@ -437,6 +475,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private clearDiffResult(): void {
+    this.diffRequest$.next(null); // drop anything still in flight
     this.diffLoading = false;
     this.diffError = false;
     this.selectedOldTx = null;
@@ -448,37 +487,10 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
     if (!this.diffOldTxid || !this.diffNewTxid) {
       return;
     }
-    this.compareTxs(this.diffOldTxid, this.diffNewTxid);
-  }
-
-  /**
-   * Fetches both transactions from the RBF cache and computes their structural diff.
-   * @param oldTxid - the replaced transaction
-   * @param newTxid - the replacement
-   */
-  private compareTxs(oldTxid: string, newTxid: string): void {
     this.diffError = false;
     this.diffLoading = true;
     this.diffView = null;
-    forkJoin({
-      oldTx: this.apiService.getRbfCachedTx$(oldTxid).pipe(
-        catchError(() => of(null))
-      ),
-      newTx: this.apiService.getRbfCachedTx$(newTxid).pipe(
-        catchError(() => of(null))
-      ),
-    }).pipe(
-      takeUntil(this.destroy$)
-    ).subscribe((result) => {
-      this.diffLoading = false;
-      if (!result.oldTx || !result.newTx) {
-        this.diffError = true;
-        return;
-      }
-      this.selectedOldTx = result.oldTx;
-      this.selectedNewTx = result.newTx;
-      this.diffView = this.buildDiffView(result.oldTx, result.newTx);
-    });
+    this.diffRequest$.next({ oldTxid: this.diffOldTxid, newTxid: this.diffNewTxid });
   }
 
   /**

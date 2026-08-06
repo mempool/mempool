@@ -36,6 +36,22 @@
       right: 0;
       background: linear-gradient(to left, var(--box-bg), var(--box-bg), transparent);
     }
+
+    // On a phone the wrapper is barely wider than a couple of nodes, so a 2em
+    // band of solid background reads as the line being cut rather than fading.
+    @media (max-width: 575.98px) {
+      &::before, &::after {
+        width: 1em;
+      }
+
+      &::before {
+        background: linear-gradient(to right, var(--box-bg), transparent);
+      }
+
+      &::after {
+        background: linear-gradient(to left, var(--box-bg), transparent);
+      }
+    }
   }
 
   .fade-out {
@@ -261,9 +277,10 @@
   }
 
   .diff-hint {
-    width: 100%;
+    width: calc(100% - 2em);
+    margin: 0.5em auto 0;
+    padding: 0 0.5em;
     text-align: center;
-    margin: 0.5em 0 0;
     font-size: 0.85rem;
     color: var(--transparent-fg);
 
@@ -304,6 +321,21 @@
 
   col.label-col {
     width: 38%;
+  }
+
+  // styles.scss applies `tr { white-space: nowrap }` to every table, which makes a
+  // long label like "Output (address changed)" spill out of its column and land on
+  // top of the address next to it. Labels wrap inside their own column instead.
+  tbody tr td:first-child {
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+
+  @media (max-width: 575.98px) {
+    // the tables stack below this width, so the label can afford to be wider
+    col.label-col {
+      width: 45%;
+    }
   }
 
   .previous-box {
