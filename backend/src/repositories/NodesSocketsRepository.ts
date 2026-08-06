@@ -30,12 +30,13 @@ class NodesSocketsRepository {
       return 0;
     }
     try {
+      const placeholders = addresses.map(() => '?').join(',');
       const query = `
         DELETE FROM nodes_sockets
         WHERE public_key = ?
-        AND socket NOT IN (${addresses.map(id => `"${id}"`).join(',')})
+        AND socket NOT IN (${placeholders})
       `;
-      const [result] = await DB.query<ResultSetHeader>(query, [publicKey]);
+      const [result] = await DB.query<ResultSetHeader>(query, [publicKey, ...addresses]);
       return result.affectedRows;
     } catch (e) {
       logger.err(`Cannot delete unused sockets for ${publicKey} from db. Reason: ` + (e instanceof Error ? e.message : e));
