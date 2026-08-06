@@ -28,6 +28,45 @@ export interface RbfDiff {
   };
 }
 
+interface OutputEntry {
+  out: Vout;
+  index: number;
+  matched: boolean;
+  outputId: string;
+}
+
+/**
+ * A FIFO of candidate outputs sharing a key. Keeping the original order and a
+ * cursor means popping returns the first still-unmatched candidate, exactly as a
+ * linear scan would, without re-walking the whole list for every output.
+ */
+interface CandidateQueue {
+  entries: OutputEntry[];
+  cursor: number;
+}
+
+function indexBy(entries: OutputEntry[], keyOf: (entry: OutputEntry) => string): Map<string, CandidateQueue> {
+  const index = new Map<string, CandidateQueue>();
+  for (const entry of entries) {
+    const key = keyOf(entry);
+    const queue = index.get(key);
+    if (queue) {
+      queue.entries.push(entry);
+    } else {
+      index.set(key, { entries: [entry], cursor: 0 });
+    }
+  }
+  return index;
+}
+
+function takeUnmatched(queue: CandidateQueue | undefined): OutputEntry | undefined {
+  if (!queue) { return undefined; }
+  while (queue.cursor < queue.entries.length && queue.entries[queue.cursor].matched) {
+    queue.cursor++;
+  }
+  return queue.entries[queue.cursor];
+}
+
 // Compares structural differences between an original transaction and its RBF replacement
 
 export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDiff {
@@ -99,14 +138,17 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
     newAddressCounts.set(addr, (newAddressCounts.get(addr) ?? 0) + 1);
   }
 
+  // Candidate indexes, so each pass looks up its matches instead of rescanning
+  // every remaining output for every output it has to place
+  const byIdAndValue = indexBy(newOutputs, (entry) => `${entry.outputId}|${entry.out.value}`);
+  const byId = indexBy(newOutputs, (entry) => entry.outputId);
+  const byValue = indexBy(newOutputs, (entry) => `${entry.out.value}`);
+  const byIndex = indexBy(newOutputs, (entry) => `${entry.index}`);
+  let anyCursor = 0;
+
   // Pass 1: match truly unchanged outputs (same address AND value, regardless of position)
   for (const oldItem of oldOutputs) {
-    const match = newOutputs.find(
-      (newItem) =>
-        !newItem.matched &&
-        oldItem.outputId === newItem.outputId &&
-        oldItem.out.value === newItem.out.value
-    );
+    const match = takeUnmatched(byIdAndValue.get(`${oldItem.outputId}|${oldItem.out.value}`));
     if (match) {
       oldItem.matched = true;
       match.matched = true;
@@ -117,11 +159,7 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
   // Pass 2: match remaining outputs by address to detect fee-adjusted or value-modified outputs
   for (const oldItem of oldOutputs) {
     if (oldItem.matched) { continue; }
-    const match = newOutputs.find(
-      (newItem) =>
-        !newItem.matched &&
-        oldItem.outputId === newItem.outputId
-    );
+    const match = takeUnmatched(byId.get(oldItem.outputId));
     if (!match) { continue; }
     oldItem.matched = true;
     match.matched = true;
@@ -145,18 +183,24 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
   // then one at the same index, before falling back to document order.
   for (const oldItem of oldOutputs) {
     if (oldItem.matched) { continue; }
-    const match =
-      newOutputs.find((newItem) => !newItem.matched && newItem.out.value === oldItem.out.value) ??
-      newOutputs.find((newItem) => !newItem.matched && newItem.index === oldItem.index) ??
-      newOutputs.find((newItem) => !newItem.matched);
+    let match =
+      takeUnmatched(byValue.get(`${oldItem.out.value}`)) ??
+      takeUnmatched(byIndex.get(`${oldItem.index}`));
+    if (!match) {
+      while (anyCursor < newOutputs.length && newOutputs[anyCursor].matched) { anyCursor++; }
+      match = newOutputs[anyCursor];
+    }
     if (!match) { continue; }
     oldItem.matched = true;
     match.matched = true;
-    const addressChanged = oldItem.out.scriptpubkey_address !== match.out.scriptpubkey_address;
+    // Compare the stable output id, not the address: two different addressless
+    // scripts (OP_RETURN and friends) both have an undefined address, which would
+    // otherwise report a script replacement as an unchanged destination.
+    const addressChanged = oldItem.outputId !== match.outputId;
     const valueChanged = oldItem.out.value !== match.out.value;
-    const changeType: 'address' | 'value' | 'both' =
-      addressChanged && valueChanged ? 'both' :
-      addressChanged ? 'address' : 'value';
+    // Anything reaching this pass had no same-id candidate left, so the
+    // destination necessarily differs; only the value may or may not have moved.
+    const changeType: 'address' | 'both' = addressChanged && valueChanged ? 'both' : 'address';
     modifiedOutputs.push({ old: oldItem.out, new: match.out, index: oldItem.index, changeType });
   }
 

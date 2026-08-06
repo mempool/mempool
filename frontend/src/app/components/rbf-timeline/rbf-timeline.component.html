@@ -28,15 +28,22 @@
               <div class="track left" [class.fullrbf]="cell.replacement?.tx?.fullRbf"></div>
               <div class="track right" [class.fullrbf]="cell.fullRbf"></div>
               <!-- with the diff open the node picks the pair to compare, so the
-                   link is disabled rather than navigating away mid-comparison -->
+                   link is disabled rather than navigating away mid-comparison.
+                   Dropping routerLink also drops the href, so the role, tab stop
+                   and keyboard handlers are restored explicitly. -->
               <a class="shape-border"
                 [class.rbf]="cell.replacement.tx.rbf"
                 [routerLink]="showDiff ? null : ['/tx/' | relativeUrl, cell.replacement.tx.txid]"
+                [attr.role]="showDiff ? 'button' : null"
+                [attr.tabindex]="showDiff ? 0 : null"
                 (click)="onNodeClick($event, cell.replacement);"
+                (keydown.enter)="onNodeClick($event, cell.replacement);"
+                (keydown.space)="onNodeClick($event, cell.replacement);"
                 (pointerover)="onHover($event, cell.replacement);"
                 (pointerout)="onBlur($event);"
               >
                 <div class="shape"></div>
+                <span class="visually-hidden" *ngIf="showDiff" i18n="rbf-diff.select-transaction">Select this transaction to compare</span>
               </a>
               <span class="fee-rate"><app-fee-rate [fee]="cell.replacement.tx.fee" [weight]="cell.replacement.tx.vsize * 4" [unitStyle]="{ display: 'block', marginTop: '-0.5em'}"></app-fee-rate></span>
             </div>
@@ -49,11 +56,17 @@
             </ng-container>
           </ng-template>
           <ng-container *ngIf="i < timeline.length - 1">
-            <!-- the segment joining two dots: with the diff open it compares that pair directly -->
+            <!-- the segment joining two dots: with the diff open it compares that
+                 pair directly, so it needs to be reachable by keyboard too -->
             <div class="interval-spacer" *ngIf="cell.replacement?.interval != null; else intervalSpacer"
               [class.diff-selectable]="showDiff && cell.replacement?.replacedBy"
-              (click)="onEdgeClick($event, cell.replacement)">
+              [attr.role]="showDiff && cell.replacement?.replacedBy ? 'button' : null"
+              [attr.tabindex]="showDiff && cell.replacement?.replacedBy ? 0 : null"
+              (click)="onEdgeClick($event, cell.replacement)"
+              (keydown.enter)="onEdgeClick($event, cell.replacement)"
+              (keydown.space)="onEdgeClick($event, cell.replacement)">
               <div class="track" [class.fullrbf]="cell.fullRbf"></div>
+              <span class="visually-hidden" *ngIf="showDiff && cell.replacement?.replacedBy" i18n="rbf-diff.compare-pair">Compare these two transactions</span>
             </div>
           </ng-container>
         </ng-container>
