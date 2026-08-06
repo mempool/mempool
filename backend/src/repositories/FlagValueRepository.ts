@@ -37,11 +37,11 @@ class FlagValuesRepository {
    * Get the set of bucket that area already indexed between heights by bucketSize
    *
    * @asyncSafe */
-  public async $getIndexedStartHeights(bucketSize: number, fromHeight: number, toHeight: number): Promise<number[]> {
+  public async $getIndexedStartHeights(bucketSize: number, startHeight: number, latestHeight: number): Promise<number[]> {
     try {
       const [rows]: any[] = await DB.query(
-        `SELECT DISTINCT start_height FROM flag_values WHERE bucket_size = ? AND start_height >= ? AND start_height <= ?`,
-        [bucketSize.toString(), fromHeight, toHeight]
+        `SELECT DISTINCT start_height FROM flag_values WHERE bucket_size = ? AND start_height <= ? AND start_height >= ?`,
+        [bucketSize.toString(), startHeight, latestHeight]
       );
       return rows.map(row => row.start_height);
     } catch (e) {
@@ -108,6 +108,7 @@ class FlagValuesRepository {
     return [];
   }
 
+  /** @asyncSafe */
   public async $deleteFlagValuesBelowHeight(height: number, bucketSize: number):  Promise<void> {
     try {
       await DB.query(`DELETE FROM flag_values WHERE start_height < ? AND bucket_size = ?`, [height, bucketSize.toString()]);

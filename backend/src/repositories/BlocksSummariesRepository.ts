@@ -217,12 +217,13 @@ class BlocksSummariesRepository {
     return false;
   }
 
+  /** @asyncSafe */
   public async $getTipIndexed(): Promise<number | null> {
     if (!Common.blocksSummariesIndexingEnabled()) {
       return null;
     }
     try {
-      const [row]: any[] = await DB.query('SELECT MAX(height) as tip FROM blocks_summaries');
+      const [row]: any[] = await DB.query('SELECT MAX(height) as tip FROM blocks_summaries WHERE version >= 1');
 
       if (row !== null && row.length > 0) {
         return row[0].tip;
@@ -233,18 +234,19 @@ class BlocksSummariesRepository {
     return null;
   }
 
-  public async $getSummariesBetweenHeights(startHeight: number, lastHeight: number): Promise<{height: number, transactions: string, timestamp: number}[]> {
+  public async $getSummariesBetweenHeights(startHeight: number, latestHeight: number): Promise<{height: number, transactions: string, timestamp: number}[] | undefined> {
     try {
-      const [rows]: any[] = await DB.query(`SELECT bs.height, bs.transactions, UNIX_TIMESTAMP(b.blockTimestamp) as timestamp FROM blocks_summaries bs JOIN blocks b ON bs.id = b.hash WHERE bs.height > ? AND bs.height <= ? AND b.stale = 0 AND bs.version >= 1 ORDER BY height DESC`, [startHeight, lastHeight]);
+      const [rows]: any[] = await DB.query(`SELECT bs.height, bs.transactions, UNIX_TIMESTAMP(b.blockTimestamp) as timestamp FROM blocks_summaries bs JOIN blocks b ON bs.id = b.hash WHERE bs.height <= ? AND bs.height > ? AND b.stale = 0 AND bs.version >= 1 ORDER BY height DESC`, [startHeight, latestHeight]);
 
       if (rows !== null && rows.length > 0) {
         return rows;
+      } else {
+        throw new Error(`No more block summaries where found between #${startHeight} and #${latestHeight}`);
       }
     } catch (e) {
-      logger.err(`Cannot get blocks between ${lastHeight} and ${startHeight}. Reason: ` + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot get blocks between ${startHeight} and ${latestHeight}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
     }
-
-    return [];
   }
 }
 
