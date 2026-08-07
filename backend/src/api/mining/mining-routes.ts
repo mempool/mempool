@@ -29,6 +29,7 @@ class MiningRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fees', this.$getBlockFeesTimespan)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/rewards/:interval', this.$getHistoricalBlockRewards)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/fee-rates/:interval', this.$getHistoricalBlockFeeRates)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/min-fee-rate/:interval', this.$getMinFeeRates)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/sizes-weights/:interval', this.$getHistoricalBlockSizeAndWeight)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/difficulty-adjustments/:interval', this.$getDifficultyAdjustments)
       .get(config.MEMPOOL.API_URL_PREFIX + 'mining/blocks/predictions/:interval', this.$getHistoricalBlocksHealth)
@@ -265,6 +266,29 @@ class MiningRoutes {
       res.json(blockFeeRates);
     } catch (e) {
       handleError(req, res, 500, 'Failed to get historical block fee rates');
+    }
+  }
+
+  private async $getMinFeeRates(req: Request, res: Response) {
+    try {
+      const minFeeRates = await mining.$getMinFeeRates(req.params.interval);
+      // Deliberately the unfiltered count, not the selected interval's: this header
+      // only feeds the frontend's period-button visibility guards (stats.dayCount >=
+      // N), which must see the full history to decide whether 3M/6M/1Y etc. exist,
+      // regardless of which period is currently selected. The CDF's threshold
+      // percentage does NOT read this header — it uses data.length, which is already
+      // period-local by construction. Scoping this to the interval would break the
+      // period selector: picking 1M would hide 3M/6M until a reload. Matches the
+      // convention of every other route in this file ($getPools, $getPoolsHistoricalHashrate,
+      // etc.), which all report the unfiltered count for the same reason.
+      const dayCount = await BlocksRepository.$getMinFeeRateDayCount();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.header('X-total-count', dayCount.toString());
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+      res.json(minFeeRates);
+    } catch (e) {
+      handleError(req, res, 500, 'Failed to get minimum daily fee rates');
     }
   }
 

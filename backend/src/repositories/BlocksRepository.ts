@@ -1,5 +1,5 @@
 import bitcoinApi, { bitcoinCoreApi } from '../api/bitcoin/bitcoin-api-factory';
-import { BlockExtended, BlockExtension, BlockPrice, EffectiveFeeStats } from '../mempool.interfaces';
+import { BlockExtended, BlockExtension, BlockPrice, EffectiveFeeStats, MempoolTransactionExtended } from '../mempool.interfaces';
 import DB from '../database';
 import logger from '../logger';
 import { Common } from '../api/common';
@@ -13,6 +13,17 @@ import config from '../config';
 import chainTips from '../api/chain-tips';
 import blocks from '../api/blocks';
 import BlocksAuditsRepository from './BlocksAuditsRepository';
+import AccelerationRepository from './AccelerationRepository';
+import {
+  computeMinFeeRate,
+  MinFeeRateDay,
+  MinFeeRateInputSnapshot,
+  MIN_FEE_RATE_ACCELERATION_FINGERPRINT_SQL,
+  MIN_FEE_RATE_START_DATE,
+  MIN_FEE_RATE_VERSION,
+} from '../api/mining/min-fee-rate';
+import { OutOfBandCandidate } from '../api/prioritization';
+import { makeBlockTemplate } from '../api/mini-miner';
 import transactionUtils from '../api/transaction-utils';
 import { parseDATUMTemplateCreator, parseDMNDTemplateCreator } from '../utils/bitcoin-script';
 import poolsUpdater from '../tasks/pools-updater';
@@ -1425,6 +1436,300 @@ class BlocksRepository {
       throw e;
     }
     return blocksMigrated;
+  }
+
+  /**
+   * Blocks whose persisted metric is older than the current algorithm. No dependency
+   * on blocks_summaries: the backfill fetches the full block itself and runs
+   * makeBlockTemplate directly, so it covers every block regardless of which CPFP
+   * producer originally indexed it.
+   */
+  public async $getBlocksNeedingMinFeeRate(limit: number): Promise<{ height: number, hash: string }[]> {
+    try {
+      const [blocks]: any[] = await DB.query(`
+        SELECT height, hash
+        FROM blocks
+        WHERE min_fee_rate_version < ${MIN_FEE_RATE_VERSION}
+          AND stale = 0
+          AND CONVERT_TZ(blockTimestamp, @@session.time_zone, '+00:00') >= ?
+        ORDER BY height DESC
+        LIMIT ?
+      `, [MIN_FEE_RATE_START_DATE, limit]);
+      return blocks;
+    } catch (e) {
+      logger.err(`Cannot get blocks needing min_fee_rate. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Blocks whose acceleration set no longer matches the input snapshot stored with the
+   * current result (a late-arriving accelerated txid for an already-computed block).
+   * The indexed block-side predicate keeps this pull sweep bounded to current,
+   * canonical results.
+   */
+  public async $getBlocksWithChangedMinFeeRateInputs(limit: number): Promise<{ height: number, hash: string }[]> {
+    try {
+      const [blocks]: any[] = await DB.query(`
+        SELECT blocks.height, blocks.hash
+        FROM blocks
+        LEFT JOIN accelerations ON accelerations.height = blocks.height
+        WHERE blocks.min_fee_rate_version = ${MIN_FEE_RATE_VERSION}
+          AND blocks.stale = 0
+          AND CONVERT_TZ(blocks.blockTimestamp, @@session.time_zone, '+00:00') >= ?
+        GROUP BY
+          blocks.height,
+          blocks.hash,
+          blocks.min_fee_rate_acceleration_count,
+          blocks.min_fee_rate_acceleration_fingerprint,
+          blocks.min_fee_rate_computed_at
+        HAVING
+          blocks.min_fee_rate_acceleration_count <> COUNT(accelerations.txid)
+          OR blocks.min_fee_rate_acceleration_fingerprint <>
+            ${MIN_FEE_RATE_ACCELERATION_FINGERPRINT_SQL}
+        ORDER BY blocks.min_fee_rate_computed_at ASC, blocks.height DESC
+        LIMIT ?
+      `, [MIN_FEE_RATE_START_DATE, limit]);
+      return blocks;
+    } catch (e) {
+      logger.err(`Cannot get blocks with changed min_fee_rate inputs. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /** Persist a result and the exact input snapshot used to compute it. */
+  public async $updateMinFeeRate(
+    height: number,
+    hash: string,
+    rate: number | null,
+    snapshot: MinFeeRateInputSnapshot
+  ): Promise<void> {
+    try {
+      await DB.query(
+        `UPDATE blocks SET
+          min_fee_rate = ?,
+          min_fee_rate_version = ?,
+          min_fee_rate_acceleration_count = ?,
+          min_fee_rate_acceleration_fingerprint = ?,
+          min_fee_rate_computed_at = CURRENT_TIMESTAMP
+        WHERE height = ? AND hash = ?`,
+        [
+          rate,
+          MIN_FEE_RATE_VERSION,
+          snapshot.accelerationCount,
+          snapshot.accelerationFingerprint,
+          height,
+          hash,
+        ]
+      );
+    } catch (e) {
+      logger.err(`Cannot update min_fee_rate for block ${height} (${hash}). Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Minimum fee-merit effective fee rate per UTC calendar day (issue #6639).
+   * Unlike the rolling DIV-bucket mining charts, this buckets on the fixed UTC day so
+   * the "minimum daily fee rate" is stable regardless of the selected interval.
+   * The current UTC day is excluded because its partial MIN is biased upward.
+   * @asyncSafe
+   */
+  public async $getMinFeeRatesByDay(interval: string | null): Promise<MinFeeRateDay[]> {
+    try {
+      let query = `
+        WITH eligible AS (
+          SELECT
+            height,
+            min_fee_rate,
+            DATE(CONVERT_TZ(blockTimestamp, @@session.time_zone, '+00:00')) AS utcDay
+          FROM blocks
+          WHERE stale = 0
+            AND min_fee_rate_version = ${MIN_FEE_RATE_VERSION}
+            AND min_fee_rate IS NOT NULL
+            AND CONVERT_TZ(blockTimestamp, @@session.time_zone, '+00:00') >= ?
+            AND CONVERT_TZ(blockTimestamp, @@session.time_zone, '+00:00') < UTC_DATE()`;
+
+      if (interval !== null) {
+        query += `
+            AND CONVERT_TZ(blockTimestamp, @@session.time_zone, '+00:00')
+              >= DATE_SUB(UTC_DATE(), INTERVAL ${interval})`;
+      }
+
+      query += `
+        ),
+        ranked AS (
+          SELECT
+            height,
+            min_fee_rate,
+            utcDay,
+            ROW_NUMBER() OVER (
+              PARTITION BY utcDay
+              ORDER BY min_fee_rate ASC, height ASC
+            ) AS dailyRank,
+            COUNT(*) OVER (PARTITION BY utcDay) AS usableBlockCount
+          FROM eligible
+        )
+        SELECT
+          CAST(min_fee_rate AS DOUBLE) AS minRate,
+          height AS minHeight,
+          TIMESTAMPDIFF(SECOND, '1970-01-01 00:00:00', utcDay) AS timestamp,
+          usableBlockCount
+        FROM ranked
+        WHERE dailyRank = 1
+        ORDER BY utcDay`;
+
+      const [rows]: any = await DB.query(query, [MIN_FEE_RATE_START_DATE]);
+      return rows;
+    } catch (e) {
+      logger.err(`Cannot generate min fee rates by day. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Count complete UTC days that have at least one usable metric value. This is the
+   * same unit used by the graph's timespan selector.
+   */
+  public async $getMinFeeRateDayCount(): Promise<number> {
+    try {
+      const [rows]: any[] = await DB.query(`
+        SELECT COUNT(DISTINCT DATE(CONVERT_TZ(blockTimestamp, @@session.time_zone, '+00:00'))) AS count
+        FROM blocks
+        WHERE stale = 0
+          AND min_fee_rate_version = ${MIN_FEE_RATE_VERSION}
+          AND min_fee_rate IS NOT NULL
+          AND CONVERT_TZ(blockTimestamp, @@session.time_zone, '+00:00') >= ?
+          AND CONVERT_TZ(blockTimestamp, @@session.time_zone, '+00:00') < UTC_DATE()
+      `, [MIN_FEE_RATE_START_DATE]);
+      return rows[0]?.count || 0;
+    } catch (e) {
+      logger.err(`Cannot count minimum fee rate days. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Backfill blocks.min_fee_rate by fetching each block's full transactions (with
+   * `vin`, unlike blocks_summaries) and running makeBlockTemplate directly, the same
+   * criterion the live path derives from calculateGoodBlockCpfp's pass and the exact
+   * one calculateBoostRate uses to price accelerator boosts. This makes the metric
+   * independent of which CPFP producer originally indexed a block, eliminating the
+   * Fast-vs-Good divergence (a real "different value depending on when it was
+   * processed" bug, measured and confirmed fixed: see the acceleration-parity
+   * measurement below for the one input this does NOT unify).
+   *
+   * accelerations is deliberately passed as [] to makeBlockTemplate here, while the
+   * live path (blocks.ts $saveBlockData) passes calculateGoodBlockCpfp's real
+   * poolAccelerations. This is a known, measured asymmetry, not an oversight:
+   *
+   * - accelerations=[] is the configuration RESEARCH-6639.md validated against the
+   *   reference figures (6% of days <=0.1 sat/vB, p50 0.15, max 0.63). Passing real
+   *   max_bid values here would ship a configuration never checked against them.
+   * - Aligning the live path to [] instead would mean it can no longer reuse the
+   *   calculateGoodBlockCpfp pass already computed for CPFP, giving up the measured
+   *   0.5% marginal cost and putting a ~76ms template rebuild on block arrival.
+   *
+   * Measured impact (2,394 comparisons: 800 real blocks x 3 synthetic acceleration
+   * densities, real accelerations vs [] into makeBlockTemplate, same helper applied to
+   * both): the excluded set differs in 98% of blocks and the per-block minimum in ~6%,
+   * with a statistically significant upward bias when real accelerations are present
+   * (62.5% of differing cases higher, sign-test p=0.003) — a low-rate transaction
+   * absorbed into a boosted cluster inherits its higher effective rate. Aggregated to
+   * the published daily minimum (what actually ships), only 1.8% of sampled days
+   * differ, by under 0.004 sat/vB — but that figure comes from a sparse per-day sample
+   * (~3 of a day's ~144 blocks) and likely understates the true rate at full coverage.
+   * No sampled block landed at or below the 0.1 sat/vB reference threshold (minimum
+   * observed: 0.103), so whether a real block ever crosses it differently between the
+   * two paths remains untested by this measurement, not disproven.
+   *
+   * The standard this asymmetry has to clear is narrower than the one Fast-vs-Good
+   * failed: not "does not diverge", but "does not diverge on the published metric".
+   * Real accelerations are typically absent on both paths in production (the
+   * acceleration service is opt-in), so most blocks see [] on both sides regardless.
+   *
+   * Each run processes at most one algorithm-version batch and one smaller
+   * low-priority input-change sweep; neither queue is drained in one invocation. A
+   * single block's RPC/compute failure is logged and skipped rather than aborting the
+   * rest of the batch, since this path now depends on Core RPC per block.
+   * @asyncSafe
+   */
+  public async $backfillMinFeeRate(): Promise<number> {
+    const batchSize = 1000;
+    const sweepBatchSize = 100;
+    let blocksProcessed = 0;
+    try {
+      let timer = Date.now() / 1000;
+      const startedAt = Date.now() / 1000;
+
+      const processBatch = async (batch: { height: number, hash: string }[]): Promise<void> => {
+        for (const row of batch) {
+          try {
+            let transactions: MempoolTransactionExtended[] | undefined;
+            if (config.MEMPOOL.BACKEND === 'esplora') {
+              transactions = (await bitcoinApi.$getTxsForBlock(row.hash, true)).map(tx => transactionUtils.extendMempoolTransaction(tx));
+            }
+            if (!transactions) {
+              const block = await bitcoinClient.getBlock(row.hash, 2);
+              transactions = block.tx.map(tx => {
+                tx.fee *= 100_000_000;
+                return tx;
+              });
+            }
+            if (!transactions?.length) {
+              throw new Error(`missing transaction data`);
+            }
+
+            const accelerationState = await AccelerationRepository.$getMinFeeRateAccelerationStateAtHeight(row.height);
+            const acceleratedTxids = new Set(accelerationState.txids);
+
+            const template = makeBlockTemplate(transactions, [], 1, Infinity, Infinity);
+            const templateMap = new Map(template.map(tx => [tx.txid, tx]));
+            const candidates: OutOfBandCandidate[] = transactions.map(tx => {
+              const templateTx = templateMap.get(tx.txid);
+              return {
+                txid: tx.txid,
+                effectiveFeePerVsize: templateTx?.effectiveFeePerVsize ?? 0,
+                cluster: templateTx?.cluster || [tx.txid],
+              };
+            });
+
+            const rate = computeMinFeeRate(candidates, acceleratedTxids);
+
+            await this.$updateMinFeeRate(row.height, row.hash, rate, {
+              accelerationCount: accelerationState.count,
+              accelerationFingerprint: accelerationState.fingerprint,
+            });
+
+            blocksProcessed++;
+          } catch (e) {
+            logger.err(`Cannot backfill min_fee_rate for block ${row.height} (${row.hash}), skipping. Reason: ` + (e instanceof Error ? e.message : e));
+          }
+
+          const elapsedSeconds = (Date.now() / 1000) - timer;
+          if (elapsedSeconds > 5) {
+            const runningFor = (Date.now() / 1000) - startedAt;
+            const blockPerSeconds = blocksProcessed / elapsedSeconds;
+            logger.debug(`Backfilling min_fee_rate | ~${blockPerSeconds.toFixed(2)} blocks/sec | height: ${row.height} | total: ${blocksProcessed} | elapsed: ${runningFor.toFixed(2)} seconds`);
+            timer = Date.now() / 1000;
+          }
+        }
+      };
+
+      const versionBatch = await this.$getBlocksNeedingMinFeeRate(batchSize);
+      await processBatch(versionBatch);
+
+      const changedInputsBatch = await this.$getBlocksWithChangedMinFeeRateInputs(sweepBatchSize);
+      await processBatch(changedInputsBatch);
+
+      if (blocksProcessed > 0) {
+        logger.notice(`Backfilling min_fee_rate completed: processed ${blocksProcessed} blocks`);
+      }
+    } catch (e) {
+      logger.err(`Backfilling min_fee_rate failed. Trying again later. Reason: ${(e instanceof Error ? e.message : e)}`);
+      throw e;
+    }
+    return blocksProcessed;
   }
 }
 

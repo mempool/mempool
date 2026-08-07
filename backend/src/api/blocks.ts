@@ -34,6 +34,7 @@ import statistics from './statistics/statistics';
 import { calcBitsDifference } from './difficulty-adjustment';
 import AccelerationRepository from '../repositories/AccelerationRepository';
 import { calculateGoodBlockCpfp } from './cpfp';
+import { buildOutOfBandCandidates, computeMinFeeRate, MIN_SUMMARY_VERSION } from './mining/min-fee-rate';
 import blockProcessor, { BlockProcessingResult, detectTemplateAlgorithm, saveCpfpDataToCpfpSummary } from './block-processor';
 import mempool from './mempool';
 import CpfpRepository from '../repositories/CpfpRepository';
@@ -620,6 +621,36 @@ class Blocks {
       });
       this.updateTimerProgress(timer, `saved audit results for ${this.currentBlockHeight}`);
     }
+
+    // Live min_fee_rate: reuse the CPFP pass already computed above instead of running
+    // a second makeBlockTemplate. Only version >= MIN_SUMMARY_VERSION (calculateGood /
+    // calculateClusterMempool) carries a CPFP-adjusted rate and per-tx cluster data;
+    // a Fast-indexed (version 1) block is left for the backfill sweep, which runs
+    // makeBlockTemplate directly and so covers it regardless of version.
+    //
+    // cpfpSummary.transactions here carries rates computed with real poolAccelerations
+    // fed into makeBlockTemplate (calculateGoodBlockCpfp's own call, upstream of this
+    // point), while BlocksRepository.$backfillMinFeeRate deliberately uses []. This is
+    // a known, measured asymmetry: see the doc comment on $backfillMinFeeRate for the
+    // measurement and why it's accepted rather than unified.
+    if (cpfpSummary.version >= MIN_SUMMARY_VERSION) {
+      try {
+        const accelerationState = await AccelerationRepository.$getMinFeeRateAccelerationStateAtHeight(blockExtended.height);
+        const candidates = buildOutOfBandCandidates(cpfpSummary.transactions);
+        const rate = computeMinFeeRate(candidates, new Set(accelerationState.txids));
+        await blocksRepository.$updateMinFeeRate(blockExtended.height, blockExtended.id, rate, {
+          accelerationCount: accelerationState.count,
+          accelerationFingerprint: accelerationState.fingerprint,
+        });
+      } catch (e) {
+        logger.debug(`failed to compute live min_fee_rate for ${blockExtended.height}: ` + (e instanceof Error ? e.message : e));
+      }
+    }
+
+    // The backfill sweep independently covers Fast-indexed blocks, gaps, and
+    // algorithm-version upgrades; scheduling it here keeps it reacting to new blocks
+    // rather than waiting for a sequential indexing pass.
+    indexer.scheduleSingleTask('minFeeRate', 10000);
   }
 
   /**

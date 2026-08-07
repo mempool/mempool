@@ -9,6 +9,8 @@ import { BlockFeesSubsidyGraphComponent } from '@components/block-fees-subsidy-g
 import { PriceChartComponent } from '@components/price-chart/price-chart.component';
 import { BlockRewardsGraphComponent } from '@components/block-rewards-graph/block-rewards-graph.component';
 import { BlockFeeRatesGraphComponent } from '@components/block-fee-rates-graph/block-fee-rates-graph.component';
+import { MinFeeRateGraphComponent } from '@components/min-fee-rate-graph/min-fee-rate-graph.component';
+import { MinFeeRateCdfGraphComponent } from '@components/min-fee-rate-cdf-graph/min-fee-rate-cdf-graph.component';
 import { BlockSizesWeightsGraphComponent } from '@components/block-sizes-weights-graph/block-sizes-weights-graph.component';
 import { FeeDistributionGraphComponent } from '@components/fee-distribution-graph/fee-distribution-graph.component';
 import { IncomingTransactionsGraphComponent } from '@components/incoming-transactions-graph/incoming-transactions-graph.component';
@@ -70,6 +72,8 @@ import { CommonModule } from '@angular/common';
     PriceChartComponent,
     BlockRewardsGraphComponent,
     BlockFeeRatesGraphComponent,
+    MinFeeRateGraphComponent,
+    MinFeeRateCdfGraphComponent,
     BlockSizesWeightsGraphComponent,
     FeeDistributionGraphComponent,
     IncomingTransactionsGraphComponent,
