@@ -25,7 +25,7 @@ import { download, formatterXAxis, formatterXAxisLabel } from '@app/shared/graph
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MempoolGraphComponent implements OnInit, OnChanges {
-  @Input() data: any[];
+  @Input() data: OptimizedMempoolStats[];
   @Input() filterSize = 100000;
   @Input() limitFilterFee = 1;
   @Input() hideCount: boolean = true;
@@ -37,6 +37,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   @Input() showZoom = true;
   @Input() windowPreferenceOverride: string;
   @Input() isLoading: boolean;
+  @Input() error: any;
 
   mempoolVsizeFeesData: any;
   mempoolVsizeFeesOptions: EChartsOption;
@@ -72,7 +73,11 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes) {
-    if (!this.data) {
+    if (this.isLoading) {
+      return;
+    }
+    if (!this.data || (this.data && this.data.length === 0) || this.error) {
+      this.mountMessageOnChart();
       return;
     }
     this.isWidget = this.template === 'widget';
@@ -452,6 +457,25 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           show: false,
         }
       } : null],
+    };
+  }
+
+  mountMessageOnChart() {
+    let errorMessage = $localize`:error.general-loading-data:Error loading data.`;
+    if (!this.error && this.data && this.data.length === 0) { // Empty array
+      errorMessage = $localize`No data to display yet. Try again later.`;
+    }
+
+    this.mempoolVsizeFeesOptions = {
+      title: {
+        textStyle: {
+          color: 'grey',
+          fontSize: 15
+        },
+        text: errorMessage,
+        left: 'center',
+        top: 'center',
+      },
     };
   }
 

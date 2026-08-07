@@ -1,6 +1,6 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { combineLatest, EMPTY, fromEvent, interval, merge, Observable, of, Subject, Subscription, timer } from 'rxjs';
-import { catchError, delayWhen, distinctUntilChanged, filter, map, scan, share, shareReplay, startWith, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
+import { catchError, delayWhen, distinctUntilChanged, filter, map, retry, scan, share, shareReplay, startWith, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import { AuditStatus, BlockExtended, CurrentPegs, FederationAddress, FederationUtxo, OptimizedMempoolStats, RecentPeg } from '@interfaces/node-api.interface';
 import { MempoolInfo, ReplacementInfo } from '@interfaces/websocket.interface';
 import { ApiService } from '@app/services/api.service';
@@ -44,7 +44,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   replacements$: Observable<ReplacementInfo[]>;
   latestBlockHeight: number;
   mempoolTransactionsWeightPerSecondData: any;
-  mempoolStats$: Observable<MempoolStatsData>;
+  mempoolStats: MempoolStatsData;
+  mempoolStatsError: any;
+  isMempoolStatsLoading = true;
   transactionsWeightPerSecondOptions: any;
   isLoadingWebSocket$: Observable<boolean>;
   liquidPegsMonth$: Observable<any>;
@@ -59,6 +61,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   emergencySpentUtxosStats$: Observable<any>;
   fullHistory$: Observable<any>;
   isLoad: boolean = true;
+  mempoolStatsSubscription: Subscription;
   filterSubscription: Subscription;
   mempoolInfoSubscription: Subscription;
   currencySubscription: Subscription;
@@ -90,6 +93,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     private websocketService: WebsocketService,
     private seoService: SeoService,
     @Inject(PLATFORM_ID) private platformId: object,
+    private cd: ChangeDetectorRef,
   ) {
     this.webGlEnabled = this.stateService.isBrowser && detectWebGL();
   }
@@ -99,6 +103,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
+    this.mempoolStatsSubscription.unsubscribe();
     this.filterSubscription.unsubscribe();
     this.mempoolInfoSubscription.unsubscribe();
     this.currencySubscription.unsubscribe();
@@ -213,13 +218,19 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.replacements$ = this.stateService.rbfLatestSummary$;
 
-    this.mempoolStats$ = this.stateService.connectionState$
+    this.mempoolStatsSubscription = this.stateService.connectionState$
       .pipe(
         filter((state) => state === 2),
+        tap(() => {
+          this.isMempoolStatsLoading = true;
+          this.mempoolStatsError = null;
+        }),
         switchMap(() => this.apiService.list2HStatistics$().pipe(
-          catchError((e) => {
+          retry({ count: 3, delay: 1000 }),
+          catchError((err) => {
+            this.mempoolStatsError = err;
             return of(null);
-          })
+          }),
         )),
         switchMap((mempoolStats) => {
           return merge(
@@ -228,6 +239,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
                 scan((acc, stats) => {
                   const now = Date.now() / 1000;
                   const start = now - (2 * 60 * 60);
+                  this.mempoolStatsError = null;
                   acc.unshift(stats);
                   acc = acc.filter(p => p.added >= start);
                   return acc;
@@ -246,8 +258,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             return null;
           }
         }),
-        shareReplay(1),
-      );
+      ).subscribe((mempoolStats) => {
+        this.isMempoolStatsLoading = false;
+        this.mempoolStats = mempoolStats;
+        this.cd.markForCheck();
+      });
 
     if (this.stateService.network === 'liquid') {
       this.auditStatus$ = this.stateService.blocks$.pipe(
