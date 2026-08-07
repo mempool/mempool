@@ -211,6 +211,7 @@ class HashratesRepository {
       // Re-run the hashrate indexing to fill up missing data
       mining.lastHashrateIndexingDate = null;
       mining.lastWeeklyHashrateIndexingDate = null;
+      mining.invalidatePoolsHistoricalHashrateCache();
     } catch (e) {
       logger.err('Cannot delete latest hashrates data points. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
     }
@@ -227,6 +228,7 @@ class HashratesRepository {
       // Re-run the hashrate indexing to fill up missing data
       mining.lastHashrateIndexingDate = null;
       mining.lastWeeklyHashrateIndexingDate = null;
+      mining.invalidatePoolsHistoricalHashrateCache();
     } catch (e) {
       logger.err('Cannot delete latest hashrates data points. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
     }

@@ -1,6 +1,6 @@
 import { BlockPrice, PoolInfo, PoolStats, RewardStats } from '../../mempool.interfaces';
 import BlocksRepository from '../../repositories/BlocksRepository';
-import PoolsRepository from '../../repositories/PoolsRepository';
+import PoolsRepository, { POOLS_STATS_INTERVALS } from '../../repositories/PoolsRepository';
 import HashratesRepository from '../../repositories/HashratesRepository';
 import bitcoinClient from '../bitcoin/bitcoin-client';
 import logger from '../../logger';
@@ -22,6 +22,14 @@ interface DifficultyBlock {
   difficulty: number,
 }
 
+interface PoolsStats {
+  pools: PoolStats[],
+  blockCount: number,
+  lastEstimatedHashrate: number,
+  lastEstimatedHashrate3d: number,
+  lastEstimatedHashrate1w: number,
+}
+
 class Mining {
   private blocksPriceIndexingRunning = false;
   public lastHashrateIndexingDate: number | null = null;
@@ -29,6 +37,15 @@ class Mining {
 
   public reindexHashrateRequested = false;
   public reindexDifficultyAdjustmentRequested = false;
+
+  // Rebuilt in the background on new blocks/reorgs/pool changes; snapshots older than this get a lazy refresh.
+  // The resolved snapshot and the in-flight rebuild are kept apart so requests never wait on a rebuild,
+  // and so a failed rebuild leaves the previous snapshot in place instead of emptying the cache.
+  private static readonly POOLS_STATS_RESYNC_MS = 600000;
+  private poolsStatsCache: { syncedAt: number, byInterval: Record<string, PoolsStats> } | null = null;
+  private poolsStatsRebuild: Promise<Record<string, PoolsStats>> | null = null;
+  private poolsHistoricalHashrateCache: Map<string, { syncedAt: number, hashrates: any[] }> = new Map();
+  private poolsHistoricalHashrateRebuilds: Map<string, Promise<any[]>> = new Map();
 
   private genesisData: {
     timestamp: number,
@@ -109,52 +126,177 @@ class Mining {
 
   /**
    * Generate high level overview of the pool ranks and general stats
+   *
+   * Only rejects on a cold start with no snapshot to fall back on
+   *
+   * @asyncUnsafe
    */
-  public async $getPoolsStats(interval: string | null): Promise<object> {
-    const poolsStatistics = {};
+  public async $getPoolsStats(interval: string | null): Promise<PoolsStats> {
+    const cacheKey = (interval && Common.getSqlInterval(interval)) ? interval : 'all';
 
-    const poolsInfo: PoolInfo[] = await PoolsRepository.$getPoolsInfo(interval);
+    const cached = this.poolsStatsCache;
+    if (cached) {
+      if (Date.now() - cached.syncedAt >= Mining.POOLS_STATS_RESYNC_MS) {
+        void this.$rebuildPoolsStatsCache();
+      }
+      // stale data beats waiting on a rebuild, and beats a 500 if that rebuild fails
+      return cached.byInterval[cacheKey];
+    }
 
-    const poolsStats: PoolStats[] = [];
-    let rank = 1;
-    let blockCount = 0;
+    // nothing cached yet, so this request has to wait for the first build
+    return (await this.$refreshPoolsStats())[cacheKey];
+  }
 
-    poolsInfo.forEach((poolInfo: PoolInfo) => {
-      const poolStat: PoolStats = {
-        poolId: poolInfo.poolId, // mysql row id
-        name: poolInfo.name,
-        link: poolInfo.link,
-        blockCount: poolInfo.blockCount,
-        rank: rank++,
-        emptyBlocks: poolInfo.emptyBlocks,
-        slug: poolInfo.slug,
-        avgMatchRate: poolInfo.avgMatchRate !== null ? Math.round(100 * poolInfo.avgMatchRate) / 100 : null,
-        avgFeeDelta: poolInfo.avgFeeDelta,
-        poolUniqueId: poolInfo.poolUniqueId
-      };
-      poolsStats.push(poolStat);
-      blockCount += poolInfo.blockCount;
+  /** @asyncSafe */
+  public $rebuildPoolsStatsCache(): Promise<void> {
+    return this.$refreshPoolsStats().then(() => undefined, (e) => {
+      logger.err(`Failed to build pools stats cache. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
     });
+  }
 
-    poolsStatistics['pools'] = poolsStats;
-    poolsStatistics['blockCount'] = blockCount;
+  /**
+   * Runs one rebuild at a time, and only replaces the cached snapshot once the new one resolves.
+   * Callers must handle the rejection.
+   */
+  private $refreshPoolsStats(): Promise<Record<string, PoolsStats>> {
+    if (this.poolsStatsRebuild) {
+      return this.poolsStatsRebuild;
+    }
 
+    const rebuild = this.$queryAllPoolsStats().then((byInterval) => {
+      this.poolsStatsCache = { syncedAt: Date.now(), byInterval };
+      return byInterval;
+    });
+    this.poolsStatsRebuild = rebuild;
+
+    // release the slot either way, so a failed rebuild does not block the next attempt
+    const releaseSlot = (): void => {
+      if (this.poolsStatsRebuild === rebuild) {
+        this.poolsStatsRebuild = null;
+      }
+    };
+    rebuild.then(releaseSlot, releaseSlot);
+
+    return rebuild;
+  }
+
+  private async $queryAllPoolsStats(): Promise<Record<string, PoolsStats>> {
+    const poolsInfoPerInterval: Record<string, PoolInfo[]> = await PoolsRepository.$getPoolsInfoPerInterval();
+    const estimatedHashrates = await this.$getEstimatedHashrates();
+
+    const statsByInterval: Record<string, PoolsStats> = {};
+    for (const interval of POOLS_STATS_INTERVALS) {
+      let rank = 1;
+      let blockCount = 0;
+
+      const poolStats: PoolStats[] = [];
+      poolsInfoPerInterval[interval].forEach((poolInfo) => {
+        poolStats.push({
+          poolId: poolInfo.poolId, // mysql row id
+          name: poolInfo.name,
+          link: poolInfo.link,
+          blockCount: poolInfo.blockCount,
+          rank: rank++,
+          emptyBlocks: poolInfo.emptyBlocks,
+          slug: poolInfo.slug,
+          avgMatchRate: poolInfo.avgMatchRate !== null ? Math.round(100 * poolInfo.avgMatchRate) / 100 : null,
+          avgFeeDelta: poolInfo.avgFeeDelta,
+          poolUniqueId: poolInfo.poolUniqueId
+        });
+        blockCount += poolInfo.blockCount;
+      });
+
+      statsByInterval[interval] = { pools: poolStats, blockCount: blockCount, ...estimatedHashrates };
+    }
+
+    return statsByInterval;
+  }
+
+  /**
+   * Estimated network hashrate over the last `blockCount` blocks.
+   * Core rejects a lookup of 0 blocks, and one failed window must not zero the others.
+   *
+   * @asyncSafe
+   */
+  private async $getEstimatedHashrate(blockCount: number): Promise<number> {
+    if (blockCount <= 0) {
+      return 0;
+    }
+
+    try {
+      return await bitcoinClient.getNetworkHashPs(blockCount);
+    } catch (e) {
+      logger.debug(`Bitcoin Core is not available, using zeroed value for current hashrate over ${blockCount} blocks`, logger.tags.mining);
+      return 0;
+    }
+  }
+
+  /** @asyncSafe */
+  private async $getEstimatedHashrates(): Promise<{ lastEstimatedHashrate: number, lastEstimatedHashrate3d: number, lastEstimatedHashrate1w: number }> {
     const totalBlock24h: number = await BlocksRepository.$blockCount(null, '24h');
     const totalBlock3d: number = await BlocksRepository.$blockCount(null, '3d');
     const totalBlock1w: number = await BlocksRepository.$blockCount(null, '1w');
 
-    try {
-      poolsStatistics['lastEstimatedHashrate'] = await bitcoinClient.getNetworkHashPs(totalBlock24h);
-      poolsStatistics['lastEstimatedHashrate3d'] = await bitcoinClient.getNetworkHashPs(totalBlock3d);
-      poolsStatistics['lastEstimatedHashrate1w'] = await bitcoinClient.getNetworkHashPs(totalBlock1w);
-    } catch (e) {
-      poolsStatistics['lastEstimatedHashrate'] = 0;
-      poolsStatistics['lastEstimatedHashrate3d'] = 0;
-      poolsStatistics['lastEstimatedHashrate1w'] = 0;
-      logger.debug('Bitcoin Core is not available, using zeroed value for current hashrate', logger.tags.mining);
+    return {
+      lastEstimatedHashrate: await this.$getEstimatedHashrate(totalBlock24h),
+      lastEstimatedHashrate3d: await this.$getEstimatedHashrate(totalBlock3d),
+      lastEstimatedHashrate1w: await this.$getEstimatedHashrate(totalBlock1w),
+    };
+  }
+
+  /**
+   * Get weekly hashrate history for all pools
+   */
+  public async $getPoolsHistoricalHashrate(interval: string | null): Promise<any[]> {
+    const cacheKey = Common.getSqlInterval(interval) ?? 'all';
+
+    const cached = this.poolsHistoricalHashrateCache.get(cacheKey);
+    if (cached) {
+      if (Date.now() - cached.syncedAt >= Mining.POOLS_STATS_RESYNC_MS) {
+        this.$refreshPoolsHistoricalHashrate(cacheKey, interval).catch((e) => {
+          logger.err(`Failed to refresh pools historical hashrate. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
+        });
+      }
+      return cached.hashrates;
     }
 
-    return poolsStatistics;
+    return this.$refreshPoolsHistoricalHashrate(cacheKey, interval);
+  }
+
+  /**
+   * Runs one rebuild at a time per interval, and only replaces the cached snapshot once it resolves.
+   * Callers must handle the rejection.
+   */
+  private $refreshPoolsHistoricalHashrate(cacheKey: string, interval: string | null): Promise<any[]> {
+    const running = this.poolsHistoricalHashrateRebuilds.get(cacheKey);
+    if (running) {
+      return running;
+    }
+
+    const rebuild = HashratesRepository.$getPoolsWeeklyHashrate(interval).then((hashrates) => {
+      // an invalidation while this was in flight means the result is already stale, so drop it
+      if (this.poolsHistoricalHashrateRebuilds.get(cacheKey) === rebuild) {
+        this.poolsHistoricalHashrateCache.set(cacheKey, { syncedAt: Date.now(), hashrates });
+      }
+      return hashrates;
+    });
+    this.poolsHistoricalHashrateRebuilds.set(cacheKey, rebuild);
+
+    // release the slot either way, so a failed rebuild does not block the next attempt
+    const releaseSlot = (): void => {
+      if (this.poolsHistoricalHashrateRebuilds.get(cacheKey) === rebuild) {
+        this.poolsHistoricalHashrateRebuilds.delete(cacheKey);
+      }
+    };
+    rebuild.then(releaseSlot, releaseSlot);
+
+    return rebuild;
+  }
+
+  public invalidatePoolsHistoricalHashrateCache(): void {
+    this.poolsHistoricalHashrateCache.clear();
+    // in-flight rebuilds started before the invalidation must not write their result back
+    this.poolsHistoricalHashrateRebuilds.clear();
   }
 
   /**
@@ -312,6 +454,7 @@ class Mining {
       }
       this.lastWeeklyHashrateIndexingDate = new Date().getUTCDate();
       if (newlyIndexed > 0) {
+        this.invalidatePoolsHistoricalHashrateCache();
         logger.info(`Weekly mining pools hashrates indexing completed: indexed ${newlyIndexed} weeks`, logger.tags.mining);
       } else {
         logger.debug(`Weekly mining pools hashrates indexing completed: indexed ${newlyIndexed} weeks`, logger.tags.mining);
