@@ -314,6 +314,7 @@ export interface BlockExtension {
   avgFee: number;
   avgFeeRate: number;
   coinbaseRaw: string;
+  coinbaseBip54?: boolean;
   orphans: OrphanedBlock[] | null;
   coinbaseAddress: string | null;
   coinbaseAddresses: string[] | null;
