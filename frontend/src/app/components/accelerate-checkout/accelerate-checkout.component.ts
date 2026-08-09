@@ -9,7 +9,6 @@ import { ETA, EtaService } from '@app/services/eta.service';
 import { Transaction } from '@interfaces/electrs.interface';
 import { MiningStats } from '@app/services/mining.service';
 import { IAuth, AuthServiceMempool } from '@app/services/auth.service';
-import { EnterpriseService } from '@app/services/enterprise.service';
 import { PartnerCodeService } from '@app/services/partner-code.service';
 import { ApiService } from '@app/services/api.service';
 import { isDevMode } from '@angular/core';
@@ -147,7 +146,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     private audioService: AudioService,
     private cd: ChangeDetectorRef,
     private authService: AuthServiceMempool,
-    private enterpriseService: EnterpriseService,
     private partnerCodeService: PartnerCodeService,
     private themeService: ThemeService,
   ) {
@@ -236,7 +234,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
     if (this._step === 'checkout') {
       this.insertSquare();
-      this.enterpriseService.goal(8);
       this.scrollToElementWithTimeout('acceleratePreviewAnchor', 'start', 100);
     }
     
