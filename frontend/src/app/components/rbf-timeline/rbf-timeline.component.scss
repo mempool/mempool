@@ -3,19 +3,15 @@
   width: 100%;
   padding: 1em 0;
 
-  .timeline-wrapper {
+  // Non-scrolling frame around the scroller. The edge fades live here because an
+  // absolutely positioned child of an overflow container scrolls away with its
+  // contents, which left the fade sitting mid-timeline covering the track.
+  // It wraps only the timeline, so the fades never reach the diff tables below.
+  .timeline-viewport {
     position: relative;
     width: calc(100% - 2em);
     margin: auto;
-    overflow-x: auto;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
 
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    // scoped to the timeline so the gradients don't overlay the diff tables below
     &::after, &::before {
       content: '';
       display: block;
@@ -37,7 +33,7 @@
       background: linear-gradient(to left, var(--box-bg), var(--box-bg), transparent);
     }
 
-    // On a phone the wrapper is barely wider than a couple of nodes, so a 2em
+    // On a phone the viewport is barely wider than a couple of nodes, so a 2em
     // band of solid background reads as the line being cut rather than fading.
     @media (max-width: 575.98px) {
       &::before, &::after {
@@ -51,6 +47,18 @@
       &::after {
         background: linear-gradient(to left, var(--box-bg), transparent);
       }
+    }
+  }
+
+  // owns horizontal scrolling and nothing else
+  .timeline-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
     }
   }
 
@@ -118,6 +126,12 @@
 
       &:hover .track {
         background: var(--info);
+
+        // a full RBF track is already --info, so the usual highlight would be
+        // invisible on exactly the lines that need to look clickable
+        &.fullrbf {
+          background: var(--fg);
+        }
       }
     }
 
@@ -295,6 +309,15 @@
     width: 100%;
     padding: 1rem 0;
   }
+
+  .diff-notice {
+    width: calc(100% - 2em);
+    margin: 0.5em auto 0;
+    padding: 0 0.5em;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--transparent-fg);
+  }
 }
 
 .rbf-diff-section {
@@ -402,11 +425,27 @@
     color: var(--red);
   }
 
-  .output-address {
-    display: block;
-    max-width: 100%;
-    overflow: hidden;
+  // the warning sits next to the address, so the address has to be the part that
+  // shrinks when the column is narrow
+  .output-address-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    // set here rather than on .output-address so the placeholder for an added or
+    // removed output measures exactly the same as a real address
     font-size: 0.9rem;
+  }
+
+  .output-address {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
+
+  .output-warning {
+    flex: 0 0 auto;
+    font-size: 0.8rem;
+    cursor: help;
   }
 
   .output-script-type {
@@ -414,8 +453,15 @@
     color: var(--transparent-fg);
   }
 
+  // explicit line heights so a populated cell and a placeholder cell measure the
+  // same, which is what keeps the two tables aligned row by row
+  .output-address-row {
+    line-height: 1.6;
+  }
+
   .output-value {
     display: block;
+    line-height: 1.6;
     font-size: 0.85rem;
     color: var(--transparent-fg);
   }

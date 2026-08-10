@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { RbfTree, RbfTransaction } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { ApiService } from '@app/services/api.service';
-import { forkJoin, of, Subject } from 'rxjs';
-import { catchError, switchMap, takeUntil } from 'rxjs/operators';
+import { forkJoin, of, Observable, Subject } from 'rxjs';
+import { catchError, map, retry, switchMap, takeUntil } from 'rxjs/operators';
 import { Transaction, Vout } from '@interfaces/electrs.interface';
 import { calculateRbfDiff } from '@app/shared/rbf-diff.utils';
 
@@ -89,6 +89,9 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
   // First half of a two-click selection, waiting for the user to pick the other end
   pendingAnchorTxid: string | null = null;
 
+  // the pair the tables currently show, which can lag behind the selection while
+  // a new comparison is loading or after one failed to load
+  private renderedPair: { oldTxid: string, newTxid: string } | null = null;
   private nodeIndex = new Map<string, RbfTree>();
   private destroy$ = new Subject<void>();
   // Comparisons go through one stream so a slower earlier request can never land
@@ -108,8 +111,8 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
     // can already have queued a comparison
     this.diffRequest$.pipe(
       switchMap((request) => request ? forkJoin({
-        oldTx: this.apiService.getRbfCachedTx$(request.oldTxid).pipe(catchError(() => of(null))),
-        newTx: this.apiService.getRbfCachedTx$(request.newTxid).pipe(catchError(() => of(null))),
+        oldTx: this.fetchCachedTx$(request.oldTxid),
+        newTx: this.fetchCachedTx$(request.newTxid),
       }) : of(null)),
       takeUntil(this.destroy$),
     ).subscribe((result) => {
@@ -119,11 +122,18 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
       this.diffLoading = false;
       if (!result.oldTx || !result.newTx) {
         this.diffError = true;
+        // stay on the comparison that is still on screen, so the highlighted
+        // pair keeps matching the table below it
+        if (this.renderedPair) {
+          this.diffOldTxid = this.renderedPair.oldTxid;
+          this.diffNewTxid = this.renderedPair.newTxid;
+        }
         return;
       }
       this.selectedOldTx = result.oldTx;
       this.selectedNewTx = result.newTx;
       this.diffView = this.buildDiffView(result.oldTx, result.newTx);
+      this.renderedPair = { oldTxid: result.oldTx.txid, newTxid: result.newTx.txid };
     });
   }
 
@@ -481,6 +491,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
     this.selectedOldTx = null;
     this.selectedNewTx = null;
     this.diffView = null;
+    this.renderedPair = null;
   }
 
   private loadDiff(): void {
@@ -489,8 +500,29 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
     }
     this.diffError = false;
     this.diffLoading = true;
-    this.diffView = null;
+    // diffView is deliberately left alone: a slow or failed comparison shouldn't
+    // wipe the table the user is already reading
     this.diffRequest$.next({ oldTxid: this.diffOldTxid, newTxid: this.diffNewTxid });
+  }
+
+  /**
+   * The RBF cache lives in the memory of each backend instance, so the same txid
+   * can come back empty from one instance and populated from another. An empty
+   * body arrives as HTTP 204, which is a *success* with a null body rather than
+   * an error, so it has to be turned into one for the retry to see it. Retrying
+   * usually lands on an instance that has the transaction.
+   */
+  private fetchCachedTx$(txid: string): Observable<Transaction | null> {
+    return this.apiService.getRbfCachedTx$(txid).pipe(
+      map((tx) => {
+        if (!tx) {
+          throw new Error(`no cached transaction for ${txid}`);
+        }
+        return tx;
+      }),
+      retry({ count: 2, delay: 400 }),
+      catchError(() => of(null)),
+    );
   }
 
   /**

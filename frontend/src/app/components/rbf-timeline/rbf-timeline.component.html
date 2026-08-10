@@ -1,75 +1,77 @@
 <div class="rbf-timeline box" [class.mined]="replacements.mined">
-  <div class="timeline-wrapper">
-    <div class="timeline" *ngFor="let timeline of rows; let j = index">
-      <div class="intervals" *ngIf="j < rowLimit || timelineExpanded">
-        <ng-container *ngFor="let cell of timeline; let i = index;">
-          <div class="node-spacer"></div>
-          <ng-container *ngIf="i < timeline.length - 1">
-            <div class="interval" *ngIf="cell.replacement?.interval != null; else intervalSpacer">
-              <div class="interval-time">
-                <app-time [time]="cell.replacement.interval" [relative]="false"></app-time>
+  <div class="timeline-viewport">
+    <div class="timeline-wrapper">
+      <div class="timeline" *ngFor="let timeline of rows; let j = index">
+        <div class="intervals" *ngIf="j < rowLimit || timelineExpanded">
+          <ng-container *ngFor="let cell of timeline; let i = index;">
+            <div class="node-spacer"></div>
+            <ng-container *ngIf="i < timeline.length - 1">
+              <div class="interval" *ngIf="cell.replacement?.interval != null; else intervalSpacer">
+                <div class="interval-time">
+                  <app-time [time]="cell.replacement.interval" [relative]="false"></app-time>
+                </div>
               </div>
-            </div>
-          </ng-container>
-        </ng-container>
-      </div>
-      <div class="nodes" *ngIf="j < rowLimit || timelineExpanded">
-        <ng-container *ngFor="let cell of timeline; let i = index;">
-          <ng-container *ngIf="cell.replacement?.tx; else nonNode">
-            <div class="node"
-              [id]="'node-'+cell.replacement.tx.txid"
-              [class.selected]="txid === cell.replacement.tx.txid"
-              [class.mined]="cell.replacement.tx.mined"
-              [class.first-node]="cell.first"
-              [class.diff-old]="highlightedOldTxid === cell.replacement.tx.txid"
-              [class.diff-new]="highlightedNewTxid === cell.replacement.tx.txid"
-              [class.diff-pending]="pendingAnchorTxid === cell.replacement.tx.txid"
-            >
-              <div class="track left" [class.fullrbf]="cell.replacement?.tx?.fullRbf"></div>
-              <div class="track right" [class.fullrbf]="cell.fullRbf"></div>
-              <!-- with the diff open the node picks the pair to compare, so the
-                   link is disabled rather than navigating away mid-comparison.
-                   Dropping routerLink also drops the href, so the role, tab stop
-                   and keyboard handlers are restored explicitly. -->
-              <a class="shape-border"
-                [class.rbf]="cell.replacement.tx.rbf"
-                [routerLink]="showDiff ? null : ['/tx/' | relativeUrl, cell.replacement.tx.txid]"
-                [attr.role]="showDiff ? 'button' : null"
-                [attr.tabindex]="showDiff ? 0 : null"
-                (click)="onNodeClick($event, cell.replacement);"
-                (keydown.enter)="onNodeClick($event, cell.replacement);"
-                (keydown.space)="onNodeClick($event, cell.replacement);"
-                (pointerover)="onHover($event, cell.replacement);"
-                (pointerout)="onBlur($event);"
-              >
-                <div class="shape"></div>
-                <span class="visually-hidden" *ngIf="showDiff" i18n="rbf-diff.select-transaction">Select this transaction to compare</span>
-              </a>
-              <span class="fee-rate"><app-fee-rate [fee]="cell.replacement.tx.fee" [weight]="cell.replacement.tx.vsize * 4" [unitStyle]="{ display: 'block', marginTop: '-0.5em'}"></app-fee-rate></span>
-            </div>
-          </ng-container>
-          <ng-template #nonNode>
-            <ng-container [ngSwitch]="cell.connector">
-              <div class="connector" [class.fullrbf]="cell.fullRbf" *ngSwitchCase="'pipe'"><div class="pipe" [class.fullrbf]="cell.fullRbf" [class.last-pipe]="!timelineExpanded && j === rowLimit - 1"></div></div>
-              <div class="connector" *ngSwitchCase="'corner'"><div class="corner" [class.fullrbf]="cell.fullRbf"></div></div>
-              <div class="node-spacer" *ngSwitchDefault></div>
             </ng-container>
-          </ng-template>
-          <ng-container *ngIf="i < timeline.length - 1">
-            <!-- the segment joining two dots: with the diff open it compares that
-                 pair directly, so it needs to be reachable by keyboard too -->
-            <div class="interval-spacer" *ngIf="cell.replacement?.interval != null; else intervalSpacer"
-              [class.diff-selectable]="showDiff && cell.replacement?.replacedBy"
-              [attr.role]="showDiff && cell.replacement?.replacedBy ? 'button' : null"
-              [attr.tabindex]="showDiff && cell.replacement?.replacedBy ? 0 : null"
-              (click)="onEdgeClick($event, cell.replacement)"
-              (keydown.enter)="onEdgeClick($event, cell.replacement)"
-              (keydown.space)="onEdgeClick($event, cell.replacement)">
-              <div class="track" [class.fullrbf]="cell.fullRbf"></div>
-              <span class="visually-hidden" *ngIf="showDiff && cell.replacement?.replacedBy" i18n="rbf-diff.compare-pair">Compare these two transactions</span>
-            </div>
           </ng-container>
-        </ng-container>
+        </div>
+        <div class="nodes" *ngIf="j < rowLimit || timelineExpanded">
+          <ng-container *ngFor="let cell of timeline; let i = index;">
+            <ng-container *ngIf="cell.replacement?.tx; else nonNode">
+              <div class="node"
+                [id]="'node-'+cell.replacement.tx.txid"
+                [class.selected]="txid === cell.replacement.tx.txid"
+                [class.mined]="cell.replacement.tx.mined"
+                [class.first-node]="cell.first"
+                [class.diff-old]="highlightedOldTxid === cell.replacement.tx.txid"
+                [class.diff-new]="highlightedNewTxid === cell.replacement.tx.txid"
+                [class.diff-pending]="pendingAnchorTxid === cell.replacement.tx.txid"
+              >
+                <div class="track left" [class.fullrbf]="cell.replacement?.tx?.fullRbf"></div>
+                <div class="track right" [class.fullrbf]="cell.fullRbf"></div>
+                <!-- with the diff open the node picks the pair to compare, so the
+                     link is disabled rather than navigating away mid-comparison.
+                     Dropping routerLink also drops the href, so the role, tab stop
+                     and keyboard handlers are restored explicitly. -->
+                <a class="shape-border"
+                  [class.rbf]="cell.replacement.tx.rbf"
+                  [routerLink]="showDiff ? null : ['/tx/' | relativeUrl, cell.replacement.tx.txid]"
+                  [attr.role]="showDiff ? 'button' : null"
+                  [attr.tabindex]="showDiff ? 0 : null"
+                  (click)="onNodeClick($event, cell.replacement);"
+                  (keydown.enter)="onNodeClick($event, cell.replacement);"
+                  (keydown.space)="onNodeClick($event, cell.replacement);"
+                  (pointerover)="onHover($event, cell.replacement);"
+                  (pointerout)="onBlur($event);"
+                >
+                  <div class="shape"></div>
+                  <span class="visually-hidden" *ngIf="showDiff" i18n="rbf-diff.select-transaction">Select this transaction to compare</span>
+                </a>
+                <span class="fee-rate"><app-fee-rate [fee]="cell.replacement.tx.fee" [weight]="cell.replacement.tx.vsize * 4" [unitStyle]="{ display: 'block', marginTop: '-0.5em'}"></app-fee-rate></span>
+              </div>
+            </ng-container>
+            <ng-template #nonNode>
+              <ng-container [ngSwitch]="cell.connector">
+                <div class="connector" [class.fullrbf]="cell.fullRbf" *ngSwitchCase="'pipe'"><div class="pipe" [class.fullrbf]="cell.fullRbf" [class.last-pipe]="!timelineExpanded && j === rowLimit - 1"></div></div>
+                <div class="connector" *ngSwitchCase="'corner'"><div class="corner" [class.fullrbf]="cell.fullRbf"></div></div>
+                <div class="node-spacer" *ngSwitchDefault></div>
+              </ng-container>
+            </ng-template>
+            <ng-container *ngIf="i < timeline.length - 1">
+              <!-- the segment joining two dots: with the diff open it compares that
+                   pair directly, so it needs to be reachable by keyboard too -->
+              <div class="interval-spacer" *ngIf="cell.replacement?.interval != null; else intervalSpacer"
+                [class.diff-selectable]="showDiff && cell.replacement?.replacedBy"
+                [attr.role]="showDiff && cell.replacement?.replacedBy ? 'button' : null"
+                [attr.tabindex]="showDiff && cell.replacement?.replacedBy ? 0 : null"
+                (click)="onEdgeClick($event, cell.replacement)"
+                (keydown.enter)="onEdgeClick($event, cell.replacement)"
+                (keydown.space)="onEdgeClick($event, cell.replacement)">
+                <div class="track" [class.fullrbf]="cell.fullRbf"></div>
+                <span class="visually-hidden" *ngIf="showDiff && cell.replacement?.replacedBy" i18n="rbf-diff.compare-pair">Compare these two transactions</span>
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
       </div>
     </div>
   </div>
@@ -97,13 +99,15 @@
     </div>
   </div>
 
-  <!-- RBF Diff Error -->
-  <div class="diff-error alert alert-danger" *ngIf="diffError" i18n="rbf-diff.load-error">
-    Failed to load transaction diff.
+  <!-- The comparison could not be loaded after retrying. Kept deliberately quiet:
+       the previous comparison stays on screen and clicking again retries. -->
+  <div class="diff-notice" *ngIf="showDiff && diffError" i18n="rbf-diff.load-error">
+    This comparison could not be loaded. Select it again to retry.
   </div>
 
   <!-- RBF Structural Diff Content -->
-  <div class="rbf-diff-section" *ngIf="showDiff && !diffLoading && diffView && selectedOldTx && selectedNewTx">
+  <!-- no !diffLoading here: the previous comparison stays visible while the next one loads -->
+  <div class="rbf-diff-section" *ngIf="showDiff && diffView && selectedOldTx && selectedNewTx">
     <div class="row">
       <!-- Left Column: Previous Transaction -->
       <div class="col-sm">
@@ -177,8 +181,9 @@
       <td i18n="transaction.fee|Transaction fee">Fee</td>
       <td>
         <app-amount [satoshis]="tx.fee" [noFiat]="true" [forceSats]="true"></app-amount>
+        <!-- up is green and down is red, consistently for every metric -->
         <span *ngIf="side === 'current' && diff.feePercent !== null" class="difference"
-          [class.positive]="!diff.feeIncreased" [class.negative]="diff.feeIncreased">
+          [class.positive]="diff.feeIncreased" [class.negative]="!diff.feeIncreased">
           {{ diff.feePercent > 0 ? '+' : '' }}{{ diff.feePercent | number: '1.0-1' }}%
         </span>
       </td>
@@ -200,7 +205,7 @@
         <span *only-weight [innerHTML]="'&lrm;' + (tx.weight | wuBytes: 2)"></span>
         <span *only-vsize [innerHTML]="'&lrm;' + (tx.weight / 4 | vbytes: 2)"></span>
         <span *ngIf="side === 'current' && diff.weightPercent !== null" class="difference"
-          [class.positive]="!diff.weightIncreased" [class.negative]="diff.weightIncreased">
+          [class.positive]="diff.weightIncreased" [class.negative]="!diff.weightIncreased">
           {{ diff.weightPercent > 0 ? '+' : '' }}{{ diff.weightPercent | number: '1.0-1' }}%
         </span>
       </td>
@@ -246,29 +251,36 @@
       bump is not flagged as a change at all.
     -->
     <tr *ngFor="let row of diff.outputRows" [class.address-changed]="row.addressChanged">
+      <td i18n="rbf-diff.output-address">Output address</td>
       <td>
-        <span *ngIf="row.addressChanged" i18n="rbf-diff.output-address-changed">Output (address changed)</span>
-        <span *ngIf="!row.addressChanged && row.feeAdjusted" i18n="rbf-diff.output-fee-adjusted">Output (fee adjusted)</span>
-        <span *ngIf="!row.addressChanged && !row.feeAdjusted" i18n="transaction.output">Output</span>
-      </td>
-      <td>
-        <ng-container *ngIf="(side === 'previous' ? row.previous : row.current) as out; else notApplicable">
-          <!-- app-truncate only ellipsizes when its flex container is bounded, so
-               this stays block-level rather than inline -->
-          <span class="output-address" *ngIf="out.scriptpubkey_address; else scriptType">
-            <app-truncate [text]="out.scriptpubkey_address" [lastChars]="8"
-              [link]="['/address/' | relativeUrl, out.scriptpubkey_address]"></app-truncate>
+        <ng-container *ngIf="(side === 'previous' ? row.previous : row.current) as out; else noOutput">
+          <span class="output-address-row">
+            <!-- app-truncate only ellipsizes when its flex container is bounded, so
+                 this stays block-level rather than inline -->
+            <span class="output-address" *ngIf="out.scriptpubkey_address; else scriptType">
+              <app-truncate [text]="out.scriptpubkey_address" [lastChars]="8"
+                [link]="['/address/' | relativeUrl, out.scriptpubkey_address]"></app-truncate>
+            </span>
+            <ng-template #scriptType>
+              <span class="output-script-type">{{ out.scriptpubkey_type | scriptpubkeyType }}</span>
+            </ng-template>
+            <span class="output-warning" *ngIf="side === 'current' && row.addressChanged" role="img"
+              i18n-ngbTooltip="rbf-diff.output-address-changed" ngbTooltip="Output address changed"
+              i18n-aria-label="rbf-diff.output-address-changed" aria-label="Output address changed">&#9888;&#65039;</span>
           </span>
-          <ng-template #scriptType>
-            <span class="output-script-type">{{ out.scriptpubkey_type | scriptpubkeyType }}</span>
-          </ng-template>
           <span class="output-value">
             <app-amount [satoshis]="out.value" [noFiat]="true"></app-amount>
-            <ng-container *ngIf="side === 'current' && row.addressChanged">
-              <ng-container *ngTemplateOutlet="changedDot"></ng-container>
-            </ng-container>
           </span>
         </ng-container>
+        <!-- an added or removed output has nothing on one side, but the placeholder
+             still has to be as tall as an address plus its amount, otherwise the two
+             tables stop lining up row by row -->
+        <ng-template #noOutput>
+          <span class="output-address-row">
+            <span class="text-muted null-placeholder" i18n-aria-label="rbf-diff.not-applicable" aria-label="Not applicable">&mdash;</span>
+          </span>
+          <span class="output-value">&nbsp;</span>
+        </ng-template>
       </td>
     </tr>
   </ng-template>
