@@ -1176,16 +1176,18 @@ class BitcoinRoutes {
       const op = (req.params.op) as 'and' | 'or' | 'nor' | undefined;
       const mask = BigInt(req.params.mask ?? 0n);
 
-      const { tip }  = await FlagValueRepository.$getTipAndTailIndexedByBucketSize(bucketSize) || { tip: undefined };
+      const { tip, tail }  = await FlagValueRepository.$getTipAndTailIndexedByBucketSize(bucketSize) || { tip: undefined, tail: undefined };
 
-      if (!tip) {
+      if (tip === undefined || tail === undefined) {
         handleError(req, res, 400, `Failed to get latest indexed flag values for ${interval}`);
         return;
       }
 
+      const totalCount = await FlagValueRepository.$getTotalBlocksIndexedByBucketSize(bucketSize === 1 ? 1008 : bucketSize) ?? tip - tail;
+
       const startHeight = presets[interval].retentionSpan !== -1 ? (tip - presets[interval].retentionSpan) : -1;
       const txsCount = await FlagValueRepository.$queryTxCountBasedOnMask(mask, bucketSize, op, startHeight);
-      res.header('X-total-count', tip.toString());
+      res.header('X-total-count', totalCount.toString());
       res.header('Expires', new Date(Date.now() + 1000 * 3600 * 24 * (presets[interval].bucketSizes[0] / 144)).toUTCString());
       res.send(txsCount);
     } catch (e: any) {

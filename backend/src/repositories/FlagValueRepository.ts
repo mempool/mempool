@@ -128,6 +128,18 @@ class FlagValuesRepository {
       logger.err(`Cannot delete flag values above ${height}. Reason: ` + (e instanceof Error ? e.message : e));
     }
   }
+
+  public async $getTotalBlocksIndexedByBucketSize(bucketSize: number): Promise<number | null> {
+    try {
+      const [rows]: any[] = await DB.query(`SELECT (count(distinct start_height) * ?) as total FROM flag_values WHERE bucket_size = ?`, [bucketSize, bucketSize.toString()]);
+      if (rows !== null && rows.length > 0) {
+        return rows[0].total;
+      }
+    } catch (e) {
+      logger.err(`Cannot get total blocks indexed in flag_values. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+    return null;
+  }
 }
 
 export default new FlagValuesRepository();
