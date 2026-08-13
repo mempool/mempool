@@ -773,14 +773,16 @@ class BlocksRepository {
    */
   public async $getHistoricalBlockFees(div: number, interval: string | null, timespan?: {from: number, to: number}): Promise<any> {
     try {
+      const withPrices = Common.blockPricesIndexingEnabled();
+
       let query = `SELECT
         CAST(AVG(blocks.height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(fees) as INT) as avgFees,
-        prices.USD
-        FROM blocks
+        CAST(AVG(fees) as INT) as avgFees${withPrices ? `,
+        prices.USD` : ''}
+        FROM blocks${withPrices ? `
         JOIN blocks_prices on blocks_prices.height = blocks.height
-        JOIN prices on prices.id = blocks_prices.price_id
+        JOIN prices on prices.id = blocks_prices.price_id` : ''}
         WHERE stale = 0
       `;
 
@@ -806,14 +808,16 @@ class BlocksRepository {
    */
   public async $getHistoricalBlockRewards(div: number, interval: string | null): Promise<any> {
     try {
+      const withPrices = Common.blockPricesIndexingEnabled();
+
       let query = `SELECT
         CAST(AVG(blocks.height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(reward) as INT) as avgRewards,
-        prices.USD
-        FROM blocks
+        CAST(AVG(reward) as INT) as avgRewards${withPrices ? `,
+        prices.USD` : ''}
+        FROM blocks${withPrices ? `
         JOIN blocks_prices on blocks_prices.height = blocks.height
-        JOIN prices on prices.id = blocks_prices.price_id
+        JOIN prices on prices.id = blocks_prices.price_id` : ''}
         WHERE stale = 0
       `;
 

@@ -902,6 +902,15 @@ export class Common {
     );
   }
 
+  // must match the conditions under which the indexer runs the 'blocksPrices' task,
+  // otherwise queries will join against a blocks_prices table that is never populated
+  static blockPricesIndexingEnabled(): boolean {
+    return (
+      !['testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK) &&
+      config.FIAT_PRICE.ENABLED === true
+    );
+  }
+
   static setDateMidnight(date: Date): void {
     date.setUTCHours(0);
     date.setUTCMinutes(0);

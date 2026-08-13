@@ -142,7 +142,7 @@ const routes: Routes = [
           },
           {
             path: 'mining/block-fees-subsidy',
-            data: { networks: ['bitcoin'] },
+            data: { networks: ['bitcoin'], networkSpecific: true, onlySubnet: [''] },
             component: BlockFeesSubsidyGraphComponent,
           },
           {
