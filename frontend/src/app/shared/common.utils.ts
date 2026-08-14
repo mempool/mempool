@@ -170,6 +170,7 @@ export function uncompressTx(tx: TransactionCompressed): TransactionStripped {
     flags: tx[5],
     time: tx[6],
     acc: !!tx[7],
+    private: !!tx[8],
   };
 }
 

@@ -29,6 +29,7 @@ export default class TxView implements TransactionStripped {
   value: number;
   feerate: number;
   acc?: boolean;
+  private?: boolean;
   rate?: number;
   flags: number;
   bigintFlags?: bigint | null = 0b00000100_00000000_00000000_00000000n;
@@ -60,6 +61,7 @@ export default class TxView implements TransactionStripped {
     this.value = tx.value;
     this.feerate = tx.rate || (tx.fee / tx.vsize); // sort by effective fee rate where available
     this.acc = tx.acc;
+    this.private = tx.private;
     this.rate = tx.rate;
     this.status = tx.status;
     this.flags = tx.flags || 0;

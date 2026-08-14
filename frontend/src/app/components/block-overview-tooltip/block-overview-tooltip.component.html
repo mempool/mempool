@@ -97,6 +97,7 @@
         <td colspan="2">
           <div class="tags mt-2" [class.any-mode]="filterMode === 'or'">
             <span *ngIf="!auditEnabled && tx && (tx.status === 'accelerated' || tx.acc || acceleration)" class="badge badge-accelerated" i18n="transaction.audit.accelerated">Accelerated</span>
+            <span *ngIf="tx && tx.private" class="badge badge-accelerated" i18n="transaction.private|Private transaction">Private</span>
             <ng-container *ngFor="let filter of filters;">
               <span class="btn badge filter-tag" [class.matching]="activeFilters[filter.key]">{{ filter.label }}</span>
             </ng-container>

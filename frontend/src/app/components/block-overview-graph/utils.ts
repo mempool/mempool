@@ -89,6 +89,7 @@ export const defaultAuditColors = {
   added_prioritized: darken(desaturate(hexToColor('0099ff'), 0.15), 0.85),
   prioritized: darken(desaturate(hexToColor('0099ff'), 0.3), 0.7),
   accelerated: hexToColor('8f5ff6'),
+  privateAcceleration: setOpacity(hexToColor('8f5ff6'), 0.6),
 };
 
 const contrastColors: { [key: string]: ColorPalette } = {
@@ -120,6 +121,7 @@ export const contrastAuditColors = {
   added_prioritized: darken(desaturate(hexToColor('00bb98'), 0.15), 0.85),
   prioritized: darken(desaturate(hexToColor('00bb98'), 0.3), 0.7),
   accelerated: hexToColor('8f5ff6'),
+  privateAcceleration: setOpacity(hexToColor('8f5ff6'), 0.6),
 };
 
 export function defaultColorFunction(
@@ -134,7 +136,7 @@ export function defaultColorFunction(
   // Normal mode
   if (!tx.scene?.highlightingEnabled) {
     if (tx.acc) {
-      return auditColors.accelerated;
+      return tx.private ? auditColors.privateAcceleration : auditColors.accelerated;
     } else {
       return levelColor;
     }
@@ -179,7 +181,7 @@ export function defaultColorFunction(
       }
     default:
       if (tx.acc) {
-        return auditColors.accelerated;
+        return tx.private ? auditColors.privateAcceleration : auditColors.accelerated;
       } else {
         return levelColor;
       }
@@ -203,7 +205,7 @@ export function ageColorFunction(
   theme?: string,
 ): Color {
   if (tx.acc || tx.status === 'accelerated') {
-    return auditColors.accelerated;
+    return tx.private ? auditColors.privateAcceleration : auditColors.accelerated;
   }
 
   const color = theme !== 'contrast' && theme !== 'bukele' ? defaultColorFunction(tx, colors, auditColors, relativeTime) : contrastColorFunction(tx, colors, auditColors, relativeTime);
