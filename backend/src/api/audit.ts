@@ -3,6 +3,7 @@ import logger from '../logger';
 import { MempoolTransactionExtended, MempoolBlockWithTransactions } from '../mempool.interfaces';
 import rbfCache from './rbf-cache';
 import transactionUtils from './transaction-utils';
+import { ConfirmedPrivateTransactions } from '../utils/private-acceleration';
 
 const PROPAGATION_MARGIN = 180; // in seconds, time since a transaction is first seen after which it is assumed to have propagated to all miners
 
@@ -24,7 +25,8 @@ class Audit {
     height: number,
     transactions: MempoolTransactionExtended[],
     projectedBlocks: MempoolBlockWithTransactions[],
-    mempool: { [txId: string]: MempoolTransactionExtended }
+    mempool: { [txId: string]: MempoolTransactionExtended },
+    confirmedPrivateTxs: ConfirmedPrivateTransactions = {}
   ): AuditResult {
     if (!projectedBlocks?.[0]?.transactionIds || !mempool) {
       return { unseen: [], censored: [], added: [], prioritized: [], fresh: [], sigop: [], fullrbf: [], accelerated: [], matchRate: 100, similarity: 1 };
@@ -48,10 +50,12 @@ class Audit {
     const inBlock = {};
     const inTemplate = {};
 
+    const revealedTxids = new Set(Object.values(confirmedPrivateTxs));
+
     const now = Math.round((Date.now() / 1000));
     for (const tx of transactions) {
       inBlock[tx.txid] = tx;
-      if (mempool[tx.txid] && mempool[tx.txid].acceleration) {
+      if ((mempool[tx.txid] && mempool[tx.txid].acceleration) || revealedTxids.has(tx.txid)) {
         accelerated.push(tx.txid);
         isAccelerated[tx.txid] = true;
       }

@@ -2,6 +2,8 @@ import config from '../config';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
+import { Acceleration } from './services/acceleration';
+import { ConfirmedPrivateTransactions } from '../utils/private-acceleration';
 import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended, TransactionClassified, BlockAudit, TransactionAudit, TemplateAlgorithm } from '../mempool.interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
@@ -502,21 +504,32 @@ class Blocks {
     }
   }
 
+  /** Includes recently withdrawn accelerations and reveals confirmed private handles for indexing. */
+  private accelerationsForBlock(accelerations: { [txid: string]: Acceleration }, confirmedPrivateTxs: ConfirmedPrivateTransactions): Acceleration[] {
+    const withdrawn = memPool.getWithdrawnAccelerations().filter(acc => !accelerations[acc.txid]);
+    return Object.values(accelerations).concat(withdrawn)
+      .map(acc => confirmedPrivateTxs[acc.txid] ? { ...acc, txid: confirmedPrivateTxs[acc.txid] } : acc);
+  }
+
   /** @asyncUnsafe */
   private async $applyBlockTransactionsToMempool(
     txIds: string[],
     transactions: MempoolTransactionExtended[]
-  ): Promise<{ rbfTransactions: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }}}> {
+  ): Promise<{ rbfTransactions: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }}, confirmedPrivateTxs: ConfirmedPrivateTransactions}> {
     const _memPool = memPool.getMempool();
 
     const rbfTransactions = Common.findMinedRbfTransactions(transactions, memPool.getSpendMap());
     memPool.handleRbfTransactions(rbfTransactions);
     memPool.removeFromSpendMap(transactions);
 
+    const confirmedPrivateTxs = memPool.matchPrivateTxs(transactions);
+    const minedPrivateTxs = memPool.removePrivateTxs(Object.keys(confirmedPrivateTxs));
+    const removedTransactions = minedPrivateTxs.length ? transactions.concat(minedPrivateTxs) : transactions;
+
     if (config.MEMPOOL.CLUSTER_MEMPOOL) {
       memPool.clusterMempool?.applyMempoolChange({
         added: [],
-        removed: transactions,
+        removed: removedTransactions,
         accelerations: mempool.getAccelerations(),
       });
     }
@@ -533,7 +546,7 @@ class Blocks {
     if (memPool.limitGBT) {
       const minFeeMempool = await bitcoinSecondClient.getRawMemPool();
       const minFeeTip = await bitcoinSecondClient.getBlockCount();
-      candidates = memPool.getNextCandidates(minFeeMempool, minFeeTip, transactions);
+      candidates = memPool.getNextCandidates(minFeeMempool, minFeeTip, removedTransactions);
       transactionIds = Object.keys(candidates?.txs || {});
     } else {
       candidates = undefined;
@@ -545,13 +558,13 @@ class Blocks {
       mempoolBlocks.processClusterMempoolBlocks(cmBlocks, _memPool, mempool.getAccelerations());
     } else if (config.MEMPOOL.RUST_GBT) {
       const added = memPool.limitGBT ? (candidates?.added || []) : [];
-      const removed = memPool.limitGBT ? (candidates?.removed || []) : transactions;
+      const removed = memPool.limitGBT ? (candidates?.removed || []) : removedTransactions;
       await mempoolBlocks.$rustUpdateBlockTemplates(transactionIds, _memPool, added, removed, candidates, true);
     } else {
       await mempoolBlocks.$makeBlockTemplates(transactionIds, _memPool, candidates, true, true);
     }
 
-    return { rbfTransactions };
+    return { rbfTransactions, confirmedPrivateTxs };
   }
 
   /** @asyncUnsafe */
@@ -1353,7 +1366,7 @@ class Blocks {
         await statistics.runStatistics();
       }
 
-      const { rbfTransactions } = await this.$applyBlockTransactionsToMempool(txIds, cpfpSummary.transactions);
+      const { rbfTransactions, confirmedPrivateTxs } = await this.$applyBlockTransactionsToMempool(txIds, cpfpSummary.transactions);
       this.updateTimerProgress(timer, `applied mempool changes for ${this.currentBlockHeight}`);
 
       if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
@@ -1364,7 +1377,7 @@ class Blocks {
         await this.$handleReorgs(blockExtended, timer);
       }
 
-      await websocketHandler.handleNewBlock(blockExtended, txIds, cpfpSummary.transactions, rbfTransactions);
+      await websocketHandler.handleNewBlock(blockExtended, txIds, cpfpSummary.transactions, rbfTransactions, confirmedPrivateTxs);
       this.updateTimerProgress(timer, `sent websocket updates for ${this.currentBlockHeight}`);
 
       if (Common.indexingEnabled()) {
@@ -1373,7 +1386,7 @@ class Blocks {
 
         await AccelerationRepository.$indexAccelerationsForBlock(
           blockExtended,
-          Object.values(accelerations),
+          this.accelerationsForBlock(accelerations, confirmedPrivateTxs),
           cpfpSummary.transactions
         );
         this.updateTimerProgress(timer, `indexed accelerations for ${this.currentBlockHeight}`);
@@ -1382,6 +1395,8 @@ class Blocks {
           await this.$saveBlockData(processingResult, timer);
         }
       }
+
+      memPool.rotateWithdrawnAccelerations();
 
       if (block.height % 2016 === 0) {
         if (Common.indexingEnabled()) {

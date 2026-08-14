@@ -152,7 +152,20 @@ class BlockProcessor {
       );
     }
 
-    const auditResult = Audit.auditBlock(block.height, transactions, projectedBlocks, auditMempool);
+    const confirmedPrivateTxs = memPool.matchPrivateTxs(transactions);
+    if (memPool.hasPrivateTxs() || Object.keys(confirmedPrivateTxs).length) {
+      projectedBlocks = projectedBlocks.map(projectedBlock => ({
+        ...projectedBlock,
+        transactionIds: projectedBlock.transactionIds
+          .map(txid => confirmedPrivateTxs[txid] ?? txid)
+          .filter(txid => !auditMempool[txid]?.private),
+        transactions: projectedBlock.transactions
+          .map(tx => confirmedPrivateTxs[tx.txid] ? { ...tx, txid: confirmedPrivateTxs[tx.txid] } : tx)
+          .filter(tx => !auditMempool[tx.txid]?.private),
+      }));
+    }
+
+    const auditResult = Audit.auditBlock(block.height, transactions, projectedBlocks, auditMempool, confirmedPrivateTxs);
 
     const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions : [];
 
