@@ -19,6 +19,7 @@ import feeApi from './fee-api';
 import priceUpdater from '../tasks/price-updater';
 import { ApiPrice } from '../repositories/PricesRepository';
 import { Acceleration } from './services/acceleration';
+import { ConfirmedPrivateTransactions } from '../utils/private-acceleration';
 import accelerationApi from './services/acceleration';
 import mempool from './mempool';
 import statistics from './statistics/statistics';
@@ -203,7 +204,7 @@ class WebsocketHandler {
                   // It might have appeared before we had the time to start watching for it
                   const tx = memPool.getMempool()[trackTxid];
                   if (tx) {
-                    if (config.MEMPOOL.BACKEND === 'esplora') {
+                    if (config.MEMPOOL.BACKEND === 'esplora' || tx.private) {
                       response['tx'] = JSON.stringify(tx);
                     } else {
                       // tx.prevout is missing from transactions when in bitcoind mode
@@ -224,6 +225,10 @@ class WebsocketHandler {
                     }
                   }
                 }
+              }
+              const confirmedPrivateTxid = memPool.getConfirmedPrivateTxid(trackTxid);
+              if (confirmedPrivateTxid) {
+                response['txConfirmed'] = JSON.stringify(confirmedPrivateTxid);
               }
               const tx = memPool.getMempool()[trackTxid];
               if (tx && tx.position) {
@@ -700,17 +705,19 @@ class WebsocketHandler {
         }
       }
     }
+    const publicTransactions = memPool.hasPrivateTxs() ? newTransactions.filter(tx => !tx.private) : newTransactions;
+    const publicDeletedTransactions = deletedTransactions.filter(tx => !tx.private);
     const mempoolDeltaTxids: MempoolDeltaTxids = {
       sequence: this.mempoolSequence,
-      added: newTransactions.map(tx => tx.txid),
-      removed: deletedTransactions.map(tx => tx.txid),
+      added: publicTransactions.map(tx => tx.txid),
+      removed: publicDeletedTransactions.map(tx => tx.txid),
       mined: [],
       replaced: replacedTransactions.map(replacement => ({ replaced: replacement.replaced, by: replacement.by.txid })),
     };
     const mempoolDelta: MempoolDelta = {
       sequence: this.mempoolSequence,
-      added: newTransactions,
-      removed: deletedTransactions.map(tx => tx.txid),
+      added: publicTransactions,
+      removed: publicDeletedTransactions.map(tx => tx.txid),
       mined: [],
       replaced: replacedTransactions,
     };
@@ -1085,7 +1092,8 @@ class WebsocketHandler {
     block: BlockExtended,
     txIds: string[],
     transactions: MempoolTransactionExtended[],
-    rbfTransactions: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }}
+    rbfTransactions: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }},
+    confirmedPrivateTxs: ConfirmedPrivateTransactions = {}
   ): Promise<void> {
     if (!this.webSocketServers.length) {
       throw new Error('No WebSocket.Server have been set');
@@ -1094,10 +1102,11 @@ class WebsocketHandler {
     this.printLogs();
 
     const _memPool = memPool.getMempool();
-    const confirmedTxids: { [txid: string]: boolean } = {};
+    const confirmedTxids: { [txid: string]: string } = {};
     for (const txId of txIds) {
-      confirmedTxids[txId] = true;
+      confirmedTxids[txId] = txId;
     }
+    Object.assign(confirmedTxids, confirmedPrivateTxs);
 
     const mBlocks = mempoolBlocks.getMempoolBlocks();
     const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
@@ -1191,7 +1200,7 @@ class WebsocketHandler {
       if (client['track-tx']) {
         const trackTxid = client['track-tx'];
         if (trackTxid && confirmedTxids[trackTxid]) {
-          response['txConfirmed'] = JSON.stringify(trackTxid);
+          response['txConfirmed'] = JSON.stringify(confirmedTxids[trackTxid]);
         } else {
           const mempoolTx = _memPool[trackTxid];
           if (mempoolTx && mempoolTx.position) {

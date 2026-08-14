@@ -53,7 +53,7 @@ class Statistics {
       }
     }
     // Remove 0 and undefined
-    memPoolArray = memPoolArray.filter((tx) => tx.effectiveFeePerVsize);
+    memPoolArray = memPoolArray.filter((tx) => tx.effectiveFeePerVsize && !tx.private);
 
     if (!memPoolArray.length) {
       try {

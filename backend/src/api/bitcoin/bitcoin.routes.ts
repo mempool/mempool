@@ -21,6 +21,7 @@ import transactionRepository from '../../repositories/TransactionRepository';
 import rbfCache from '../rbf-cache';
 import { calculateMempoolTxCpfp } from '../cpfp';
 import { handleError } from '../../utils/api';
+import { getPrivateHandle } from '../../utils/private-acceleration';
 import poolsUpdater from '../../tasks/pools-updater';
 import chainTips from '../chain-tips';
 import FlagValueRepository, { INTERVAL_PRESETS } from '../../repositories/FlagValueRepository';
@@ -911,9 +912,10 @@ class BitcoinRoutes {
   }
 
   private async getRecentMempoolTransactions(req: Request, res: Response) {
-    const latestTransactions = Object.entries(mempool.getMempool())
-      .sort((a, b) => (b[1].firstSeen || 0) - (a[1].firstSeen || 0))
-      .slice(0, 10).map((tx) => Common.stripTransaction(tx[1]));
+    const latestTransactions = Object.values(mempool.getMempool())
+      .filter(tx => !tx.private)
+      .sort((a, b) => (b.firstSeen || 0) - (a.firstSeen || 0))
+      .slice(0, 10).map((tx) => Common.stripTransaction(tx));
 
     res.json(latestTransactions);
   }
@@ -1088,7 +1090,9 @@ class BitcoinRoutes {
       return;
     }
     try {
-      const result = rbfCache.getTx(req.params.txId);
+      const result = rbfCache.getTx(req.params.txId)
+        || mempool.getPrivateTx(req.params.txId)
+        || mempool.getPrivateTx(getPrivateHandle(req.params.txId));
       if (result) {
         res.json(result);
       } else {
