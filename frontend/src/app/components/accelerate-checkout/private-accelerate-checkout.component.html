@@ -1,0 +1,164 @@
+<div class="box card w-100 accelerate-checkout-inner private-accelerate" style="background: var(--box-bg)">
+
+  @if (step === 'intro') {
+    <div class="row align-items-center">
+      <div class="col-md">
+        <span i18n="private-accel.intro-title|Privately Accelerate">Privately Accelerate</span>
+      </div>
+      <div class="col-md d-flex justify-content-md-end">
+        <button type="button" class="mt-1 btn btn-purple rounded-pill d-flex flex-row justify-content-center align-items-center"
+          style="width: 200px" (click)="startCheckout()">
+          <img src="/resources/mempool-accelerator-sparkles-light.svg" height="20" class="me-2" style="margin-left: -10px">
+          <span i18n="transaction.accelerate|Accelerate button label">Accelerate</span>
+        </button>
+      </div>
+    </div>
+  }
+
+  @else if (isLoading) {
+    <div class="row">
+      <div class="col-md">
+        <div class="d-flex flex-row justify-content-center align-items-center">
+          <div class="m-4 spinner-border text-light" style="width: 25px; height: 25px"></div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @else if (step === 'error') {
+    <div class="row mb-1 text-center">
+      <div class="col-sm">
+        <h1 style="font-size: larger;" i18n="private-accel.unavailable|Cannot accelerate privately">Cannot accelerate privately</h1>
+      </div>
+    </div>
+    <div class="row text-center mt-1">
+      <div class="col-sm">
+        <span>{{ error }}</span>
+      </div>
+    </div>
+  }
+
+  @else if (step === 'success') {
+    <div class="row mb-1 text-center">
+      <div class="col-sm">
+        <h1 style="font-size: larger;" i18n="accelerator.success-message">Transaction is being accelerated!</h1>
+      </div>
+    </div>
+    <div class="row text-center mt-1">
+      <div class="col-sm">
+        <div class="d-flex flex-row justify-content-center align-items-center">
+          <span i18n="accelerator.confirmed-acceleration-with-miners">Transaction has been accepted for acceleration by our mining pool partners.</span>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-3 mb-2 text-center">
+      <div class="col-sm d-flex flex-column">
+        <a class="mt-1 btn btn-purple rounded-pill align-self-center" style="width: 200px"
+          [routerLink]="transactionLink" i18n="private-accel.success-link|View transaction">View transaction</a>
+      </div>
+    </div>
+  }
+
+  @else if (step === 'processing') {
+    <div class="row mb-1 text-center">
+      <div class="col-sm">
+        <h1 style="font-size: larger;" i18n="accelerator.accelerating-your-transaction">Accelerating your transaction</h1>
+      </div>
+    </div>
+
+    <div class="row text-center mt-1">
+      <div class="col-sm">
+        <div class="d-flex flex-row flex-column justify-content-center align-items-center">
+          <span i18n="accelerator.confirming-acceleration-with-miners">Confirming your acceleration with our mining pool partners...</span>
+          @if (slowAcceptance) {
+            <span i18n="accelerator.confirming-acceleration-with-miners">...sorry, this is taking longer than expected...</span>
+          }
+          <div class="m-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @else if (step === 'invoice') {
+    <div class="row mb-md-1 text-center" id="confirm-title">
+      <div class="col-sm" id="confirm-payment-title">
+        <h1 style="font-size: larger;" i18n="accelerator.confirm-your-payment">Confirm your payment</h1>
+      </div>
+    </div>
+
+    <div class="row text-center">
+      <div class="col-sm">
+        <div class="w-100 mb-3" style="font-size: 14px">
+          <ng-container i18n="private-accel.payment-to-mempool">Payment to mempool.space for a private acceleration</ng-container>
+        </div>
+      </div>
+    </div>
+
+    <div class="row text-center mt-1">
+      <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
+        <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<span><small style="font-family: monospace;">{{ ((invoice?.btcDue * 100_000_000) || cost) | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span></p>
+        <app-bitcoin-invoice style="width: 100%;" [invoice]="invoice" [minimal]="true" (completed)="waitForAcceptance()"></app-bitcoin-invoice>
+      </div>
+    </div>
+  }
+
+  @else {
+    <div class="row">
+      <div class="col-md">
+        <div class="d-flex flex-column">
+          <span><ng-container i18n="private-accel.accelerate-to">Privately accelerate to</ng-container>&nbsp;~{{ userBid / estimate.txSummary.effectiveVsize | number : '1.0-1' }} <span class="symbol">sat/vB</span></span>
+          <span class="checkout-text">
+            <ng-container i18n="accelerator.for-an-additional-cost">For an additional</ng-container> <app-fiat [value]="cost"></app-fiat> (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
+          </span>
+          <span class="checkout-text" *ngIf="(etaInfo$ | async) as etaInfo">
+            <ng-container i18n="private-accel.expected-confirmation">Expected confirmation time <app-time kind="within" [time]="etaInfo.acceleratedETA" [fastRender]="false" [fixedRender]="true"></app-time></ng-container>
+          </span>
+        </div>
+      </div>
+      <div class="col-md pie d-none d-md-flex">
+        <small class="form-text checkout-text mb-2" *ngIf="(etaInfo$ | async) as etaInfo"><ng-container i18n="accelerator.hashrate-percentage-description">Your transaction will be prioritized by up to <strong>{{ etaInfo.hashratePercentage | number : '1.1-1' }}%</strong> of miners.</ng-container></small>
+        <app-active-acceleration-box [miningStats]="miningStats" [pools]="estimate.pools" [chartOnly]="true" class="ms-2"></app-active-acceleration-box>
+      </div>
+    </div>
+    <div class="payment-area" style="font-size: 14px;">
+      <div class="row text-center justify-content-center mx-2 mb-3">
+        <span i18n="private-accel.payment-to-mempool">Payment to mempool.space for a private acceleration</span>
+      </div>
+      <div class="row payment-options">
+        @if (canPayFromBalance || canPayWithLightning) {
+          @if (canPayFromBalance) {
+            <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
+              <p>
+                @if (estimate.isProUser) {
+                  <ng-container i18n="accelerator.your-account-will-be-debited">Your account will be debited no more than </ng-container>
+                } @else {
+                  <ng-container i18n="accelerator.use-accelerator-credits">Use accelerator credits for </ng-container>
+                }
+                &nbsp;<span style="white-space: nowrap"><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>
+              </p>
+              <div class="d-flex justify-content-center" [class.disabled]="isSubmitting">
+                <div class="paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px; font-size: 30px" (click)="payFromBalance()">
+                  <img class="me-2 purple-filter" src="/resources/mempool-accelerator-sparkles-light.svg" height="30">
+                  <span i18n="transaction.pay|Pay button label">Pay</span>
+                </div>
+              </div>
+            </div>
+          }
+          @if (canPayWithLightning) {
+            <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
+              <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span> with</p>
+              <div class="paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" [class.disabled]="isSubmitting" (click)="payWithLightning()">
+                <img src="/resources/bitcoin-btc-logo-full.svg" height=30>
+              </div>
+            </div>
+          }
+        } @else {
+          <div class="col-sm text-center">
+            <span class="checkout-text" i18n="private-accel.no-payment-method">No payment method is available for this acceleration.</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+</div>

@@ -70,6 +70,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
   hasCpfp: boolean = false;
   cpfpMode: boolean = false;
   mempoolBlocksSubscription: Subscription;
+  isPrivate: boolean = false;
 
   constructor(
     public route: ActivatedRoute,
@@ -87,8 +88,14 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.seoService.setTitle($localize`:@@d7f92e6fe26fba6fff568cbdae5db4a5c8c6a55c:Preview Transaction`);
-    this.seoService.setDescription($localize`:@@meta.description.preview-tx:Preview a transaction to the Bitcoin${seoDescriptionNetwork(this.stateService.network)} network using the transaction's raw hex data.`);
+    this.isPrivate = !!this.route.snapshot.data['isPrivate'];
+    if (this.isPrivate) {
+      this.seoService.setTitle($localize`:@@private-accel.page-title:Mempool Accelerator® Private`);
+      this.seoService.setDescription($localize`:@@meta.description.private-accel:Privately accelerate a Bitcoin${seoDescriptionNetwork(this.stateService.network)} transaction without broadcasting it to the public network.`);
+    } else {
+      this.seoService.setTitle($localize`:@@d7f92e6fe26fba6fff568cbdae5db4a5c8c6a55c:Preview Transaction`);
+      this.seoService.setDescription($localize`:@@meta.description.preview-tx:Preview a transaction to the Bitcoin${seoDescriptionNetwork(this.stateService.network)} network using the transaction's raw hex data.`);
+    }
     this.websocketService.want(['blocks', 'mempool-blocks']);
     this.cpfpMode = this.route.snapshot.queryParams['cpfp'] === 'true';
     this.pushTxForm = this.formBuilder.group({
@@ -295,6 +302,9 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
   }
 
   postTx(): void {
+    if (this.isPrivate) {
+      return;
+    }
     this.isLoadingBroadcast = true;
     this.errorBroadcast = null;
 

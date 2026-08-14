@@ -66,6 +66,39 @@ export class EtaService {
     );
   }
 
+  getPrivateEtaObservable(estimate: { pools?: number[] }): Observable<{ hashratePercentage?: number, acceleratedETA?: number }> {
+    return combineLatest([
+      this.stateService.difficultyAdjustment$,
+      this.miningService.getMiningStats('1m'),
+    ]).pipe(
+      map(([da, miningStats]) => {
+        if (!estimate?.pools?.length || !miningStats?.lastEstimatedHashrate || !da) {
+          return { hashratePercentage: undefined, acceleratedETA: undefined };
+        }
+
+        const pools: { [id: number]: SinglePoolStats } = {};
+        for (const pool of miningStats.pools) {
+          pools[pool.poolUniqueId] = pool;
+        }
+
+        let acceleratedHashrate = 0;
+        for (const poolId of estimate.pools) {
+          acceleratedHashrate += pools[poolId]?.lastEstimatedHashrate ?? 0;
+        }
+        const fraction = acceleratedHashrate / miningStats.lastEstimatedHashrate;
+        if (fraction <= 0) {
+          return { hashratePercentage: 0, acceleratedETA: undefined };
+        }
+
+        return {
+          hashratePercentage: fraction * 100,
+          acceleratedETA: Date.now() + (da.adjustedTimeAvg / fraction),
+        };
+      }),
+      shareReplay()
+    );
+  }
+
   mempoolPositionFromFees(feerate: number, mempoolBlocks: MempoolBlock[]): MempoolPosition {
     for (let txInBlockIndex = 0; txInBlockIndex < mempoolBlocks.length; txInBlockIndex++) {
       const block = mempoolBlocks[txInBlockIndex];

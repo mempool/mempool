@@ -131,6 +131,18 @@ export class ServicesApiServices {
     return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/estimate`, { txInput: txInput }, { observe: 'response' });
   }
 
+  estimatePrivate$(txInput: string) {
+    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/estimate/private`, { txInput: txInput }, { observe: 'response' });
+  }
+
+  acceleratePrivate$(txInput: string, userBid: number) {
+    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/private`, { txInput: txInput, userBid: userBid });
+  }
+
+  acceleratePrivateWithLightning$(txInput: string, userBid: number) {
+    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/private/lightning`, { txInput: txInput, userBid: userBid });
+  }
+
   accelerate$(txInput: string, userBid: number) {
     return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate`, { txInput: txInput, userBid: userBid});
   }

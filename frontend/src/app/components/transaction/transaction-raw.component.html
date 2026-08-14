@@ -2,7 +2,11 @@
 
   @if (!transaction) {
 
-    <h1 style="margin-top: 19px;" i18n="shared.preview-transaction|Preview Transaction">Preview Transaction</h1>
+    @if (isPrivate) {
+      <h1 style="margin-top: 19px;" i18n="private-accel.heading|Mempool Accelerator® Private">Mempool Accelerator® Private</h1>
+    } @else {
+      <h1 style="margin-top: 19px;" i18n="shared.preview-transaction|Preview Transaction">Preview Transaction</h1>
+    }
 
     <form [formGroup]="pushTxForm" (submit)="decodeTransaction()" novalidate>
       <div class="mb-3">
@@ -19,7 +23,9 @@
 
   @if (transaction && !error && !isLoading) {
     <div class="title-block">
-      @if (isCoinbase) {
+      @if (isPrivate) {
+        <h1 i18n="private-accel.heading|Mempool Accelerator® Private">Mempool Accelerator® Private</h1>
+      } @else if (isCoinbase) {
         <h1 i18n="shared.preview-coinbase|Preview Coinbase">Preview Coinbase</h1>
       } @else {
         <h1 i18n="shared.preview-transaction|Preview Transaction">Preview Transaction</h1>
@@ -47,19 +53,28 @@
       <div class="alert alert-mempool" style="align-items: center;">
         <span>
           <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
-          <ng-container *ngIf="!successBroadcast" i18n="transaction.local-tx|This transaction is stored locally in your browser.">
+          <ng-container *ngIf="isPrivate" i18n="private-accel.local-tx|This transaction stays in your browser until you accelerate it.">
+            This transaction is stored locally in your browser. It will not be broadcast to the public network.
+          </ng-container>
+          <ng-container *ngIf="!isPrivate && !successBroadcast" i18n="transaction.local-tx|This transaction is stored locally in your browser.">
             This transaction is stored locally in your browser. Broadcast it to add it to the mempool.
           </ng-container>
           <ng-container *ngIf="successBroadcast" i18n="transaction.redirecting|Redirecting to transaction page...">
             Redirecting to transaction page...
           </ng-container>
         </span>
-        <button *ngIf="!successBroadcast" [disabled]="isLoadingBroadcast || missingSignatures" i18n-ngbTooltip="transaction.missing-signature"
-        ngbTooltip="Transaction cannot be broadcasted because it's missing signature(s)" placement="bottom"
-        [disableTooltip]="!missingSignatures" type="button" class="btn btn-sm btn-primary btn-broadcast"
-        i18n="transaction.broadcast|Broadcast" (click)="postTx()">Broadcast</button>
-        <button *ngIf="successBroadcast" type="button" class="btn btn-sm btn-success no-cursor btn-broadcast" i18n="transaction.broadcasted|Broadcasted">Broadcasted</button>
+        @if (!isPrivate) {
+          <button *ngIf="!successBroadcast" [disabled]="isLoadingBroadcast || missingSignatures" i18n-ngbTooltip="transaction.missing-signature"
+          ngbTooltip="Transaction cannot be broadcasted because it's missing signature(s)" placement="bottom"
+          [disableTooltip]="!missingSignatures" type="button" class="btn btn-sm btn-primary btn-broadcast"
+          i18n="transaction.broadcast|Broadcast" (click)="postTx()">Broadcast</button>
+          <button *ngIf="successBroadcast" type="button" class="btn btn-sm btn-success no-cursor btn-broadcast" i18n="transaction.broadcasted|Broadcasted">Broadcasted</button>
+        }
       </div>
+    }
+
+    @if (isPrivate && transaction) {
+      <app-private-accelerate-checkout [txHex]="rawHexTransaction"></app-private-accelerate-checkout>
     }
 
     @if (!hasPrevouts) {
