@@ -801,6 +801,7 @@ export class Common {
       vsize: tx.weight / 4,
       value: tx.vout.reduce((acc, vout) => acc + (vout.value ? vout.value : 0), 0),
       acc: tx.acceleration || undefined,
+      private: tx.private || undefined,
       rate: tx.effectiveFeePerVsize,
       time: tx.firstSeen || undefined,
     };

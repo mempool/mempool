@@ -132,6 +132,7 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
     vsize: number,
   };
   acceleration?: boolean;
+  private?: boolean;
   acceleratedBy?: number[];
   acceleratedAt?: number;
   feeDelta?: number;
@@ -244,6 +245,7 @@ export interface TransactionStripped {
   vsize: number;
   value: number;
   acc?: boolean;
+  private?: boolean;
   rate?: number; // effective fee rate
   time?: number;
 }
@@ -252,8 +254,8 @@ export interface TransactionClassified extends TransactionStripped {
   flags: number;
 }
 
-// [txid, fee, vsize, value, rate, flags, acceleration?]
-export type TransactionCompressed = [string, number, number, number, number, number, number, 1?];
+// [txid, fee, vsize, value, rate, flags, acceleration?, private?]
+export type TransactionCompressed = [string, number, number, number, number, number, number, 1?, 1?];
 // [txid, rate, flags, acceleration?]
 export type MempoolDeltaChange = [string, number, number, (1|0)];
 

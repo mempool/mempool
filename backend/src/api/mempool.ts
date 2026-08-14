@@ -14,12 +14,17 @@ import accelerationApi from './services/acceleration';
 import redisCache from './redis-cache';
 import blocks from './blocks';
 import { ClusterMempool } from '../cluster-mempool/cluster-mempool';
+import { ConfirmedPrivateTransactions, getPrivateHandle } from '../utils/private-acceleration';
 
 class Mempool {
   private inSync: boolean = false;
   private mempoolCacheDelta: number = -1;
   private mempoolCache: { [txId: string]: MempoolTransactionExtended } = {};
   private mempoolCandidates: { [txid: string ]: boolean } = {};
+  private privateTxids = new Set<string>();
+  // Two-block buffer for feed withdrawals that arrive before block processing.
+  private withdrawnAccelerations: Map<string, Acceleration>[] = [new Map(), new Map()];
+  private confirmedPrivateTxids = new Map<string, { txid: string, height: number }>();
   private spendMap = new Map<string, MempoolTransactionExtended>();
   private recentlyDeleted: MempoolTransactionExtended[][] = []; // buffer of transactions deleted in recent mempool updates
   private mempoolInfo: IBitcoinApi.MempoolInfo;
@@ -127,9 +132,151 @@ class Mempool {
     return this.spendMap.get(`${txid}:${index}`);
   }
 
+  public hasPrivateTxs(): boolean {
+    return this.privateTxids.size > 0;
+  }
+
+  public getPrivateTx(txid: string): MempoolTransactionExtended | null {
+    const tx = this.mempoolCache[txid];
+    return tx?.private ? tx : null;
+  }
+
+  /** match potential private txs to recent private handles. */
+  public matchPrivateTxs(transactions: TransactionExtended[]): ConfirmedPrivateTransactions {
+    const matched: ConfirmedPrivateTransactions = {};
+    if (this.privateTxids.size || this.withdrawnAccelerations[0].size || this.withdrawnAccelerations[1].size) {
+      // A private transaction always confirms with zero fee, so only those are worth hashing.
+      for (const tx of transactions.filter(tx => !tx.fee)) {
+        const handle = getPrivateHandle(tx.txid);
+        if (this.mempoolCache[handle] || this.findWithdrawnAcceleration(handle)) {
+          matched[handle] = tx.txid;
+          this.recordConfirmedPrivateTx(handle, tx.txid);
+        }
+      }
+    }
+    return matched;
+  }
+
+  /** The txid a private handle confirmed as, while still retained. */
+  public getConfirmedPrivateTxid(handle: string): string | undefined {
+    return this.confirmedPrivateTxids.get(handle)?.txid;
+  }
+
+  public recordConfirmedPrivateTx(handle: string, txid: string): void {
+    if (!this.confirmedPrivateTxids.has(handle)) {
+      this.confirmedPrivateTxids.set(handle, { txid, height: blocks.getCurrentBlockHeight() });
+    }
+  }
+
+  private pruneConfirmedPrivateTxids(): void {
+    const cutoff = blocks.getCurrentBlockHeight() - 144;
+    for (const [handle, entry] of this.confirmedPrivateTxids) {
+      if (entry.height < cutoff) {
+        this.confirmedPrivateTxids.delete(handle);
+      }
+    }
+  }
+
+  public getWithdrawnAccelerations(): Acceleration[] {
+    return [...new Map([...this.withdrawnAccelerations[1], ...this.withdrawnAccelerations[0]]).values()];
+  }
+
+  public rotateWithdrawnAccelerations(): void {
+    this.withdrawnAccelerations = [new Map(), this.withdrawnAccelerations[0]];
+    this.pruneConfirmedPrivateTxids();
+  }
+
+  private findWithdrawnAcceleration(txid: string): Acceleration | undefined {
+    return this.withdrawnAccelerations[0].get(txid) || this.withdrawnAccelerations[1].get(txid);
+  }
+
+  private rememberWithdrawnAccelerations(newAccelerationMap: Record<string, Acceleration>): void {
+    for (const acceleration of Object.values(this.accelerations).filter(acc => !newAccelerationMap[acc.txid])) {
+      this.withdrawnAccelerations[0].set(acceleration.txid, acceleration);
+    }
+  }
+
+  public removePrivateTxs(txids: string[]): MempoolTransactionExtended[] {
+    const removed: MempoolTransactionExtended[] = [];
+    for (const txid of txids) {
+      const tx = this.mempoolCache[txid];
+      if (tx) {
+        delete this.mempoolCache[txid];
+        this.privateTxids.delete(txid);
+        removed.push(tx);
+      }
+    }
+    return removed;
+  }
+
+  private makePrivateTx(acceleration: Acceleration): MempoolTransactionExtended {
+    const vsize = acceleration.effectiveVsize;
+    return {
+      txid: acceleration.txid,
+      version: 0,
+      locktime: 0,
+      size: vsize,
+      weight: vsize * 4,
+      fee: 0,
+      sigops: 0,
+      vin: [],
+      vout: [],
+      status: { confirmed: false },
+      vsize,
+      adjustedVsize: vsize,
+      order: transactionUtils.txidToOrdering(acceleration.txid),
+      firstSeen: acceleration.added,
+      feePerVsize: 0,
+      adjustedFeePerVsize: 0,
+      effectiveFeePerVsize: (acceleration.effectiveFee + acceleration.feeDelta) / vsize,
+      flags: 0,
+      acceleration: true,
+      acceleratedBy: acceleration.pools,
+      acceleratedAt: acceleration.added,
+      feeDelta: acceleration.feeDelta,
+      private: true,
+    };
+  }
+
+  private updatePrivateTxs(newAccelerations: Record<string, Acceleration> | null): { added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[] } {
+    const added: MempoolTransactionExtended[] = [];
+    const removed: MempoolTransactionExtended[] = [];
+
+    if (newAccelerations) {
+      for (const txid of [...this.privateTxids].filter(txid => !newAccelerations[txid])) {
+        removed.push(...this.removePrivateTxs([txid]));
+      }
+
+      for (const acceleration of Object.values(newAccelerations).filter(acc => acc.private)) {
+        if (this.confirmedPrivateTxids.has(acceleration.txid)) {
+          continue;
+        }
+        const existing = this.mempoolCache[acceleration.txid];
+        if (existing) {
+          existing.effectiveFeePerVsize = (acceleration.effectiveFee + acceleration.feeDelta) / existing.vsize;
+          existing.acceleratedBy = acceleration.pools;
+          existing.feeDelta = acceleration.feeDelta;
+        } else {
+          const tx = this.makePrivateTx(acceleration);
+          this.mempoolCache[tx.txid] = tx;
+          this.privateTxids.add(tx.txid);
+          added.push(tx);
+        }
+      }
+    }
+
+    return { added, removed };
+  }
+
   /** @asyncUnsafe */
   public async $setMempool(mempoolData: { [txId: string]: MempoolTransactionExtended }) {
     this.mempoolCache = mempoolData;
+    this.privateTxids.clear();
+    for (const txid of Object.keys(this.mempoolCache)) {
+      if (this.mempoolCache[txid].private) {
+        delete this.mempoolCache[txid];
+      }
+    }
     let count = 0;
     const redisTimer = Date.now();
     if (config.MEMPOOL.CACHE_ENABLED && config.REDIS.ENABLED) {
@@ -251,12 +398,14 @@ class Mempool {
 
     const start = new Date().getTime();
     let hasChange: boolean = false;
-    const currentMempoolSize = Object.keys(this.mempoolCache).length;
+    const currentMempoolSize = Object.keys(this.mempoolCache).length - this.privateTxids.size;
     this.updateTimerProgress(timer, 'got raw mempool');
     const diff = transactions.length - currentMempoolSize;
     let newTransactions: MempoolTransactionExtended[] = [];
 
     this.mempoolCacheDelta = Math.abs(diff);
+
+    const privateTxs = this.updatePrivateTxs(accelerations);
 
     if (!this.inSync) {
       loadingIndicators.setProgress('mempool', currentMempoolSize / transactions.length * 100);
@@ -375,7 +524,7 @@ class Mempool {
 
       // Delete evicted transactions from mempool
       for (const tx in this.mempoolCache) {
-        if (!transactionsObject[tx]) {
+        if (!transactionsObject[tx] && !this.mempoolCache[tx].private) {
           deletedTransactions.push(this.mempoolCache[tx]);
         }
       }
@@ -385,21 +534,24 @@ class Mempool {
       redisCache.queueTransactionsForRemoval(deletedTransactions.map(tx => tx.txid));
     }
 
-    const candidates = await this.getNextCandidates(minFeeMempool, minFeeTip, deletedTransactions);
+    const addedTransactions = privateTxs.added.length ? newTransactions.concat(privateTxs.added) : newTransactions;
+    const removedTransactions = privateTxs.removed.length ? deletedTransactions.concat(privateTxs.removed) : deletedTransactions;
+
+    const candidates = await this.getNextCandidates(minFeeMempool, minFeeTip, removedTransactions);
 
     const newMempoolSize = currentMempoolSize + newTransactions.length - deletedTransactions.length;
     const newTransactionsStripped = newTransactions.map((tx) => Common.stripTransaction(tx));
     this.latestTransactions = newTransactionsStripped.concat(this.latestTransactions).slice(0, 6);
 
     const accelerationDelta = accelerations != null ? await this.updateAccelerations(accelerations) : [];
-    if (accelerationDelta.length) {
+    if (accelerationDelta.length || privateTxs.added.length || privateTxs.removed.length) {
       hasChange = true;
     }
 
-    if (config.MEMPOOL.CLUSTER_MEMPOOL && (newTransactions.length || deletedTransactions.length || accelerationDelta.length)) {
+    if (config.MEMPOOL.CLUSTER_MEMPOOL && (hasChange || newTransactions.length || deletedTransactions.length)) {
       this.clusterMempool?.applyMempoolChange({
-        added: newTransactions,
-        removed: deletedTransactions,
+        added: addedTransactions,
+        removed: removedTransactions,
         accelerations: this.getAccelerations(),
       });
     }
@@ -408,15 +560,15 @@ class Mempool {
 
     const candidatesChanged = candidates?.added?.length || candidates?.removed?.length;
 
-    this.recentlyDeleted.unshift(deletedTransactions);
+    this.recentlyDeleted.unshift(removedTransactions);
     this.recentlyDeleted.length = Math.min(this.recentlyDeleted.length, 10); // truncate to the last 10 mempool updates
 
-    if (this.mempoolChangedCallback && (hasChange || newTransactions.length || deletedTransactions.length)) {
-      this.mempoolChangedCallback(this.mempoolCache, newTransactions, this.recentlyDeleted, accelerationDelta);
+    if (this.mempoolChangedCallback && (hasChange || addedTransactions.length || removedTransactions.length)) {
+      this.mempoolChangedCallback(this.mempoolCache, addedTransactions, this.recentlyDeleted, accelerationDelta);
     }
-    if (this.$asyncMempoolChangedCallback && (hasChange || newTransactions.length || deletedTransactions.length || candidatesChanged)) {
+    if (this.$asyncMempoolChangedCallback && (hasChange || addedTransactions.length || removedTransactions.length || candidatesChanged)) {
       this.updateTimerProgress(timer, 'running async mempool callback');
-      await this.$asyncMempoolChangedCallback(this.mempoolCache, newMempoolSize, newTransactions, this.recentlyDeleted, accelerationDelta, candidates);
+      await this.$asyncMempoolChangedCallback(this.mempoolCache, newMempoolSize, addedTransactions, this.recentlyDeleted, accelerationDelta, candidates);
       this.updateTimerProgress(timer, 'completed async mempool callback');
     }
 
@@ -447,6 +599,7 @@ class Mempool {
   public updateAccelerations(newAccelerationMap: Record<string, Acceleration>): string[] {
     try {
       const accelerationDelta = accelerationApi.getAccelerationDelta(this.accelerations, newAccelerationMap);
+      this.rememberWithdrawnAccelerations(newAccelerationMap);
       this.accelerations = newAccelerationMap;
       return accelerationDelta;
     } catch (e: any) {

@@ -22,6 +22,7 @@ export interface Acceleration {
       vbytes: number,
     },
   },
+  private?: boolean,
 };
 
 export interface AccelerationHistory {
@@ -79,7 +80,7 @@ class AccelerationApi {
   private async $fetchAccelerations(): Promise<Acceleration[] | null> {
     try {
       const response = await axios.get(this.apiPath, { responseType: 'json', timeout: 10000 });
-      return response?.data || [];
+      return (response?.data || []).filter((acceleration: Acceleration) => !acceleration.private);
     } catch (e) {
       logger.warn('Failed to fetch current accelerations from the mempool services backend: ' + (e instanceof Error ? e.message : e));
       return null;
@@ -96,6 +97,9 @@ class AccelerationApi {
         const latestAccelerations = {};
         for (const acc of accelerations) {
           latestAccelerations[acc.txid] = acc;
+        }
+        for (const acceleration of Object.values(this._accelerations).filter(acc => acc.private)) {
+          latestAccelerations[acceleration.txid] = acceleration;
         }
         this._accelerations = latestAccelerations;
         return this._accelerations;
@@ -230,9 +234,10 @@ class AccelerationApi {
   }
 
   private handleWebsocketMessage(msg: any): void {
-    if (msg?.accelerations !== null) {
+    // deliberate loose equality: we don't want to nuke latestAccelerations on other messages where msg.accelerations is merely undefined
+    if (msg?.accelerations != null) {
       const latestAccelerations = {};
-      for (const acc of msg?.accelerations || []) {
+      for (const acc of msg.accelerations) {
         latestAccelerations[acc.txid] = acc;
       }
       this._accelerations = latestAccelerations;

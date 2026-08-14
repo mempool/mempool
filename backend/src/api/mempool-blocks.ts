@@ -773,7 +773,19 @@ class MempoolBlocks {
   }
 
   public compressTx(tx: TransactionClassified): TransactionCompressed {
-    if (tx.acc) {
+    if (tx.private) {
+      return [
+        tx.txid,
+        tx.fee,
+        tx.vsize,
+        tx.value,
+        Math.round((tx.rate || (tx.fee / tx.vsize)) * 100) / 100,
+        tx.flags,
+        tx.time || 0,
+        1,
+        1,
+      ];
+    } else if (tx.acc) {
       return [
         tx.txid,
         tx.fee,
