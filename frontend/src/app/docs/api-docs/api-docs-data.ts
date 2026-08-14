@@ -12939,6 +12939,13 @@ export const faqData = [
     title: 'How can I share or verify Taproot scripts?',
   },
   {
+    type: 'endpoint',
+    category: 'advanced',
+    showConditions: bitcoinNetworks,
+    fragment: 'why-may-my-coldcard-multisig-wallet-funds-be-at-risk',
+    title: 'Why may my Coldcard multisig wallet funds be at risk?',
+  },
+  {
     type: 'category',
     category: 'self-hosting',
     fragment: 'self-hosting',
