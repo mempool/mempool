@@ -21,6 +21,9 @@
         <span i18n="transaction.poison.warning">Warning! This transaction involves deceptively similar addresses. It may be an address poisoning attack.</span>
       </div>
     }
+    @if (showColdcardWarning) {
+      <app-coldcard-alert></app-coldcard-alert>
+    }
     <div class="row">
       <div class="col">
         <table class="table table-fixed table-borderless smaller-text table-sm table-tx-vin">
