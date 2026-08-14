@@ -22,6 +22,7 @@ export interface Transaction {
   bestDescendant?: BestDescendant | null;
   cpfpChecked?: boolean;
   acceleration?: boolean;
+  private?: boolean;
   acceleratedBy?: number[];
   acceleratedAt?: number;
   feeDelta?: number;

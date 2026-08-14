@@ -384,15 +384,15 @@ export class WebsocketService {
         ).subscribe((block) => {
           this.stateService.updateChainTip(block.height);
           this.stateService.addBlock(block);
-          this.stateService.txConfirmed$.next([response.txConfirmed, block]);
         });
       } else if (response.block.height > this.stateService.latestBlockHeight + 1) {
         reinitBlocks = true;
       }
+    }
 
-      if (response.txConfirmed) {
-        this.isTrackingTx = false;
-      }
+    if (response.txConfirmed) {
+      this.stateService.txConfirmed$.next([response.txConfirmed, response.block ?? null]);
+      this.isTrackingTx = false;
     }
 
     if (response.conversions) {

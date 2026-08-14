@@ -169,7 +169,7 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
         });
 
       this.txConfirmedSubscription = this.stateService.txConfirmed$.subscribe(([txid, block]) => {
-        if (txid) {
+        if (txid && block) {
           this.markHeight = block.height;
           this.moveArrowToPosition(true, true);
         } else {

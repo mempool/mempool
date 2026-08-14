@@ -133,6 +133,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   isAccelerated$ = new BehaviorSubject<boolean>(false); // refactor this to make isAccelerated an observable itself
   ETA$: Observable<ETA | null>;
   isCached: boolean = false;
+  isPrivateTx: boolean = false;
+  revealedPrivateTxid: string | null = null;
   now = Date.now();
   da$: Observable<DifficultyAdjustment>;
   liquidUnblinding = new LiquidUnblinding();
@@ -351,10 +353,18 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.seoService.clearSoft404();
 
+
+      if (tx.private && tx.txid !== this.txId) {
+        // Redirect real-txid lookups to the private handle.
+        this.router.navigate([this.relativeUrlPipe.transform('/tx'), tx.txid], { replaceUrl: true });
+        return;
+      }
+
       if (!this.tx) {
         this.tx = tx;
         this.setFeatures();
-        this.isCached = true;
+        this.isPrivateTx = !!tx.private;
+        this.isCached = !this.isPrivateTx;
         if (tx.fee === undefined) {
           this.tx.fee = 0;
         }
@@ -364,7 +374,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.waitingForTransaction = false;
         this.graphExpanded = false;
         this.transactionTime = tx.firstSeen || 0;
-        this.setupGraph();
+        if (this.isPrivateTx) {
+          // Private placeholders lack the CPFP metadata that normally marks acceleration.
+          this.setIsAccelerated();
+        } else {
+          this.setupGraph();
+        }
 
         this.fetchRbfHistory$.next(this.tx.txid);
         this.txRbfInfoSubscription = this.stateService.txRbfInfo$.subscribe((rbfInfo) => {
@@ -383,24 +398,27 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.setIsAccelerated();
       }),
       switchMap((blockHeight: number) => {
-        if (this.stateService.network === '' && this.stateService.env.ACCELERATOR && blockHeight >= 819500 ) {
+        if (this.stateService.network === '' && this.stateService.env.ACCELERATOR && blockHeight >= this.stateService.env.ACCELERATOR_START_HEIGHT ) {
           return this.servicesApiService.getAccelerationDataForTxid$(this.txId).pipe(
             switchMap((accelerationData: Acceleration) => {
-              if (this.tx.acceleration && !accelerationData) { // If the just mined transaction was accelerated, but services backend did not return any acceleration data, retry
+              if ((this.tx.acceleration || this.revealedPrivateTxid === this.txId) && !accelerationData) { // If the just mined transaction was accelerated, but services backend did not return any acceleration data, retry
                 return throwError(() => 'retry');
               }
               return of(accelerationData);
             }),
             retry({
-              count: 3,
+              // A revealed private acceleration is known to be accelerated, so it is worth waiting
+              count: this.revealedPrivateTxid === this.txId ? 20 : 3,
               delay: (error) => {
-                if (error === 'retry') {
+                if (error === 'retry' || (this.revealedPrivateTxid === this.txId && error?.status === 404)) {
                   return timer(2000);
                 }
                 return throwError(() => error);
               }
             }),
             catchError(() => {
+              this.waitingForAccelerationInfo = false;
+              this.setIsAccelerated();
               return of(null);
             })
           );
@@ -444,6 +462,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     ).subscribe(pool => {
       this.pool = pool;
+      if (this.tx) {
+        this.setIsAccelerated();
+      }
     });
 
     this.auditSubscription = this.fetchMiningInfo$.pipe(
@@ -680,9 +701,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           }
           this.seoService.clearSoft404();
 
+
           this.tx = tx;
           this.setFeatures();
           this.isCached = false;
+          this.isPrivateTx = !!tx.private;
           if (tx.fee === undefined) {
             this.tx.fee = 0;
           }
@@ -698,7 +721,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.waitingForTransaction = false;
           this.websocketService.startTrackTransaction(tx.txid);
           this.graphExpanded = false;
-          this.setupGraph();
+          if (this.isPrivateTx) {
+            // Private placeholders lack the CPFP metadata that normally marks acceleration.
+            this.setIsAccelerated();
+          } else {
+            this.setupGraph();
+          }
 
           if (!tx.status?.confirmed) {
             if (tx.firstSeen) {
@@ -707,6 +735,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               this.transactionTimes$.next(tx.txid);
             }
           } else {
+            if (this.revealedPrivateTxid === this.txId) {
+              this.waitingForAccelerationInfo = true;
+            }
             this.fetchAcceleration$.next(tx.status.block_height);
             this.fetchMiningInfo$.next({ hash: tx.status.block_hash, height: tx.status.block_height, txid: tx.txid });
             this.transactionTime = 0;
@@ -756,7 +787,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       );
 
     this.txConfirmedSubscription = this.stateService.txConfirmed$.subscribe(([txConfirmed, block]) => {
-      if (txConfirmed && this.tx && !this.tx.status.confirmed && txConfirmed === this.tx.txid) {
+      if (txConfirmed && this.isPrivateTx && txConfirmed !== this.txId) {
+        // Replace the private handle with the confirmed txid.
+        this.revealedPrivateTxid = txConfirmed;
+        this.router.navigate([this.relativeUrlPipe.transform('/tx'), txConfirmed], { replaceUrl: true });
+        return;
+      }
+      if (txConfirmed && block && this.tx && !this.tx.status.confirmed && txConfirmed === this.tx.txid) {
         if (this.tx.acceleration) {
           this.waitingForAccelerationInfo = true;
         }
@@ -968,6 +1005,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isAcceleration =
       (
         (this.tx.acceleration && (!this.tx.status.confirmed || this.waitingForAccelerationInfo)) ||
+        (this.revealedPrivateTxid === this.txId && this.waitingForAccelerationInfo) ||
         (this.accelerationInfo && this.pool && this.accelerationInfo.pools.some(pool => (pool === this.pool.id)))
       ) &&
       !this.accelerationCanceled;
@@ -1004,7 +1042,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   checkAccelerationEligibility() {
-    if (this.tx && this.tx.flags) {
+    if (this.tx && this.tx.flags && !this.tx.private) {
       const replaceableInputs = (this.tx.flags & (TransactionFlags.sighash_none | TransactionFlags.sighash_acp)) > 0n;
       const highSigop = (this.tx.sigops * 20) > this.tx.weight;
       this.eligibleForAcceleration = !replaceableInputs && !highSigop;
@@ -1076,6 +1114,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.gotInitialPosition = false;
     this.error = undefined;
     this.tx = null;
+    this.isPrivateTx = false;
     this.txChanged$.next(true);
     this.setFeatures();
     this.waitingForTransaction = false;

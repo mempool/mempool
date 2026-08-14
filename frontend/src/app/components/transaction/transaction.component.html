@@ -7,7 +7,11 @@
     </div>
 
     <ng-container *ngIf="!rbfTransaction || rbfTransaction?.size || tx">
-      <h1 i18n="shared.transaction">Transaction</h1>
+      @if (isPrivateTx) {
+        <h1 i18n="transaction.private.heading|Private Acceleration">Private Acceleration</h1>
+      } @else {
+        <h1 i18n="shared.transaction">Transaction</h1>
+      }
 
       <span class="tx-link">
         <span class="txid">
@@ -150,7 +154,7 @@
       <br>
     </ng-container>
 
-    <ng-container *ngIf="flowEnabled; else flowPlaceholder">
+    <ng-container *ngIf="flowEnabled && !isPrivateTx; else flowPlaceholder">
       <div class="title float-start">
         <h2 id="flow" #flow class="anchor" i18n="transaction.flow|Transaction flow">Flow</h2>
       </div>
@@ -192,20 +196,22 @@
       </div>
     </ng-template>
 
-    <div class="subtitle-block">
-      <div class="title">
-        <h2 i18n="transaction.inputs-and-outputs|Transaction inputs and outputs">Inputs & Outputs</h2>
+    @if (!isPrivateTx) {
+      <div class="subtitle-block">
+        <div class="title">
+          <h2 i18n="transaction.inputs-and-outputs|Transaction inputs and outputs">Inputs & Outputs</h2>
+        </div>
+
+        <div class="title-buttons">
+          <button *ngIf="!flowEnabled" type="button" class="btn btn-outline-info flow-toggle btn-sm" (click)="toggleGraph()" i18n="show-diagram">Show diagram</button>
+          <button type="button" class="btn btn-outline-info btn-sm" (click)="toggleDetailsFromTxPage()" i18n="transaction.details|Transaction Details">Details</button>
+        </div>
       </div>
 
-      <div class="title-buttons">
-        <button *ngIf="!flowEnabled" type="button" class="btn btn-outline-info flow-toggle btn-sm" (click)="toggleGraph()" i18n="show-diagram">Show diagram</button>
-        <button type="button" class="btn btn-outline-info btn-sm" (click)="toggleDetailsFromTxPage()" i18n="transaction.details|Transaction Details">Details</button>
-      </div>
-    </div>
+      <app-transactions-list #txList [transactions]="[tx]" [cached]="isCached" [errorUnblinded]="errorUnblinded" [inputIndex]="inputIndex" [outputIndex]="outputIndex" [transactionPage]="true"></app-transactions-list>
+    }
 
-
-    <app-transactions-list #txList [transactions]="[tx]" [cached]="isCached" [errorUnblinded]="errorUnblinded" [inputIndex]="inputIndex" [outputIndex]="outputIndex" [transactionPage]="true"></app-transactions-list>
-
+    @if (!isPrivateTx) {
     <div class="title text-start">
       <h2 i18n="transaction.details|Transaction Details">Details</h2>
     </div>
@@ -265,6 +271,7 @@
         </div>
       </div>
     </div>
+    }
 
   </ng-template>
 

@@ -31,6 +31,7 @@ import { PartnerCodeService } from '@app/services/partner-code.service';
 import { ZONE_SERVICE } from '@app/injection-tokens';
 import { TrackerStage } from '@components/tracker/tracker-bar.component';
 import { MiningService, MiningStats } from '@app/services/mining.service';
+import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { ETA, EtaService } from '@app/services/eta.service';
 import { getTransactionFlags, getUnacceleratedFeeRate } from '@app/shared/transaction.utils';
 
@@ -111,6 +112,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
   isAccelerated$ = new BehaviorSubject<boolean>(false); // refactor this to make isAccelerated an observable itself
   ETA$: Observable<ETA | null>;
   isCached: boolean = false;
+  isPrivateTx: boolean = false;
   now = Date.now();
   da$: Observable<DifficultyAdjustment>;
   isMobile: boolean;
@@ -149,6 +151,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
     private partnerCodeService: PartnerCodeService,
     private miningService: MiningService,
     private router: Router,
+    private relativeUrlPipe: RelativeUrlPipe,
     private cd: ChangeDetectorRef,
     private zone: NgZone,
     @Inject(ZONE_SERVICE) private zoneService: any,
@@ -270,10 +273,17 @@ export class TrackerComponent implements OnInit, OnDestroy {
       }
       this.seoService.clearSoft404();
 
+      if (tx.private && tx.txid !== this.txId) {
+        // Redirect real-txid lookups to the private handle.
+        this.router.navigate([this.relativeUrlPipe.transform('/tx'), tx.txid], { replaceUrl: true });
+        return;
+      }
+
       if (!this.tx) {
         this.tx = tx;
+        this.isPrivateTx = !!tx.private;
         this.checkAccelerationEligibility();
-        this.isCached = true;
+        this.isCached = !this.isPrivateTx;
         if (tx.fee === undefined) {
           this.tx.fee = 0;
         }
@@ -282,6 +292,10 @@ export class TrackerComponent implements OnInit, OnDestroy {
         this.error = undefined;
         this.waitingForTransaction = false;
         this.transactionTime = tx.firstSeen || 0;
+        if (this.isPrivateTx) {
+          // Private placeholders lack the CPFP metadata that normally marks acceleration.
+          this.setIsAccelerated();
+        }
 
         this.fetchRbfHistory$.next(this.tx.txid);
         this.txChanged$.next(true);
@@ -295,7 +309,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
         this.setIsAccelerated();
       }),
       switchMap((blockHeight: number) => {
-        if (this.stateService.network === '' && this.stateService.env.ACCELERATOR && blockHeight >= 819500 ) {
+        if (this.stateService.network === '' && this.stateService.env.ACCELERATOR && blockHeight >= this.stateService.env.ACCELERATOR_START_HEIGHT ) {
           return this.servicesApiService.getAccelerationDataForTxid$(this.txId).pipe(
             switchMap((accelerationData: Acceleration) => {
               if (this.tx.acceleration && !accelerationData) { // If the just mined transaction was accelerated, but services backend did not return any acceleration data, retry
@@ -481,6 +495,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
           this.seoService.clearSoft404();
 
           this.tx = tx;
+          this.isPrivateTx = !!tx.private;
           this.checkAccelerationEligibility();
           this.isCached = false;
           if (tx.fee === undefined) {
@@ -497,6 +512,10 @@ export class TrackerComponent implements OnInit, OnDestroy {
           this.loadingCachedTx = false;
           this.waitingForTransaction = false;
           this.websocketService.startTrackTransaction(tx.txid);
+          if (this.isPrivateTx) {
+            // Private placeholders lack the CPFP metadata that normally marks acceleration.
+            this.setIsAccelerated();
+          }
 
           if (!tx.status?.confirmed) {
             this.trackerStage = 'pending';
@@ -557,7 +576,12 @@ export class TrackerComponent implements OnInit, OnDestroy {
       );
 
     this.stateService.txConfirmed$.subscribe(([txConfirmed, block]) => {
-      if (txConfirmed && this.tx && !this.tx.status.confirmed && txConfirmed === this.tx.txid) {
+      if (txConfirmed && this.isPrivateTx && txConfirmed !== this.txId) {
+        // Replace the private handle with the confirmed txid.
+        this.router.navigate([this.relativeUrlPipe.transform('/tx'), txConfirmed], { replaceUrl: true });
+        return;
+      }
+      if (txConfirmed && block && this.tx && !this.tx.status.confirmed && txConfirmed === this.tx.txid) {
         this.tx.status = {
           confirmed: true,
           block_height: block.height,
@@ -781,7 +805,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
   }
 
   checkAccelerationEligibility() {
-    if (this.tx) {
+    if (this.tx && !this.tx.private) {
       const txHeight = this.tx.status?.block_height || (this.stateService.latestBlockHeight >= 0 ? this.stateService.latestBlockHeight + 1 : null);
       this.tx.flags = getTransactionFlags(this.tx, null, null, txHeight, this.stateService.network);
       const replaceableInputs = (this.tx.flags & (TransactionFlags.sighash_none | TransactionFlags.sighash_acp)) > 0n;
@@ -829,6 +853,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
     this.auditStatus = null;
     this.accelerationPositions = null;
     this.eligibleForAcceleration = false;
+    this.isPrivateTx = false;
     this.trackerStage = 'waiting';
     document.body.scrollTo(0, 0);
     this.leaveTransaction();

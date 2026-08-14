@@ -83,6 +83,7 @@ export interface Env {
   HISTORICAL_PRICE: boolean;
   ACCELERATOR: boolean;
   ACCELERATOR_BUTTON: boolean;
+  ACCELERATOR_START_HEIGHT: number;
   PUBLIC_ACCELERATIONS: boolean;
   ADDITIONAL_CURRENCIES: boolean;
   GIT_COMMIT_HASH_MEMPOOL_SPACE?: string;
@@ -132,6 +133,7 @@ const defaultEnv: Env = {
   'HISTORICAL_PRICE': true,
   'ACCELERATOR': false,
   'ACCELERATOR_BUTTON': true,
+  'ACCELERATOR_START_HEIGHT': 819500,
   'PUBLIC_ACCELERATIONS': false,
   'ADDITIONAL_CURRENCIES': false,
   'STRATUM_ENABLED': false,
@@ -176,7 +178,7 @@ export class StateService {
   liveAccelerations$: Observable<Acceleration[]>;
   stratumJobUpdate$ = new Subject<{ state: Record<string, StratumJob> } | { job: StratumJob }>();
   stratumJobs$ = new BehaviorSubject<Record<string, StratumJob>>({});
-  txConfirmed$ = new Subject<[string, BlockExtended]>();
+  txConfirmed$ = new Subject<[string, BlockExtended | null]>();
   txReplaced$ = new Subject<ReplacedTransaction>();
   txRbfInfo$ = new Subject<RbfTree>();
   rbfLatest$ = new Subject<RbfTree[]>();

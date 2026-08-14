@@ -267,6 +267,7 @@ export interface TransactionStripped {
   value: number;
   rate?: number; // effective fee rate
   acc?: boolean;
+  private?: boolean;
   flags?: number | null;
   time?: number;
   status?: 'found' | 'missing' | 'sigop' | 'fresh' | 'freshcpfp' | 'added' | 'added_prioritized' | 'prioritized' | 'added_deprioritized' | 'deprioritized' | 'censored' | 'selected' | 'rbf' | 'accelerated' | 'matched' | 'unmatched';
