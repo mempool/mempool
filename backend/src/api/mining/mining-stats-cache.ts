@@ -17,7 +17,9 @@ export default class MiningStatsCache<T> {
     const snapshot = this.snapshot;
 
     if (snapshot) {
-      if (this.isDirty() || Date.now() - snapshot.syncedAt >= this.resyncMs) {
+      // reads never react to invalidations, only to the snapshot ageing out: rebuilding is
+      // driven by events so that request volume cannot pull heavy work onto the read path
+      if (Date.now() - snapshot.syncedAt >= this.resyncMs) {
         void this.$refreshQuietly();
       }
       return snapshot.byKey[key];
