@@ -157,9 +157,13 @@ class Mining {
       const cachedResult = await this.poolsStatsCache.$get(interval && Common.getSqlInterval(interval) ? interval : 'all');
       return cachedResult;
     } catch (e) {
-      logger.err(`Failed to get pools stats cache`);
+      logger.err(`Failed to get pools stats. Reason: ` + (e instanceof Error ? e.message : e), logger.tags.mining);
       throw e;
     }
+  }
+
+  public markPoolsStatsDirty(): void {
+    this.poolsStatsCache.markDirty();
   }
 
   /** @asyncSafe */

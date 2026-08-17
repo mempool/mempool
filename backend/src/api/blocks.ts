@@ -1370,6 +1370,11 @@ class Blocks {
       if (Common.indexingEnabled()) {
         await blocksRepository.$saveBlockInDatabase(blockExtended);
         this.updateTimerProgress(timer, `saved ${this.currentBlockHeight} to database`);
+        // marked now but rebuilt later: a scheduled task is dropped if one is already running,
+        // and the mark is what makes that in-flight rebuild chain another one instead of
+        // publishing a result that predates this block. The delay lets the block's audit row
+        // land before the rebuild queries for it.
+        mining.markPoolsStatsDirty();
         indexer.scheduleSingleTask('poolsStats', 30000);
 
         await AccelerationRepository.$indexAccelerationsForBlock(

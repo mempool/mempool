@@ -28,9 +28,19 @@ export default class MiningStatsCache<T> {
     return (await this.$refresh())[key];
   }
 
+  /**
+   * Record that the underlying data changed without starting a rebuild, for callers that defer
+   * the rebuild to a scheduled task. If a rebuild is already in flight its result predates this
+   * change, so the mark is what makes another one follow it; and if the deferred task is dropped
+   * the mark survives for the next invalidation or the periodic resync to pick up.
+   */
+  public markDirty(): void {
+    this.generation++;
+  }
+
   /** @asyncSafe */
   public $invalidate(): Promise<void> {
-    this.generation++;
+    this.markDirty();
     return this.$refreshQuietly();
   }
 
