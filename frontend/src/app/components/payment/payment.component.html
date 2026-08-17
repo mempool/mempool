@@ -80,8 +80,7 @@
 </ng-template>
 
 <ng-template #rows>
-  <ng-container *ngTemplateOutlet="addressRow"></ng-container><!-- 
-  <ng-container *ngTemplateOutlet="amountRow"></ng-container> -->
+  <ng-container *ngTemplateOutlet="addressRow"></ng-container>
   <ng-container *ngTemplateOutlet="statusRow"></ng-container>
 </ng-template>
 
@@ -118,23 +117,26 @@
 <ng-template #statusRow>
   @if (tx && !replaced) {
     <tr>
-      <td class="td-width" i18n="transaction.status|Transaction Status">Status</td>
-      <td>
         @if (!tx.status?.confirmed) {
-          <ng-container *ngIf="(ETA$ | async) as eta; else etaSkeleton">
-            @if (eta.blocks >= 7) {
-              <span i18n="transaction.eta.not-any-time-soon|Transaction ETA mot any time soon">Not any time soon</span>
-            } @else {
-              <app-time kind="until" [time]="eta.time" [fastRender]="false"></app-time>
-            }
-          </ng-container>
+          <td class="td-width" i18n="transaction.eta|Transaction ETA">ETA</td>
+          <td>
+            <ng-container *ngIf="(ETA$ | async) as eta; else etaSkeleton">
+              @if (eta.blocks >= 7) {
+                <span i18n="transaction.eta.not-any-time-soon|Transaction ETA mot any time soon">Not any time soon</span>
+              } @else {
+                <app-time kind="until" [time]="eta.time" [fastRender]="false"></app-time>
+              }
+            </ng-container>
+          </td>
           <ng-template #etaSkeleton>
             <span class="skeleton-loader"></span>
           </ng-template>
         } @else {
-          <ng-container *ngTemplateOutlet="confs"></ng-container>
+          <td class="td-width" i18n="transaction.status|Transaction Status">Status</td>
+          <td>
+            <ng-container *ngTemplateOutlet="confs"></ng-container>
+          </td>
         }
-      </td>
     </tr>
   } @else if (replaced) {
   } @else {
