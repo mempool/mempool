@@ -42,7 +42,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
   rbfTransaction: Transaction | null;
 
   destination = '';
-  confsRequired = 1;
+  confsRequired = 3;
   amount = 0;
   confirmations = 0;
   settled = false;
@@ -425,8 +425,8 @@ export class PaymentComponent implements OnInit, OnDestroy {
   resetTransaction(): void {
     const fragmentParams = new URLSearchParams(this.route.snapshot.fragment || '');
     this.destination = fragmentParams.get('destination') || '';
-    const parsedConfs = Math.min(Math.ceil(parseInt((fragmentParams.get('confs') || '1'), 10)), 6); // Capped to 6 confs
-    this.confsRequired = (!isNaN(parsedConfs) && parsedConfs >= 1) ? parsedConfs : 1;
+    const parsedConfs = Math.min(Math.ceil(parseInt((fragmentParams.get('confs') || '3'), 10)), 6); // Capped to 6 confs
+    this.confsRequired = (!isNaN(parsedConfs) && parsedConfs >= 1) ? parsedConfs : 3;
 
     this.error = undefined;
     this.tx = null;
