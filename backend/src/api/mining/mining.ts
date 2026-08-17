@@ -216,17 +216,46 @@ class Mining {
 
   /** @asyncUnsafe */
   private async $queryAllPoolsHashrate(): Promise<Record<string, any[]>> {
-    const entries = await Promise.all(POOLS_STATS_INTERVALS.map(
-      async (interval) => {
-        try {
-          return [interval, await HashratesRepository.$getPoolsWeeklyHashrate(interval === 'all' ? null : interval)] as const;
-        } catch (e) {
-          return [interval, []];
-        }
-      }
-    ));
+    const bounds = await this.$getIntervalBounds();
 
-    return Object.fromEntries(entries);
+    // querying without a time filter returns a superset of every interval, so one round trip
+    // covers all of them. Each interval is then just the rows inside its window.
+    const allHashrates = await HashratesRepository.$getPoolsWeeklyHashrate(null);
+
+    const hashratesByInterval: Record<string, any[]> = {};
+    for (const interval of POOLS_STATS_INTERVALS) {
+      const from = bounds.from[interval];
+      hashratesByInterval[interval] = from === undefined
+        ? allHashrates
+        : allHashrates.filter((hashrate) => hashrate.timestamp >= from && hashrate.timestamp <= bounds.until);
+    }
+
+    return hashratesByInterval;
+  }
+
+  /**
+   * Start of each interval window, as unix timestamps against a single NOW().
+   * Resolved by the database rather than in JS because DATE_SUB clamps month and year
+   * arithmetic to the last valid day of the month, and JS date math overflows instead.
+   *
+   * @asyncUnsafe
+   */
+  private async $getIntervalBounds(): Promise<{ until: number, from: Record<string, number> }> {
+    const intervals = POOLS_STATS_INTERVALS.filter((interval) => Common.getSqlInterval(interval) !== null);
+    const columns = intervals.map((interval) =>
+      `UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL ${Common.getSqlInterval(interval)})) AS \`${interval}\``
+    );
+
+    const [rows]: any[] = await database.query(
+      `SELECT UNIX_TIMESTAMP(NOW()) AS \`until\`, ${columns.join(', ')}`
+    );
+
+    const from: Record<string, number> = {};
+    for (const interval of intervals) {
+      from[interval] = Number(rows[0][interval]);
+    }
+
+    return { until: Number(rows[0].until), from };
   }
 
   /**
