@@ -186,17 +186,23 @@ class Mining {
     }
   }
 
-  /** @asyncSafe */
+  /** @asyncUnsafe */
   private async $getEstimatedHashrates(): Promise<{ lastEstimatedHashrate: number, lastEstimatedHashrate3d: number, lastEstimatedHashrate1w: number }> {
-    const totalBlock24h: number = await BlocksRepository.$blockCount(null, '24h');
-    const totalBlock3d: number = await BlocksRepository.$blockCount(null, '3d');
-    const totalBlock1w: number = await BlocksRepository.$blockCount(null, '1w');
+    // the three windows are independent, and getnetworkhashps is the slowest part of a rebuild,
+    // so they run concurrently rather than as six sequential round trips
+    const [totalBlock24h, totalBlock3d, totalBlock1w] = await Promise.all([
+      BlocksRepository.$blockCount(null, '24h'),
+      BlocksRepository.$blockCount(null, '3d'),
+      BlocksRepository.$blockCount(null, '1w'),
+    ]);
 
-    return {
-      lastEstimatedHashrate: await this.$getEstimatedHashrate(totalBlock24h),
-      lastEstimatedHashrate3d: await this.$getEstimatedHashrate(totalBlock3d),
-      lastEstimatedHashrate1w: await this.$getEstimatedHashrate(totalBlock1w),
-    };
+    const [lastEstimatedHashrate, lastEstimatedHashrate3d, lastEstimatedHashrate1w] = await Promise.all([
+      this.$getEstimatedHashrate(totalBlock24h),
+      this.$getEstimatedHashrate(totalBlock3d),
+      this.$getEstimatedHashrate(totalBlock1w),
+    ]);
+
+    return { lastEstimatedHashrate, lastEstimatedHashrate3d, lastEstimatedHashrate1w };
   }
 
   /** @asyncSafe */
