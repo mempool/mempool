@@ -942,6 +942,8 @@ class Blocks {
         indexedThisRun = 0;
       }
     }
+    // expected_fees was just backfilled for these blocks, and that is what avgFeeDelta averages
+    void mining.$rebuildPoolsStatsCache();
     logger.debug(`Indexing block audit details completed`);
   }
 
