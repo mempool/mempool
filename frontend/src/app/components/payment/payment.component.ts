@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, HostListener, ChangeDetectorRef, Inject } from '@angular/core';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { switchMap, filter, catchError, map, startWith, distinctUntilChanged, tap } from 'rxjs/operators';
+import { switchMap, filter, catchError, map, startWith, distinctUntilChanged, tap, skip } from 'rxjs/operators';
 import { Transaction } from '@interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, combineLatest, BehaviorSubject, Subject } from 'rxjs';
 import { StateService } from '@app/services/state.service';
@@ -69,6 +69,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
   fetchRbfSubscription: Subscription;
   fetchCachedTxSubscription: Subscription;
   txRbfInfoSubscription: Subscription;
+  urlFragmentSubscription: Subscription;
   latestReplacement: string;
   amountMode: string;
   viewAmountMode$: Observable<'btc' | 'sats' | 'fiat'>;
@@ -358,6 +359,10 @@ export class PaymentComponent implements OnInit, OnDestroy {
         }
       })
     );
+
+    this.urlFragmentSubscription = this.route.fragment.pipe(skip(1)).subscribe((fragment) => {
+      this.updateFragmentParams(fragment);
+    });
   }
 
   isValidDestination(tx: Transaction): boolean {
@@ -383,6 +388,33 @@ export class PaymentComponent implements OnInit, OnDestroy {
       this.confirmations = 0;
     }
     this.settled = this.confirmations >= this.confsRequired;
+  }
+
+  updateFragmentParams(fragment: string | null): void {
+    const params = new URLSearchParams(fragment ?? '');
+
+    if (params.has('confs')) {
+      const confsRequired = Number(params.get('confs'));
+      if (confsRequired && !isNaN(confsRequired) && confsRequired > 0) {
+        this.confsRequired = Math.min(confsRequired, 6);
+      } else {
+        this.confsRequired = 3;
+      }
+    } else {
+      this.confsRequired = 3;
+    }
+    this.updateConfirmations();
+
+    if (params.has('destination')) {
+      this.destination = params.get('destination') || '';
+      if (this.tx) {
+        if (this.isValidDestination(this.tx)) {
+          this.setAmount();
+        } else {
+          this.viewFullDetails();
+        }
+      }
+    }
   }
 
   markBlock(): void {
@@ -470,6 +502,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
     this.mempoolPositionSubscription?.unsubscribe();
     this.txConfirmedSubscription?.unsubscribe();
     this.txReplacedSubscription?.unsubscribe();
+    this.urlFragmentSubscription?.unsubscribe();
     this.leaveTransaction();
   }
 
