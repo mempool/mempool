@@ -172,6 +172,13 @@
   }
 }
 
+.amount-link {
+  text-decoration: none; 
+  color: var(--fg);
+  width: 100%;
+  text-align: center;
+}
+
 .amount-col {
   display: flex;
   flex-direction: column;
@@ -202,6 +209,10 @@
   }
 }
 
+.amount-loading {
+  padding: 15px;
+}
+
 .toggler {
   font-size: 12px;
   position: absolute;
@@ -220,13 +231,6 @@
 
 .inactive {
   color: var(--transparent-fg);
-}
-
-.amount {
-  text-decoration: none; 
-  color: white;
-  width: 100%;
-  text-align: center;
 }
 
 @keyframes pulse {

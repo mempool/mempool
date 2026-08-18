@@ -70,10 +70,16 @@
       </div>
       <div class="amount-col">
         <span class="text" i18n="transaction.amount|Amount">Amount</span>
-        <a class="amount" href="" (click)="changeMode(mode === 'sats' ? 'btc' : 'sats')">
-          <app-amount [satoshis]="amount" [blockConversion]="tx.price" [noFiat]="true"></app-amount>
-        </a>
-        <app-fiat class="fiat" [value]="amount" [blockConversion]="tx.price"></app-fiat>
+        @if (amount > 0 ) {
+          <a class="amount-link" href="" (click)="changeMode(mode === 'sats' ? 'btc' : 'sats')">
+            <app-amount [satoshis]="amount" [noFiat]="true"></app-amount>
+          </a>
+          <app-fiat class="fiat" [value]="amount" [blockConversion]="tx.price"></app-fiat>
+        } @else {
+          <div class="amount-loading">
+            <div class="spinner-border text-light"></div>
+          </div>
+        }
       </div>
     }
   </div>
@@ -179,12 +185,10 @@
     <a [routerLink]="['/tx/' | relativeUrl, latestReplacement]" [queryParams]="{ mode: 'status' }">{{ latestReplacement
       }}</a>
   </div>
-  } @else if (tx && !isCached) {
+  } @else if (!isCached) {
   <div class="tracker-bar">
     <app-tracker-bar [stage]="trackerStage"></app-tracker-bar>
   </div>
-  } @else {
-  <ng-container *ngTemplateOutlet="skeletonRow"></ng-container>
   }
 </ng-template>
 
