@@ -11,7 +11,6 @@ import { getTransactionFlags, getUnacceleratedFeeRate } from '@app/shared/transa
 import { ApiService } from '@app/services/api.service';
 import { CacheService } from '@app/services/cache.service';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
-import { EnterpriseService } from '@app/services/enterprise.service';
 import { ETA, EtaService } from '@app/services/eta.service';
 import { MiningService, MiningStats } from '@app/services/mining.service';
 import { PartnerCodeService } from '@app/services/partner-code.service';
@@ -77,7 +76,6 @@ export class TransactionAccelerateComponent implements OnInit, OnDestroy {
     private websocketService: WebsocketService,
     private apiService: ApiService,
     private seoService: SeoService,
-    private enterpriseService: EnterpriseService,
     private partnerCodeService: PartnerCodeService,
     private miningService: MiningService,
     private etaService: EtaService,
@@ -87,7 +85,6 @@ export class TransactionAccelerateComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.onResize();
     this.setupPartnerCode();
-    this.enterpriseService.page();
     this.urlFragmentSubscription = this.route.fragment.subscribe((fragment) => {
       this.consumePartnerCodeFragment(fragment);
     });
