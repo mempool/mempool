@@ -225,3 +225,26 @@ export function parseDATUMTemplateCreator(coinbaseRaw: string): string[] | null 
 
   return tagString.split('\x0f').map((name) => name.replace(/[^a-zA-Z0-9 ]/g, ''));
 }
+
+/** Extracts miner names from a DMND coinbase transaction */
+export function parseDMNDTemplateCreator(coinbaseRaw: string): string[] {
+  try {
+    if (!coinbaseRaw || coinbaseRaw.length % 2 !== 0 || !/^[0-9a-fA-F]+$/.test(coinbaseRaw)) {
+      return [];
+    }
+
+    const bytes = Buffer.from(coinbaseRaw, 'hex');
+    const blockHeightLength = bytes[0];
+    const tagDelimiterIndex = 1 + blockHeightLength;
+    if (bytes.length <= tagDelimiterIndex || bytes[tagDelimiterIndex] !== 0x00) {
+      return [];
+    }
+
+    const tagStart = tagDelimiterIndex + 1;
+    const tagEnd = bytes.indexOf(0x00, tagStart);
+    const tags = bytes.subarray(tagStart, tagEnd === -1 ? undefined : tagEnd);
+    return tags.toString('utf8').split('/').slice(1, -1);
+  } catch {
+    return [];
+  }
+}

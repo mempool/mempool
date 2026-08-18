@@ -80,9 +80,9 @@ const downloadFile = (filePath, url) => {
   }
 
   return new Promise((resolve, reject) => {
-    https.get(url, (response) => {
+    https.get(url, { headers: { 'user-agent': 'node.js' } }, (response) => {
       if (response.statusCode < 200 || response.statusCode > 299) {
-        reject(new Error(`HTTP Error ${response.statusCode} while fetching '${filePath}'`));
+        reject(new Error(`HTTP Error ${response.statusCode} while fetching '${url}' (destination '${filePath}')`));
         return;
       }
 
@@ -230,7 +230,7 @@ const downloadMiningPoolLogos = async () => {
     const poolLogos = await fetchGitHubContents('/repos/mempool/mining-pool-logos/contents/', !!config.githubToken);
 
     let downloadedCount = 0;
-    const validFiles = poolLogos.filter(item => item.type === 'file' && item.download_url);
+    const validFiles = poolLogos.filter(item => item.type === 'file' && item.download_url && item.name.toLowerCase().endsWith('.svg'));
 
     for (const poolLogo of validFiles) {
       if (config.verbose) {

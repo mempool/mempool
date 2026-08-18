@@ -92,6 +92,10 @@ export class TransactionDetailsComponent implements OnChanges {
   }
 
   calculateAcceleratorSavings(block: BlockExtended): void {
+    if (this.network !== '') {
+      this.acceleratorSavingsSats = 0;
+      return;
+    }
     const minBlockRate = block?.extras?.feeRange?.[0];
     if (minBlockRate !== undefined) {
       const vsize = this.tx.weight / 4;
@@ -100,7 +104,7 @@ export class TransactionDetailsComponent implements OnChanges {
   }
 
   get showAcceleratorSavingsMsg(): boolean {
-    return this.acceleratorSavingsSats > 0 && this.cpfpInfo !== null && this.cpfpInfo !== undefined && !this.hasCpfp;
+    return this.network === '' && this.acceleratorSavingsSats > 0 && this.cpfpInfo !== null && this.cpfpInfo !== undefined && !this.hasCpfp;
   }
 
   onAccelerateClicked(): void {

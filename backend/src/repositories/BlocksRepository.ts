@@ -14,7 +14,7 @@ import chainTips from '../api/chain-tips';
 import blocks from '../api/blocks';
 import BlocksAuditsRepository from './BlocksAuditsRepository';
 import transactionUtils from '../api/transaction-utils';
-import { parseDATUMTemplateCreator } from '../utils/bitcoin-script';
+import { parseDATUMTemplateCreator, parseDMNDTemplateCreator } from '../utils/bitcoin-script';
 import poolsUpdater from '../tasks/pools-updater';
 
 interface DatabaseBlock {
@@ -306,39 +306,6 @@ class BlocksRepository {
   }
 
   /**
-   * Get empty blocks for one or all pools
-   * @asyncSafe
-   */
-  public async $countEmptyBlocks(poolId: number | null, interval: string | null = null): Promise<any> {
-    interval = Common.getSqlInterval(interval);
-
-    const params: any[] = [];
-    let query = `SELECT count(height) as count, pools.id as poolId
-      FROM blocks
-      JOIN pools on pools.id = blocks.pool_id
-      WHERE tx_count = 1 AND stale = 0`;
-
-    if (poolId) {
-      query += ` AND pool_id = ?`;
-      params.push(poolId);
-    }
-
-    if (interval) {
-      query += ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
-    }
-
-    query += ` GROUP by pools.id`;
-
-    try {
-      const [rows] = await DB.query(query, params);
-      return rows;
-    } catch (e) {
-      logger.err('Cannot count empty blocks. Reason: ' + (e instanceof Error ? e.message : e));
-      throw e;
-    }
-  }
-
-  /**
    * Return most recent block height
    * @asyncSafe
    */
@@ -360,17 +327,26 @@ class BlocksRepository {
     interval = Common.getSqlInterval(interval);
 
     const params: any[] = [];
-    let query = `SELECT count(height) as blockCount
-      FROM blocks 
-      WHERE stale = 0`;
-
-    if (poolId) {
-      query += ` AND pool_id = ?`;
+    let query;
+    if (!poolId && !interval) {
+      // optimized query to get full indexed block count
+      query = `SELECT CAST(COALESCE(MAX(height) - MIN(height) + 1, 0) AS SIGNED) as blockCount FROM blocks`;
+    } else if (!poolId) {
+      // optimized query for indexed count within an interval
+      query = `SELECT GREATEST(0, COALESCE(
+        CAST((SELECT height FROM blocks WHERE stale = 0 AND blockTimestamp <= NOW() ORDER BY blockTimestamp DESC LIMIT 1) AS SIGNED) -
+        CAST((SELECT height FROM blocks WHERE stale = 0 AND blockTimestamp >= DATE_SUB(NOW(), INTERVAL ${interval}) ORDER BY blockTimestamp ASC LIMIT 1) AS SIGNED) + 1
+      , 0)) as blockCount`;
+    } else {
+      // for specific pools, we do still have to actually count the blocks
+      query = `SELECT count(*) as blockCount
+        FROM blocks
+        WHERE stale = 0 AND pool_id = ?`;
       params.push(poolId);
-    }
 
-    if (interval) {
-      query += ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+      if (interval) {
+        query += ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+      }
     }
 
     try {
@@ -1374,6 +1350,8 @@ class BlocksRepository {
 
     if (extras.pool.name === 'OCEAN') {
       extras.pool.minerNames = parseDATUMTemplateCreator(extras.coinbaseRaw);
+    } else if (extras.pool.name === 'DMND') {
+      extras.pool.minerNames = parseDMNDTemplateCreator(extras.coinbaseRaw);
     }
 
     blk.extras = <BlockExtension>extras;
