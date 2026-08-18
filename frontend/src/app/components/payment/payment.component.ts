@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, HostListener, ChangeDetectorRef, Inject } from '@angular/core';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { switchMap, filter, catchError, map, startWith, distinctUntilChanged, tap, skip } from 'rxjs/operators';
+import { switchMap, filter, catchError, map, startWith, distinctUntilChanged, tap } from 'rxjs/operators';
 import { Transaction } from '@interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, combineLatest, BehaviorSubject, Subject } from 'rxjs';
 import { StateService } from '@app/services/state.service';
@@ -360,7 +360,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.urlFragmentSubscription = this.route.fragment.pipe(skip(1)).subscribe((fragment) => {
+    this.urlFragmentSubscription = this.route.fragment.subscribe((fragment) => {
       this.updateFragmentParams(fragment);
     });
   }
