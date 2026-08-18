@@ -1,0 +1,4 @@
+<div class="alert alert-danger alert-dismissible" role="alert" *ngIf="storageService.getValue('hideColdcardWarning') !== 'hidden'">
+  <a [routerLink]="['/docs/faq' | relativeUrl]" fragment="why-may-my-coldcard-multisig-wallet-funds-be-at-risk"><span>⚠️ </span><span i18n="coldcard.warning">Warning for Coldcard users: If this multisig involves Coldcard devices these funds may be at risk.</span></a>
+  <button type="button" class="btn-close btn-close-white" aria-label="Close" i18n-aria-label (click)="dismissWarning()"></button>
+</div>

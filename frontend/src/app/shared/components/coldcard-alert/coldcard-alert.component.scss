@@ -1,0 +1,12 @@
+.alert-danger {
+	display: flex;
+	align-items: center;
+	position: relative;
+  background-color: #b71c1c;
+  border-color: #b71c1c;
+}
+
+.btn-close:hover,
+.btn-close:focus {
+  opacity: 1;
+}
