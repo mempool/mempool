@@ -365,19 +365,25 @@ export class PaymentComponent implements OnInit, OnDestroy {
     });
   }
 
+  private destinationMatches(address?: string): boolean {
+    const isBech32 = /^(bc1|tb1|bcrt1|ex1|lq1|tex1|tlq1)/i.test(this.destination);
+    return address === this.destination
+      || (isBech32 && address?.toLowerCase() === this.destination.toLowerCase());
+  }
+
   isValidDestination(tx: Transaction): boolean {
     const network = (this.network || 'mainnet') as any;
     if (!this.destination || !getRegex('address', network).test(this.destination)) {
       return false;
     }
 
-    this.isValidView = tx?.vout?.some(vout => vout.scriptpubkey_address === this.destination);
+    this.isValidView = tx?.vout?.some(vout => this.destinationMatches(vout.scriptpubkey_address));
     return this.isValidView;
   }
 
   setAmount(): void {
     this.amount = (this.tx?.vout || []).reduce((total, vout) => {
-      return vout.scriptpubkey_address === this.destination ? total + vout.value : total;
+      return this.destinationMatches(vout.scriptpubkey_address) ? total + vout.value : total;
     }, 0);
   }
 
