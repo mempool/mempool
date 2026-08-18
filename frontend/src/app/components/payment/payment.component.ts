@@ -395,7 +395,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
 
     if (params.has('confs')) {
       const confsRequired = Number(params.get('confs'));
-      if (confsRequired && !isNaN(confsRequired) && confsRequired > 0) {
+      if (Number.isInteger(confsRequired) && confsRequired > 0) {
         this.confsRequired = Math.min(confsRequired, 6);
       } else {
         this.confsRequired = 3;
