@@ -169,10 +169,9 @@
   <span class="confs">
     @for (conf of confsRequiredArr; track $index) {
       <span>
-        <svg width="25px" height="25px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-          <path class="confirmation" [class.pending]="($index + 1) > confirmations"
-            [class.animate]="($index + 1) === (confirmations + 1)" d="M23.05 23.05V488.9H488.9V23.05H23.05z" />
-        </svg>
+        <svg class="confirmation" width="25px" height="25px" viewBox="0 0 200 200">
+          <rect class="square" x="0" y="0" width="200" height="200" rx="2" ry="2" [class.pending]="($index + 1) > confirmations" [class.animate]="($index + 1) === (confirmations + 1)" />
+        </svg> 
       </span>
       }
   </span>
