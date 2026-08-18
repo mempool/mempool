@@ -1,53 +1,51 @@
 <div class="container-xl">
 
   @if (!error || loadingCachedTx) {
-
-  <div class="title-block">
-    <h1 i18n="shared.bitcoin.payment">Bitcoin payment</h1>
-    <span class="tx-link">
-      <span class="txid">
-        <app-truncate [text]="txId" [lastChars]="12" [link]="['/tx/' | relativeUrl, txId]">
-          <app-clipboard [text]="txId"></app-clipboard>
-        </app-truncate>
+    <div class="title-block">
+      <h1 i18n="shared.bitcoin.payment">Bitcoin payment</h1>
+      <span class="tx-link">
+        <span class="txid">
+          <app-truncate [text]="txId" [lastChars]="12" [link]="['/tx/' | relativeUrl, txId]">
+            <app-clipboard [text]="txId"></app-clipboard>
+          </app-truncate>
+        </span>
       </span>
-    </span>
-  </div>
-  <div class="clearfix"></div>
-
-  <div class="box">
-    <div class="row">
-      @if (isMobile) {
-      <div class="col-sm">
-        <ng-container *ngTemplateOutlet="amountSection"></ng-container>
-        <ng-container *ngTemplateOutlet="trackerPanel"></ng-container>
-        <table class="table table-borderless table-striped">
-          <tbody>
-            <ng-container *ngTemplateOutlet="rows"></ng-container>
-          </tbody>
-        </table>
-      </div>
-      } @else {
-      <div class="col-sm">
-        <ng-container *ngTemplateOutlet="trackerPanel"></ng-container>
-        <table class="table table-borderless table-striped">
-          <tbody>
-            <ng-container *ngTemplateOutlet="rows"></ng-container>
-          </tbody>
-        </table>
-      </div>
-      <div class="col-sm amount-side">
-        <ng-container *ngTemplateOutlet="amountSection"></ng-container>
-      </div>
-      }
     </div>
-  </div>
+    <div class="clearfix"></div>
 
-  <div class="details-link">
-    <button type="button" class="btn btn-sm btn-outline-info" (click)="viewFullDetails()">
-      <span i18n="transaction.view-full-details">View full transaction details</span>
-    </button>
-  </div>
+    <div class="box">
+      <div class="row">
+        @if (isMobile) {
+        <div class="col-sm">
+          <ng-container *ngTemplateOutlet="amountSection"></ng-container>
+          <ng-container *ngTemplateOutlet="trackerPanel"></ng-container>
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <ng-container *ngTemplateOutlet="rows"></ng-container>
+            </tbody>
+          </table>
+        </div>
+        } @else {
+        <div class="col-sm">
+          <ng-container *ngTemplateOutlet="trackerPanel"></ng-container>
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <ng-container *ngTemplateOutlet="rows"></ng-container>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-sm amount-side">
+          <ng-container *ngTemplateOutlet="amountSection"></ng-container>
+        </div>
+        }
+      </div>
+    </div>
 
+    <div class="details-link">
+      <button type="button" class="btn btn-sm btn-outline-info" (click)="viewFullDetails()">
+        <span i18n="transaction.view-full-details">View full transaction details</span>
+      </button>
+    </div>
   }
 
   @if (error && !loadingCachedTx) {
@@ -58,25 +56,41 @@
 
 </div>
 
+<ng-template #trackerPanel>
+  @if (replaced) {
+    <div class="alert-replaced" role="alert">
+      <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>
+      <a [routerLink]="['/tx/' | relativeUrl, latestReplacement]" [queryParams]="{ mode: 'status' }">{{ latestReplacement
+        }}</a>
+    </div>
+  } @else if (!isCached) {
+    <div class="tracker-bar">
+      <app-tracker-bar [stage]="trackerStage"></app-tracker-bar>
+    </div>
+  }
+</ng-template>
+
 <ng-template #amountSection>
   <div style="position: relative;">
     @if (viewAmountMode$ | async; as mode) {
-      <div class="toggler">
-        <a href="" (click)="changeMode('btc')" class="toggler-option"
-          [class.inactive]="mode === 'sats'"><small>BTC</small></a>
-        <span style="color: var(--transparent-fg); font-size: 8px"> | </span>
-        <a href="" (click)="changeMode('sats')" class="toggler-option"
-          [class.inactive]="mode !== 'sats'"><small>Sats</small></a>
-      </div>
+      @if (!isMobile) {
+        <div class="toggler">
+          <a href="" (click)="changeMode('btc')" class="option"
+            [class.inactive]="mode === 'sats'"><small>BTC</small></a>
+          <span style="color: var(--transparent-fg); font-size: 8px"> | </span>
+          <a href="" (click)="changeMode('sats')" class="option"
+            [class.inactive]="mode !== 'sats'"><small>Sats</small></a>
+        </div>
+      }
       <div class="amount-col">
         <span class="text" i18n="transaction.amount|Amount">Amount</span>
-        @if (amount > 0 ) {
+        @if (!isLoadingTx) {
           <a class="amount-link" href="" (click)="changeMode(mode === 'sats' ? 'btc' : 'sats')">
             <app-amount [satoshis]="amount" [noFiat]="true"></app-amount>
           </a>
           <app-fiat class="fiat" [value]="amount" [blockConversion]="tx.price"></app-fiat>
         } @else {
-          <div class="amount-loading">
+          <div class="amount-loader">
             <div class="spinner-border text-light"></div>
           </div>
         }
@@ -104,28 +118,12 @@
   }
 </ng-template>
 
-<ng-template #amountRow>
-  @if (tx) {
-    <tr>
-      <td class="td-width" i18n="transaction.amount|Amount">Amount</td>
-      <td class="wrap-cell">
-        <app-amount [satoshis]="amount" [blockConversion]="tx.price" [noFiat]="true"></app-amount>
-        <span class="fiat">
-          <app-fiat [value]="amount" [blockConversion]="tx.price"></app-fiat>
-        </span>
-      </td>
-    </tr>
-  } @else {
-    <ng-container *ngTemplateOutlet="skeletonRow"></ng-container>
-  }
-</ng-template>
-
 <ng-template #statusRow>
   @if (tx && !replaced) {
     <tr>
-        @if (!tx.status?.confirmed) {
-          <td class="td-width" i18n="transaction.eta|Transaction ETA">ETA</td>
-          <td>
+      @if (!tx.status?.confirmed) {
+        <td class="td-width" i18n="transaction.eta|Transaction ETA">ETA</td>
+        <td>
             <ng-container *ngIf="(ETA$ | async) as eta; else etaSkeleton">
               @if (eta.blocks >= 7) {
                 <span i18n="transaction.eta.not-any-time-soon|Transaction ETA mot any time soon">Not any time soon</span>
@@ -133,62 +131,64 @@
                 <app-time kind="until" [time]="eta.time" [fastRender]="false"></app-time>
               }
             </ng-container>
-          </td>
-          <ng-template #etaSkeleton>
+        </td>
+        <ng-template #etaSkeleton>
             <span class="skeleton-loader"></span>
-          </ng-template>
-        } @else {
-          <td class="td-width" i18n="transaction.status|Transaction Status">Status</td>
-          <td>
-            <ng-container *ngTemplateOutlet="confs"></ng-container>
-          </td>
-        }
+        </ng-template>
+      } @else {
+        <td class="td-width" i18n="transaction.status|Transaction Status">Status</td>
+        <td>
+            <ng-container *ngTemplateOutlet="status"></ng-container>
+        </td>
+      }
     </tr>
   } @else if (replaced) {
+    <!-- status row not shown if replaced -->
   } @else {
     <ng-container *ngTemplateOutlet="skeletonRow"></ng-container>
   }
 </ng-template>
 
-<ng-template #confs>
+<ng-template #status>
   @if (settled) {
-  <span class="settled" i18n="transaction.status.settled|Settled">Settled</span>
+    <span class="settled" i18n="transaction.status.settled|Settled">Settled</span>
   } @else if (isValidView && confsRequired > 1) {
     <span class="confs-cell">
-      <span>
-        <span>{{ confirmations }} <span i18n="shared.of">of</span> {{ confsRequired }} </span><span i18n="shared.confirmations">Confirmations</span>
-      </span>
-      <ng-container *ngTemplateOutlet="confsProgress"></ng-container>
+      @if (isMobile) {
+        <div>
+          <span>{{confirmations > confsRequired ? confsRequired : confirmations}}/{{confsRequired}} </span>
+          <span i18n="shared.confirmations">Confirmations</span>
+        </div>
+        <ng-container *ngTemplateOutlet="progressCircle"></ng-container>
+      } @else {
+        <ng-container *ngTemplateOutlet="progressCircle"></ng-container>
+        <div>
+          <span>{{confirmations > confsRequired ? confsRequired : confirmations}}/{{confsRequired}} </span>
+          <span i18n="shared.confirmations">Confirmations</span>
+        </div>
+      }
     </span>
   } @else {
-  <span class="skeleton-loader"></span>
+    <span class="skeleton-loader"></span>
   }
 </ng-template>
 
-<ng-template #confsProgress>
-  <span class="confs">
-    @for (conf of confsRequiredArr; track $index) {
-      <span>
-        <svg class="confirmation" width="25px" height="25px" viewBox="0 0 200 200">
-          <rect class="square" x="0" y="0" width="200" height="200" rx="2" ry="2" [class.pending]="($index + 1) > confirmations" [class.animate]="($index + 1) === (confirmations + 1)" />
-        </svg> 
-      </span>
-      }
-  </span>
-</ng-template>
-
-<ng-template #trackerPanel>
-  @if (replaced) {
-  <div class="alert-replaced" role="alert">
-    <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>
-    <a [routerLink]="['/tx/' | relativeUrl, latestReplacement]" [queryParams]="{ mode: 'status' }">{{ latestReplacement
-      }}</a>
+<ng-template #progressCircle>
+  <div class="progress-circle-wrapper">
+    <svg viewBox="0 0 36 36" class="circular-chart">
+      <path class="circle-bg"
+        d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831"
+      />
+      <path class="circle"
+        [attr.stroke-dasharray]="(confirmations >= confsRequired ? 100 : (confirmations / confsRequired) * 100) + ', 100'"
+        d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831"
+      />
+    </svg>
   </div>
-  } @else if (!isCached) {
-  <div class="tracker-bar">
-    <app-tracker-bar [stage]="trackerStage"></app-tracker-bar>
-  </div>
-  }
 </ng-template>
 
 <ng-template #skeletonRow>

@@ -86,20 +86,6 @@
   }
 }
 
-.fiat {
-  display: block;
-  @media (min-width: 768px) {
-    display: inline-block;
-    margin-left: 15px;
-    text-align: left;
-  }
-}
-
-.badge {
-  position: relative;
-  top: -1px;
-}
-
 .details-link {
   margin-top: 20px;
   text-align: center;
@@ -118,33 +104,12 @@
 
 .confs-cell {
   display: flex;
-  gap: 1em;
-  flex-direction: row;
+  gap: 12px;
   align-items: center;
   justify-content: end;
-  flex-wrap: wrap;
 
   @media (min-width: 850px) {
     justify-content: start;
-  }
-}
-
-.confs {
-  display: flex;
-  gap: 2px;
-}
-
-.confirmation {
-  .square {
-    fill: var(--green);
-    fill-opacity: 1;
-
-    &.pending {
-      fill-opacity: 0.3;
-      &.animate {
-        animation: pulse 1.5s ease-in-out infinite;
-      }
-    }
   }
 }
 
@@ -174,13 +139,6 @@
   }
 }
 
-.amount-link {
-  text-decoration: none; 
-  color: var(--fg);
-  width: 100%;
-  text-align: center;
-}
-
 .amount-col {
   display: flex;
   flex-direction: column;
@@ -196,6 +154,13 @@
     color: var(--transparent-fg);
   }
 
+  .amount-link {
+    text-decoration: none; 
+    color: var(--fg);
+    width: 100%;
+    text-align: center;
+  }
+
   app-amount {
     font-size: 2rem;
     font-weight: 600;
@@ -209,10 +174,10 @@
     text-align: center;
     color: var(--transparent-fg);
   }
-}
 
-.amount-loading {
-  padding: 15px;
+  .amount-loader {
+    padding: 1em;
+  }
 }
 
 .toggler {
@@ -221,28 +186,43 @@
   top: -20px;
   right: 3px;
   text-align: right;
-  
-  @media (max-width: 850px) {
-    top: 2px;
+
+  .option {
+    text-decoration: none;
+
+    &.inactive {
+      color: var(--transparent-fg);
+    }
   }
 }
 
-.toggler-option {
-  text-decoration: none;
-}
 
-.inactive {
-  color: var(--transparent-fg);
-}
 
-@keyframes pulse {
-  0% {
-    fill-opacity: 0.30;
-  }
-  50% {
-    fill-opacity: 1;
-  }
-  100% {
-    fill-opacity: 0.30;
+.progress-circle-wrapper {
+  display: inline-block;
+  width: 2em;
+  height: 2em;
+  vertical-align: middle;
+
+  .circular-chart {
+    display: block;
+    width: 100%;
+    height: 100%;
+
+    .circle-bg {
+      stroke: var(--orange);
+      stroke-opacity: 0.3;
+      fill-opacity: 0;
+      stroke-width: 4px;
+    }
+
+    .circle {
+      stroke: var(--orange);
+      stroke-opacity: 1;
+      fill-opacity: 0;
+      stroke-width: 4px;
+      stroke-linecap: round;
+      transition: stroke-dasharray 0.5s ease-out;
+    }
   }
 }
