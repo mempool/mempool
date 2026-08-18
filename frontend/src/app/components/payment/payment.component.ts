@@ -485,7 +485,6 @@ export class PaymentComponent implements OnInit, OnDestroy {
     this.mempoolPosition = null;
     this.accelerationPositions = null;
     this.isAccelerated$.next(false);
-    this.txRbfInfoSubscription?.unsubscribe();
     this.leaveTransaction();
   }
 
@@ -509,6 +508,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
     this.txConfirmedSubscription?.unsubscribe();
     this.txReplacedSubscription?.unsubscribe();
     this.urlFragmentSubscription?.unsubscribe();
+    this.txRbfInfoSubscription?.unsubscribe();
     this.leaveTransaction();
   }
 
