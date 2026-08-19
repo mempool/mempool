@@ -107,7 +107,7 @@ export class BlockRewardsGraphComponent implements OnInit {
   }
 
   prepareChartOptions(data) {
-    const showFiat = !this.stateService.isAnyTestnet();
+    const showFiat = !this.stateService.isAnyTestnet() && data.blockRewardsFiat.length > 0;
     let title: object;
     if (data.blockRewards.length === 0) {
       title = {

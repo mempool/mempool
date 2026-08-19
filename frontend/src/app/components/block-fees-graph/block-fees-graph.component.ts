@@ -110,7 +110,7 @@ export class BlockFeesGraphComponent implements OnInit {
   }
 
   prepareChartOptions(data) {
-    const showFiat = !this.stateService.isAnyTestnet();
+    const showFiat = !this.stateService.isAnyTestnet() && data.blockFeesFiat.length > 0;
     const feesBtcLabel = $localize`:@@graphs.blockFees.feesBtc:Fees BTC`;
     const feesFiatLabel = $localize`:@@graphs.blockFees.feesFiat:Fees ${this.currency}:currency:`;
 
