@@ -35,8 +35,11 @@ const JUST_NUMBERS_REGEX = /^[1-9]\d*$/;
 const IBD_ETA_BASELINE_MS = 30 * 60 * 1000;
 const BLOCK_INDEX_ETA_BASELINE_MS = 2 * 60 * 1000;
 // electrs routinely trails Core by a block or two in normal operation, while a
-// node indexing for the first time is thousands of blocks behind.
-const ELECTRS_LAG_TOLERANCE = 2;
+// node indexing for the first time is thousands of blocks behind. Keep the
+// window generous: the cost of reporting a lagging server as indexed is a stale
+// figure on one page, while the cost of the opposite is sending someone with a
+// working node to the Getting Started page.
+const ELECTRS_LAG_TOLERANCE = 10;
 
 // Sampled per process. With SPAWN_CLUSTER_PROCS > 0 each worker keeps its own
 // baseline, so consecutive polls can land on different workers and the reported
@@ -139,8 +142,14 @@ class BitcoinRoutes {
     try {
       const blockchainInfo = await bitcoinClient.getBlockchainInfo();
 
+      // Core keeps initialblockdownload set while the tip is older than -maxtipage
+      // (24h by default), so an idle regtest/signet dev chain reports IBD forever
+      // even at blocks === headers. Pair it with the height check the indexer
+      // already uses as its "Core is fully synced" test.
+      const ibd = blockchainInfo.initialblockdownload && blockchainInfo.blocks !== blockchainInfo.headers;
+
       let estimatedTimeRemaining: number | null = null;
-      if (blockchainInfo.initialblockdownload && blockchainInfo.verificationprogress < 1) {
+      if (ibd && blockchainInfo.verificationprogress < 1) {
         const now = Date.now();
         if (lastIBDSample && blockchainInfo.verificationprogress > lastIBDSample.progress) {
           const progressPerSecond = (blockchainInfo.verificationprogress - lastIBDSample.progress) / ((now - lastIBDSample.time) / 1000);
@@ -179,7 +188,7 @@ class BitcoinRoutes {
       }
 
       const result: IBDProgress = {
-        ibd: blockchainInfo.initialblockdownload,
+        ibd,
         bitcoind: {
           blocks: blockchainInfo.blocks,
           headers: blockchainInfo.headers,
@@ -196,16 +205,24 @@ class BitcoinRoutes {
       };
 
       if (config.MEMPOOL.BACKEND === 'esplora' || config.MEMPOOL.BACKEND === 'electrum') {
+        let electrsReachable = true;
         let electrsIndexed = false;
         try {
           const electrsTip = await bitcoinApi.$getElectrsHeightTip();
-          electrsIndexed = !blockchainInfo.initialblockdownload && electrsTip >= blockchainInfo.blocks - ELECTRS_LAG_TOLERANCE;
+          electrsIndexed = !ibd && electrsTip >= blockchainInfo.blocks - ELECTRS_LAG_TOLERANCE;
         } catch (e) {
-          // electrs/electrum unreachable or still starting up — treat as not yet indexed
+          // Answering the query at all is what makes electrs reachable. A server
+          // that is still building its first index does not open its port, so
+          // this branch covers both that and a plain outage — the two are
+          // indistinguishable from here, and the page says so rather than
+          // claiming indexing is in progress.
+          electrsReachable = false;
+          logger.debug(`Could not read the electrs index tip: ` + (e instanceof Error ? e.message : e));
         }
         // electrs exposes neither an indexing percentage nor a reliable start
         // time, so we can only report whether it is done — no bar, ETA or elapsed.
         result.electrs = {
+          reachable: electrsReachable,
           indexed: electrsIndexed,
           progress: null,
         };

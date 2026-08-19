@@ -143,9 +143,7 @@
     </div>
 
     <ng-container *ngIf="mempoolStatus === 'active'">
-      <ng-container
-        *ngIf="syncProgress.mempool.progress != null; else mempoolScan"
-      >
+      <ng-container *ngIf="syncProgress.mempool.progress > 0; else mempoolScan">
         <div
           class="sync-bar"
           role="progressbar"
@@ -202,6 +200,11 @@
       class="pulse"
       i18n="getting-started.status.in-progress"
       >In progress</span
+    >
+    <span
+      *ngSwitchCase="'unreachable'"
+      i18n="getting-started.status.unreachable"
+      >Not reachable</span
     >
     <span *ngSwitchDefault i18n="getting-started.status.waiting">Waiting</span>
   </span>
