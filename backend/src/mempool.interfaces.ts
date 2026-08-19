@@ -537,6 +537,7 @@ export interface IBDProgress {
     estimatedTimeRemaining: number | null;
   };
   electrs?: {
+    reachable: boolean;
     indexed: boolean;
     progress: number | null;
   };

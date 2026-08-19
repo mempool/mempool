@@ -11,7 +11,7 @@ import { ApiService } from '@app/services/api.service';
 import { StateService } from '@app/services/state.service';
 import { SyncProgress } from '@interfaces/node-api.interface';
 
-type StageStatus = 'complete' | 'active' | 'waiting';
+type StageStatus = 'complete' | 'active' | 'waiting' | 'unreachable';
 
 @Component({
   selector: 'app-getting-started',
@@ -47,7 +47,10 @@ export class GettingStartedComponent implements OnInit, OnDestroy {
     if (electrs.indexed) {
       return 'complete';
     }
-    return this.syncProgress.ibd ? 'waiting' : 'active';
+    if (this.syncProgress.ibd) {
+      return 'waiting';
+    }
+    return electrs.reachable ? 'active' : 'unreachable';
   }
 
   get mempoolStatus(): StageStatus {
@@ -78,6 +81,8 @@ export class GettingStartedComponent implements OnInit, OnDestroy {
         return $localize`:@@getting-started.electrs.desc.active:Building the transaction index from the synced blockchain data.`;
       case 'complete':
         return $localize`:@@getting-started.electrs.desc.complete:Transaction indexing complete.`;
+      case 'unreachable':
+        return $localize`:@@getting-started.electrs.desc.unreachable:Can't reach the server. It does not accept connections until its first index is built, so this is expected during setup — otherwise check that it is running.`;
       default:
         return $localize`:@@getting-started.electrs.desc.waiting:Waiting for Bitcoin Core to finish before transaction indexing can begin.`;
     }
