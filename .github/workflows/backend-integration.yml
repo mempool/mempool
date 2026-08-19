@@ -23,12 +23,12 @@ jobs:
     
     steps:
       - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ${{ matrix.node }}/integration
 
       - name: Setup Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ matrix.node }}
           registry-url: "https://registry.npmjs.org"
@@ -36,7 +36,7 @@ jobs:
           cache-dependency-path: '${{ matrix.node }}/integration/backend/package-lock.json'
 
       - name: Cache node modules
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ matrix.node }}/integration/backend/node_modules
           key: ${{ runner.os }}-backend-integration-node-${{ matrix.node }}-${{ hashFiles('${{ matrix.node }}/integration/backend/package-lock.json') }}
@@ -50,7 +50,7 @@ jobs:
         working-directory: ${{ matrix.node }}/integration
 
       - name: Cache Rust dependencies
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ~/.cargo/bin/
