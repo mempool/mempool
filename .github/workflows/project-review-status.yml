@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   project-automation:
-    uses: mempool/.github/.github/workflows/project-board-automation.yml@86b3a255a9a60ac3396d516bd26a64a171aef7d5 # master
+    uses: mempool/.github/.github/workflows/project-board-automation.yml@1b41bb42b0876d8469dc5c5878711aeffb678266 # master
     with:
       project-number: 8
     secrets:
