@@ -540,6 +540,7 @@ export interface SyncProgress {
     estimatedTimeRemaining: number | null;
   };
   electrs?: {
+    reachable: boolean;
     indexed: boolean;
     progress: number | null;
   };

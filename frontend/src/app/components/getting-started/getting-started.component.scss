@@ -74,6 +74,10 @@
     background: var(--success);
     color: #fff;
   }
+
+  &.unreachable {
+    color: var(--orange);
+  }
 }
 
 .pulse {
