@@ -230,6 +230,7 @@ class Indexer {
       void blocks.$generateFlagValuesDatabase();
       // do not wait for classify blocks to finish
       void blocks.$classifyBlocks();
+      void blocks.$updateBlocksMissingBip54Tag();
       runSuccessful = true;
     } catch (e) {
       nextRunDelay = retryDelay;

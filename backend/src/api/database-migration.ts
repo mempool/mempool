@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 112;
+  private static currentVersion = 113;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -1259,6 +1259,11 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 112) {
       await this.$executeQuery(this.getCreateFlagsValuesTableQuery(), await this.$checkIfTableExists('flag_values'));
       await this.updateToSchemaVersion(112);
+    }
+
+    if (databaseSchemaVersion < 113) {
+      await this.$executeQuery('ALTER TABLE `blocks` ADD coinbase_bip_54 TINYINT(1) NULL DEFAULT NULL');
+      await this.updateToSchemaVersion(113);
     }
   }
 
