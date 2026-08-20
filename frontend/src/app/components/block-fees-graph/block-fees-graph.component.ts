@@ -187,6 +187,7 @@ export class BlockFeesGraphComponent implements OnInit {
         }
       },
       legend: data.blockFees.length === 0 ? undefined : {
+        top: 'top',
         data: [
           {
             name: feesBtcLabel,

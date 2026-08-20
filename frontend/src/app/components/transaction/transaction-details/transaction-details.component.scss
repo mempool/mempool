@@ -172,8 +172,16 @@
     gap: 0.5rem;
     flex-wrap: wrap;
 
+    @media (max-width: 849.98px) {
+      justify-content: flex-end;
+    }
+
     .effective-fee-container {
       flex: 0 0 auto;
+
+      @media (max-width: 425px) {
+        align-items: flex-end;
+      }
     }
   }
 }

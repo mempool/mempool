@@ -1,5 +1,6 @@
 import express from 'express';
 import { Application, Request, Response, NextFunction } from 'express';
+import * as fs from 'fs';
 import * as http from 'http';
 import * as WebSocket from 'ws';
 import bitcoinApi from './api/bitcoin/bitcoin-api-factory';
@@ -66,6 +67,10 @@ class Server {
 
   constructor() {
     this.app = express();
+
+    if (cluster.isPrimary && config.MEMPOOL.UNIX_SOCKET_PATH) {
+      this.clearStaleUnixSocket(config.MEMPOOL.UNIX_SOCKET_PATH);
+    }
 
     if (!config.MEMPOOL.SPAWN_CLUSTER_PROCS) {
       void this.startServer();
@@ -230,6 +235,8 @@ class Server {
         logger.notice(`Mempool Server is running on port ${config.MEMPOOL.HTTP_PORT}`);
       }
     });
+    this.server.keepAliveTimeout = 70 * 1000;
+    this.server.headersTimeout = 71 * 1000;
 
     if (this.serverUnixSocket) {
       this.serverUnixSocket.listen(config.MEMPOOL.UNIX_SOCKET_PATH, () => {
@@ -239,9 +246,23 @@ class Server {
           logger.notice(`Mempool Server is listening on ${config.MEMPOOL.UNIX_SOCKET_PATH}`);
         }
       });
+
+      this.serverUnixSocket.keepAliveTimeout = 70 * 1000;
+      this.serverUnixSocket.headersTimeout = 71 * 1000;
     }
 
     void poolsUpdater.$startService();
+  }
+
+  clearStaleUnixSocket(path: string): void {
+    try {
+      if (fs.existsSync(path)) {
+        fs.unlinkSync(path);
+        logger.notice(`Removed stale unix socket ${path}`);
+      }
+    } catch (e) {
+      logger.err(`Failed to remove stale unix socket ${path}. Reason: ${e instanceof Error ? e.message : e}`);
+    }
   }
 
   /** @asyncSafe */
@@ -400,6 +421,16 @@ class Server {
       this.warnedHeapCritical = false;
       this.maxHeapSize = 0;
       this.lastHeapLogTime = now;
+      this.server?.getConnections((error, count) => {
+        if (!error) {
+          logger.debug(`${count} open TCP sockets`);
+        }
+      });
+      this.serverUnixSocket?.getConnections((error, count) => {
+        if (!error) {
+          logger.debug(`${count} open unix sockets`);
+        }
+      });
     }
   }
 
