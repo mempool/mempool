@@ -21,6 +21,9 @@ import { TrackerStage } from '@components/tracker/tracker-bar.component';
 import { ApiService } from '@app/services/api.service';
 import { StorageService } from '@app/services/storage.service';
 
+const DEFAULT_CONFS = 2;
+const MAX_CONFS = 24;
+
 @Component({
   selector: 'app-payment',
   templateUrl: './payment.component.html',
@@ -42,7 +45,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
   rbfTransaction: Transaction | null;
 
   destination = '';
-  confsRequired = 3;
+  confsRequired = DEFAULT_CONFS;
   amount = 0;
   confirmations = 0;
   settled = false;
@@ -402,12 +405,12 @@ export class PaymentComponent implements OnInit, OnDestroy {
     if (params.has('confs')) {
       const confsRequired = Number(params.get('confs'));
       if (Number.isInteger(confsRequired) && confsRequired > 0) {
-        this.confsRequired = Math.min(confsRequired, 6);
+        this.confsRequired = Math.min(confsRequired, MAX_CONFS);
       } else {
-        this.confsRequired = 3;
+        this.confsRequired = DEFAULT_CONFS;
       }
     } else {
-      this.confsRequired = 3;
+      this.confsRequired = DEFAULT_CONFS;
     }
     this.updateConfirmations();
 
@@ -463,8 +466,8 @@ export class PaymentComponent implements OnInit, OnDestroy {
   resetTransaction(): void {
     const fragmentParams = new URLSearchParams(this.route.snapshot.fragment || '');
     this.destination = fragmentParams.get('destination') || '';
-    const parsedConfs = Math.min(Math.ceil(parseInt((fragmentParams.get('confs') || '3'), 10)), 6); // Capped to 6 confs
-    this.confsRequired = (!isNaN(parsedConfs) && parsedConfs >= 1) ? parsedConfs : 3;
+    const parsedConfs = Math.min(Math.ceil(parseInt((fragmentParams.get('confs') || DEFAULT_CONFS.toString()), 10)), MAX_CONFS);
+    this.confsRequired = (!isNaN(parsedConfs) && parsedConfs >= 1) ? parsedConfs : DEFAULT_CONFS;
 
     this.error = undefined;
     this.tx = null;
