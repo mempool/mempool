@@ -237,24 +237,19 @@
         }
       }
 
-      // the pair currently being diffed, matching the Previous / Current
-      // column accents in .rbf-diff-section
-      &.diff-old .shape-border,
-      &.diff-old.selected .shape-border,
-      &.diff-old.mined .shape-border {
+      // The pair currently being diffed, matching the Previous / New column
+      // accents in .rbf-diff-section. The template drops .selected and .mined
+      // while the diff is open, so these never have to outrank them.
+      &.diff-old .shape-border {
         background: var(--red);
       }
 
-      &.diff-new .shape-border,
-      &.diff-new.selected .shape-border,
-      &.diff-new.mined .shape-border {
+      &.diff-new .shape-border {
         background: var(--green);
       }
 
       // first half of a two-click comparison, waiting for the other end
-      &.diff-pending .shape-border,
-      &.diff-pending.selected .shape-border,
-      &.diff-pending.mined .shape-border {
+      &.diff-pending .shape-border {
         background: var(--tertiary);
         outline: 2px dashed var(--fg);
       }
@@ -326,85 +321,83 @@
   padding-top: 0.5rem;
   border-top: 1px solid var(--border-subtle);
 
-  // Bootstrap's .col-sm doesn't shrink below its content, and a full address is
-  // wide enough to push both columns past the container and wrap them onto
-  // separate lines. Bounding the cells keeps the two tables side by side.
-  .col-sm {
-    min-width: 0;
-  }
-
-  table {
+  .rbf-diff-table {
     margin-bottom: 0;
-    // fixed layout so a long address can never widen the table; the colgroup in
-    // the template sets the column split, since the colspan'd header row would
-    // otherwise be the one deciding it
+    // fixed layout so a long address can never widen the table and push the
+    // third column off the box
     table-layout: fixed;
     width: 100%;
   }
 
   col.label-col {
-    width: 38%;
+    width: 30%;
   }
 
   // styles.scss applies `tr { white-space: nowrap }` to every table, which makes a
-  // long label like "Output (address changed)" spill out of its column and land on
-  // top of the address next to it. Labels wrap inside their own column instead.
-  tbody tr td:first-child {
+  // long field name spill out of its column and land on top of the value next to
+  // it. Names wrap inside their own column instead.
+  .row-label {
     white-space: normal;
     overflow-wrap: break-word;
   }
 
-  @media (max-width: 575.98px) {
-    // the tables stack below this width, so the label can afford to be wider
-    col.label-col {
-      width: 45%;
+  thead th {
+    font-weight: 600;
+    text-align: left;
+    padding-bottom: 0.5rem;
+    // each column carries the colour of its node in the timeline above
+    border-bottom: 2px solid transparent;
+
+    &.previous-col {
+      border-bottom-color: var(--red);
+    }
+
+    &.new-col {
+      border-bottom-color: var(--green);
     }
   }
 
-  .previous-box {
-    border-top: 3px solid var(--red);
-  }
-
-  .current-box {
-    border-top: 3px solid var(--green);
-  }
-
-  .diff-head td {
-    font-weight: 600;
-    text-align: left;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-  }
-
-  .diff-head-content {
+  // The name and the txid share one line. A wrapper rather than the th itself,
+  // because turning a table cell into a flex container drops it out of the table
+  // and the columns stop lining up with the colgroup.
+  .col-head {
     display: flex;
     align-items: baseline;
     gap: 0.35rem;
-    white-space: nowrap;
     overflow: hidden;
-
-    code {
-      margin: 0;
-      font-size: 0.85rem;
-      color: var(--link-color);
-      background: transparent;
-      padding: 0;
-      opacity: 0.9;
-    }
   }
 
-  td:last-child {
+  .col-name {
+    flex: 0 0 auto;
+  }
+
+  // gives way before the column does, so the header can never push the table wide
+  thead code {
+    margin: 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--link-color);
+    background: transparent;
+    padding: 0;
+    opacity: 0.9;
+  }
+
+  td {
     text-align: left;
+    vertical-align: top;
+  }
+
+  // repeated inside every value cell, for the stacked layout below; the header
+  // row says the same thing while the table still has columns
+  .col-label {
+    display: none;
   }
 
   .null-placeholder {
     opacity: 0.5;
-  }
-
-  .changed-indicator {
-    margin-left: 0.5rem;
-    font-size: 0.6rem;
-    color: var(--green);
   }
 
   .difference.positive {
@@ -415,13 +408,16 @@
     color: var(--red);
   }
 
-  // a replaced destination is a warning, not a neutral delta. The label carries
-  // the colour so the address itself still reads as an ordinary link.
-  tr.address-changed td:first-child {
-    color: var(--red);
+  // neither an improvement nor a regression, so it stays out of the red/green
+  // vocabulary the percentages use
+  .count-delta {
+    margin-left: 0.35rem;
+    color: var(--transparent-fg);
   }
 
-  .address-changed .changed-indicator {
+  // a replaced destination is a warning, not a neutral delta. The field name
+  // carries the colour so the address itself still reads as an ordinary link.
+  tr.address-changed .row-label {
     color: var(--red);
   }
 
@@ -431,8 +427,6 @@
     display: flex;
     align-items: baseline;
     gap: 0.35rem;
-    // set here rather than on .output-address so the placeholder for an added or
-    // removed output measures exactly the same as a real address
     font-size: 0.9rem;
   }
 
@@ -453,16 +447,65 @@
     color: var(--transparent-fg);
   }
 
-  // explicit line heights so a populated cell and a placeholder cell measure the
-  // same, which is what keeps the two tables aligned row by row
-  .output-address-row {
-    line-height: 1.6;
-  }
-
   .output-value {
     display: block;
-    line-height: 1.6;
     font-size: 0.85rem;
     color: var(--transparent-fg);
+  }
+
+  // Three columns don't fit on a phone, so the table folds: the field name
+  // becomes a heading and its two values stack underneath it, each one labelled
+  // with the transaction it belongs to.
+  @media (max-width: 575.98px) {
+    // the table itself has to leave the table formatting context too, otherwise
+    // the colgroup keeps sizing the cells to their desktop columns and the
+    // stacked content spills out of a third of the width
+    .rbf-diff-table,
+    tbody {
+      display: block;
+    }
+
+    thead {
+      display: none;
+    }
+
+    tbody tr {
+      display: block;
+      padding: 0.4rem 0;
+    }
+
+    tbody td {
+      display: block;
+      width: 100%;
+      padding: 0.1rem 0.5rem;
+    }
+
+    .row-label {
+      font-weight: 600;
+      padding-bottom: 0.2rem;
+    }
+
+    // a scalar value fits beside its label
+    .col-label {
+      display: inline-block;
+      min-width: 5.5em;
+      vertical-align: top;
+      font-size: 0.8rem;
+      color: var(--transparent-fg);
+    }
+
+    // an address does not: app-truncate only ellipsizes inside a flex container
+    // with a resolved width, which an inline-level box beside a label never has.
+    // So the label takes its own line and the address gets the full cell.
+    .output-row {
+      .col-label {
+        display: block;
+        min-width: 0;
+      }
+
+      .output-address-row {
+        width: 100%;
+      }
+    }
   }
 }

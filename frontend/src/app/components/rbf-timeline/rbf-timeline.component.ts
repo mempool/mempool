@@ -18,9 +18,9 @@ interface TimelineCell {
 }
 
 /**
- * One output of the replacement, aligned across the Previous and Current tables.
- * Every row renders on both sides so the two tables stay in step; the side that
- * doesn't exist gets a placeholder.
+ * One output of the replacement, rendered as a single row with the previous and
+ * the new destination side by side. An added or removed output has nothing on
+ * one side and gets a placeholder there.
  */
 interface OutputDiffRow {
   previous: Vout | null;
@@ -31,7 +31,7 @@ interface OutputDiffRow {
 }
 
 /**
- * Everything the diff tables render. A field is only flagged when it actually
+ * Everything the diff table renders. A field is only flagged when it actually
  * changed, so unchanged rows never reach the template.
  */
 interface RbfDiffView {
@@ -43,10 +43,10 @@ interface RbfDiffView {
   weightChanged: boolean;
   weightPercent: number | null;
   weightIncreased: boolean;
-  inputCountChanged: boolean;
-  addedInputs: number;
-  removedInputs: number;
-  outputCountChanged: boolean;
+  inputsChanged: boolean;
+  inputsDelta: string;
+  outputsChanged: boolean;
+  outputsDelta: string;
   outputRows: OutputDiffRow[];
 }
 
@@ -526,7 +526,23 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
-   * Reduces the structural diff to just what the tables render. Rows for
+   * Reads as "(+2 −1)". Reporting how many were added and how many removed
+   * rather than the net keeps a swap visible: replacing one input with another
+   * leaves the total untouched, which a net delta would report as no change.
+   */
+  private formatCountDelta(added: number, removed: number): string {
+    const parts: string[] = [];
+    if (added > 0) {
+      parts.push(`+${added}`);
+    }
+    if (removed > 0) {
+      parts.push(`−${removed}`);
+    }
+    return parts.length ? `(${parts.join(' ')})` : '';
+  }
+
+  /**
+   * Reduces the structural diff to just what the table renders. Rows for
    * unchanged fields are left out entirely rather than rendered as noise.
    */
   private buildDiffView(oldTx: Transaction, newTx: Transaction): RbfDiffView {
@@ -548,6 +564,11 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
         .map(adj => ({ previous: adj.old, current: adj.new, addressChanged: false, feeAdjusted: true })),
     ];
 
+    const addedInputs = diff.inputs.added.length;
+    const removedInputs = diff.inputs.removed.length;
+    const addedOutputs = diff.outputs.added.length;
+    const removedOutputs = diff.outputs.removed.length;
+
     return {
       versionChanged: diff.transaction.versionChanged,
       locktimeChanged: diff.transaction.locktimeChanged,
@@ -557,10 +578,12 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
       weightChanged: diff.metrics.weightDelta !== null,
       weightPercent: oldTx.weight > 0 ? ((newTx.weight - oldTx.weight) / oldTx.weight) * 100 : null,
       weightIncreased: newTx.weight > oldTx.weight,
-      inputCountChanged: oldTx.vin.length !== newTx.vin.length,
-      addedInputs: diff.inputs.added.length,
-      removedInputs: diff.inputs.removed.length,
-      outputCountChanged: oldTx.vout.length !== newTx.vout.length,
+      // an input can be swapped for another without the total moving, so the
+      // count alone can't decide whether the row is worth showing
+      inputsChanged: oldTx.vin.length !== newTx.vin.length || addedInputs > 0 || removedInputs > 0,
+      inputsDelta: this.formatCountDelta(addedInputs, removedInputs),
+      outputsChanged: oldTx.vout.length !== newTx.vout.length || addedOutputs > 0 || removedOutputs > 0,
+      outputsDelta: this.formatCountDelta(addedOutputs, removedOutputs),
       outputRows,
     };
   }
