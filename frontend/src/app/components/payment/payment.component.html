@@ -10,6 +10,9 @@
           </app-truncate>
         </span>
       </span>
+      <div class="details-button">
+        <button type="button" class="btn btn-outline-info btn-sm" (click)="viewFullDetails()" i18n="transaction.details|Transaction Details">Details</button>
+      </div>
     </div>
     <div class="clearfix"></div>
 
@@ -39,12 +42,6 @@
         </div>
         }
       </div>
-    </div>
-
-    <div class="details-link">
-      <button type="button" class="btn btn-sm btn-outline-info" (click)="viewFullDetails()">
-        <span i18n="transaction.view-full-details">View full transaction details</span>
-      </button>
     </div>
   }
 
