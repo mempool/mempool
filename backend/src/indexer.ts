@@ -137,7 +137,7 @@ class Indexer {
 
     switch (task) {
       case 'blocksPrices': {
-        if (!['testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK) && config.FIAT_PRICE.ENABLED) {
+        if (Common.blockPricesIndexingEnabled()) {
           let latestPriceId;
           try {
             latestPriceId = await PricesRepository.$getLatestPriceId();
