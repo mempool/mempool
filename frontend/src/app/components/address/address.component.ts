@@ -652,15 +652,6 @@ export class AddressComponent implements OnInit, OnDestroy {
     }
   }
 
-  get showColdcardWarning(): boolean {
-    return !this.isLoadingTransactions && !this.error
-      && this.addressTypeInfo
-      && ['p2sh', 'v0_p2wsh', 'p2sh-p2wsh'].includes(this.addressTypeInfo.type)
-      && !!this.addressTypeInfo.isMultisig
-      && this.addressTypeInfo.network === 'mainnet'
-      && (this.chainStats.balance > 0 || this.mempoolStats.balance > 0);
-  }
-
   ngOnDestroy(): void {
     this.mainSubscription.unsubscribe();
     this.mempoolTxSubscription.unsubscribe();
