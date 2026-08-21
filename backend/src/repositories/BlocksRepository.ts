@@ -61,6 +61,7 @@ interface DatabaseBlock {
   totalInputAmt: number;
   firstSeen: string; // UNIX_TIMESTAMP() returns a string when applied to datetime(6)
   stale: boolean;
+  coinbaseBip54: boolean | null;
 }
 
 const BLOCK_DB_FIELDS = `
@@ -92,6 +93,7 @@ const BLOCK_DB_FIELDS = `
   blocks.coinbase_addresses AS coinbaseAddresses,
   blocks.coinbase_signature AS coinbaseSignature,
   blocks.coinbase_signature_ascii AS coinbaseSignatureAscii,
+  blocks.coinbase_bip_54 AS coinbaseBip54,
   blocks.avg_tx_size AS avgTxSize,
   blocks.total_inputs AS totalInputs,
   blocks.total_outputs AS totalOutputs,
@@ -132,7 +134,7 @@ class BlocksRepository {
         total_inputs,       total_outputs,            total_input_amt,   total_output_amt,
         fee_percentiles,    segwit_total_txs,         segwit_total_size, segwit_total_weight,
         median_fee_amt,     coinbase_signature_ascii, definition_hash,   index_version,
-        stale,              first_seen
+        stale,              first_seen,               coinbase_bip_54
       ) VALUE (
         ?, ?, FROM_UNIXTIME(?), ?,
         ?, ?, ?, ?,
@@ -144,7 +146,7 @@ class BlocksRepository {
         ?, ?, ?, ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?,
-        ?, FROM_UNIXTIME(?)
+        ?, FROM_UNIXTIME(?), ?
       )`;
 
       const poolDbId = await PoolsRepository.$getPoolByUniqueId(block.extras.pool.id);
@@ -194,7 +196,8 @@ class BlocksRepository {
         poolsUpdater.currentSha,
         BlocksRepository.version,
         (block.stale ? 1 : 0),
-        block.extras.firstSeen === null ? 1 : block.extras.firstSeen // Sentinel value 1 indicates that we could not find first seen time
+        block.extras.firstSeen === null ? 1 : block.extras.firstSeen, // Sentinel value 1 indicates that we could not find first seen time
+        block.extras.coinbaseBip54 ?? null
       ];
 
       await DB.query(query, params);
@@ -1298,6 +1301,7 @@ class BlocksRepository {
     extras.utxoSetSize = dbBlk.utxoSetSize;
     extras.totalInputAmt = dbBlk.totalInputAmt;
     extras.virtualSize = dbBlk.weight / 4.0;
+    extras.coinbaseBip54 = dbBlk.coinbaseBip54;
 
     extras.firstSeen = null;
     if (config.CORE_RPC.DEBUG_LOG_PATH) {
@@ -1429,6 +1433,43 @@ class BlocksRepository {
       throw e;
     }
     return blocksMigrated;
+  }
+
+  /** @asyncSafe */
+  public async $getBlocksMissingBip54Tag(): Promise<{id: string, height: number, timestamp: number}[]> {
+    const timeFirstMainnetBip54Coinbase = 1771507776;
+    const query = `SELECT 
+    hash as id, 
+    height,
+    UNIX_TIMESTAMP(blocks.blockTimestamp) AS timestamp
+    FROM blocks
+    where coinbase_bip_54 IS NULL AND
+    stale = 0 AND
+    height > 0 AND
+    blockTimestamp >= FROM_UNIXTIME(${timeFirstMainnetBip54Coinbase})
+    ORDER BY height DESC`;
+
+    try {
+      const [blocks]: any[] = await DB.query(query);
+
+      return blocks;
+    } catch (e) {
+      logger.err(`Cannot get blocks with missing bip54 flag. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+
+    return [];
+  }
+
+  public async $updateCoinbaseBip54(result: boolean, hash: string): Promise<void> {
+    const query = `UPDATE blocks SET coinbase_bip_54 = ? WHERE hash = ?`;
+    const params = [result, hash];
+
+    try {
+      await DB.query(query, params);
+    } catch (e) {
+      logger.err(`Couldn't update coinbaseBip54 field for block ${hash}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
   }
 }
 

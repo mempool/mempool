@@ -1165,6 +1165,20 @@ export class Common {
     });
   }
 
+  static isBip54Coinbase (block: IEsploraApi.Block | {id: string, height: number, timestamp: number}, coinbaseTx: IEsploraApi.Transaction): boolean | null {
+    if (typeof block.height !== 'number' || typeof block.timestamp !== 'number') {
+      return null;
+    }
+
+    const timeFirstMainnetBip54Coinbase = 1771507776;
+    if (block.timestamp < timeFirstMainnetBip54Coinbase) {
+      return null;
+    }
+
+    const seq = coinbaseTx.vin[0].sequence;
+    return (block.height > 0 && coinbaseTx.locktime === block.height - 1 && typeof seq === 'number' && seq !== 0xffffffff);
+  }
+
   private static validateTransactionHex(txhex: string): string {
     // Do not mutate txhex
 

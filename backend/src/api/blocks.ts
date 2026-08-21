@@ -52,6 +52,7 @@ class Blocks {
   private quarterEpochBlockTime: number | null = null;
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
   private classifyingBlocks: boolean = false;
+  private updatingBlocksMissingBip54Tag: boolean = false;
   private oldestCoreLogTimestamp: number | undefined | null = undefined;
 
   private mainLoopTimeout: number = 120000;
@@ -386,6 +387,8 @@ class Blocks {
           extras.firstSeen = getBlockFirstSeenFromLogs(block.id, block.timestamp, oldestLog);
         }
       }
+
+      extras.coinbaseBip54 = Common.isBip54Coinbase(block, transactions[0]);
     }
 
     blk.extras = <BlockExtension>extras;
@@ -1081,6 +1084,65 @@ class Blocks {
     }
 
     this.classifyingBlocks = false;
+  }
+
+  /** @asyncSafe */
+  public async $updateBlocksMissingBip54Tag(): Promise<void> {
+    if (this.updatingBlocksMissingBip54Tag) {
+      return;
+    }
+
+    this.updatingBlocksMissingBip54Tag = true;
+
+    if (!Common.indexingEnabled() || Common.isLiquid()) {
+      return;
+    }
+
+    const blocksMissingCoinbaseBip54 = await BlocksRepository.$getBlocksMissingBip54Tag();
+
+    if (!blocksMissingCoinbaseBip54.length) {
+      this.updatingBlocksMissingBip54Tag = false;
+      return;
+   }
+
+    let timer = Date.now();
+    let updatedThisRun = 0;
+    let updatedInTotal = 0;
+    let numToUpdate = blocksMissingCoinbaseBip54.length;
+
+    logger.debug(`Updating blocks missing bip54 tag from #${blocksMissingCoinbaseBip54[0].height} to #${blocksMissingCoinbaseBip54[blocksMissingCoinbaseBip54.length - 1].height}`, logger.tags.mining);
+    for (const block of blocksMissingCoinbaseBip54) {
+      try {
+        const coinbaseTx = await bitcoinApi.$getCoinbaseTx(block.id);
+
+        const coinbaseBip54 = Common.isBip54Coinbase(block, coinbaseTx);
+        if (coinbaseBip54 === null) {
+          numToUpdate--;
+          continue;
+        }
+
+        await BlocksRepository.$updateCoinbaseBip54(coinbaseBip54, block.id);
+        updatedInTotal++;
+        updatedThisRun++;
+
+      } catch (e) {
+        logger.warn(`Failed to update bip54 tag field in block #${block.height}. Reason: ` + (e instanceof Error ? e.message : e), logger.tags.mining);
+      }
+
+      const elapsedSeconds = (Date.now() - timer) / 1000;
+      if (elapsedSeconds > 5) {
+        const perSecond = updatedThisRun / elapsedSeconds;
+        const progress = (updatedInTotal / numToUpdate) * 100;
+        logger.debug(`Updated bip54 tag of #${block.height}: ${updatedInTotal} / ${numToUpdate}  (${progress.toFixed(2)}%) | ~${perSecond.toFixed(1)} blocks/s`, logger.tags.mining);
+        timer = Date.now();
+        updatedThisRun = 0;
+      }
+
+      await Common.sleep$(250); //Don't DoS the DB
+    }
+    logger.debug(`Update of blocks missing bip54 tag completed`, logger.tags.mining);
+
+    this.updatingBlocksMissingBip54Tag = false;
   }
 
   /**
