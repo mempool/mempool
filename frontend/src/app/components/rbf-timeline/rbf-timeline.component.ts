@@ -26,8 +26,9 @@ interface OutputDiffRow {
   previous: Vout | null;
   current: Vout | null;
   addressChanged: boolean;
-  // value reduced by exactly the fee bump — not a real change to the output
-  feeAdjusted: boolean;
+  // the destination survived the replacement, so the table shows it once across
+  // both columns instead of printing the same address twice
+  sameAddress: boolean;
 }
 
 /**
@@ -40,6 +41,7 @@ interface RbfDiffView {
   feeChanged: boolean;
   feePercent: number | null;
   feeIncreased: boolean;
+  feeRateChanged: boolean;
   weightChanged: boolean;
   weightPercent: number | null;
   weightIncreased: boolean;
@@ -365,6 +367,27 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
     return this.showDiff && this.pendingAnchorTxid !== null;
   }
 
+  /**
+   * Which end of the comparison a node is. The fills alone cannot say it: red
+   * and green are exactly the pair a red-green colour blind reader cannot
+   * separate, and a screen reader never sees them at all.
+   */
+  diffRole(txid: string): 'previous' | 'new' | 'pending' | null {
+    if (!this.showDiff) {
+      return null;
+    }
+    if (this.pendingAnchorTxid === txid) {
+      return 'pending';
+    }
+    if (this.highlightedOldTxid === txid) {
+      return 'previous';
+    }
+    if (this.highlightedNewTxid === txid) {
+      return 'new';
+    }
+    return null;
+  }
+
   get pendingAnchorShort(): string {
     return this.pendingAnchorTxid ? this.pendingAnchorTxid.substring(0, 8) : '';
   }
@@ -526,6 +549,16 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
+   * Cross multiplied rather than comparing two divisions, so a rate that did not
+   * really move can never read as changed because of a rounding artefact. The
+   * products can pass the safe integer range for a large fee, hence BigInt.
+   */
+  private feeRateChanged(oldTx: Transaction, newTx: Transaction): boolean {
+    return BigInt(Math.round(oldTx.fee)) * BigInt(newTx.weight)
+      !== BigInt(Math.round(newTx.fee)) * BigInt(oldTx.weight);
+  }
+
+  /**
    * Reads as "(+2 −1)". Reporting how many were added and how many removed
    * rather than the net keeps a swap visible: replacing one input with another
    * leaves the total untouched, which a net delta would report as no change.
@@ -552,17 +585,21 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
     const outputRows: OutputDiffRow[] = [
       ...diff.outputs.modified
         .filter(m => m.changeType !== 'value')
-        .map(m => ({ previous: m.old, current: m.new, addressChanged: true, feeAdjusted: false })),
+        .map(m => ({ previous: m.old, current: m.new, addressChanged: true })),
       ...diff.outputs.modified
         .filter(m => m.changeType === 'value')
-        .map(m => ({ previous: m.old, current: m.new, addressChanged: false, feeAdjusted: false })),
+        .map(m => ({ previous: m.old, current: m.new, addressChanged: false })),
       ...diff.outputs.removed
-        .map(out => ({ previous: out, current: null, addressChanged: false, feeAdjusted: false })),
+        .map(out => ({ previous: out, current: null, addressChanged: false })),
       ...diff.outputs.added
-        .map(out => ({ previous: null, current: out, addressChanged: false, feeAdjusted: false })),
-      ...diff.outputs.feeAdjusted
-        .map(adj => ({ previous: adj.old, current: adj.new, addressChanged: false, feeAdjusted: true })),
-    ];
+        .map(out => ({ previous: null, current: out, addressChanged: false })),
+    ].map(row => ({
+      // derived rather than set per case, so the two shapes can never disagree.
+      // An added or removed output keeps its column: which side it is missing
+      // from is the whole point of that row.
+      ...row,
+      sameAddress: !!row.previous && !!row.current && !row.addressChanged,
+    }));
 
     const addedInputs = diff.inputs.added.length;
     const removedInputs = diff.inputs.removed.length;
@@ -575,6 +612,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
       feeChanged: diff.metrics.feeDelta !== null,
       feePercent: oldTx.fee > 0 ? ((newTx.fee - oldTx.fee) / oldTx.fee) * 100 : null,
       feeIncreased: newTx.fee > oldTx.fee,
+      feeRateChanged: this.feeRateChanged(oldTx, newTx),
       weightChanged: diff.metrics.weightDelta !== null,
       weightPercent: oldTx.weight > 0 ? ((newTx.weight - oldTx.weight) / oldTx.weight) * 100 : null,
       weightIncreased: newTx.weight > oldTx.weight,

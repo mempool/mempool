@@ -148,6 +148,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   overrideFlowPreference: boolean = null;
   flowEnabled: boolean;
   showRbfDiff: boolean = false;
+
+  // The structural diff compares amounts and destinations, and on Liquid neither
+  // is well defined: an output carries an arbitrary asset, and a confidential one
+  // has no value at all. It stays off there until it is asset aware.
+  get isLiquid(): boolean {
+    return this.network === 'liquid' || this.network === 'liquidtestnet';
+  }
   isDetailsOpen: boolean = false;
   tooltipPosition: { x: number, y: number };
   isMobile: boolean;

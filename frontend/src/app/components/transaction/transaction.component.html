@@ -137,7 +137,7 @@
         <h2 id="rbf" i18n="transaction.rbf-history|RBF Timeline">RBF Timeline</h2>
       </div>
 
-      <button *ngIf="rbfInfo.replaces?.length" type="button" class="btn btn-outline-info rbf-diff-toggle btn-sm float-end" (click)="showRbfDiff = !showRbfDiff">
+      <button *ngIf="rbfInfo.replaces?.length && !isLiquid" type="button" class="btn btn-outline-info rbf-diff-toggle btn-sm float-end" (click)="showRbfDiff = !showRbfDiff">
         <span *ngIf="!showRbfDiff" i18n="rbf-diff.show">Show structural diff</span>
         <span *ngIf="showRbfDiff" i18n="rbf-diff.hide">Hide structural diff</span>
       </button>
