@@ -18,7 +18,6 @@ export interface RbfDiff {
     added: Vout[];
     removed: Vout[];
     modified: Array<{ old: Vout; new: Vout; index: number; changeType: 'address' | 'value' | 'both' }>;
-    feeAdjusted: Array<{ old: Vout; new: Vout; index: number }>; // Value reduced by exactly feeDelta
     unchanged: Array<{ old: Vout; new: Vout; index: number }>;
   };
   metrics: {
@@ -106,7 +105,6 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
   const addedOutputs: Vout[] = [];
   const removedOutputs: Vout[] = [];
   const modifiedOutputs: Array<{ old: Vout; new: Vout; index: number; changeType: 'address' | 'value' | 'both' }> = [];
-  const feeAdjustedOutputs: Array<{ old: Vout; new: Vout; index: number }> = [];
   const unchangedOutputs: Array<{ old: Vout; new: Vout; index: number }> = [];
 
   // Annotate outputs with their original indices, a matched flag, and a stable match key
@@ -123,21 +121,6 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
     matched: false,
     outputId: out.scriptpubkey_address ?? `scriptpubkey:${out.scriptpubkey}`,
   }));
-  const oldAddressCounts = new Map<string, number>();
-  const newAddressCounts = new Map<string, number>();
-
-  for (const out of oldTx.vout) {
-    const addr = out.scriptpubkey_address;
-    if (!addr) { continue; }
-    oldAddressCounts.set(addr, (oldAddressCounts.get(addr) ?? 0) + 1);
-  }
-
-  for (const out of newTx.vout) {
-    const addr = out.scriptpubkey_address;
-    if (!addr) { continue; }
-    newAddressCounts.set(addr, (newAddressCounts.get(addr) ?? 0) + 1);
-  }
-
   // Candidate indexes, so each pass looks up its matches instead of rescanning
   // every remaining output for every output it has to place
   const byIdAndValue = indexBy(newOutputs, (entry) => `${entry.outputId}|${entry.out.value}`);
@@ -156,26 +139,14 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
     }
   }
 
-  // Pass 2: match remaining outputs by address to detect fee-adjusted or value-modified outputs
+  // Pass 2: same destination, different amount.
   for (const oldItem of oldOutputs) {
     if (oldItem.matched) { continue; }
     const match = takeUnmatched(byId.get(oldItem.outputId));
     if (!match) { continue; }
     oldItem.matched = true;
     match.matched = true;
-    const valueDelta = oldItem.out.value - match.out.value;
-    // Only classify as fee-adjusted if this looks like a change output (address unique in both txs),
-    // to avoid false positives from unrelated outputs that coincidentally match the fee delta.
-    const addr = oldItem.out.scriptpubkey_address;
-    const isLikelyChangeOutput =
-      !!addr &&
-      oldAddressCounts.get(addr) === 1 &&
-      newAddressCounts.get(addr) === 1;
-    if (valueDelta === feeDelta && feeDelta > 0 && isLikelyChangeOutput) {
-      feeAdjustedOutputs.push({ old: oldItem.out, new: match.out, index: oldItem.index });
-    } else {
-      modifiedOutputs.push({ old: oldItem.out, new: match.out, index: oldItem.index, changeType: 'value' });
-    }
+    modifiedOutputs.push({ old: oldItem.out, new: match.out, index: oldItem.index, changeType: 'value' });
   }
 
   // Pass 3: match any still-unmatched outputs as best-effort (address changed).
@@ -233,7 +204,6 @@ export function calculateRbfDiff(oldTx: Transaction, newTx: Transaction): RbfDif
       added: addedOutputs,
       removed: removedOutputs,
       modified: modifiedOutputs,
-      feeAdjusted: feeAdjustedOutputs,
       unchanged: unchangedOutputs,
     },
     metrics: {

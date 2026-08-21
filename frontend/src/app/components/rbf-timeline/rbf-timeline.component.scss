@@ -244,8 +244,13 @@
         background: var(--red);
       }
 
+      // bigger as well as green: red and green are the one pair a red-green
+      // colour blind reader cannot separate, so size carries the distinction.
+      // Same dimensions the selected-and-mined state already uses.
       &.diff-new .shape-border {
         background: var(--green);
+        height: calc(1em + 16px);
+        width: calc(1em + 16px);
       }
 
       // first half of a two-click comparison, waiting for the other end
@@ -447,10 +452,38 @@
     color: var(--transparent-fg);
   }
 
-  .output-value {
+  .output-value,
+  .output-amount {
     display: block;
     font-size: 0.85rem;
     color: var(--transparent-fg);
+  }
+
+  // The destination spans the two columns it would otherwise be repeated in,
+  // centred over them. The amounts below split the same cell in half so they
+  // still line up with the Previous and New columns of every other row.
+  .output-merged {
+    .output-address-row {
+      justify-content: center;
+    }
+
+    .output-address {
+      flex: 0 1 auto;
+    }
+
+    .output-amounts {
+      display: flex;
+    }
+
+    // centred inside its half rather than left aligned: the address above spans
+    // the whole cell, so amounts pinned to the left of each half leave the row
+    // visibly lopsided. Centred, the pair balances around the address while each
+    // one stays in the half belonging to its column.
+    .output-amount {
+      flex: 1 1 50%;
+      min-width: 0;
+      text-align: center;
+    }
   }
 
   // Three columns don't fit on a phone, so the table folds: the field name
@@ -505,6 +538,30 @@
 
       .output-address-row {
         width: 100%;
+      }
+    }
+
+    // there are no columns left to span here, so the merged cell unwinds: the
+    // address sits left like every other value and the amounts stack, each one
+    // taking its label back beside it
+    .output-merged {
+      .output-address-row {
+        justify-content: flex-start;
+      }
+
+      .output-amounts {
+        display: block;
+      }
+
+      // stacked and label-led here, so centring would only break the left edge
+      // they share with every other value
+      .output-amount {
+        text-align: left;
+      }
+
+      .col-label {
+        display: inline-block;
+        min-width: 5.5em;
       }
     }
   }

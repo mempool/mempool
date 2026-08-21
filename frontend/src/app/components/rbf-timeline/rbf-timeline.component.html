@@ -47,7 +47,12 @@
                   (pointerout)="onBlur($event);"
                 >
                   <div class="shape"></div>
-                  <span class="visually-hidden" *ngIf="showDiff" i18n="rbf-diff.select-transaction">Select this transaction to compare</span>
+                  <span class="visually-hidden" *ngIf="showDiff" [ngSwitch]="diffRole(cell.replacement.tx.txid)">
+                    <ng-container *ngSwitchCase="'previous'" i18n="rbf-diff.node-previous">Previous transaction of the comparison</ng-container>
+                    <ng-container *ngSwitchCase="'new'" i18n="rbf-diff.node-new">New transaction of the comparison</ng-container>
+                    <ng-container *ngSwitchCase="'pending'" i18n="rbf-diff.node-pending">Selected, now choose the transaction to compare it with</ng-container>
+                    <ng-container *ngSwitchDefault i18n="rbf-diff.select-transaction">Select this transaction to compare</ng-container>
+                  </span>
                 </a>
                 <span class="fee-rate"><app-fee-rate [fee]="cell.replacement.tx.fee" [weight]="cell.replacement.tx.vsize * 4" [unitStyle]="{ display: 'block', marginTop: '-0.5em'}"></app-fee-rate></span>
               </div>
@@ -177,7 +182,7 @@
           </td>
         </tr>
 
-        <tr *ngIf="diffView.feeChanged || diffView.weightChanged">
+        <tr *ngIf="diffView.feeRateChanged">
           <td class="row-label" i18n="transaction.fee-rate|Transaction fee rate">Fee rate</td>
           <td>
             <span class="col-label" i18n="rbf-diff.previous-tx">Previous</span>
@@ -245,14 +250,41 @@
         -->
         <tr class="output-row" *ngFor="let row of diffView.outputRows" [class.address-changed]="row.addressChanged">
           <td class="row-label" i18n="rbf-diff.output-address">Output address</td>
-          <td>
-            <span class="col-label" i18n="rbf-diff.previous-tx">Previous</span>
-            <ng-container *ngTemplateOutlet="outputCell; context: { $implicit: row.previous, changed: false }"></ng-container>
+          <!-- The destination survived the replacement, so printing it in both
+               columns just says the same thing twice. It spans them instead,
+               centred; only the amounts, which do differ, stay per column. -->
+          <td class="output-merged" colspan="2"
+            *ngIf="(row.sameAddress ? row.current : null) as out; else splitOutput">
+            <span class="output-address-row">
+              <span class="output-address" *ngIf="out.scriptpubkey_address; else mergedScriptType">
+                <app-truncate [text]="out.scriptpubkey_address" [lastChars]="8"
+                  [link]="['/address/' | relativeUrl, out.scriptpubkey_address]"></app-truncate>
+              </span>
+              <ng-template #mergedScriptType>
+                <span class="output-script-type">{{ out.scriptpubkey_type | scriptpubkeyType }}</span>
+              </ng-template>
+            </span>
+            <span class="output-amounts">
+              <span class="output-amount" *ngIf="row.previous as prev">
+                <span class="col-label" i18n="rbf-diff.previous-tx">Previous</span>
+                <app-amount [satoshis]="prev.value" [noFiat]="true"></app-amount>
+              </span>
+              <span class="output-amount">
+                <span class="col-label" i18n="rbf-diff.new-tx">New</span>
+                <app-amount [satoshis]="out.value" [noFiat]="true"></app-amount>
+              </span>
+            </span>
           </td>
-          <td>
-            <span class="col-label" i18n="rbf-diff.new-tx">New</span>
-            <ng-container *ngTemplateOutlet="outputCell; context: { $implicit: row.current, changed: row.addressChanged }"></ng-container>
-          </td>
+          <ng-template #splitOutput>
+            <td>
+              <span class="col-label" i18n="rbf-diff.previous-tx">Previous</span>
+              <ng-container *ngTemplateOutlet="outputCell; context: { $implicit: row.previous, changed: false }"></ng-container>
+            </td>
+            <td>
+              <span class="col-label" i18n="rbf-diff.new-tx">New</span>
+              <ng-container *ngTemplateOutlet="outputCell; context: { $implicit: row.current, changed: row.addressChanged }"></ng-container>
+            </td>
+          </ng-template>
         </tr>
       </tbody>
     </table>
