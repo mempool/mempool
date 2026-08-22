@@ -4,6 +4,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { SharedModule } from '@app/shared/shared.module';
 import { PaymentComponent } from '@components/payment/payment.component';
 import { TrackerModule } from '@components/tracker/tracker.module';
+import { TransactionModule } from '@components/transaction/transaction.module';
 
 const routes: Routes = [
   {
@@ -35,7 +36,8 @@ export class PaymentRoutingModule { }
     CommonModule,
     PaymentRoutingModule,
     SharedModule,
-    TrackerModule
+    TrackerModule,
+    TransactionModule
   ],
   declarations: [
     PaymentComponent

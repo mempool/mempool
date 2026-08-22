@@ -224,3 +224,40 @@
     }
   }
 }
+
+.etaDeepMempool {
+  flex-wrap: wrap;
+  @media (max-width: 849px) {
+    justify-content: right !important;
+  }
+}
+
+.accelerateDeepMempool {
+  margin-left: 5px;
+}
+
+.title {
+  h2 {
+    line-height: 1;
+    margin: 0;
+    padding-bottom: 5px;
+  }
+}
+
+.accelerator-toggle {
+  position: relative;
+  bottom: -13px;
+  margin-top: -5px;
+  margin-left: 10px;
+  @media (min-width: 768px) {
+    display: inline-block;
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+}
+
+.hide-on-mobile {
+  @media (max-width: 767px) {
+    display: none;
+  }
+}
