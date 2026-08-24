@@ -380,7 +380,7 @@ jobs:
       # mempool
       - name: Chrome browser tests (${{ matrix.module }})
         if: ${{ matrix.module == 'mempool' }}
-        uses: cypress-io/github-action@c32f12761482a282d24ca0fd7466d8ae86f54ba8 # v7.4.2
+        uses: cypress-io/github-action@09090944bd8aaa2a517cefb6e38bf1aae336b42b # v7.4.3
         with:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
@@ -405,7 +405,7 @@ jobs:
       # liquid
       - name: Chrome browser tests (${{ matrix.module }})
         if: ${{ matrix.module == 'liquid' }}
-        uses: cypress-io/github-action@c32f12761482a282d24ca0fd7466d8ae86f54ba8 # v7.4.2
+        uses: cypress-io/github-action@09090944bd8aaa2a517cefb6e38bf1aae336b42b # v7.4.3
         with:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
@@ -430,7 +430,7 @@ jobs:
       # testnet
       - name: Chrome browser tests (${{ matrix.module }})
         if: ${{ matrix.module == 'testnet4' }}
-        uses: cypress-io/github-action@c32f12761482a282d24ca0fd7466d8ae86f54ba8 # v7.4.2
+        uses: cypress-io/github-action@09090944bd8aaa2a517cefb6e38bf1aae336b42b # v7.4.3
         with:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
