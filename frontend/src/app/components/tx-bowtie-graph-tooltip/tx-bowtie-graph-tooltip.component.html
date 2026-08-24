@@ -83,13 +83,18 @@
                 </ng-template>
               </ng-container>
             </p>
-            <p *ngSwitchCase="'output'"><span i18n="transaction.input">Input</span>&nbsp; #{{ line.vin }}
+            <p *ngSwitchCase="'output'">
+              @if (line.vin !== undefined) {
+                <span i18n="transaction.input">Input</span>&nbsp; #{{ line.vin }}
+              }
               <ng-container *ngIf="line.blockHeight">
                 <ng-container *ngIf="line?.status?.block_height; else noBlockHeight">
                   <ng-container *ngTemplateOutlet="nBlocksLater; context:{n: line?.status?.block_height - line.blockHeight, connector: true}"></ng-container>
                 </ng-container>
                 <ng-template #noBlockHeight>
-                  <ng-container *ngTemplateOutlet="nBlocksLater; context:{n: chainTip + 1 - line.blockHeight, connector: true}"></ng-container>
+                  @if (line?.status?.confirmed !== true) {
+                    <ng-container *ngTemplateOutlet="nBlocksLater; context:{n: chainTip + 1 - line.blockHeight, connector: true}"></ng-container>
+                  }
                 </ng-template>
               </ng-container>
             </p>
