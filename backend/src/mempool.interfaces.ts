@@ -319,6 +319,7 @@ export interface BlockExtension {
   coinbaseAddresses: string[] | null;
   coinbaseSignature: string | null;
   coinbaseSignatureAscii: string | null;
+  coinbaseBip54: boolean | null;
   virtualSize: number;
   avgTxSize: number;
   totalInputs: number;

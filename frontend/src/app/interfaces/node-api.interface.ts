@@ -215,6 +215,7 @@ export interface BlockExtension {
   feeRange?: number[];
   reward?: number;
   coinbaseRaw?: string;
+  coinbaseBip54?: boolean | null;
   matchRate?: number;
   expectedFees?: number;
   expectedWeight?: number;

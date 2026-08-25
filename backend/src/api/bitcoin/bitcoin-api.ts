@@ -7,6 +7,7 @@ import mempool from '../mempool';
 import { TransactionExtended } from '../../mempool.interfaces';
 import transactionUtils from '../transaction-utils';
 import { Common } from '../common';
+import indexer from '../../indexer';
 
 class BitcoinApi implements AbstractBitcoinApi {
   private rawMempoolCache: IBitcoinApi.RawMempool | null = null;
@@ -233,8 +234,36 @@ class BitcoinApi implements AbstractBitcoinApi {
 
   /** @asyncUnsafe */
   async $getOutspends(txId: string): Promise<IEsploraApi.Outspend[]> {
-    const outSpends: IEsploraApi.Outspend[] = [];
     const tx = await this.$getRawTransaction(txId, true, false);
+    if (indexer.isCoreIndexReady('txospenderindex')) {
+      const outputs = tx.vout.map((_, vout) => ({ txid: txId, vout }));
+      if (!outputs.length) {
+        return [];
+      }
+
+      try {
+        const spendingPrevouts: IBitcoinApi.TxSpendingPrevout[] = await this.bitcoindClient.getTxSpendingPrevout(outputs, { mempool_only: false });
+        return spendingPrevouts.map((spendingPrevout): IEsploraApi.Outspend => {
+          if (!spendingPrevout.spendingtxid) {
+            return { spent: false };
+          }
+
+          return {
+            spent: true,
+            txid: spendingPrevout.spendingtxid,
+            status: spendingPrevout.blockhash ? { confirmed: true, block_hash: spendingPrevout.blockhash } : { confirmed: false },
+          };
+        });
+      } catch (e) {
+        const rpcError = e as { code?: number; message?: string };
+        // If txospenderindex is not available, fall back to gettxout for each output
+        if (rpcError.code !== -1 || !rpcError.message?.includes('txospenderindex is unavailable')) {
+          throw e;
+        }
+      }
+    }
+
+    const outSpends: IEsploraApi.Outspend[] = [];
     for (let i = 0; i < tx.vout.length; i++) {
       if (tx.status && tx.status.block_height === 0) {
         outSpends.push({
