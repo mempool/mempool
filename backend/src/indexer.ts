@@ -137,7 +137,7 @@ class Indexer {
 
     switch (task) {
       case 'blocksPrices': {
-        if (!['testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK) && config.FIAT_PRICE.ENABLED) {
+        if (Common.blockPricesIndexingEnabled()) {
           let latestPriceId;
           try {
             latestPriceId = await PricesRepository.$getLatestPriceId();
@@ -239,6 +239,7 @@ class Indexer {
       void blocks.$generateFlagValuesDatabase();
       // do not wait for classify blocks to finish
       void blocks.$classifyBlocks();
+      void blocks.$updateBlocksMissingBip54Tag();
       runSuccessful = true;
     } catch (e) {
       nextRunDelay = retryDelay;
