@@ -945,6 +945,8 @@ class Blocks {
         indexedThisRun = 0;
       }
     }
+    // expected_fees was just backfilled for these blocks, and that is what avgFeeDelta averages
+    void mining.$rebuildPoolsStatsCache();
     logger.debug(`Indexing block audit details completed`);
   }
 
@@ -1432,6 +1434,12 @@ class Blocks {
       if (Common.indexingEnabled()) {
         await blocksRepository.$saveBlockInDatabase(blockExtended);
         this.updateTimerProgress(timer, `saved ${this.currentBlockHeight} to database`);
+        // marked now but rebuilt later: a scheduled task is dropped if one is already running,
+        // and the mark is what makes that in-flight rebuild chain another one instead of
+        // publishing a result that predates this block. The delay lets the block's audit row
+        // land before the rebuild queries for it.
+        mining.markPoolsStatsDirty();
+        indexer.scheduleSingleTask('poolsStats', 30000);
 
         await AccelerationRepository.$indexAccelerationsForBlock(
           blockExtended,
@@ -1625,6 +1633,7 @@ class Blocks {
       await AccelerationRepository.$deleteAccelerationsFrom(forkTail.height);
       this.flagValuesDeleteQueue.push(forkTail.height);
       chainTips.clearOrphanCacheAboveHeight(forkTail.height);
+      void mining.$rebuildPoolsStatsCache();
       this.updateTimerProgress(timer, `deleted stale block data`);
 
       this.blocks = newBlocks.reverse();
