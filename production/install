@@ -26,6 +26,13 @@ case `uname -s` in
 
 esac
 
+NODE_CONFIGURE_FLAGS="--shared-zlib"
+case `uname -m` in
+    arm64|aarch64)
+        NODE_CONFIGURE_FLAGS="${NODE_CONFIGURE_FLAGS} --openssl-no-asm --dest-cpu=arm64"
+    ;;
+esac
+
 ########################################
 ##### mempool installation options #####
 ########################################
@@ -1082,7 +1089,7 @@ echo "[*] Installing nvm.sh from GitHub"
 osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash'
 
 echo "[*] Building NodeJS via nvm.sh"
-osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v24.13.0 --shared-zlib'
+osSudo "${MEMPOOL_USER}" zsh -c "source ~/.zshrc ; nvm install v24.13.0 ${NODE_CONFIGURE_FLAGS}"
 osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm alias default 24.13.0'
 
 ####################
@@ -1559,37 +1566,6 @@ if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
 fi
 
 ########################################
-# Electrs instance for Bitcoin Mainnet #
-########################################
-if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
-    echo "[*] FIXME: must only crontab enabled daemons"
-fi
-
-########################################
-# Electrs instance for Bitcoin Testnet #
-########################################
-
-if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
-    echo "[*] FIXME: must only crontab enabled daemons"
-fi
-
-#########################################
-# Electrs instance for Bitcoin Testnet4 #
-#########################################
-
-if [ "${BITCOIN_TESTNET4_ENABLE}" = ON ];then
-    echo "[*] FIXME: must only crontab enabled daemons"
-fi
-
-#######################################
-# Electrs instance for Bitcoin Signet #
-#######################################
-
-if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
-    echo "[*] FIXME: must only crontab enabled daemons"
-fi
-
-########################################
 # Electrs instance for Elements Liquid #
 ########################################
 
@@ -1620,8 +1596,32 @@ fi
 echo "[*] Installing crontabs"
 case $OS in
     FreeBSD)
-        osSudo "${ROOT_USER}" crontab -u "${BITCOIN_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.crontab"
-        osSudo "${ROOT_USER}" crontab -u "${MINFEE_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/minfee.crontab"
+        crontab_bitcoin=()
+        if [ "${BITCOIN_MAINNET_ENABLE}" = ON ]; then
+            crontab_bitcoin+="@reboot sleep 40 ; screen -dmS mainnet ${BITCOIN_ELECTRS_HOME}/start mainnet\n"
+            crontab_bitcoin+="33 03 * * * \${HOME}/electrs/start mainnet popular-scripts >/dev/null 2>&1\n"
+        fi
+        if [ "${BITCOIN_TESTNET_ENABLE}" = ON ]; then
+            crontab_bitcoin+="@reboot sleep 10 ; /usr/local/bin/bitcoind -testnet >/dev/null 2>&1\n"
+            crontab_bitcoin+="@reboot sleep 50 ; screen -dmS testnet ${BITCOIN_ELECTRS_HOME}/start testnet\n"
+            crontab_bitcoin+="31 03 * * * \${HOME}/electrs/start testnet popular-scripts >/dev/null 2>&1\n"
+        fi
+        if [ "${BITCOIN_TESTNET4_ENABLE}" = ON ]; then
+            crontab_bitcoin+="@reboot sleep 20 ; /usr/local/bin/bitcoind -testnet4 >/dev/null 2>&1\n"
+            crontab_bitcoin+="@reboot sleep 60 ; screen -dmS testnet4 ${BITCOIN_ELECTRS_HOME}/start testnet4\n"
+            crontab_bitcoin+="30 03 * * * \${HOME}/electrs/start testnet4 popular-scripts >/dev/null 2>&1\n"
+        fi
+        if [ "${BITCOIN_SIGNET_ENABLE}" = ON ]; then
+            crontab_bitcoin+="@reboot sleep 30 ; /usr/local/bin/bitcoind -signet >/dev/null 2>&1\n"
+            crontab_bitcoin+="@reboot sleep 70 ; screen -dmS signet ${BITCOIN_ELECTRS_HOME}/start signet\n"
+            crontab_bitcoin+="32 03 * * * \${HOME}/electrs/start signet popular-scripts >/dev/null 2>&1\n"
+        fi
+        if [ "${BITCOIN_MAINNET_MINFEE_ENABLE}" = ON ]; then
+            osSudo "${ROOT_USER}" crontab -u "${MINFEE_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/minfee.crontab"
+        fi
+        if [ "${BITCOIN_MAINNET_ENABLE}" = ON -o "${BITCOIN_TESTNET_ENABLE}" = ON -o "${BITCOIN_TESTNET4_ENABLE}" = ON -o "${BITCOIN_SIGNET_ENABLE}" = ON ];then
+            printf '%b' "${crontab_bitcoin}" | osSudo "${ROOT_USER}" crontab -u "${BITCOIN_USER}" -
+        fi
     ;;
     Debian)
         crontab_bitcoin=()
@@ -1843,8 +1843,10 @@ case $OS in
         chown "${MEMPOOL_USER}:${MEMPOOL_GROUP}" "${MEMPOOL_HOME}/socket"
         setfacl -m "user:bitcoin:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,everyone@::f:allow" "${BITCOIN_HOME}/socket"
         chown "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_HOME}/socket"
-        setfacl -m "user:elements:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,everyone@::f:allow" "${ELEMENTS_HOME}/socket"
-        chown "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_HOME}/socket"
+        if [ "${ELEMENTS_INSTALL}" = ON ];then
+            setfacl -m "user:elements:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,everyone@::f:allow" "${ELEMENTS_HOME}/socket"
+            chown "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_HOME}/socket"
+        fi
     ;;
 
     Debian)
