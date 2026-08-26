@@ -72,7 +72,7 @@ jobs:
             echo "failed=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Close PR if provenance check failed
+      - name: Warn if provenance check failed
         if: steps.npm-provenance.outputs.failed == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -81,9 +81,9 @@ jobs:
         run: |
           COMMENT_BODY_FILE="$(mktemp)"
           cat > "$COMMENT_BODY_FILE" <<EOF
-          ## Provenance Attestation Check Failed
+          ## ⚠️⚠️ Provenance Attestation Check Failed ⚠️⚠️
           
-          This pull request has been automatically closed because the following dependencies do not have [provenance attestation](https://docs.npmjs.com/generating-provenance-statements):
+          The following dependencies do not have [provenance attestation](https://docs.npmjs.com/generating-provenance-statements):
           
           **Failed:** $FAILED_DEPS
           
@@ -95,8 +95,6 @@ jobs:
           
           - Check if a newer version of the dependency publishes provenance
           - Contact the package maintainer to request [npm provenance](https://docs.npmjs.com/generating-provenance-statements) support
-          - If this dependency is trusted and an exception is warranted, a maintainer can reopen this PR and add the \`provenance-exception\` label
           EOF
           
           gh pr comment "$PR_NUMBER" --body-file "$COMMENT_BODY_FILE"
-          gh pr close "$PR_NUMBER"
