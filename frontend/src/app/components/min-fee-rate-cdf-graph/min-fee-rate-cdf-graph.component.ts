@@ -156,6 +156,7 @@ export class MinFeeRateCdfGraphComponent implements OnInit, OnDestroy {
     const thresholdValue = this.formatFeeRate(this.threshold);
     const thresholdPercent = `${formatNumber(this.percentBelow, this.locale, '1.1-1')}%`;
     const thresholdLabel = $localize`:@@mining.min-fee-rate-cdf.legend-threshold:Threshold`;
+    const maxRate = hasData ? cdf[cdf.length - 1][0] : 0;
 
     this.chartOptions = {
       title: hasData ? undefined : {
@@ -170,7 +171,7 @@ export class MinFeeRateCdfGraphComponent implements OnInit, OnDestroy {
         right: this.right,
         left: this.left,
         bottom: 80,
-        top: 20,
+        top: 40,
       },
       legend: !hasData ? undefined : {
         top: 'top',
@@ -265,14 +266,6 @@ export class MinFeeRateCdfGraphComponent implements OnInit, OnDestroy {
           },
           itemStyle: {
             color: 'var(--fg)',
-          },
-          // The reading the threshold control produces, kept on the line itself now
-          // that the legend carries only the short series name.
-          endLabel: {
-            show: true,
-            color: 'var(--fg)',
-            fontSize: 11,
-            formatter: `${thresholdValue} sat/vB → ${thresholdPercent}`,
           },
         },
         // Marker where the threshold crosses the curve. A separate series rather than a

@@ -255,7 +255,7 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
             yAxis: this.threshold,
             label: {
               show: true,
-              position: 'end',
+              position: 'insideEndTop',
               formatter: (): string => `${this.formatFeeRate(this.threshold)} sat/vB`,
               color: 'var(--fg)',
               fontSize: 11,
