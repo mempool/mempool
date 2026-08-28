@@ -320,6 +320,11 @@
   }
 }
 
+// styles.scss:1575 pads every cell of every .table with 0.75rem, overriding
+// bootstrap's own value. The merged output cell drops that padding and re-applies
+// it to its children, so this has to stay in step with that rule.
+$diff-cell-padding-x: 0.75rem;
+
 .rbf-diff-section {
   width: calc(100% - 2em);
   margin: 1rem auto 0;
@@ -401,7 +406,11 @@
     display: none;
   }
 
+  // the only content of its cell when an output exists on one side only, so it
+  // sits on the same axis as the amounts rather than hugging the column's edge
   .null-placeholder {
+    display: block;
+    text-align: center;
     opacity: 0.5;
   }
 
@@ -452,9 +461,13 @@
     color: var(--transparent-fg);
   }
 
+  // Centred inside the column rather than pinned to its left edge, and the same
+  // way whether the row shares an address or not, so every amount in a column
+  // lands on one axis regardless of which presentation its row uses.
   .output-value,
   .output-amount {
     display: block;
+    text-align: center;
     font-size: 0.85rem;
     color: var(--transparent-fg);
   }
@@ -463,8 +476,19 @@
   // centred over them. The amounts below split the same cell in half so they
   // still line up with the Previous and New columns of every other row.
   .output-merged {
+    // The cell spans two columns, so its own padding would push the split point
+    // off the column boundary and leave the second amount out of line with every
+    // other row. The padding is moved onto the children instead: each half is
+    // then exactly one column wide and starts where that column's content starts.
+    padding-left: 0;
+    padding-right: 0;
+
+    // The destination is the one thing both transactions share, so it is centred
+    // across the pair of columns it replaces. The amounts below are not shared,
+    // so they stay in the column they belong to.
     .output-address-row {
       justify-content: center;
+      padding: 0 $diff-cell-padding-x;
     }
 
     .output-address {
@@ -475,14 +499,10 @@
       display: flex;
     }
 
-    // centred inside its half rather than left aligned: the address above spans
-    // the whole cell, so amounts pinned to the left of each half leave the row
-    // visibly lopsided. Centred, the pair balances around the address while each
-    // one stays in the half belonging to its column.
     .output-amount {
       flex: 1 1 50%;
       min-width: 0;
-      text-align: center;
+      padding: 0 $diff-cell-padding-x;
     }
   }
 
@@ -518,6 +538,13 @@
       padding-bottom: 0.2rem;
     }
 
+    // stacked and label-led at this width, so there is no column to centre in
+    .output-value,
+    .output-amount,
+    .null-placeholder {
+      text-align: left;
+    }
+
     // a scalar value fits beside its label
     .col-label {
       display: inline-block;
@@ -551,12 +578,6 @@
 
       .output-amounts {
         display: block;
-      }
-
-      // stacked and label-led here, so centring would only break the left edge
-      // they share with every other value
-      .output-amount {
-        text-align: left;
       }
 
       .col-label {

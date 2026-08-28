@@ -5,8 +5,8 @@ import { StateService } from '@app/services/state.service';
 import { ApiService } from '@app/services/api.service';
 import { forkJoin, of, Observable, Subject } from 'rxjs';
 import { catchError, map, retry, switchMap, takeUntil } from 'rxjs/operators';
-import { Transaction, Vout } from '@interfaces/electrs.interface';
-import { calculateRbfDiff } from '@app/shared/rbf-diff.utils';
+import { Transaction } from '@interfaces/electrs.interface';
+import { buildRbfDiffView, RbfDiffView } from '@app/shared/rbf-diff.utils';
 
 type Connector = 'pipe' | 'corner';
 
@@ -15,41 +15,6 @@ interface TimelineCell {
   connector?: Connector,
   first?: boolean,
   fullRbf?: boolean,
-}
-
-/**
- * One output of the replacement, rendered as a single row with the previous and
- * the new destination side by side. An added or removed output has nothing on
- * one side and gets a placeholder there.
- */
-interface OutputDiffRow {
-  previous: Vout | null;
-  current: Vout | null;
-  addressChanged: boolean;
-  // the destination survived the replacement, so the table shows it once across
-  // both columns instead of printing the same address twice
-  sameAddress: boolean;
-}
-
-/**
- * Everything the diff table renders. A field is only flagged when it actually
- * changed, so unchanged rows never reach the template.
- */
-interface RbfDiffView {
-  versionChanged: boolean;
-  locktimeChanged: boolean;
-  feeChanged: boolean;
-  feePercent: number | null;
-  feeIncreased: boolean;
-  feeRateChanged: boolean;
-  weightChanged: boolean;
-  weightPercent: number | null;
-  weightIncreased: boolean;
-  inputsChanged: boolean;
-  inputsDelta: string;
-  outputsChanged: boolean;
-  outputsDelta: string;
-  outputRows: OutputDiffRow[];
 }
 
 function isTimelineCell(val: RbfTree | TimelineCell): boolean {
@@ -134,7 +99,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
       }
       this.selectedOldTx = result.oldTx;
       this.selectedNewTx = result.newTx;
-      this.diffView = this.buildDiffView(result.oldTx, result.newTx);
+      this.diffView = buildRbfDiffView(result.oldTx, result.newTx);
       this.renderedPair = { oldTxid: result.oldTx.txid, newTxid: result.newTx.txid };
     });
   }
@@ -546,83 +511,5 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
       retry({ count: 2, delay: 400 }),
       catchError(() => of(null)),
     );
-  }
-
-  /**
-   * Cross multiplied rather than comparing two divisions, so a rate that did not
-   * really move can never read as changed because of a rounding artefact. The
-   * products can pass the safe integer range for a large fee, hence BigInt.
-   */
-  private feeRateChanged(oldTx: Transaction, newTx: Transaction): boolean {
-    return BigInt(Math.round(oldTx.fee)) * BigInt(newTx.weight)
-      !== BigInt(Math.round(newTx.fee)) * BigInt(oldTx.weight);
-  }
-
-  /**
-   * Reads as "(+2 −1)". Reporting how many were added and how many removed
-   * rather than the net keeps a swap visible: replacing one input with another
-   * leaves the total untouched, which a net delta would report as no change.
-   */
-  private formatCountDelta(added: number, removed: number): string {
-    const parts: string[] = [];
-    if (added > 0) {
-      parts.push(`+${added}`);
-    }
-    if (removed > 0) {
-      parts.push(`−${removed}`);
-    }
-    return parts.length ? `(${parts.join(' ')})` : '';
-  }
-
-  /**
-   * Reduces the structural diff to just what the table renders. Rows for
-   * unchanged fields are left out entirely rather than rendered as noise.
-   */
-  private buildDiffView(oldTx: Transaction, newTx: Transaction): RbfDiffView {
-    const diff = calculateRbfDiff(oldTx, newTx);
-
-    // Most important first: a replaced destination is the reason to look at all
-    const outputRows: OutputDiffRow[] = [
-      ...diff.outputs.modified
-        .filter(m => m.changeType !== 'value')
-        .map(m => ({ previous: m.old, current: m.new, addressChanged: true })),
-      ...diff.outputs.modified
-        .filter(m => m.changeType === 'value')
-        .map(m => ({ previous: m.old, current: m.new, addressChanged: false })),
-      ...diff.outputs.removed
-        .map(out => ({ previous: out, current: null, addressChanged: false })),
-      ...diff.outputs.added
-        .map(out => ({ previous: null, current: out, addressChanged: false })),
-    ].map(row => ({
-      // derived rather than set per case, so the two shapes can never disagree.
-      // An added or removed output keeps its column: which side it is missing
-      // from is the whole point of that row.
-      ...row,
-      sameAddress: !!row.previous && !!row.current && !row.addressChanged,
-    }));
-
-    const addedInputs = diff.inputs.added.length;
-    const removedInputs = diff.inputs.removed.length;
-    const addedOutputs = diff.outputs.added.length;
-    const removedOutputs = diff.outputs.removed.length;
-
-    return {
-      versionChanged: diff.transaction.versionChanged,
-      locktimeChanged: diff.transaction.locktimeChanged,
-      feeChanged: diff.metrics.feeDelta !== null,
-      feePercent: oldTx.fee > 0 ? ((newTx.fee - oldTx.fee) / oldTx.fee) * 100 : null,
-      feeIncreased: newTx.fee > oldTx.fee,
-      feeRateChanged: this.feeRateChanged(oldTx, newTx),
-      weightChanged: diff.metrics.weightDelta !== null,
-      weightPercent: oldTx.weight > 0 ? ((newTx.weight - oldTx.weight) / oldTx.weight) * 100 : null,
-      weightIncreased: newTx.weight > oldTx.weight,
-      // an input can be swapped for another without the total moving, so the
-      // count alone can't decide whether the row is worth showing
-      inputsChanged: oldTx.vin.length !== newTx.vin.length || addedInputs > 0 || removedInputs > 0,
-      inputsDelta: this.formatCountDelta(addedInputs, removedInputs),
-      outputsChanged: oldTx.vout.length !== newTx.vout.length || addedOutputs > 0 || removedOutputs > 0,
-      outputsDelta: this.formatCountDelta(addedOutputs, removedOutputs),
-      outputRows,
-    };
   }
 }
