@@ -20,6 +20,8 @@ const MAX_STANDARD_P2WSH_SCRIPT_SIZE = 3600;
 const MAX_STANDARD_SCRIPTSIG_SIZE = 1650;
 const DUST_RELAY_TX_FEE = 3;
 export const MAX_OP_RETURN_RELAY = 83;
+const TRUC_MAX_VSIZE = 10_000; // BIP-431: v3 transactions must be 10,000 vB or smaller
+const TRUC_CHILD_MAX_VSIZE = 1_000; // BIP-431: v3 transactions with an unconfirmed v3 ancestor must be 1,000 vB or smaller
 const DEFAULT_PERMIT_BAREMULTISIG = true;
 const MAX_TX_LEGACY_SIGOPS = 2_500 * 4; // witness-adjusted sigops
 
@@ -796,16 +798,55 @@ export function isBurnKey(pubkey: string): boolean {
   ].includes(pubkey);
 }
 
+/**
+ * TRUC (BIP-431) heuristic: a version 3 transaction playing exactly one role
+ * (parent or child) in an in-mempool CPFP package, within the vsize limit
+ * for that role. Mirrors Common.isTruc in the backend.
+ *
+ * Note: the cpfp_parent/cpfp_child flags reflect actual CPFP relationships,
+ * so a v3 transaction with in-mempool relatives but no fee-bumping
+ * dependency is not flagged, and the versions of its relatives cannot be
+ * checked here.
+ */
+export function isTruc(flags: bigint, tx: Transaction): boolean {
+  if (tx.version !== 3) {
+    return false;
+  }
+  const isChild = (flags & TransactionFlags.cpfp_child) === TransactionFlags.cpfp_child;
+  const isParent = (flags & TransactionFlags.cpfp_parent) === TransactionFlags.cpfp_parent;
+  if (isChild && isParent) {
+    // mid-chain v3 transactions violate BIP-431's two-transaction package topology
+    return false;
+  }
+  // the frontend Transaction model has no vsize, so derive it from the weight
+  const vsize = Math.ceil(tx.weight / 4);
+  if (isChild) {
+    return vsize <= TRUC_CHILD_MAX_VSIZE;
+  }
+  if (isParent) {
+    return vsize <= TRUC_MAX_VSIZE;
+  }
+  // version 3 transaction without an in-mempool package
+  return false;
+}
+
 export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replacement?: boolean, height?: number, network?: string): bigint {
   let flags = tx.flags ? BigInt(tx.flags) : 0n;
 
-  // Update variable flags (CPFP, RBF)
+  // Update variable flags (CPFP, RBF, TRUC)
   if (cpfpInfo) {
     if (cpfpInfo.ancestors.length) {
       flags |= TransactionFlags.cpfp_child;
     }
     if (cpfpInfo.descendants?.length) {
       flags |= TransactionFlags.cpfp_parent;
+    }
+    // TRUC status depends on CPFP package membership, so re-evaluate it
+    // whenever CPFP info is refreshed (otherwise preserve the flag
+    // computed by the backend)
+    flags &= ~TransactionFlags.truc;
+    if (isTruc(flags, tx)) {
+      flags |= TransactionFlags.truc;
     }
   }
   if (replacement) {
