@@ -557,6 +557,22 @@ export function isPoint(pointHex: string): boolean {
   }
 }
 
+/** BIP65 locktime threshold: values below are block heights, values at or above are UNIX timestamps */
+export const LOCKTIME_THRESHOLD = 500000000;
+
+/**
+ * Detects OP_CLTV operands in an ASM instruction list.
+ *
+ * Returns a map of instruction index -> locktime value for every instruction
+ * that is part of a `<push> OP_CLTV` pair (both the push and the CLTV opcode).
+ *
+ * Assumes the standard pattern of a 1-4 byte data push immediately followed by
+ * OP_CLTV is a locktime operand. 4 bytes is the maximum operand size accepted
+ * by CLTV consensus rules. The pushed bytes are interpreted as an unsigned
+ * little-endian integer; this is purely a display hint, not consensus validation.
+ *
+ * @param instructions ASM instructions (already split on 'OP_')
+ */
 export function detectCltvTimestamps(instructions: string[]): Map<number, number> {
   const cltvTimestamps: Map<number, number> = new Map();
   for (let i = 0; i < instructions.length; i++) {
@@ -587,12 +603,13 @@ export function detectCltvTimestamps(instructions: string[]): Map<number, number
   return cltvTimestamps;
 }
 
+/** Formats a BIP65 locktime value as a human-readable block height or UTC timestamp */
 export function formatCltvTimestamp(timestamp: number): string {
-  if (timestamp < 500000000) {
-    return `Block height: ${timestamp}`;
+  if (isNaN(timestamp) || timestamp < 0 || timestamp > 4294967295) {
+    return 'Invalid locktime';
   }
-  if (timestamp > 4294967295) {
-    return `Invalid timestamp: ${timestamp}`;
+  if (timestamp < LOCKTIME_THRESHOLD) {
+    return `Block height: ${timestamp}`;
   }
   const date = new Date(timestamp * 1000);
   return date.toISOString().replace('T', ' ').replace(/\.\d{3}Z$/, ' UTC');

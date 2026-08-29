@@ -92,9 +92,7 @@ export class AsmComponent {
     this.hideSigInfo.emit();
   }
 
-  formatTimestamp(timestamp: number): string {
-    return formatCltvTimestamp(timestamp);
-  }
+  readonly formatTimestamp = formatCltvTimestamp;
 
   readonly opcodeStyles: Map<string, string> = new Map([
     // Constants

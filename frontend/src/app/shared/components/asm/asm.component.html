@@ -1,13 +1,13 @@
 <div class="asm">
   @for (instruction of instructions; track instruction.instruction; let i = $index) {
-    @if (instruction.cltvTimestamp && instruction.instruction === 'CLTV') {
-      <span [class]='opcodeStyles.get(instruction.instruction)' [ngbTooltip]="formatTimestamp(instruction.cltvTimestamp)" placement="top" container="body" tooltipClass="cltv-tooltip-class" class="cltv-opcode">OP_{{instruction.instruction}}</span>
+    @if (instruction.cltvTimestamp !== undefined && instruction.instruction === 'CLTV') {
+      <span [ngClass]="[opcodeStyles.get(instruction.instruction) || '', 'cltv-opcode']" [ngbTooltip]="formatTimestamp(instruction.cltvTimestamp)" placement="top" container="body" tooltipClass="cltv-tooltip-class">OP_{{instruction.instruction}}</span>
     } @else {
       <span [class]='opcodeStyles.get(instruction.instruction)'>OP_{{instruction.instruction}}</span>
     }
     @for (arg of instruction.args; track arg; let j = $index) {
-      @if (j === 0 && instruction.cltvTimestamp) {
-        <span class="cltv-annotation" [ngbTooltip]="formatTimestamp(instruction.cltvTimestamp)" placement="top" container="body" tooltipClass="cltv-tooltip-class">{{ arg }}</span>
+      @if (j === 0 && instruction.cltvTimestamp !== undefined) {
+        <span class="cltv-annotation" [ngbTooltip]="formatTimestamp(instruction.cltvTimestamp)" placement="top" container="body" tooltipClass="cltv-tooltip-class">{{ arg }}<span class="cltv-icon"><fa-icon [icon]="['fas', 'clock']" [fixedWidth]="true"></fa-icon></span></span>
       } @else {
         <ng-container *ngIf="annotations.signatures?.[arg] as sigInfo; else plainArg">
           <span class="sig sig-key sig-inline sighash-{{sigInfo.sig.sighash}}"

@@ -322,15 +322,12 @@ export class AsmStylerPipe implements PipeTransform {
     }
 
     if (cltvTimestamp !== undefined) {
-      const tooltipText = this.formatTimestamp(cltvTimestamp);
+      // native title tooltip: this pipe output is rendered via innerHTML, where ngbTooltip is unavailable
+      const tooltipText = formatCltvTimestamp(cltvTimestamp);
       return `<span class='${style} cltv-tooltip' title='${tooltipText}'>OP_${opcode}</span> <span class='cltv-tooltip' title='${tooltipText}'>${args}</span><br>`;
     }
 
     return `<span class='${style}'>OP_${opcode}</span> ${args}<br>`;
-  }
-
-  formatTimestamp(timestamp: number): string {
-    return formatCltvTimestamp(timestamp);
   }
 
 }
