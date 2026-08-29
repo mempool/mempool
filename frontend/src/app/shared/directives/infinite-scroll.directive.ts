@@ -24,6 +24,7 @@ export class InfiniteScrollDirective implements AfterViewInit, OnDestroy {
   @Output() scrolled = new EventEmitter<void>();
 
   private lastCheck = 0;
+  private lastScrollY = 0;
   private retryTimer: ReturnType<typeof setTimeout> | null = null;
   private triggeredTotal = 0;
   private readonly onScroll = (): void => this.scheduleCheck();
@@ -71,11 +72,17 @@ export class InfiniteScrollDirective implements AfterViewInit, OnDestroy {
   }
 
   // ngx-infinite-scroll window mode: fire when remaining / totalToScroll <= distance/10.
+  // Downward-only — `scrolled` in the replaced library ignores upward motion.
   // Scroll-event only — no init emit, matching production first-load.
   private check(): void {
     const host = this.host.nativeElement;
     const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
     const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+    const scrollingDown = scrollY > this.lastScrollY;
+    this.lastScrollY = scrollY;
+    if (!scrollingDown) {
+      return;
+    }
     const top = host.getBoundingClientRect().top + scrollY;
     const totalToScroll = top + host.offsetHeight;
     if (totalToScroll <= 0) {
