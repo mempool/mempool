@@ -12,9 +12,10 @@ import backendInfo from '../backend-info';
 import transactionUtils from '../transaction-utils';
 import { IEsploraApi } from './esplora-api.interface';
 import loadingIndicators from '../loading-indicators';
-import { CpfpInfo, TransactionExtended } from '../../mempool.interfaces';
+import { CpfpInfo, IBDProgress, TransactionExtended } from '../../mempool.interfaces';
 import logger from '../../logger';
 import blocks from '../blocks';
+import indexer from '../../indexer';
 import bitcoinClient from './bitcoin-client';
 import difficultyAdjustment from '../difficulty-adjustment';
 import transactionRepository from '../../repositories/TransactionRepository';
@@ -31,6 +32,20 @@ const ADDRESS_REGEX = /^[a-z0-9]{2,120}$/i;
 const SCRIPT_HASH_REGEX = /^([a-f0-9]{2})+$/i;
 const MAX_TRANSACTION_TIMES = 100;
 const JUST_NUMBERS_REGEX = /^[1-9]\d*$/;
+const IBD_ETA_BASELINE_MS = 30 * 60 * 1000;
+const BLOCK_INDEX_ETA_BASELINE_MS = 2 * 60 * 1000;
+// electrs routinely trails Core by a block or two in normal operation, while a
+// node indexing for the first time is thousands of blocks behind. Keep the
+// window generous: the cost of reporting a lagging server as indexed is a stale
+// figure on one page, while the cost of the opposite is sending someone with a
+// working node to the Getting Started page.
+const ELECTRS_LAG_TOLERANCE = 10;
+
+// Sampled per process. With SPAWN_CLUSTER_PROCS > 0 each worker keeps its own
+// baseline, so consecutive polls can land on different workers and the reported
+// ETA may jump. Harmless on the default single-process setup this page targets.
+let lastIBDSample: { time: number; progress: number } | null = null;
+let lastBlockIndexSample: { time: number; progress: number } | null = null;
 
 class BitcoinRoutes {
   public initRoutes(app: Application) {
@@ -44,6 +59,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/mempool-blocks', this.getMempoolBlocks)
       .get(config.MEMPOOL.API_URL_PREFIX + 'backend-info', this.getBackendInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'init-data', this.getInitData)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'sync-progress', this.$getSyncProgress)
       .get(config.MEMPOOL.API_URL_PREFIX + 'validate-address/:address', this.validateAddress)
       .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/rbf', this.getRbfHistory)
       .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/cached', this.getCachedTx)
@@ -119,6 +135,102 @@ class BitcoinRoutes {
       res.send(result);
     } catch (e) {
       handleError(req, res, 500, 'Failed to get init data');
+    }
+  }
+
+  private async $getSyncProgress(req: Request, res: Response): Promise<void> {
+    try {
+      const blockchainInfo = await bitcoinClient.getBlockchainInfo();
+
+      // Core keeps initialblockdownload set while the tip is older than -maxtipage
+      // (24h by default), so an idle regtest/signet dev chain reports IBD forever
+      // even at blocks === headers. Pair it with the height check the indexer
+      // already uses as its "Core is fully synced" test.
+      const ibd = blockchainInfo.initialblockdownload && blockchainInfo.blocks !== blockchainInfo.headers;
+
+      let estimatedTimeRemaining: number | null = null;
+      if (ibd && blockchainInfo.verificationprogress < 1) {
+        const now = Date.now();
+        if (lastIBDSample && blockchainInfo.verificationprogress > lastIBDSample.progress) {
+          const progressPerSecond = (blockchainInfo.verificationprogress - lastIBDSample.progress) / ((now - lastIBDSample.time) / 1000);
+          if (progressPerSecond > 0) {
+            estimatedTimeRemaining = Math.round((1 - blockchainInfo.verificationprogress) / progressPerSecond);
+          }
+        }
+        // Advance the baseline only once it is old enough, so the ETA is averaged over a long, stable window
+        if (!lastIBDSample || (now - lastIBDSample.time) >= IBD_ETA_BASELINE_MS) {
+          lastIBDSample = { time: now, progress: blockchainInfo.verificationprogress };
+        }
+      }
+
+      const indicators = loadingIndicators.getLoadingIndicators();
+      const mempoolProgress = indicators['mempool'] ?? null;
+      const blockIndexingProgress = indicators['block-indexing'] ?? null;
+      const inSync = mempool.isInSync();
+      const indexed = !Common.indexingEnabled() || indexer.isInitialIndexingComplete();
+
+      // Estimate block-indexing time remaining by sampling its progress over a
+      // stable window, the same way the Core IBD ETA is computed above.
+      let blockIndexingETA: number | null = null;
+      if (inSync && blockIndexingProgress !== null && blockIndexingProgress < 100) {
+        const now = Date.now();
+        if (lastBlockIndexSample && blockIndexingProgress > lastBlockIndexSample.progress) {
+          const progressPerSecond = (blockIndexingProgress - lastBlockIndexSample.progress) / ((now - lastBlockIndexSample.time) / 1000);
+          if (progressPerSecond > 0) {
+            blockIndexingETA = Math.round((100 - blockIndexingProgress) / progressPerSecond);
+          }
+        }
+        if (!lastBlockIndexSample || (now - lastBlockIndexSample.time) >= BLOCK_INDEX_ETA_BASELINE_MS) {
+          lastBlockIndexSample = { time: now, progress: blockIndexingProgress };
+        }
+      } else {
+        lastBlockIndexSample = null;
+      }
+
+      const result: IBDProgress = {
+        ibd,
+        bitcoind: {
+          blocks: blockchainInfo.blocks,
+          headers: blockchainInfo.headers,
+          verificationprogress: blockchainInfo.verificationprogress,
+          estimatedTimeRemaining,
+        },
+        mempool: {
+          inSync,
+          indexing: indexer.indexerIsRunning(),
+          indexed,
+          progress: inSync ? blockIndexingProgress : mempoolProgress,
+          estimatedTimeRemaining: blockIndexingETA,
+        },
+      };
+
+      if (config.MEMPOOL.BACKEND === 'esplora' || config.MEMPOOL.BACKEND === 'electrum') {
+        let electrsReachable = true;
+        let electrsIndexed = false;
+        try {
+          const electrsTip = await bitcoinApi.$getElectrsHeightTip();
+          electrsIndexed = !ibd && electrsTip >= blockchainInfo.blocks - ELECTRS_LAG_TOLERANCE;
+        } catch (e) {
+          // Answering the query at all is what makes electrs reachable. A server
+          // that is still building its first index does not open its port, so
+          // this branch covers both that and a plain outage — the two are
+          // indistinguishable from here, and the page says so rather than
+          // claiming indexing is in progress.
+          electrsReachable = false;
+          logger.debug(`Could not read the electrs index tip: ` + (e instanceof Error ? e.message : e));
+        }
+        // electrs exposes neither an indexing percentage nor a reliable start
+        // time, so we can only report whether it is done — no bar, ETA or elapsed.
+        result.electrs = {
+          reachable: electrsReachable,
+          indexed: electrsIndexed,
+          progress: null,
+        };
+      }
+
+      res.json(result);
+    } catch (e) {
+      handleError(req, res, 500, 'Failed to get sync progress');
     }
   }
 
