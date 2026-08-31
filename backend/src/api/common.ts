@@ -23,6 +23,8 @@ const MAX_STANDARD_P2WSH_SCRIPT_SIZE = 3600;
 const MAX_STANDARD_SCRIPTSIG_SIZE = 1650;
 const DUST_RELAY_TX_FEE = 3;
 const MAX_OP_RETURN_RELAY = 83;
+const TRUC_MAX_VSIZE = 10_000; // BIP-431: v3 transactions must be 10,000 vB or smaller
+const TRUC_CHILD_MAX_VSIZE = 1_000; // BIP-431: v3 transactions with an unconfirmed v3 ancestor must be 1,000 vB or smaller
 const DEFAULT_PERMIT_BAREMULTISIG = true;
 const MAX_TX_LEGACY_SIGOPS = 2_500 * 4; // witness-adjusted sigops
 
@@ -607,10 +609,44 @@ export class Common {
     return isTaproot || !isNotTaproot;
   }
 
+  /**
+   * TRUC (BIP-431) heuristic: a version 3 transaction playing exactly one role
+   * (parent or child) in an in-mempool CPFP package, within the vsize limit
+   * for that role.
+   *
+   * Note: the cpfp_parent/cpfp_child flags reflect actual CPFP relationships,
+   * so a v3 transaction with in-mempool relatives but no fee-bumping
+   * dependency is not flagged, and the versions of its relatives cannot be
+   * checked here.
+   *
+   * Must be called after the CPFP flags are (re)set, and before the
+   * static-flags early return in getTransactionFlags, so that TRUC status is
+   * re-evaluated on every mempool update as packages form and dissolve.
+   */
+  static isTruc(flags: bigint, tx: TransactionExtended): boolean {
+    if (tx.version !== 3) {
+      return false;
+    }
+    const isChild = (flags & TransactionFlags.cpfp_child) === TransactionFlags.cpfp_child;
+    const isParent = (flags & TransactionFlags.cpfp_parent) === TransactionFlags.cpfp_parent;
+    if (isChild && isParent) {
+      // mid-chain v3 transactions violate BIP-431's two-transaction package topology
+      return false;
+    }
+    if (isChild) {
+      return tx.vsize <= TRUC_CHILD_MAX_VSIZE;
+    }
+    if (isParent) {
+      return tx.vsize <= TRUC_MAX_VSIZE;
+    }
+    // version 3 transaction without an in-mempool package
+    return false;
+  }
+
   static getTransactionFlags(tx: TransactionExtended, height?: number): number {
     let flags = tx.flags ? BigInt(tx.flags) : 0n;
 
-    // Update variable flags (CPFP, RBF)
+    // Update variable flags (CPFP, RBF, TRUC)
     flags &= ~TransactionFlags.cpfp_child;
     if (tx.ancestors?.length) {
       flags |= TransactionFlags.cpfp_child;
@@ -622,6 +658,10 @@ export class Common {
     flags &= ~TransactionFlags.replacement;
     if (tx.replacement) {
       flags |= TransactionFlags.replacement;
+    }
+    flags &= ~TransactionFlags.truc;
+    if (this.isTruc(flags, tx)) {
+      flags |= TransactionFlags.truc;
     }
 
     // Already processed static flags, no need to do it again
@@ -648,6 +688,7 @@ export class Common {
       }
       if (vin.prevout?.scriptpubkey_type) {
         switch (vin.prevout?.scriptpubkey_type) {
+          case 'anchor': flags |= TransactionFlags.p2a; break;
           case 'p2pk': flags |= TransactionFlags.p2pk; break;
           case 'multisig': flags |= TransactionFlags.p2ms; break;
           case 'p2pkh': flags |= TransactionFlags.p2pkh; break;
@@ -701,6 +742,7 @@ export class Common {
     let olgaSize = 0;
     for (const vout of tx.vout) {
       switch (vout.scriptpubkey_type) {
+        case 'anchor': flags |= TransactionFlags.p2a; break;
         case 'p2pk': {
           flags |= TransactionFlags.p2pk;
           // detect fake pubkey (i.e. not a valid DER point on the secp256k1 curve)
