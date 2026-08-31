@@ -56,3 +56,21 @@
 	margin-left: 4px;
 	margin-right: -4px;
 }
+
+.cltv-annotation {
+	cursor: default;
+	margin-left: 4px;
+
+	.cltv-icon {
+		margin-left: 4px;
+		color: #ff8c00;
+	}
+
+	&:hover .cltv-icon {
+		color: color-mix(in srgb, #ff8c00 60%, white);
+	}
+}
+
+.cltv-opcode {
+	cursor: default;
+}
