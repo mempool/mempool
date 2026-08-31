@@ -1,0 +1,234 @@
+<div class="container-xl">
+
+  @if (!error || loadingCachedTx) {
+    <div class="title-block">
+      <h1 i18n="shared.bitcoin.payment">Bitcoin payment</h1>
+      <span class="tx-link">
+        <span class="txid">
+          <app-truncate [text]="txId" [lastChars]="12" [link]="['/tx/' | relativeUrl, txId]">
+            <app-clipboard [text]="txId"></app-clipboard>
+          </app-truncate>
+        </span>
+      </span>
+      <div class="details-button">
+        <button type="button" class="btn btn-outline-info btn-sm" (click)="viewFullDetails()" i18n="transaction.details|Transaction Details">Details</button>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+
+    <div class="box">
+      <div class="row">
+        @if (isMobile) {
+        <div class="col-sm">
+          <ng-container *ngTemplateOutlet="amountSection"></ng-container>
+          <ng-container *ngTemplateOutlet="trackerPanel"></ng-container>
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <ng-container *ngTemplateOutlet="rows"></ng-container>
+            </tbody>
+          </table>
+        </div>
+        } @else {
+        <div class="col-sm">
+          <ng-container *ngTemplateOutlet="trackerPanel"></ng-container>
+          <table class="table table-borderless table-striped">
+            <tbody>
+              <ng-container *ngTemplateOutlet="rows"></ng-container>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-sm amount-side">
+          <ng-container *ngTemplateOutlet="amountSection"></ng-container>
+        </div>
+        }
+      </div>
+    </div>
+
+    @if (!tx?.status?.confirmed && showAccelerationSummary) {
+      @if (ETA$ | async; as eta) {
+        <br>
+        <div class="title float-start mb-1">
+          <h2><a [href]="[ isMempoolSpaceBuild ? '/accelerator' : 'https://mempool.space/accelerator']" [target]="isMempoolSpaceBuild ? '' : 'blank'"><app-svg-images name="accelerator" [height]="isMobile ? '35px' : '45px'"></app-svg-images></a></h2>
+        </div>
+        <button type="button" class="btn btn-outline-info accelerator-toggle btn-sm float-end" [class.hide-on-mobile]="hasAccelerationDetails" (click)="closeAccelerator()" i18n="accelerator.hide">Hide accelerator</button>
+        @if (hasAccelerationDetails) {
+          <button class="btn btn-sm btn-outline-info accelerator-toggle float-end ms-2" (click)="showAccelerationDetails = !showAccelerationDetails" i18n="transaction.details|Transaction Details">Details</button>
+        }
+        <div class="clearfix"></div>
+        @if (da$ | async; as da) {
+          <app-accelerate-checkout
+            [advancedEnabled]="true"
+            [tx]="tx"
+            [accelerating]="isAcceleration"
+            [eta]="eta"
+            [miningStats]="miningStats"
+            [showDetails]="showAccelerationDetails"
+            [noCTA]="true"
+            (hasDetails)="setHasAccelerationDetails($event)"
+            (completed)="onAccelerationCompleted()"
+            (unavailable)="eligibleForAcceleration = false"
+            class="h-100 w-100"
+          ></app-accelerate-checkout>
+        }
+      }
+    }
+  }
+
+  @if (error && !loadingCachedTx) {
+    <app-http-error [error]="error">
+      <span i18n="transaction.error.loading-transaction-data">Error loading transaction data.</span>
+    </app-http-error>
+  }
+
+</div>
+
+<ng-template #trackerPanel>
+  @if (replaced) {
+    <div class="alert-replaced" role="alert">
+      <span i18n="transaction.rbf.replacement|RBF replacement">This transaction has been replaced by:</span>
+      <a [routerLink]="['/tx/' | relativeUrl, latestReplacement]" [queryParams]="{ mode: 'status' }">{{ latestReplacement
+        }}</a>
+    </div>
+  } @else if (!isCached) {
+    <div class="tracker-bar">
+      <app-tracker-bar [stage]="trackerStage"></app-tracker-bar>
+    </div>
+  }
+</ng-template>
+
+<ng-template #amountSection>
+  <div style="position: relative;">
+    @if (viewAmountMode$ | async; as mode) {
+      @if (!isMobile) {
+        <div class="toggler">
+          <a href="" (click)="changeMode('btc')" class="option"
+            [class.inactive]="mode === 'sats'"><small>BTC</small></a>
+          <span style="color: var(--transparent-fg); font-size: 8px"> | </span>
+          <a href="" (click)="changeMode('sats')" class="option"
+            [class.inactive]="mode !== 'sats'"><small>Sats</small></a>
+        </div>
+      }
+      <div class="amount-col">
+        <span class="text" i18n="transaction.amount|Amount">Amount</span>
+        @if (!isLoadingTx) {
+          <a class="amount-link" href="" (click)="changeMode(mode === 'sats' ? 'btc' : 'sats')">
+            <app-amount [satoshis]="amount" [noFiat]="true"></app-amount>
+          </a>
+          <app-fiat class="fiat" [value]="amount" [blockConversion]="tx.price"></app-fiat>
+        } @else {
+          <div class="amount-loader">
+            <div class="spinner-border text-light"></div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</ng-template>
+
+<ng-template #rows>
+  <ng-container *ngTemplateOutlet="addressRow"></ng-container>
+  <ng-container *ngTemplateOutlet="statusRow"></ng-container>
+</ng-template>
+
+<ng-template #addressRow>
+  @if (isValidView) {
+    <tr>
+      <td class="td-width" i18n="shared.address">Address</td>
+      <td>
+        <app-truncate class="address" [text]="destination" [lastChars]="4"
+          [link]="['/address/' | relativeUrl, destination]"></app-truncate>
+      </td>
+    </tr>
+  } @else {
+    <ng-container *ngTemplateOutlet="skeletonRow"></ng-container>
+  }
+</ng-template>
+
+<ng-template #statusRow>
+  @if (tx && !replaced) {
+    <tr>
+      @if (!tx.status?.confirmed) {
+        <td class="td-width" i18n="transaction.eta|Transaction ETA">ETA</td>
+        <td>
+            <ng-container *ngIf="(ETA$ | async) as eta; else etaSkeleton">
+              <span [class]="(!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !showAccelerationSummary && notAcceleratedOnLoad) ? 'etaDeepMempool d-flex justify-content-between' : ''">
+                @if (eta.blocks >= 7) {
+                  <span i18n="transaction.eta.not-any-time-soon|Transaction ETA mot any time soon">Not any time soon</span>
+                } @else {
+                  <app-time kind="until" [time]="eta.time" [fastRender]="false"></app-time>
+                }
+                @if (!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !showAccelerationSummary && notAcceleratedOnLoad) {
+                  <div class="d-flex accelerate">
+                    <a class="btn btn-sm accelerateDeepMempool btn-small-height btn-purple" [class.disabled]="!eligibleForAcceleration" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
+                    <a *ngIf="!eligibleForAcceleration" href="https://mempool.space/accelerator#why-cant-accelerate" target="_blank" class="info-badges ms-1" i18n-ngbTooltip="Mempool Accelerator&reg; tooltip" ngbTooltip="This transaction cannot be accelerated">
+                        <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+                    </a>
+                  </div>
+                }
+              </span>
+            </ng-container>
+        </td>
+        <ng-template #etaSkeleton>
+            <span class="skeleton-loader"></span>
+        </ng-template>
+      } @else {
+        <td class="td-width" i18n="transaction.status|Transaction Status">Status</td>
+        <td>
+            <ng-container *ngTemplateOutlet="status"></ng-container>
+        </td>
+      }
+    </tr>
+  } @else if (replaced) {
+    <!-- status row not shown if replaced -->
+  } @else {
+    <ng-container *ngTemplateOutlet="skeletonRow"></ng-container>
+  }
+</ng-template>
+
+<ng-template #status>
+  @if (settled) {
+    <span class="settled" i18n="transaction.status.settled|Settled">Settled</span>
+  } @else if (isValidView && confsRequired > 1) {
+    <span class="confs-cell">
+      @if (isMobile) {
+        <div>
+          <span>{{confirmations > confsRequired ? confsRequired : confirmations}}/{{confsRequired}} </span>
+          <span i18n="shared.confirmations">Confirmations</span>
+        </div>
+        <ng-container *ngTemplateOutlet="progressCircle"></ng-container>
+      } @else {
+        <ng-container *ngTemplateOutlet="progressCircle"></ng-container>
+        <div>
+          <span>{{confirmations > confsRequired ? confsRequired : confirmations}}/{{confsRequired}} </span>
+          <span i18n="shared.confirmations">Confirmations</span>
+        </div>
+      }
+    </span>
+  } @else {
+    <span class="skeleton-loader"></span>
+  }
+</ng-template>
+
+<ng-template #progressCircle>
+  <div class="progress-circle-wrapper">
+    <svg viewBox="0 0 36 36" class="circular-chart">
+      <path class="circle-bg"
+        d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831"
+      />
+      <path class="circle"
+        [attr.stroke-dasharray]="(confirmations >= confsRequired ? 100 : (confirmations / confsRequired) * 100) + ', 100'"
+        d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831"
+      />
+    </svg>
+  </div>
+</ng-template>
+
+<ng-template #skeletonRow>
+  <tr>
+    <td colspan="2"><span class="skeleton-loader"></span></td>
+  </tr>
+</ng-template>
