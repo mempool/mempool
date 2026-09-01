@@ -10,7 +10,7 @@ import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, fa
   faCircleXmark, faCalendarCheck, faMoneyBillTrendUp, faRobot, faShareNodes, faCreditCard, faMicroscope, faExclamationTriangle, faLockOpen, faPaperclip, faAddressCard,
   faMedal, faBug, faFilePdf, faPiggyBank, faLayerGroup, faHeart, faCashRegister, faCodeFork, faCode, 
   faCalendar, faPause, faPlay, faExpand, faCompress} from '@fortawesome/free-solid-svg-icons';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { InfiniteScrollDirective } from '@app/shared/directives/infinite-scroll.directive';
 import { MenuComponent } from '@components/menu/menu.component';
 import { PreviewTitleComponent } from '@components/master-page-preview/preview-title.component';
 import { VbytesPipe } from '@app/shared/pipes/bytes-pipe/vbytes.pipe';
@@ -169,6 +169,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     ColoredPriceDirective,
     BrowserOnlyDirective,
     ServerOnlyDirective,
+    InfiniteScrollDirective,
     BlockchainComponent,
     BlockViewComponent,
     EightBlocksComponent,
@@ -273,7 +274,6 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     NgbDropdownModule,
     NgbCollapseModule,
     NgbDatepickerModule,
-    InfiniteScrollModule,
     FontAwesomeModule,
   ],
   providers: [
@@ -297,7 +297,6 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     NgbTypeaheadModule,
     NgbDropdownModule,
     NgbCollapseModule,
-    InfiniteScrollModule,
     FontAwesomeModule,
     TimeComponent,
     ClipboardComponent,
@@ -329,6 +328,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     ColoredPriceDirective,
     BrowserOnlyDirective,
     ServerOnlyDirective,
+    InfiniteScrollDirective,
     NoSanitizePipe,
     BlockchainComponent,
     MempoolBlocksComponent,
