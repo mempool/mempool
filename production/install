@@ -27,8 +27,8 @@ case `uname -s` in
 esac
 
 NODE_CONFIGURE_FLAGS="--shared-zlib"
-case `uname -m` in
-    arm64|aarch64)
+case "${OS}:$(uname -m)" in
+    FreeBSD:arm64|FreeBSD:aarch64)
         NODE_CONFIGURE_FLAGS="${NODE_CONFIGURE_FLAGS} --openssl-no-asm --dest-cpu=arm64"
     ;;
 esac
