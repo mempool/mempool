@@ -46,8 +46,8 @@ class Blocks {
   private blocks: BlockExtended[] = [];
   private blockSummaries: BlockSummary[] = [];
   private currentBlockHeight = 0;
-  private currentBits = 0;
   private lastDifficultyAdjustmentTime = 0;
+  private difficultyEpochStartHeight = -1; // epoch start the difficulty adjustment state was loaded from, -1 = stale
   private previousDifficultyRetarget = 0;
   private quarterEpochBlockTime: number | null = null;
   private newBlockCallbacks: ((block: BlockExtended, txIds: string[], transactions: TransactionExtended[]) => void)[] = [];
@@ -1337,32 +1337,16 @@ class Blocks {
       fastForwarded = true;
       logger.info(`Re-indexing skipped blocks and corresponding hashrates data`);
       indexer.reindex(); // Make sure to index the skipped blocks #1619
+      // the skipped blocks may include a retarget or a reorg of the epoch start
+      this.difficultyEpochStartHeight = -1;
     }
 
-    if (!this.lastDifficultyAdjustmentTime) {
+    // (re)load the difficulty adjustment state on startup or after a fast-forward
+    if (this.difficultyAdjustmentStateIsStale(this.currentBlockHeight)) {
       const blockchainInfo = await bitcoinClient.getBlockchainInfo();
-      this.updateTimerProgress(timer, 'got blockchain info for initial difficulty adjustment');
+      this.updateTimerProgress(timer, 'got blockchain info for difficulty adjustment');
       if (blockchainInfo.blocks === blockchainInfo.headers) {
-        const heightDiff = blockHeightTip % 2016;
-        const blockHash = await bitcoinApi.$getBlockHash(blockHeightTip - heightDiff);
-        this.updateTimerProgress(timer, 'got block hash for initial difficulty adjustment');
-        const block: IEsploraApi.Block = await bitcoinApi.$getBlock(blockHash);
-        this.updateTimerProgress(timer, 'got block for initial difficulty adjustment');
-        this.lastDifficultyAdjustmentTime = block.timestamp;
-        this.currentBits = block.bits;
-
-        if (blockHeightTip >= 2016) {
-          const previousPeriodBlockHash = await bitcoinApi.$getBlockHash(blockHeightTip - heightDiff - 2016);
-          this.updateTimerProgress(timer, 'got previous block hash for initial difficulty adjustment');
-          const previousPeriodBlock: IEsploraApi.Block = await bitcoinApi.$getBlock(previousPeriodBlockHash);
-          this.updateTimerProgress(timer, 'got previous block for initial difficulty adjustment');
-          if (['liquid', 'liquidtestnet'].includes(config.MEMPOOL.NETWORK)) {
-            this.previousDifficultyRetarget = NaN;
-          } else {
-            this.previousDifficultyRetarget = calcBitsDifference(previousPeriodBlock.bits, block.bits);
-          }
-          logger.debug(`Initial difficulty adjustment data set.`);
-        }
+        await this.$updateDifficultyAdjustmentState(this.currentBlockHeight, timer);
       } else {
         logger.debug(`Blockchain headers (${blockchainInfo.headers}) and blocks (${blockchainInfo.blocks}) not in sync. Waiting...`);
       }
@@ -1428,6 +1412,17 @@ class Blocks {
         await this.$handleReorgs(blockExtended, timer);
       }
 
+      // a reorg not caught above (indexing disabled) shows as a gap in the block cache
+      const lastCachedBlock = this.blocks[this.blocks.length - 1];
+      if (lastCachedBlock && lastCachedBlock.height === block.height - 1 && lastCachedBlock.id !== block.previousblockhash) {
+        this.difficultyEpochStartHeight = -1;
+      }
+
+      // new epoch or invalidated state: reload before the websocket broadcast
+      if (this.difficultyAdjustmentStateIsStale(block.height)) {
+        await this.$updateDifficultyAdjustmentState(block.height, timer, block);
+      }
+
       await websocketHandler.handleNewBlock(blockExtended, txIds, cpfpSummary.transactions, rbfTransactions);
       this.updateTimerProgress(timer, `sent websocket updates for ${this.currentBlockHeight}`);
 
@@ -1453,35 +1448,16 @@ class Blocks {
         }
       }
 
-      if (block.height % 2016 === 0) {
-        if (Common.indexingEnabled()) {
-          let adjustment;
-          if (['liquid', 'liquidtestnet'].includes(config.MEMPOOL.NETWORK)) {
-            adjustment = NaN;
-          } else {
-            adjustment = Math.round(
-              // calcBitsDifference returns +- percentage, +100 returns to positive, /100 returns to ratio.
-              // Instead of actually doing /100, just reduce the multiplier.
-              (calcBitsDifference(this.currentBits, block.bits) + 100) * 10000
-            ) / 1000000; // Remove float point noise
-          }
-
-          await DifficultyAdjustmentsRepository.$saveAdjustments({
-            time: block.timestamp,
-            height: block.height,
-            difficulty: block.difficulty,
-            adjustment,
-          });
-          this.updateTimerProgress(timer, `saved difficulty adjustment for ${this.currentBlockHeight}`);
-        }
-
-        if (['liquid', 'liquidtestnet'].includes(config.MEMPOOL.NETWORK)) {
-          this.previousDifficultyRetarget = NaN;
-        } else {
-          this.previousDifficultyRetarget = calcBitsDifference(this.currentBits, block.bits);
-        }
-        this.lastDifficultyAdjustmentTime = block.timestamp;
-        this.currentBits = block.bits;
+      if (block.height % 2016 === 0 && Common.indexingEnabled()) {
+        await DifficultyAdjustmentsRepository.$saveAdjustments({
+          time: block.timestamp,
+          height: block.height,
+          difficulty: block.difficulty,
+          // previousDifficultyRetarget is a +- percentage, +100 returns to positive, /100 returns to ratio.
+          // Instead of actually doing /100, just reduce the multiplier.
+          adjustment: Math.round((this.previousDifficultyRetarget + 100) * 10000) / 1000000, // Remove float point noise
+        });
+        this.updateTimerProgress(timer, `saved difficulty adjustment for ${this.currentBlockHeight}`);
       }
 
       // skip updating the orphan block cache if we've fallen behind the chain tip
@@ -1549,6 +1525,53 @@ class Blocks {
     }
   }
 
+  private getDifficultyEpochStartHeight(height: number): number {
+    const h = Math.max(0, height);
+    return h - (h % 2016);
+  }
+
+  /** true if `height` is in a different epoch than the loaded difficulty adjustment state */
+  private difficultyAdjustmentStateIsStale(height: number): boolean {
+    return this.difficultyEpochStartHeight !== this.getDifficultyEpochStartHeight(height);
+  }
+
+  /**
+   * (Re)load the difficulty adjustment state for the epoch containing `height` from Core:
+   * the epoch-start block (or `epochStartBlock` if the caller has it) and the one before it.
+   *
+   * @asyncUnsafe
+   */
+  private async $updateDifficultyAdjustmentState(height: number, timer: any, epochStartBlock?: IEsploraApi.Block): Promise<void> {
+    const epochStartHeight = this.getDifficultyEpochStartHeight(height);
+    let block: IEsploraApi.Block;
+    if (epochStartBlock && epochStartBlock.height === epochStartHeight) {
+      block = epochStartBlock;
+    } else {
+      const blockHash = await bitcoinCoreApi.$getBlockHash(epochStartHeight);
+      this.updateTimerProgress(timer, `got block hash ${epochStartHeight} for difficulty adjustment`);
+      block = await bitcoinCoreApi.$getBlock(blockHash);
+      this.updateTimerProgress(timer, `got block ${epochStartHeight} for difficulty adjustment`);
+    }
+
+    let previousRetarget = this.previousDifficultyRetarget;
+    if (epochStartHeight >= 2016) {
+      const previousPeriodBlockHash = await bitcoinCoreApi.$getBlockHash(epochStartHeight - 2016);
+      this.updateTimerProgress(timer, `got block hash ${epochStartHeight - 2016} for difficulty adjustment`);
+      const previousPeriodBlock: IEsploraApi.Block = await bitcoinCoreApi.$getBlock(previousPeriodBlockHash);
+      this.updateTimerProgress(timer, `got block ${epochStartHeight - 2016} for difficulty adjustment`);
+      if (['liquid', 'liquidtestnet'].includes(config.MEMPOOL.NETWORK)) {
+        previousRetarget = NaN;
+      } else {
+        previousRetarget = calcBitsDifference(previousPeriodBlock.bits, block.bits);
+      }
+    }
+
+    this.lastDifficultyAdjustmentTime = block.timestamp;
+    this.previousDifficultyRetarget = previousRetarget;
+    this.difficultyEpochStartHeight = epochStartHeight;
+    logger.debug(`Difficulty adjustment state set from block #${epochStartHeight} (previous retarget: ${previousRetarget.toFixed(2)}%)`);
+  }
+
   /** @asyncUnsafe */
   private async updateQuarterEpochBlockTime(): Promise<void> {
     if (this.currentBlockHeight >= 503) {
@@ -1588,6 +1611,8 @@ class Blocks {
     // previous blockhash is not what we expected: there has been a reorg
     if (currentlyIndexed !== null && forkTail.previousblockhash !== currentlyIndexed.id) {
       logger.warn(`Chain divergence detected at block ${blockExtended.height}, re-indexing most recent data`, logger.tags.mining);
+      // the reorg may replace the epoch start: invalidate now so the loop reloads even if the repair fails
+      this.difficultyEpochStartHeight = -1;
       this.updateTimerProgress(timer, `reconnecting diverged chain from ${this.currentBlockHeight}`);
       const newBlocks: BlockExtended[] = [];
     // walk back along the chain until we reach the fork point
@@ -1646,6 +1671,14 @@ class Blocks {
       this.updateTimerProgress(timer, `reindexed difficulty adjustments`);
       logger.info(`Re-indexed ${this.currentBlockHeight - forkTail.height} blocks and summaries. Also re-indexed the last difficulty adjustments. Will re-index latest hashrates in a few seconds.`, logger.tags.mining);
       indexer.reindex();
+
+      // reload before clients hear about the reorg; not fatal, the loop retries a failed reload
+      try {
+        await this.$updateDifficultyAdjustmentState(blockExtended.height, timer, blockExtended);
+        this.updateTimerProgress(timer, `reloaded difficulty adjustment state`);
+      } catch (e) {
+        logger.warn(`Failed to reload the difficulty adjustment state after the reorg at block #${blockExtended.height}, will retry: ${e instanceof Error ? e.message : e}`, logger.tags.mining);
+      }
 
       websocketHandler.handleReorg();
     }
