@@ -58,7 +58,7 @@ export class NodesPerISP implements OnInit {
 
           const sumLiquidity = response.nodes.reduce((partialSum, a) => partialSum + a.capacity, 0);
           const sumChannels = response.nodes.reduce((partialSum, a) => partialSum + a.channels, 0);
-          const countries = {};
+          const countries: Record<string, number> = {};
           const topCountry = {
             count: 0,
             country: '',
@@ -69,7 +69,7 @@ export class NodesPerISP implements OnInit {
             if (!node.geolocation.iso) {
               continue;
             }
-            countries[node.geolocation.iso] = countries[node.geolocation.iso] ?? 0 + 1;
+            countries[node.geolocation.iso] = (countries[node.geolocation.iso] ?? 0) + 1;
             if (countries[node.geolocation.iso] > topCountry.count) {
               topCountry.count = countries[node.geolocation.iso];
               topCountry.country = node.geolocation.country;

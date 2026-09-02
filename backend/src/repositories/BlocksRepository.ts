@@ -14,7 +14,7 @@ import chainTips from '../api/chain-tips';
 import blocks from '../api/blocks';
 import BlocksAuditsRepository from './BlocksAuditsRepository';
 import transactionUtils from '../api/transaction-utils';
-import { parseDATUMTemplateCreator } from '../utils/bitcoin-script';
+import { parseDATUMTemplateCreator, parseDMNDTemplateCreator } from '../utils/bitcoin-script';
 import poolsUpdater from '../tasks/pools-updater';
 
 interface DatabaseBlock {
@@ -61,6 +61,7 @@ interface DatabaseBlock {
   totalInputAmt: number;
   firstSeen: string; // UNIX_TIMESTAMP() returns a string when applied to datetime(6)
   stale: boolean;
+  coinbaseBip54: boolean | null;
 }
 
 const BLOCK_DB_FIELDS = `
@@ -92,6 +93,7 @@ const BLOCK_DB_FIELDS = `
   blocks.coinbase_addresses AS coinbaseAddresses,
   blocks.coinbase_signature AS coinbaseSignature,
   blocks.coinbase_signature_ascii AS coinbaseSignatureAscii,
+  blocks.coinbase_bip_54 AS coinbaseBip54,
   blocks.avg_tx_size AS avgTxSize,
   blocks.total_inputs AS totalInputs,
   blocks.total_outputs AS totalOutputs,
@@ -132,7 +134,7 @@ class BlocksRepository {
         total_inputs,       total_outputs,            total_input_amt,   total_output_amt,
         fee_percentiles,    segwit_total_txs,         segwit_total_size, segwit_total_weight,
         median_fee_amt,     coinbase_signature_ascii, definition_hash,   index_version,
-        stale,              first_seen
+        stale,              first_seen,               coinbase_bip_54
       ) VALUE (
         ?, ?, FROM_UNIXTIME(?), ?,
         ?, ?, ?, ?,
@@ -144,7 +146,7 @@ class BlocksRepository {
         ?, ?, ?, ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?,
-        ?, FROM_UNIXTIME(?)
+        ?, FROM_UNIXTIME(?), ?
       )`;
 
       const poolDbId = await PoolsRepository.$getPoolByUniqueId(block.extras.pool.id);
@@ -194,7 +196,8 @@ class BlocksRepository {
         poolsUpdater.currentSha,
         BlocksRepository.version,
         (block.stale ? 1 : 0),
-        block.extras.firstSeen === null ? 1 : block.extras.firstSeen // Sentinel value 1 indicates that we could not find first seen time
+        block.extras.firstSeen === null ? 1 : block.extras.firstSeen, // Sentinel value 1 indicates that we could not find first seen time
+        block.extras.coinbaseBip54 ?? null
       ];
 
       await DB.query(query, params);
@@ -306,39 +309,6 @@ class BlocksRepository {
   }
 
   /**
-   * Get empty blocks for one or all pools
-   * @asyncSafe
-   */
-  public async $countEmptyBlocks(poolId: number | null, interval: string | null = null): Promise<any> {
-    interval = Common.getSqlInterval(interval);
-
-    const params: any[] = [];
-    let query = `SELECT count(height) as count, pools.id as poolId
-      FROM blocks
-      JOIN pools on pools.id = blocks.pool_id
-      WHERE tx_count = 1 AND stale = 0`;
-
-    if (poolId) {
-      query += ` AND pool_id = ?`;
-      params.push(poolId);
-    }
-
-    if (interval) {
-      query += ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
-    }
-
-    query += ` GROUP by pools.id`;
-
-    try {
-      const [rows] = await DB.query(query, params);
-      return rows;
-    } catch (e) {
-      logger.err('Cannot count empty blocks. Reason: ' + (e instanceof Error ? e.message : e));
-      throw e;
-    }
-  }
-
-  /**
    * Return most recent block height
    * @asyncSafe
    */
@@ -360,17 +330,26 @@ class BlocksRepository {
     interval = Common.getSqlInterval(interval);
 
     const params: any[] = [];
-    let query = `SELECT count(height) as blockCount
-      FROM blocks 
-      WHERE stale = 0`;
-
-    if (poolId) {
-      query += ` AND pool_id = ?`;
+    let query;
+    if (!poolId && !interval) {
+      // optimized query to get full indexed block count
+      query = `SELECT CAST(COALESCE(MAX(height) - MIN(height) + 1, 0) AS SIGNED) as blockCount FROM blocks`;
+    } else if (!poolId) {
+      // optimized query for indexed count within an interval
+      query = `SELECT GREATEST(0, COALESCE(
+        CAST((SELECT height FROM blocks WHERE stale = 0 AND blockTimestamp <= NOW() ORDER BY blockTimestamp DESC LIMIT 1) AS SIGNED) -
+        CAST((SELECT height FROM blocks WHERE stale = 0 AND blockTimestamp >= DATE_SUB(NOW(), INTERVAL ${interval}) ORDER BY blockTimestamp ASC LIMIT 1) AS SIGNED) + 1
+      , 0)) as blockCount`;
+    } else {
+      // for specific pools, we do still have to actually count the blocks
+      query = `SELECT count(*) as blockCount
+        FROM blocks
+        WHERE stale = 0 AND pool_id = ?`;
       params.push(poolId);
-    }
 
-    if (interval) {
-      query += ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+      if (interval) {
+        query += ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
+      }
     }
 
     try {
@@ -576,7 +555,33 @@ class BlocksRepository {
   }
 
   /**
+   * Get the canonical block hash at a given height
+   * @asyncSafe
+   */
+  public async $getCanonicalBlockHashByHeight(height: number): Promise<string | null> {
+    try {
+      const [rows]: any[] = await DB.query(`
+        SELECT hash
+        FROM blocks
+        WHERE height = ? AND stale = 0
+        LIMIT 1`,
+        [height]
+      );
+
+      if (rows.length <= 0) {
+        return null;
+      }
+
+      return rows[0].hash;
+    } catch (e) {
+      logger.err(`Cannot get canonical block hash at height ${height}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
    * Get one block by hash
+   * @asyncSafe
    */
   public async $getBlockByHash(hash: string): Promise<BlockExtended | null> {
     try {
@@ -771,14 +776,16 @@ class BlocksRepository {
    */
   public async $getHistoricalBlockFees(div: number, interval: string | null, timespan?: {from: number, to: number}): Promise<any> {
     try {
+      const withPrices = Common.blockPricesIndexingEnabled();
+
       let query = `SELECT
         CAST(AVG(blocks.height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(fees) as INT) as avgFees,
-        prices.USD
-        FROM blocks
+        CAST(AVG(fees) as INT) as avgFees${withPrices ? `,
+        prices.USD` : ''}
+        FROM blocks${withPrices ? `
         JOIN blocks_prices on blocks_prices.height = blocks.height
-        JOIN prices on prices.id = blocks_prices.price_id
+        JOIN prices on prices.id = blocks_prices.price_id` : ''}
         WHERE stale = 0
       `;
 
@@ -804,14 +811,16 @@ class BlocksRepository {
    */
   public async $getHistoricalBlockRewards(div: number, interval: string | null): Promise<any> {
     try {
+      const withPrices = Common.blockPricesIndexingEnabled();
+
       let query = `SELECT
         CAST(AVG(blocks.height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(reward) as INT) as avgRewards,
-        prices.USD
-        FROM blocks
+        CAST(AVG(reward) as INT) as avgRewards${withPrices ? `,
+        prices.USD` : ''}
+        FROM blocks${withPrices ? `
         JOIN blocks_prices on blocks_prices.height = blocks.height
-        JOIN prices on prices.id = blocks_prices.price_id
+        JOIN prices on prices.id = blocks_prices.price_id` : ''}
         WHERE stale = 0
       `;
 
@@ -1256,6 +1265,10 @@ class BlocksRepository {
     blk.previousblockhash = dbBlk.previousblockhash;
     blk.mediantime = dbBlk.mediantime;
     blk.indexVersion = dbBlk.index_version;
+    blk.stale = dbBlk.stale;
+    if (dbBlk.stale) {
+      blk.canonical = await this.$getCanonicalBlockHashByHeight(dbBlk.height) || undefined;
+    }
     // BlockExtension
     extras.totalFees = dbBlk.totalFees;
     extras.medianFee = dbBlk.medianFee;
@@ -1288,6 +1301,7 @@ class BlocksRepository {
     extras.utxoSetSize = dbBlk.utxoSetSize;
     extras.totalInputAmt = dbBlk.totalInputAmt;
     extras.virtualSize = dbBlk.weight / 4.0;
+    extras.coinbaseBip54 = dbBlk.coinbaseBip54;
 
     extras.firstSeen = null;
     if (config.CORE_RPC.DEBUG_LOG_PATH) {
@@ -1344,6 +1358,8 @@ class BlocksRepository {
 
     if (extras.pool.name === 'OCEAN') {
       extras.pool.minerNames = parseDATUMTemplateCreator(extras.coinbaseRaw);
+    } else if (extras.pool.name === 'DMND') {
+      extras.pool.minerNames = parseDMNDTemplateCreator(extras.coinbaseRaw);
     }
 
     blk.extras = <BlockExtension>extras;
@@ -1417,6 +1433,43 @@ class BlocksRepository {
       throw e;
     }
     return blocksMigrated;
+  }
+
+  /** @asyncSafe */
+  public async $getBlocksMissingBip54Tag(): Promise<{id: string, height: number, timestamp: number}[]> {
+    const timeFirstMainnetBip54Coinbase = 1771507776;
+    const query = `SELECT 
+    hash as id, 
+    height,
+    UNIX_TIMESTAMP(blocks.blockTimestamp) AS timestamp
+    FROM blocks
+    where coinbase_bip_54 IS NULL AND
+    stale = 0 AND
+    height > 0 AND
+    blockTimestamp >= FROM_UNIXTIME(${timeFirstMainnetBip54Coinbase})
+    ORDER BY height DESC`;
+
+    try {
+      const [blocks]: any[] = await DB.query(query);
+
+      return blocks;
+    } catch (e) {
+      logger.err(`Cannot get blocks with missing bip54 flag. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+
+    return [];
+  }
+
+  public async $updateCoinbaseBip54(result: boolean, hash: string): Promise<void> {
+    const query = `UPDATE blocks SET coinbase_bip_54 = ? WHERE hash = ?`;
+    const params = [result, hash];
+
+    try {
+      await DB.query(query, params);
+    } catch (e) {
+      logger.err(`Couldn't update coinbaseBip54 field for block ${hash}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
   }
 }
 

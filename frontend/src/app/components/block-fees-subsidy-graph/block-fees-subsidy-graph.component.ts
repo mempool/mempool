@@ -146,6 +146,12 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
   }
 
   prepareChartOptions() {
+    // instances without price indexing return no fiat data, so the fiat mode has nothing to show
+    const showFiat = this.data.blockFeesFiat.length > 0;
+    if (!showFiat && this.displayMode === 'fiat') {
+      this.displayMode = 'normal';
+    }
+
     let title: object;
     if (this.data.blockFees.length === 0) {
       title = {
@@ -240,6 +246,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
         }
       ],
       legend: this.data.blockFees.length === 0 ? undefined : {
+        top: 'top',
         data: [
           {
             name: this.subsidyLabel,
@@ -257,7 +264,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
             },
             icon: 'roundRect',
           },
-          {
+          ...(showFiat ? [{
             name: this.subsidyUsdLabel,
             inactiveColor: 'var(--grey)',
             textStyle: {
@@ -272,7 +279,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
               color: 'var(--fg)',
             },
             icon: 'roundRect',
-          },
+          }] : []),
           {
             name: this.subsidyPercentLabel,
             inactiveColor: 'var(--grey)',
@@ -291,8 +298,10 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           },
         ],
         selected: {
-          [this.subsidyUsdLabel]: this.displayMode === 'fiat' && this.legend.subsidy,
-          [this.feesUsdLabel]: this.displayMode === 'fiat' && this.legend.fees,
+          ...(showFiat ? {
+            [this.subsidyUsdLabel]: this.displayMode === 'fiat' && this.legend.subsidy,
+            [this.feesUsdLabel]: this.displayMode === 'fiat' && this.legend.fees,
+          } : {}),
           [this.subsidyLabel]: this.displayMode === 'normal' && this.legend.subsidy,
           [this.feesLabel]: this.displayMode === 'normal' && this.legend.fees,
           [this.subsidyPercentLabel]: this.displayMode === 'percentage' && this.legend.subsidy,
@@ -328,7 +337,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
           axisLabel: {
             color: 'var(--grey)',
             formatter: function(val) {
-              return this.fiatShortenerPipe.transform(val, null, 'USD');
+              return this.fiatShortenerPipe.transform(val, 'USD');
             }.bind(this)
           },
           splitLine: {

@@ -1,0 +1,13 @@
+FROM nginx:1.30.1-alpine
+
+# Stage the config the way production/install does: the repo is available at
+# ${NGINX_ETC_FOLDER}/mempool and production/nginx/nginx.conf becomes the main
+# config, with __NGINX_USER__ and __NGINX_ETC_FOLDER__ substituted.
+# Build context: production/
+COPY nginx /etc/nginx/mempool/production/nginx
+
+RUN cp /etc/nginx/mempool/production/nginx/nginx.conf /etc/nginx/nginx.conf && \
+    sed -i "s!__NGINX_USER__!nginx!" /etc/nginx/nginx.conf && \
+    sed -i "s!__NGINX_ETC_FOLDER__!/etc/nginx!" /etc/nginx/nginx.conf
+
+CMD ["nginx", "-t"]

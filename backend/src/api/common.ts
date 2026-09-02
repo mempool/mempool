@@ -749,7 +749,15 @@ export class Common {
     // fast but bad heuristic to detect possible coinjoins
     // (at least 5 inputs and 5 outputs, less than half of which are unique amounts, with no address reuse)
     const addressReuse = Object.keys(reusedOutputAddresses).reduce((acc, key) => Math.max(acc, (reusedInputAddresses[key] || 0) + (reusedOutputAddresses[key] || 0)), 0) > 1;
-    if (!addressReuse && tx.vin.length >= 5 && tx.vout.length >= 5 && (Object.keys(inValues).length + Object.keys(outValues).length) <= (tx.vin.length + tx.vout.length) / 2 ) {
+    const tokenRelated = (flags & (TransactionFlags.inscription | TransactionFlags.op_return)) !== 0n;
+    if (!addressReuse &&
+        tx.vin.length >= 5 &&
+        tx.vout.length >= 5 &&
+        (Object.keys(inValues).length + Object.keys(outValues).length) <= (tx.vin.length + tx.vout.length) / 2 &&
+        !tokenRelated &&
+        tx.vin.length / tx.vout.length < 5 &&
+        tx.vin.length / tx.vout.length > 0.2
+      ) {
       flags |= TransactionFlags.coinjoin;
     }
     // more than 5:1 input:output ratio
@@ -891,6 +899,15 @@ export class Common {
     return (
       Common.indexingEnabled() &&
       config.MEMPOOL.CPFP_INDEXING === true
+    );
+  }
+
+  // must match the conditions under which the indexer runs the 'blocksPrices' task,
+  // otherwise queries will join against a blocks_prices table that is never populated
+  static blockPricesIndexingEnabled(): boolean {
+    return (
+      !['testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK) &&
+      config.FIAT_PRICE.ENABLED === true
     );
   }
 
@@ -1146,6 +1163,20 @@ export class Common {
       // Guaranteed to pass validation (see function below)
       return this.validateTransactionHex(matches[1].toLowerCase());
     });
+  }
+
+  static isBip54Coinbase (block: IEsploraApi.Block | {id: string, height: number, timestamp: number}, coinbaseTx: IEsploraApi.Transaction): boolean | null {
+    if (typeof block.height !== 'number' || typeof block.timestamp !== 'number') {
+      return null;
+    }
+
+    const timeFirstMainnetBip54Coinbase = 1771507776;
+    if (block.timestamp < timeFirstMainnetBip54Coinbase) {
+      return null;
+    }
+
+    const seq = coinbaseTx.vin[0].sequence;
+    return (block.height > 0 && coinbaseTx.locktime === block.height - 1 && typeof seq === 'number' && seq !== 0xffffffff);
   }
 
   private static validateTransactionHex(txhex: string): string {

@@ -2,6 +2,7 @@ import config from '../config';
 import logger from '../logger';
 import { BlockExtended } from '../mempool.interfaces';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
+import BlocksRepository from '../repositories/BlocksRepository';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import bitcoinClient from './bitcoin/bitcoin-client';
 import { IEsploraApi } from './bitcoin/esplora-api.interface';
@@ -23,26 +24,29 @@ export interface StaleTip extends ChainTip {
 export interface OrphanedBlock {
   height: number;
   hash: string;
+  branchlen: number;
   status: 'valid-fork' | 'valid-headers' | 'headers-only';
   prevhash: string;
 }
 
 class ChainTips {
   private chainTips: ChainTip[] = [];
-  private staleTips: Record<number, StaleTip> = {};
+  private validChainTips: ChainTip[] = []; // 'valid-fork' and 'valid-headers' only, in descending height order
+  private staleBlocks: Record<string, BlockExtended> = {};
   private orphanedBlocks: { [hash: string]: OrphanedBlock } = {};
   private blockCache: { [hash: string]: OrphanedBlock } = {};
   private orphansByHeight: { [height: number]: OrphanedBlock[] } = {};
   private indexingOrphanedBlocks = false;
   private indexingQueue: { blockhash?: string, block?: IEsploraApi.Block, tip: OrphanedBlock }[] = [];
 
-  private staleTipsCacheSize = 50;
+  private staleBlocksCacheSize = 50;
   private maxIndexingQueueSize = 100;
 
   /** @asyncSafe */
   public async updateOrphanedBlocks(): Promise<void> {
     try {
       this.chainTips = await bitcoinClient.getChainTips();
+      this.validChainTips = this.chainTips.filter(tip => tip.status === 'valid-fork' || tip.status === 'valid-headers').sort((a, b) => b.height - a.height);
 
       const activeTipHeight = this.chainTips.find(tip => tip.status === 'active')?.height || (await bitcoinApi.$getBlockHeightTip());
       let minIndexHeight = 0;
@@ -69,6 +73,7 @@ class ChainTips {
                 orphan = {
                   height: block.height,
                   hash: block.id,
+                  branchlen: chain.branchlen,
                   status: chain.status,
                   prevhash: block.previousblockhash,
                 };
@@ -119,13 +124,7 @@ class ChainTips {
         this.orphansByHeight[orphan.height].push(orphan);
       }
 
-      const heightsToKeep = new Set(this.chainTips.filter(tip => tip.status !== 'active').map(tip => tip.height));
-      const heightsToRemove: number[] = Object.keys(this.staleTips).map(Number).filter(height => !heightsToKeep.has(height));
-      for (const height of heightsToRemove) {
-        delete this.staleTips[height];
-      }
-
-      this.trimStaleTipsCache();
+      this.trimStaleBlocksCache();
 
       // index new orphaned blocks in the background
       void this.$indexOrphanedBlocks();
@@ -157,7 +156,7 @@ class ChainTips {
         }
         let staleBlock: BlockExtended | undefined;
         const alreadyIndexed = await BlocksSummariesRepository.$isSummaryIndexed(block.id);
-        const needToCache = Object.keys(this.staleTips).length < this.staleTipsCacheSize || block.height > Object.keys(this.staleTips).map(Number).sort((a, b) => b - a)[this.staleTipsCacheSize - 1];
+        const needToCache = this.shouldCacheStaleBlock(block.id, block.height);
         if (!alreadyIndexed) {
           staleBlock = await blocks.$indexBlock(block.id, block, true);
           await blocks.$indexBlockSummary(block.id, block.height, true);
@@ -168,16 +167,9 @@ class ChainTips {
         }
 
         if (staleBlock && needToCache) {
-          const canonicalBlock = await blocks.$indexBlockByHeight(staleBlock.height);
-          this.staleTips[staleBlock.height] = {
-            height: staleBlock.height,
-            hash: staleBlock.id,
-            branchlen: tip.height - staleBlock.height,
-            status: tip.status,
-            stale: staleBlock,
-            canonical: canonicalBlock,
-          };
-          this.trimStaleTipsCache();
+          // ensure the canonical block is correctly indexed
+          await blocks.$indexBlockByHeight(staleBlock.height);
+          this.cacheStaleBlock(staleBlock);
         }
       } catch (e) {
         logger.err(`Failed to index orphaned block ${block?.id} at height ${block?.height}. Reason: ${e instanceof Error ? e.message : e}`);
@@ -186,12 +178,42 @@ class ChainTips {
     this.indexingOrphanedBlocks = false;
   }
 
-  private trimStaleTipsCache(): void {
-    const staleTipHeights = Object.keys(this.staleTips).map(Number).sort((a, b) => b - a);
-    if (staleTipHeights.length > this.staleTipsCacheSize) {
-      const heightsToDiscard = staleTipHeights.slice(this.staleTipsCacheSize);
-      for (const height of heightsToDiscard) {
-        delete this.staleTips[height];
+  private shouldCacheStaleBlock(hash: string, height: number): boolean {
+    // already cached
+    if (this.staleBlocks[hash]) {
+      return false;
+    }
+
+    // cache is not full
+    const cachedBlocks = Object.values(this.staleBlocks);
+    if (cachedBlocks.length < this.staleBlocksCacheSize) {
+      return true;
+    }
+
+    // otherwise cache if this block is newer than the oldest in the cache
+    const oldestCachedHeight = cachedBlocks.reduce((min, block) => Math.min(min, block.height), Infinity);
+    return height >= oldestCachedHeight;
+  }
+
+  private cacheStaleBlock(block: BlockExtended): void {
+    this.staleBlocks[block.id] = block;
+    this.trimStaleBlocksCache();
+  }
+
+  // evict the oldest stale blocks until the cache is within the size limit
+  private trimStaleBlocksCache(): void {
+    // sort by height
+    const cachedBlocks = Object.values(this.staleBlocks).sort((a, b) => {
+      if (b.height !== a.height) {
+        return b.height - a.height;
+      }
+      // tie-break by hash
+      return a.id.localeCompare(b.id);
+    });
+    // delete everything beyond the size limit
+    if (cachedBlocks.length > this.staleBlocksCacheSize) {
+      for (const block of cachedBlocks.slice(this.staleBlocksCacheSize)) {
+        delete this.staleBlocks[block.id];
       }
     }
   }
@@ -208,8 +230,51 @@ class ChainTips {
     return this.chainTips;
   }
 
-  public getStaleTips(): StaleTip[] {
-    return Object.values(this.staleTips).sort((a, b) => b.height - a.height);
+  /**
+   * get paginated stale chain tips
+   * @param fromHeight - start height (exclusive)
+   * @param count - requested page size (target, but not strictly enforced)
+   *
+   * @asyncSafe
+   */
+  public async $getStaleTipsPage(fromHeight: number | undefined, count: number): Promise<StaleTip[]> {
+    const start = fromHeight === undefined ? 0 : this.validChainTips.findIndex(tip => tip.height < fromHeight);
+    // no tips beyond the requested height, we can return early
+    if (start === -1) {
+      return [];
+    }
+
+    // fill the response array with hydrated tip data
+    const tips: StaleTip[] = [];
+    let lastHeight;
+    for (let index = start; index < this.validChainTips.length; index++) {
+      const staleTip = this.validChainTips[index];
+      // stretch the page to include any remaining blocks at the last included height to avoid pagination gaps with a height-based cursor
+      if (tips.length >= count) {
+        if (staleTip.height !== lastHeight) {
+          break;
+        }
+      }
+      // fetch blocks from caches if available, or DB otherwise
+      const canonical = blocks.getBlocks().find(block => block.height === staleTip.height) || await BlocksRepository.$getBlockByHeight(staleTip.height);
+      let stale: BlockExtended | null | undefined = this.staleBlocks[staleTip.hash];
+      if (!stale) {
+        stale = await BlocksRepository.$getBlockByHash(staleTip.hash);
+      }
+      // skip tips with missing block data
+      if (!canonical || !stale) {
+        continue;
+      }
+
+      tips.push({
+        ...staleTip,
+        stale,
+        canonical,
+      });
+      lastHeight = staleTip.height;
+    }
+
+    return tips;
   }
 
   clearOrphanCacheAboveHeight(height: number): void {

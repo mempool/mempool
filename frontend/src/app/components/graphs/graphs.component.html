@@ -3,6 +3,9 @@
   <a routerLinkActive="active" class="btn btn-primary w-33"
     [routerLink]="['/graphs/mempool' | relativeUrl]">Mempool</a>
 
+  <a routerLinkActive="active" class="btn btn-primary w-33"
+    [routerLink]="['/graphs/goggles' | relativeUrl]" i18n="mining.goggles">Goggles</a>
+
   <div ngbDropdown class="w-33" *ngIf="stateService.env.MINING_DASHBOARD">
     <button class="btn btn-primary w-100" id="dropdownBasic1" ngbDropdownToggle i18n="mining">Mining</button>
     <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
@@ -16,7 +19,7 @@
         i18n="mining.block-fee-rates">Block Fee Rates</a>
       <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]"
         i18n="mining.block-fees">Block Fees</a>
-      <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/mining/block-fees-subsidy' | relativeUrl]"
+      <a *ngIf="isMainnet" class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/mining/block-fees-subsidy' | relativeUrl]"
         i18n="mining.block-fees-subsidy-subsidy">Block Fees Vs Subsidy</a>
       <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/mining/block-rewards' | relativeUrl]"
         i18n="mining.block-rewards">Block Rewards</a>

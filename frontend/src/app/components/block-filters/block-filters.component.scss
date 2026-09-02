@@ -18,6 +18,41 @@
     flex-wrap: wrap;
     row-gap: 0.25em;
     margin-left: 0.5em;
+    width: 100%;
+
+    &.menu-open {
+      white-space: nowrap;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      margin-right: 0.5em;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      -webkit-mask-image: linear-gradient(
+        to right,
+        transparent 0,
+        #000 var(--fade-l),
+        #000 calc(100% - var(--fade-r)),
+        transparent 100%
+      );
+
+      mask-image: linear-gradient(
+        to right,
+        transparent 0,
+        #000 var(--fade-l),
+        #000 calc(100% - var(--fade-r)),
+        transparent 100%
+      );
+
+      animation: goggles-fade-l linear both, goggles-fade-r linear both;
+      animation-timeline: scroll(self inline);
+      animation-range:0 1.5em, 0 100%;
+      animation-duration: 1ms;
+    }
   }
 
   .info-badges {
@@ -216,5 +251,28 @@
     .filter-tag {
       font-size: 0.5em;
     }
+  }
+}
+
+@property --fade-l {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --fade-r {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes goggles-fade-l {
+  to {
+    --fade-l: 1em;
+  }
+}
+@keyframes goggles-fade-r {
+  from {
+    --fade-r: 1em;
   }
 }

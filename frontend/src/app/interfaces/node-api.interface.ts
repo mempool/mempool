@@ -215,6 +215,7 @@ export interface BlockExtension {
   feeRange?: number[];
   reward?: number;
   coinbaseRaw?: string;
+  coinbaseBip54?: boolean | null;
   matchRate?: number;
   expectedFees?: number;
   expectedWeight?: number;
@@ -224,6 +225,8 @@ export interface BlockExtension {
     id: number;
     name: string;
     slug: string;
+    minerName?: string;
+    minerSlug?: string;
     minerNames: string[] | null;
   }
   orphans?: {

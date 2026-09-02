@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { combineLatest, merge, Observable, of, Subject, Subscription } from 'rxjs';
-import { catchError, filter, map, scan, share, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
+import { catchError, filter, map, retry, scan, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, OptimizedMempoolStats, TransactionStripped } from '@interfaces/node-api.interface';
 import { MempoolInfo, ReplacementInfo } from '@interfaces/websocket.interface';
 import { ApiService } from '@app/services/api.service';
@@ -47,10 +47,13 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
   replacements$: Observable<ReplacementInfo[]>;
   latestBlockHeight: number;
   mempoolTransactionsWeightPerSecondData: any;
-  mempoolStats$: Observable<MempoolStatsData>;
+  mempoolStats: MempoolStatsData;
+  mempoolStatsError: any;
+  isMempoolStatsLoading: boolean = true;
   transactionsWeightPerSecondOptions: any;
   isLoadingWebSocket$: Observable<boolean>;
   isLoad: boolean = true;
+  mempoolStatsSubscription: Subscription;
   filterSubscription: Subscription;
   mempoolInfoSubscription: Subscription;
   currencySubscription: Subscription;
@@ -100,6 +103,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   ngOnDestroy(): void {
+    this.mempoolStatsSubscription.unsubscribe();
     this.filterSubscription.unsubscribe();
     this.mempoolInfoSubscription.unsubscribe();
     this.currencySubscription.unsubscribe();
@@ -225,13 +229,19 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
 
     this.replacements$ = this.stateService.rbfLatestSummary$;
 
-    this.mempoolStats$ = this.stateService.connectionState$
+    this.mempoolStatsSubscription = this.stateService.connectionState$
       .pipe(
         filter((state) => state === 2),
+        tap(() => {
+          this.isMempoolStatsLoading = true;
+          this.mempoolStatsError = null;
+        }),
         switchMap(() => this.apiService.list2HStatistics$().pipe(
-          catchError((e) => {
+          retry({ count: 3, delay: 1000 }),
+          catchError((err) => {
+            this.mempoolStatsError = err;
             return of(null);
-          })
+          }),
         )),
         switchMap((mempoolStats) => {
           return merge(
@@ -240,6 +250,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
                 scan((acc, stats) => {
                   const now = Date.now() / 1000;
                   const start = now - (2 * 60 * 60);
+                  this.mempoolStatsError = null;
                   acc.unshift(stats);
                   acc = acc.filter(p => p.added >= start);
                   return acc;
@@ -258,8 +269,11 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
             return null;
           }
         }),
-        shareReplay(1),
-      );
+      ).subscribe((mempoolStats) => {
+        this.isMempoolStatsLoading = false;
+        this.mempoolStats = mempoolStats;
+        this.cd.markForCheck();
+      });
 
     this.currencySubscription = this.stateService.fiatCurrency$.subscribe((fiat) => {
       this.currency = fiat;
@@ -360,7 +374,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
             return summary;
           }, initial)
         )),
-        share(),
+        shareReplay({ bufferSize: 1, refCount: true }),
       );
     }
   }
@@ -412,7 +426,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
             return this.deduplicateWalletTransactions([...summaries, ...newSummaries]);
           }, this.deduplicateWalletTransactions(Object.values(wallet).flatMap(address => address.transactions)))
         )),
-        share(),
+        shareReplay({ bufferSize: 1, refCount: true }),
       );
     }
   }

@@ -110,6 +110,7 @@ export class BlockFeesGraphComponent implements OnInit {
   }
 
   prepareChartOptions(data) {
+    const showFiat = !this.stateService.isAnyTestnet() && data.blockFeesFiat.length > 0;
     const feesBtcLabel = $localize`:@@graphs.blockFees.feesBtc:Fees BTC`;
     const feesFiatLabel = $localize`:@@graphs.blockFees.feesFiat:Fees ${this.currency}:currency:`;
 
@@ -186,7 +187,8 @@ export class BlockFeesGraphComponent implements OnInit {
           hideOverlap: true,
         }
       },
-      legend: data.blockFees.length === 0 ? undefined : {
+      legend: (data.blockFees.length === 0 || !showFiat) ? undefined : {
+        top: 'top',
         data: [
           {
             name: feesBtcLabel,
@@ -223,19 +225,19 @@ export class BlockFeesGraphComponent implements OnInit {
             }
           },
         },
-        {
+        ...(showFiat ? [{
           type: 'value',
           position: 'right',
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: function(val) {
-              return this.fiatShortenerPipe.transform(val, null, this.currency);
+              return this.fiatShortenerPipe.transform(val, this.currency);
             }.bind(this)
           },
           splitLine: {
             show: false,
           },
-        },
+        }] : []),
       ],
       series: data.blockFees.length === 0 ? undefined : [
         {
@@ -252,7 +254,7 @@ export class BlockFeesGraphComponent implements OnInit {
             opacity: 1,
           }
         },
-        {
+        ...(showFiat ? [{
           legendHoverLink: false,
           zlevel: 1,
           yAxisIndex: 1,
@@ -265,7 +267,7 @@ export class BlockFeesGraphComponent implements OnInit {
             width: 2,
             opacity: 1,
           }
-        },
+        }] : []),
       ],
       dataZoom: data.blockFees.length === 0 ? undefined : [{
         type: 'inside',
