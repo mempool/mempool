@@ -2,6 +2,7 @@ import { MempoolBlockDelta, MempoolBlockDeltaCompressed, MempoolDeltaChange, Tra
 import { TransactionStripped } from '@interfaces/node-api.interface';
 import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 const amountShortenerPipe = new AmountShortenerPipe();
 
 export function isMobile(): boolean {
@@ -222,23 +223,44 @@ export function sleep$(ms: number): Promise<void> {
   });
 }
 
-export function handleDemoRedirect(route: ActivatedRoute, router: Router) {
-  let demoRedirectTimer: ReturnType<typeof setTimeout>;
-  route.queryParams
+const DEFAULT_DEMO_DELAY_MS = 300_000; // 5 minutes
+const MIN_DEMO_DELAY_MS = 5_000; // 5 seconds
+const MAX_DEMO_DELAY_MS = 3_600_000; // 1 hour
+
+export function handleDemoRedirect(route: ActivatedRoute, router: Router): Subscription {
+  let demoRedirectTimer: ReturnType<typeof setTimeout> | undefined;
+
+  const clearTimer = () => {
+    if (demoRedirectTimer !== undefined) {
+      clearTimeout(demoRedirectTimer);
+      demoRedirectTimer = undefined;
+    }
+  };
+
+  const subscription = route.queryParams
     .subscribe(params => {
+      clearTimer();
       if (params.next) {
         const path = ['/', '/acceleration', '/mining', '/lightning'];
         const index = path.indexOf(params.next);
         if (index >= 0) {
           const nextPath = path[(index + 1) % path.length];
-          clearTimeout(demoRedirectTimer);
+          // optional ?delay= query param (in seconds), clamped to sane bounds
+          const delaySeconds = parseInt(params.delay, 10);
+          const delayMs = Number.isFinite(delaySeconds)
+            ? Math.min(Math.max(delaySeconds * 1000, MIN_DEMO_DELAY_MS), MAX_DEMO_DELAY_MS)
+            : DEFAULT_DEMO_DELAY_MS;
           demoRedirectTimer = setTimeout(() => {
-            window.location.replace(`${path[index]}?next=${nextPath}`);
-          }, 300000);
+            const delayParam = Number.isFinite(delaySeconds) ? `&delay=${Math.round(delayMs / 1000)}` : '';
+            window.location.replace(`${path[index]}?next=${nextPath}${delayParam}`);
+          }, delayMs);
         }
       }
     }
   );
+
+  subscription.add(clearTimer);
+  return subscription;
 }
 
 // https://stackoverflow.com/a/60467595
