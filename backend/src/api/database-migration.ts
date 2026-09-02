@@ -1267,25 +1267,18 @@ class DatabaseMigration {
     }
 
     if (databaseSchemaVersion < 114) {
-      // The DDL is mainnet only: the route serving this metric returns 400 everywhere
-      // else, so the other networks would pay for an index on `blocks` that nothing
-      // reads. The version bump is not, otherwise they would sit below currentVersion
-      // and re-run migration initialization on every startup. Trade-off: a database
-      // first built on another network and later repointed at mainnet reaches 114
-      // without the columns, and has to be migrated by hand.
+      // DDL is mainnet only, the version bump is not: other networks would otherwise sit
+      // below currentVersion and re-run migration initialization on every startup.
       if (config.MEMPOOL.NETWORK === 'mainnet') {
-        // Per-block minimum fee-merit effective fee rate (issue #6639). Columns and index
-        // are separate statements to keep the column add on ALGORITHM=INSTANT; combining
-        // them would rebuild the whole blocks table during startup migration.
+        // Issue #6639. Split from the index below to keep the column add on
+        // ALGORITHM=INSTANT; combining them rebuilds the whole blocks table.
         await this.$executeQuery(`
           ALTER TABLE blocks
             ADD min_fee_rate DOUBLE UNSIGNED NULL DEFAULT NULL,
             ADD min_fee_rate_version TINYINT UNSIGNED NOT NULL DEFAULT 0
         `);
-        // Covering index for the daily aggregation. blockTimestamp leads because the
-        // query filters on it alone: it has to see every block in a day, computed or
-        // not, to decide the day is complete, so a version-first index would leave that
-        // range scan unseekable. The rest is read from the index, never from the row.
+        // blockTimestamp leads: the aggregation has to see every block in a day, computed
+        // or not, so a version-first index would leave that range scan unseekable.
         await this.$executeQuery(`
           ALTER TABLE blocks
             ADD INDEX min_fee_rate_series (blockTimestamp, stale, min_fee_rate_version, min_fee_rate, height)
