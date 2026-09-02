@@ -1449,15 +1449,20 @@ class Blocks {
       }
 
       if (block.height % 2016 === 0 && Common.indexingEnabled()) {
-        await DifficultyAdjustmentsRepository.$saveAdjustments({
-          time: block.timestamp,
-          height: block.height,
-          difficulty: block.difficulty,
-          // previousDifficultyRetarget is a +- percentage, +100 returns to positive, /100 returns to ratio.
-          // Instead of actually doing /100, just reduce the multiplier.
-          adjustment: Math.round((this.previousDifficultyRetarget + 100) * 10000) / 1000000, // Remove float point noise
-        });
-        this.updateTimerProgress(timer, `saved difficulty adjustment for ${this.currentBlockHeight}`);
+        if (Number.isFinite(this.previousDifficultyRetarget)) {
+          await DifficultyAdjustmentsRepository.$saveAdjustments({
+            time: block.timestamp,
+            height: block.height,
+            difficulty: block.difficulty,
+            // previousDifficultyRetarget is a +- percentage, +100 returns to positive, /100 returns to ratio.
+            // Instead of actually doing /100, just reduce the multiplier.
+            adjustment: Math.round((this.previousDifficultyRetarget + 100) * 10000) / 1000000, // Remove float point noise
+          });
+          this.updateTimerProgress(timer, `saved difficulty adjustment for ${this.currentBlockHeight}`);
+        } else {
+          // the column is NOT NULL; the indexer fills the row from the difficulty ratio instead
+          logger.warn(`Not saving the difficulty adjustment at block #${block.height} (unknown change), the indexer will compute it from the difficulty ratio`, logger.tags.mining);
+        }
       }
 
       // skip updating the orphan block cache if we've fallen behind the chain tip
@@ -1536,6 +1541,22 @@ class Blocks {
   }
 
   /**
+   * Difficulty change (%) between two consecutive epoch-start blocks, or NaN when it can't be
+   * computed (Liquid, or an exponent gap of 2+: impossible on mainnet, routine on testnet3).
+   */
+  private calcPreviousRetarget(oldBits: number, newBits: number): number {
+    if (['liquid', 'liquidtestnet'].includes(config.MEMPOOL.NETWORK)) {
+      return NaN;
+    }
+    try {
+      return calcBitsDifference(oldBits, newBits);
+    } catch (e) {
+      logger.warn(`Cannot compute the difficulty change from bits 0x${oldBits.toString(16)} to 0x${newBits.toString(16)}: ${e instanceof Error ? e.message : e}`);
+      return NaN;
+    }
+  }
+
+  /**
    * (Re)load the difficulty adjustment state for the epoch containing `height` from Core:
    * the epoch-start block (or `epochStartBlock` if the caller has it) and the one before it.
    *
@@ -1559,11 +1580,7 @@ class Blocks {
       this.updateTimerProgress(timer, `got block hash ${epochStartHeight - 2016} for difficulty adjustment`);
       const previousPeriodBlock: IEsploraApi.Block = await bitcoinCoreApi.$getBlock(previousPeriodBlockHash);
       this.updateTimerProgress(timer, `got block ${epochStartHeight - 2016} for difficulty adjustment`);
-      if (['liquid', 'liquidtestnet'].includes(config.MEMPOOL.NETWORK)) {
-        previousRetarget = NaN;
-      } else {
-        previousRetarget = calcBitsDifference(previousPeriodBlock.bits, block.bits);
-      }
+      previousRetarget = this.calcPreviousRetarget(previousPeriodBlock.bits, block.bits);
     }
 
     this.lastDifficultyAdjustmentTime = block.timestamp;
