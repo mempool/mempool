@@ -61,8 +61,7 @@ class AccelerationRepository {
       // We don't throw, not a critical issue if we miss some accelerations
     }
     // Separate from the insert above so a failure here is not reported as a failed
-    // acceleration save. The block's min_fee_rate excludes accelerated transactions, so a
-    // late-arriving acceleration invalidates an already-computed value.
+    // acceleration save.
     try {
       await BlocksRepository.$invalidateMinFeeRateAtHeight(block.height);
     } catch (e) {

@@ -180,8 +180,7 @@ class Indexer {
         logger.debug(`Backfilling min_fee_rate now`, logger.tags.mining);
         try {
           // One batch per pass, so a long queue never holds the indexer loop. A full
-          // batch means there is more of it, so the task re-queues itself and goes quiet
-          // again as soon as a batch comes back short.
+          // batch means there is more of it, so the task re-queues itself.
           if (await BlocksRepository.$backfillMinFeeRate() >= MIN_FEE_RATE_BATCH_SIZE) {
             this.scheduleSingleTask('minFeeRate', 1000);
           }

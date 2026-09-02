@@ -21,6 +21,9 @@ const DEFAULT_BAR_COLOR = '#FB8C00';
 // The series is one point per day, so anything shorter than a month is degenerate.
 const TIMESPANS = ['1m', '3m', '6m', '1y', '2y', '3y', 'all'];
 
+// The line is one pixel tall, so hit-testing it literally would make it ungrabbable.
+const THRESHOLD_GRAB_RADIUS = 6;
+
 @Component({
   selector: 'app-min-fee-rate-graph',
   templateUrl: './min-fee-rate-graph.component.html',
@@ -60,6 +63,9 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
 
   data: MinFeeRateDay[] = [];
   threshold = DEFAULT_MIN_FEE_RATE_THRESHOLD;
+
+  private dragging = false;
+  private suppressClick = false;
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -142,9 +148,8 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
     return this.minFeeRateService.formatFeeRate(val);
   }
 
-  // Formatted in UTC: west of Greenwich a UTC-midnight month boundary would otherwise
-  // render as the previous month. Granularity follows the tick rather than the timespan,
-  // because ECharts sizes tick intervals by pixel density.
+  // UTC: west of Greenwich a UTC-midnight month boundary would render as the previous
+  // month. Granularity follows the tick, since ECharts sizes intervals by pixel density.
   private formatAxisDate(value: number): string {
     const date = new Date(value);
     const isMonthStart = date.getUTCDate() === 1 && date.getUTCHours() === 0 &&
@@ -185,8 +190,9 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
       tooltip: {
         show: !this.isMobile(),
         trigger: 'axis',
+        // The threshold line is the only rule worth reading against.
         axisPointer: {
-          type: 'line'
+          type: 'none'
         },
         backgroundColor: 'rgba(17, 19, 31, 1)',
         borderRadius: 4,
@@ -243,7 +249,9 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
         barWidth: '90%',
         barMaxWidth: 50,
         markLine: {
-          silent: true,
+          // zrender drops events whose topmost hit is silent, which left the line
+          // draggable only where a bar happened to sit under it.
+          silent: false,
           symbol: 'none',
           lineStyle: {
             color: 'var(--transparent-fg)',
@@ -251,25 +259,13 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
             opacity: 1,
             width: 1,
           },
-          data: [{
-            yAxis: this.threshold,
-            label: {
-              show: true,
-              position: 'insideEndTop',
-              formatter: (): string => `${this.formatFeeRate(this.threshold)} sat/vB`,
-              color: 'var(--fg)',
-              fontSize: 11,
-            }
-          }],
+          data: this.thresholdLineData(),
         }
       }],
       visualMap: !hasData ? undefined : {
         show: false,
         dimension: 1,
-        pieces: [
-          { lte: this.threshold, color: HIGHLIGHT_COLOR },
-          { gt: this.threshold, color: DEFAULT_BAR_COLOR },
-        ],
+        pieces: this.thresholdPieces(),
       },
       dataZoom: !hasData ? undefined : [{
         type: 'inside',
@@ -294,6 +290,34 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
     };
   }
 
+  private thresholdLineData() {
+    return [{
+      yAxis: this.threshold,
+      label: {
+        show: true,
+        position: 'insideEndTop',
+        formatter: (): string => `${this.formatFeeRate(this.threshold)} sat/vB`,
+        color: 'var(--fg)',
+        fontSize: 11,
+      }
+    }];
+  }
+
+  private thresholdPieces(): { lte?: number, gt?: number, color: string }[] {
+    return [
+      { lte: this.threshold, color: HIGHLIGHT_COLOR },
+      { gt: this.threshold, color: DEFAULT_BAR_COLOR },
+    ];
+  }
+
+  private isOnThresholdLine(offsetY: number, point: number[]): boolean {
+    if (!this.chartInstance.containPixel('grid', point)) {
+      return false;
+    }
+    const lineY = this.chartInstance.convertToPixel({ yAxisIndex: 0 }, this.threshold);
+    return Math.abs(offsetY - lineY) <= THRESHOLD_GRAB_RADIUS;
+  }
+
   onChartInit(ec): void {
     if (this.chartInstance !== undefined) {
       return;
@@ -302,10 +326,64 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
     this.chartInstance = ec;
 
     this.chartInstance.on('click', (e) => {
+      // A drag that ends over a bar still emits a click.
+      if (this.suppressClick) {
+        this.suppressClick = false;
+        return;
+      }
+      // The threshold line reports clicks of its own and carries no block height.
+      if (e.componentType !== 'series') {
+        return;
+      }
       this.zone.run(() => {
         const url = new RelativeUrlPipe(this.stateService).transform(`/block/${e.data[2]}`);
         this.router.navigate([url]);
       });
+    });
+
+    const zr = this.chartInstance.getZr();
+
+    zr.on('mousedown', (e) => {
+      this.suppressClick = false;
+      if (!this.isOnThresholdLine(e.offsetY, [e.offsetX, e.offsetY])) {
+        return;
+      }
+      this.dragging = true;
+      zr.setCursorStyle('ns-resize');
+    });
+
+    zr.on('mousemove', (e) => {
+      if (this.dragging) {
+        this.dragThresholdTo(e.offsetY);
+        zr.setCursorStyle('ns-resize');
+      } else if (this.isOnThresholdLine(e.offsetY, [e.offsetX, e.offsetY])) {
+        zr.setCursorStyle('ns-resize');
+      }
+    });
+
+    const endDrag = (): void => {
+      if (!this.dragging) {
+        return;
+      }
+      this.dragging = false;
+      this.suppressClick = true;
+      this.zone.run(() => {
+        this.thresholdControl.setValue(this.threshold);
+      });
+    };
+    zr.on('mouseup', endDrag);
+    zr.on('globalout', endDrag);
+  }
+
+  // Redraws go straight to the instance: a full option rebuild per mousemove would
+  // re-issue the whole series.
+  private dragThresholdTo(offsetY: number): void {
+    const rate = this.chartInstance.convertFromPixel({ yAxisIndex: 0 }, offsetY);
+    this.threshold = Math.max(0, parseFloat(this.formatFeeRate(rate)));
+    this.thresholdControl.setValue(this.threshold, { emitEvent: false });
+    this.chartInstance.setOption({
+      series: [{ markLine: { data: this.thresholdLineData() } }],
+      visualMap: { show: false, dimension: 1, pieces: this.thresholdPieces() },
     });
   }
 

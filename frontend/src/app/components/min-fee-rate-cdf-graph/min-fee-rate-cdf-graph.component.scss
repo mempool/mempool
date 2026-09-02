@@ -33,27 +33,6 @@
   }
 }
 
-.threshold-input {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 6px;
-  @media (min-width: 830px) {
-    float: right;
-    margin-top: 0px;
-    margin-right: 12px;
-  }
-  label {
-    margin: 0;
-    font-size: 11px;
-    color: var(--transparent-fg);
-    white-space: nowrap;
-  }
-  input {
-    width: 95px;
-  }
-}
-
 .chart {
   display: flex;
   flex: 1;
