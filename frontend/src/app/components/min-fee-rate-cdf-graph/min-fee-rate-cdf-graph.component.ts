@@ -1,17 +1,17 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { echarts, EChartsOption } from '@app/graphs/echarts';
 import { EMPTY, Observable, Subject } from 'rxjs';
 import { catchError, map, share, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { SeoService } from '@app/services/seo.service';
 import { formatNumber } from '@angular/common';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { download } from '@app/shared/graphs.utils';
 import { StorageService } from '@app/services/storage.service';
 import { MiningService } from '@app/services/mining.service';
 import { StateService } from '@app/services/state.service';
 import { ActivatedRoute } from '@angular/router';
 import { MinFeeRateDay } from '@app/interfaces/node-api.interface';
-import { DEFAULT_MIN_FEE_RATE_THRESHOLD, MinFeeRateService } from '@app/services/min-fee-rate.service';
+import { MinFeeRateService } from '@app/services/min-fee-rate.service';
 
 // Vertical fee gradient, the palette the other mining charts use.
 const CURVE_GRADIENT = new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -46,9 +46,6 @@ export class MinFeeRateCdfGraphComponent implements OnInit, OnDestroy {
 
   miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
-  // Kept out of radioGroupForm: that group lives inside the timespan <form>, which is
-  // only rendered once the stats arrive, and a control may only belong to one container.
-  thresholdControl: UntypedFormControl;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -61,9 +58,10 @@ export class MinFeeRateCdfGraphComponent implements OnInit, OnDestroy {
   chartInstance: any = undefined;
 
   data: MinFeeRateDay[] = [];
-  threshold = DEFAULT_MIN_FEE_RATE_THRESHOLD;
 
-  // Share of days at or below the threshold: drives the marker and the legend readout.
+  // Null while only the hover readout is in play.
+  pinnedRate: number | null = null;
+
   percentBelow = 0;
 
   constructor(
@@ -75,11 +73,11 @@ export class MinFeeRateCdfGraphComponent implements OnInit, OnDestroy {
     private miningService: MiningService,
     public stateService: StateService,
     private route: ActivatedRoute,
+    private zone: NgZone,
     private cd: ChangeDetectorRef,
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1m' });
     this.radioGroupForm.controls.dateSpan.setValue('1m');
-    this.thresholdControl = this.formBuilder.control(DEFAULT_MIN_FEE_RATE_THRESHOLD);
   }
 
   ngOnInit(): void {
@@ -97,16 +95,6 @@ export class MinFeeRateCdfGraphComponent implements OnInit, OnDestroy {
         if (TIMESPANS.indexOf(fragment) > -1) {
           this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
         }
-      });
-
-    // Threshold changes only move the marker and recompute the stats, no refetch.
-    this.thresholdControl.valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((value) => {
-        const parsed = parseFloat(value);
-        this.threshold = isNaN(parsed) || parsed < 0 ? 0 : parsed;
-        this.updateChart();
-        this.cd.markForCheck();
       });
 
     this.statsObservable$ = this.radioGroupForm.get('dateSpan').valueChanges.pipe(
@@ -142,7 +130,9 @@ export class MinFeeRateCdfGraphComponent implements OnInit, OnDestroy {
   }
 
   updateChart(): void {
-    this.percentBelow = this.minFeeRateService.getPercentBelow(this.data, this.threshold);
+    this.percentBelow = this.pinnedRate === null
+      ? 0
+      : this.minFeeRateService.getPercentBelow(this.data, this.pinnedRate);
     this.prepareChartOptions(this.minFeeRateService.buildCdf(this.data));
   }
 
@@ -152,8 +142,9 @@ export class MinFeeRateCdfGraphComponent implements OnInit, OnDestroy {
 
   prepareChartOptions(cdf: number[][]): void {
     const hasData = cdf.length > 0;
+    const isPinned = hasData && this.pinnedRate !== null;
     const curveLabel = $localize`:@@mining.min-fee-rate-cdf.legend-curve:Cumulative`;
-    const thresholdValue = this.formatFeeRate(this.threshold);
+    const thresholdValue = this.formatFeeRate(this.pinnedRate ?? 0);
     const thresholdPercent = `${formatNumber(this.percentBelow, this.locale, '1.1-1')}%`;
     const thresholdLabel = $localize`:@@mining.min-fee-rate-cdf.legend-threshold:Threshold`;
     const maxRate = hasData ? cdf[cdf.length - 1][0] : 0;
@@ -177,7 +168,9 @@ export class MinFeeRateCdfGraphComponent implements OnInit, OnDestroy {
         top: 'top',
         data: [
           { name: curveLabel, inactiveColor: 'rgb(110, 112, 121)', textStyle: { color: 'var(--fg)' }, icon: 'roundRect' },
-          { name: thresholdLabel, inactiveColor: 'rgb(110, 112, 121)', textStyle: { color: 'var(--fg)' }, icon: 'roundRect' },
+          ...(isPinned
+            ? [{ name: thresholdLabel, inactiveColor: 'rgb(110, 112, 121)', textStyle: { color: 'var(--fg)' }, icon: 'roundRect' }]
+            : []),
         ],
       },
       tooltip: {
@@ -252,47 +245,49 @@ export class MinFeeRateCdfGraphComponent implements OnInit, OnDestroy {
             opacity: 0.5,
           },
         },
-        {
-          zlevel: 1,
-          name: thresholdLabel,
-          type: 'line',
-          data: [[this.threshold, 0], [this.threshold, 100]],
-          symbol: 'none',
-          silent: true,
-          lineStyle: {
-            color: 'var(--transparent-fg)',
-            type: 'dashed',
-            width: 1,
+        ...(!isPinned ? [] : [
+          {
+            zlevel: 1,
+            name: thresholdLabel,
+            type: 'line',
+            data: [[this.pinnedRate, 0], [this.pinnedRate, 100]],
+            symbol: 'none',
+            // zrender drops events whose topmost hit is silent, which would make the
+            // pinned line the one place a click cannot clear it.
+            silent: false,
+            lineStyle: {
+              color: 'var(--transparent-fg)',
+              type: 'dashed',
+              width: 1,
+            },
+            itemStyle: {
+              color: 'var(--fg)',
+            },
           },
-          itemStyle: {
-            color: 'var(--fg)',
+          // Scatter rather than a markPoint: MarkPointComponent is not in the bundle.
+          {
+            zlevel: 2,
+            name: 'threshold-marker',
+            type: 'scatter',
+            data: [[this.pinnedRate, this.percentBelow]],
+            symbolSize: 10,
+            silent: false,
+            // Flips side once the pin is far enough right to push the text off the grid.
+            label: {
+              show: true,
+              position: this.pinnedRate > maxRate * 0.7 ? 'left' : 'right',
+              distance: 8,
+              color: 'var(--fg)',
+              fontSize: 11,
+              formatter: `${thresholdValue} sat/vB → ${thresholdPercent}`,
+            },
+            itemStyle: {
+              color: 'var(--fg)',
+              borderColor: THRESHOLD_MARKER_COLOR,
+              borderWidth: 2,
+            },
           },
-        },
-        // Marker where the threshold crosses the curve. A separate series rather than a
-        // markPoint because MarkPointComponent is not registered in the echarts bundle.
-        {
-          zlevel: 2,
-          name: 'threshold-marker',
-          type: 'scatter',
-          data: [[this.threshold, this.percentBelow]],
-          symbolSize: 10,
-          silent: true,
-          // Flips side once the threshold is far enough right to push the text off
-          // the grid.
-          label: {
-            show: true,
-            position: this.threshold > maxRate * 0.7 ? 'left' : 'right',
-            distance: 8,
-            color: 'var(--fg)',
-            fontSize: 11,
-            formatter: `${thresholdValue} sat/vB → ${thresholdPercent}`,
-          },
-          itemStyle: {
-            color: 'var(--fg)',
-            borderColor: THRESHOLD_MARKER_COLOR,
-            borderWidth: 2,
-          },
-        },
+        ]),
       ],
     };
   }
@@ -302,6 +297,27 @@ export class MinFeeRateCdfGraphComponent implements OnInit, OnDestroy {
       return;
     }
     this.chartInstance = ec;
+
+    // Bound at the zrender layer: the curve draws no symbols, so series-level clicks
+    // would only land on the line itself.
+    this.chartInstance.getZr().on('click', (e) => {
+      const point = [e.offsetX, e.offsetY];
+      if (!this.chartInstance.containPixel('grid', point)) {
+        return;
+      }
+      this.zone.run(() => {
+        this.togglePin(this.chartInstance.convertFromPixel({ seriesIndex: 0 }, point)[0]);
+      });
+    });
+  }
+
+  /** Rounds to the printed precision so the share answers the rate the label shows. */
+  private togglePin(rate: number): void {
+    this.pinnedRate = this.pinnedRate !== null || !(rate > 0)
+      ? null
+      : parseFloat(this.formatFeeRate(rate));
+    this.updateChart();
+    this.cd.markForCheck();
   }
 
   isMobile(): boolean {

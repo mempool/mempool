@@ -1484,8 +1484,7 @@ class BlocksRepository {
     }
   }
   /**
-   * First canonical block at or after the metric's start date. Cached because it never
-   * moves, and it keeps the backfill queue off the blocks that predate the series.
+   * First canonical block at or after the metric's start date.
    * @asyncSafe
    */
   private async $getMinFeeRateStartHeight(): Promise<number> {
@@ -1531,8 +1530,7 @@ class BlocksRepository {
   }
 
   /**
-   * Queue a block for recomputation. Called when its acceleration set changes after the
-   * metric was already computed, so the stored value no longer matches its inputs.
+   * Called when a block's acceleration set changes after the metric was computed.
    * @asyncSafe
    */
   public async $invalidateMinFeeRateAtHeight(height: number): Promise<void> {
@@ -1563,11 +1561,7 @@ class BlocksRepository {
     }
   }
 
-  /**
-   * Shared prelude for both daily queries: the scoped window, the height gaps inside it,
-   * and the per-day aggregate. `startDay` is a SQL expression, not a value, because the
-   * interval variant computes it from NOW().
-   */
+  /** `startDay` is a SQL expression, not a value: the interval variant needs NOW(). */
   private minFeeRateDaysCte(startDay: string, extraDayColumns = ''): string {
     return `
       WITH scoped AS (
@@ -1609,27 +1603,15 @@ class BlocksRepository {
     )`;
 
   /**
-   * Minimum fee-merit effective fee rate per UTC calendar day (issue #6639).
-   * Unlike the rolling DIV-bucket mining charts, this buckets on the fixed UTC day so
-   * the "minimum daily fee rate" is stable regardless of the selected interval.
-   *
-   * A day is only published once its minimum can no longer move: every non-stale block
-   * in it carries the current metric version, and no height is missing from the chain
-   * across the day's span. A day short of even one block reports a minimum that is too
-   * high, and nothing in the response would let a caller tell it apart from a real one.
-   *
-   * Completeness is a property of the height sequence, not of each day's own range.
-   * Block timestamps are not monotonic in height, so a late block can land in the
-   * previous UTC day and leave two days interleaved rather than partitioned; both are
-   * fully indexed, and testing each day's heights for contiguity would withhold both.
+   * Per UTC calendar day (issue #6639). An incomplete day is withheld: its minimum
+   * would be too high and indistinguishable from a real one. The gap test runs on the
+   * global height sequence, since block timestamps are not monotonic in height.
    * @asyncSafe
    */
   public async $getMinFeeRatesByDay(interval: string | null): Promise<MinFeeRateDay[]> {
     try {
-      // The requested interval is snapped to a UTC day boundary: a raw
-      // DATE_SUB(NOW(), ...) cuts the oldest bucket at the current time of day and still
-      // reports it as a whole day. The scan starts one day earlier than that, so the
-      // first published day's predecessor height is in scope for the gap test.
+      // Snapped to a UTC day boundary: a raw DATE_SUB(NOW(), ...) would cut the oldest
+      // bucket mid-day. The scan starts a day earlier so the gap test has a predecessor.
       const startDay = interval === null
         ? `FLOOR(? / 86400)`
         : `GREATEST(
@@ -1678,9 +1660,8 @@ class BlocksRepository {
   }
 
   /**
-   * Days available across the whole history, which is what the graph's timespan buttons
-   * guard against. Counts exactly what $getMinFeeRatesByDay would publish, so the count
-   * can never promise a period the series does not cover.
+   * Counts exactly what $getMinFeeRatesByDay publishes, so it can never promise a
+   * period the series does not cover.
    * @asyncSafe
    */
   public async $getMinFeeRateDayCount(): Promise<number> {
@@ -1706,24 +1687,8 @@ class BlocksRepository {
   }
 
   /**
-   * Backfill blocks.min_fee_rate. Transactions come with `vin`, so makeBlockTemplate can
-   * be run directly and the value does not depend on which CPFP producer originally
-   * indexed the block.
-   *
-   * accelerations are deliberately passed as [] to makeBlockTemplate: an acceleration is
-   * an out-of-band payment, so letting it raise the template rate of its CPFP package
-   * would hide exactly what this metric measures.
-   *
-   * On a Core backend the transactions come straight from getblock, without the sigops
-   * that extendMempoolTransaction derives on the esplora path, so a sigop-heavy block can
-   * yield a slightly different rate than the same block on an esplora-backed instance.
-   *
-   * One batch per run; the queue is not drained in a single invocation. A single block's
-   * RPC/compute failure is logged and skipped rather than aborting the rest of the batch.
-   *
-   * Returns how many blocks the queue handed out, not how many succeeded: the caller uses
-   * it to decide whether more work is waiting, and a batch full of skipped blocks still
-   * means the queue is not empty.
+   * Accelerations are passed as [] on purpose: one raising its package's template rate
+   * would hide what this measures. Returns blocks claimed, not blocks computed.
    * @asyncSafe
    */
   public async $backfillMinFeeRate(): Promise<number> {
