@@ -1361,13 +1361,13 @@ class DatabaseMigration {
     transactionQueries.push(this.getUpdateToLatestSchemaVersionQuery());
 
     try {
-      await this.$executeQuery('START TRANSACTION;');
-      for (const query of transactionQueries) {
-        await this.$executeQuery(query);
-      }
-      await this.$executeQuery('COMMIT;');
+      await DB.$transaction(async () => {
+        for (const query of transactionQueries) {
+          await this.$executeQuery(query);
+        }
+      });
     } catch (e) {
-      await this.$executeQuery('ROLLBACK;');
+      logger.err(`MIGRATIONS: schema update to version ${DatabaseMigration.currentVersion} failed and was rolled back`);
       throw e;
     }
   }
