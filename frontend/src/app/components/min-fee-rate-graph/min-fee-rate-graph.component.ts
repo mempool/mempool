@@ -11,7 +11,7 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
 import { StateService } from '@app/services/state.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MinFeeRateDay } from '@app/interfaces/node-api.interface';
-import { DEFAULT_MIN_FEE_RATE_THRESHOLD, MinFeeRateService } from '@app/services/min-fee-rate.service';
+import { DEFAULT_MIN_FEE_RATE_THRESHOLD, MinFeeRateService, RATE_EPSILON } from '@app/services/min-fee-rate.service';
 
 // Days at or below the threshold are highlighted green; the rest keep the warm
 // fee-gradient tone the other mining charts use.
@@ -304,9 +304,12 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
   }
 
   private thresholdPieces(): { lte?: number, gt?: number, color: string }[] {
+    // Same tolerance the CDF counts with, so a day on the threshold is not green in one
+    // chart and orange in the other.
+    const edge = this.threshold + RATE_EPSILON;
     return [
-      { lte: this.threshold, color: HIGHLIGHT_COLOR },
-      { gt: this.threshold, color: DEFAULT_BAR_COLOR },
+      { lte: edge, color: HIGHLIGHT_COLOR },
+      { gt: edge, color: DEFAULT_BAR_COLOR },
     ];
   }
 
