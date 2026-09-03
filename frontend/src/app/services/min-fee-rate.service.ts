@@ -8,6 +8,10 @@ import { MinFeeRateDay } from '@app/interfaces/node-api.interface';
 // reference threshold both charts open on.
 export const DEFAULT_MIN_FEE_RATE_THRESHOLD = 0.1;
 
+// minRate is a fee/vsize double, so a day sitting exactly on the threshold can land a few
+// ulps either side of it. Well below the precision formatFeeRate prints.
+export const RATE_EPSILON = 1e-9;
+
 @Injectable({ providedIn: 'root' })
 export class MinFeeRateService {
   constructor(private apiService: ApiService) {}
@@ -20,7 +24,7 @@ export class MinFeeRateService {
     if (data.length === 0) {
       return 0;
     }
-    return (data.filter(d => d.minRate <= threshold).length / data.length) * 100;
+    return (data.filter(d => d.minRate <= threshold + RATE_EPSILON).length / data.length) * 100;
   }
 
   // Duplicate rates collapse to one step, so the staircase stays monotonic.
