@@ -239,9 +239,6 @@ class Indexer {
       }
 
       void this.runSingleTask('blocksPrices');
-      // Cold start and quiet-chain safety net: the block handler is the usual trigger,
-      // but neither fires on an instance that is not receiving blocks yet.
-      void this.runSingleTask('minFeeRate');
       await blocks.$indexCoinbaseAddresses();
       await mining.$indexDifficultyAdjustments();
       await mining.$generateNetworkHashrateHistory();
@@ -253,6 +250,10 @@ class Indexer {
       await auditReplicator.$sync();
       await statisticsReplicator.$sync();
       await AccelerationRepository.$indexPastAccelerations();
+      // After the acceleration sync, or the backfill would compute blocks whose
+      // exclusion set is still being written. Also the cold-start trigger: the block
+      // handler never fires on an instance that is not receiving blocks yet.
+      void this.runSingleTask('minFeeRate');
       await BlocksAuditsRepository.$migrateAuditsV0toV1();
       await BlocksRepository.$migrateBlocks();
 
