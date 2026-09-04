@@ -14,6 +14,7 @@ import { MempoolBlockComponent } from '@components/mempool-block/mempool-block.c
 import { MiningDashboardComponent } from '@components/mining-dashboard/mining-dashboard.component';
 import { AcceleratorDashboardComponent } from '@components/acceleration/accelerator-dashboard/accelerator-dashboard.component';
 import { PoolRankingComponent } from '@components/pool-ranking/pool-ranking.component';
+import { Bip54CoinbaseGraphComponent } from '@components/bip54-coinbase-graph/bip54-coinbase-graph.component';
 import { PoolComponent } from '@components/pool/pool.component';
 import { StartComponent } from '@components/start/start.component';
 import { StatisticsComponent } from '@components/statistics/statistics.component';
@@ -134,6 +135,11 @@ const routes: Routes = [
             path: 'mining/pools',
             data: { networks: ['bitcoin'] },
             component: PoolRankingComponent,
+          },
+          {
+            path: 'mining/bip54-coinbase',
+            data: { networks: ['bitcoin'] },
+            component: Bip54CoinbaseGraphComponent,
           },
           {
             path: 'mining/block-fees',
