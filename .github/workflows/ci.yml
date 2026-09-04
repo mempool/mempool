@@ -95,6 +95,58 @@ jobs:
         run: npm run build
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
 
+  backend-freebsd:
+    if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
+    strategy:
+      matrix:
+        freebsd: ["14.4"]
+        flavor: ["dev", "prod"]
+      fail-fast: false
+    runs-on: mempool-ci
+
+    name: Backend on FreeBSD ${{ matrix.freebsd }} (${{ matrix.flavor }})
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: ${{ matrix.flavor }}
+
+      - name: Test suite on FreeBSD ${{ matrix.freebsd }}
+        uses: vmactions/freebsd-vm@d0518f912576ae759075aa00fb9fe27037940271 # v1.5.4
+        with:
+          usesh: true
+          release: "${{ matrix.freebsd }}"
+          arch: aarch64
+          prepare: |
+            pkg install -y bash python3 rust node24 npm-node24
+
+          run: |
+            set -e
+            cd $GITHUB_WORKSPACE/${{ matrix.flavor }}/backend
+
+            echo "::group::Versions"
+            freebsd-version
+            node --version
+            npm --version
+            rustc --version
+            echo "::endgroup::"
+
+            echo "::group::Check install scripts"
+            /usr/local/bin/bash meta/scripts/check-install-scripts.sh
+            echo "::endgroup::"
+
+            echo "::group::Install"
+            ${{ matrix.flavor == 'dev' && 'npm ci' || 'npm ci --omit=dev --omit=optional' }}
+            echo "::endgroup::"
+
+            echo "::group::Unit Tests"
+            ${{ matrix.flavor == 'dev' && 'npm run test:ci' || 'true' }}
+            echo "::endgroup::"
+
+            echo "::group::Build"
+            npm run build
+            echo "::endgroup::"
 
   cache:
     name: "Cache assets for builds"
