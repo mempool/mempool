@@ -1,0 +1,38 @@
+.card-header {
+  border-bottom: 0;
+  font-size: 18px;
+  @media (min-width: 465px) {
+    font-size: 20px;
+  }
+}
+
+.full-container {
+  padding: 0px 15px;
+  width: 100%;
+  height: calc(100% - 140px);
+  padding-bottom: 20px;
+  @media (max-width: 992px) {
+    height: calc(100% - 190px);
+  }
+  @media (max-width: 575px) {
+    height: calc(100% - 230px);
+  }
+}
+
+.chart {
+  height: 560px;
+  margin-bottom: 10px;
+  @media (max-width: 991.98px) {
+    height: 420px;
+  }
+  @media (max-width: 767.98px) {
+    height: 300px;
+  }
+}
+
+.loadingGraphs {
+  position: absolute;
+  top: 50%;
+  left: calc(50% - 15px);
+  z-index: 99;
+}
