@@ -40,8 +40,14 @@
   </div>
 
   <div class="container pb-lg-0">
-    <div class="chart" *browserOnly [style]="{ opacity: isLoading ? 0.5 : 1 }" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
-      (chartInit)="onChartInit($event)">
+    <ng-container *ngIf="bip54DataAvailable">
+      <div class="chart" *browserOnly [style]="{ opacity: isLoading ? 0.5 : 1 }" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+        (chartInit)="onChartInit($event)">
+      </div>
+    </ng-container>
+
+    <div class="text-center unavailable" *ngIf="!bip54DataAvailable" i18n="mining.bip54-unavailable">
+      BIP-54 adoption data is not available from this backend.
     </div>
 
     <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">
