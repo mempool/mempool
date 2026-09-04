@@ -80,6 +80,7 @@ class PoolsRepository {
       return `
         COUNT(CASE WHEN ${inWindow} THEN blocks.height END) AS \`blockCount_${label}\`,
         COUNT(CASE WHEN ${inWindow} AND blocks.tx_count = 1 THEN 1 END) AS \`emptyBlocks_${label}\`,
+        COUNT(CASE WHEN ${inWindow} AND blocks.coinbase_bip_54 = 1 THEN 1 END) AS \`bip54BlockCount_${label}\`,
         AVG(CASE WHEN ${inWindow} THEN blocks_audits.match_rate END) AS \`avgMatchRate_${label}\`,
         AVG(CASE WHEN ${inWindow} THEN ${feeDelta} END) AS \`avgFeeDelta_${label}\``;
     }).join(',');
@@ -118,6 +119,7 @@ class PoolsRepository {
               poolUniqueId: row.poolUniqueId,
               blockCount: blockCount,
               emptyBlocks: row[`emptyBlocks_${label}`],
+              bip54BlockCount: row[`bip54BlockCount_${label}`],
               avgMatchRate: row[`avgMatchRate_${label}`],
               avgFeeDelta: row[`avgFeeDelta_${label}`],
             });
