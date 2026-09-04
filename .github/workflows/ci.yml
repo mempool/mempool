@@ -100,17 +100,16 @@ jobs:
     strategy:
       matrix:
         freebsd: ["14.4"]
-        flavor: ["dev", "prod"]
       fail-fast: false
     runs-on: mempool-ci
 
-    name: Backend on FreeBSD ${{ matrix.freebsd }} (${{ matrix.flavor }})
+    name: Backend on FreeBSD ARM ${{ matrix.freebsd }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          path: ${{ matrix.flavor }}
+          path: freebsd
 
       - name: Test suite on FreeBSD ${{ matrix.freebsd }}
         uses: vmactions/freebsd-vm@d0518f912576ae759075aa00fb9fe27037940271 # v1.5.4
@@ -118,12 +117,26 @@ jobs:
           usesh: true
           release: "${{ matrix.freebsd }}"
           arch: aarch64
+          cache-after-prepare: true
+          copyback: false
           prepare: |
-            pkg install -y bash python3 rust node24 npm-node24
+            set -e
+            pkg install -y bash git python3 rust node24 npm-node24
+
+            export CARGO_TARGET_DIR=/root/cargo-target
+
+            cd $GITHUB_WORKSPACE/freebsd/rust/gbt
+            cargo fetch --locked
+            cargo build --release
+
+            cd $GITHUB_WORKSPACE/freebsd/backend
+            npm ci
+            rm -rf node_modules ../rust/gbt/node_modules rust-gbt
 
           run: |
             set -e
-            cd $GITHUB_WORKSPACE/${{ matrix.flavor }}/backend
+            export CARGO_TARGET_DIR=/root/cargo-target
+            cd $GITHUB_WORKSPACE/freebsd/backend
 
             echo "::group::Versions"
             freebsd-version
@@ -136,15 +149,19 @@ jobs:
             /usr/local/bin/bash meta/scripts/check-install-scripts.sh
             echo "::endgroup::"
 
-            echo "::group::Install"
-            ${{ matrix.flavor == 'dev' && 'npm ci' || 'npm ci --omit=dev --omit=optional' }}
+            echo "::group::Install (dev)"
+            npm ci --no-audit --no-fund
             echo "::endgroup::"
 
             echo "::group::Unit Tests"
-            ${{ matrix.flavor == 'dev' && 'npm run test:ci' || 'true' }}
+            npx jest --coverage --forceExit
             echo "::endgroup::"
 
-            echo "::group::Build"
+            echo "::group::Install (prod deps only)"
+            npm ci --omit=dev --omit=optional
+            echo "::endgroup::"
+
+            echo "::group::Build (prod)"
             npm run build
             echo "::endgroup::"
 
