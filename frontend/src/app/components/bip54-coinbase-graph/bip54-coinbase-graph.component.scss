@@ -30,6 +30,11 @@
   }
 }
 
+.unavailable {
+  color: var(--transparent-fg);
+  padding: 60px 0;
+}
+
 .loadingGraphs {
   position: absolute;
   top: 50%;

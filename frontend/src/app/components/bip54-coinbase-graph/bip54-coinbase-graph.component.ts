@@ -17,8 +17,8 @@ import { isMobile } from '@app/shared/common.utils';
 // BIP-54, which reads as "adoption" but isn't.
 const WINDOWS = ['24h', '3d', '1w', '1m', '3m', '6m'];
 
-const COMPATIBLE_COLORS = ['#43A047', '#C5E1A5'];
-const INCOMPATIBLE_COLORS = ['#6b6b6b', '#3d3d3d'];
+const ADOPTED_COLORS = ['#43A047', '#C5E1A5'];
+const NOT_ADOPTED_COLORS = ['#6b6b6b', '#3d3d3d'];
 
 interface Slice {
   name: string;
@@ -26,7 +26,7 @@ interface Slice {
   blockCount: number;
   bip54BlockCount: number;
   share: number;
-  compatible: boolean;
+  adopted: boolean;
 }
 
 @Component({
@@ -41,6 +41,7 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
   radioGroupForm: UntypedFormGroup;
 
   isLoading = true;
+  bip54DataAvailable = true;
   chartOptions: EChartsOption = {};
   chartInitOptions = {
     renderer: 'svg',
@@ -50,8 +51,10 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
 
   @HostBinding('attr.dir') dir = 'ltr';
 
-  private readonly compatibleLabel = $localize`:@@mining.bip54-compatible:BIP-54 coinbase`;
-  private readonly incompatibleLabel = $localize`:@@mining.bip54-incompatible:No BIP-54 coinbase`;
+  // the split is by whether a pool has adopted, so these must not claim anything about the
+  // block counts: a pool under the threshold still mines some compatible coinbases
+  private readonly adoptedLabel = $localize`:@@mining.bip54-adopted:BIP-54 adopted`;
+  private readonly notAdoptedLabel = $localize`:@@mining.bip54-not-adopted:BIP-54 not adopted`;
 
   miningStatsObservable$: Observable<MiningStats>;
   private fragmentSubscription: Subscription;
@@ -123,27 +126,27 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
    * single contiguous arc.
    */
   generateChartSeriesData(miningStats: MiningStats): PieSeriesOption[] {
-    const compatible: Slice[] = [];
-    const incompatible: Slice[] = [];
+    const adopted: Slice[] = [];
+    const notAdopted: Slice[] = [];
 
     for (const pool of miningStats.pools) {
       const slice: Slice = {
         name: pool.name,
         slug: pool.slug,
         blockCount: pool.blockCount,
-        bip54BlockCount: pool.bip54BlockCount,
+        bip54BlockCount: pool.bip54BlockCount ?? 0,
         share: pool.share,
-        compatible: this.hasAdoptedBip54(pool),
+        adopted: this.hasAdoptedBip54(pool),
       };
-      (slice.compatible ? compatible : incompatible).push(slice);
+      (slice.adopted ? adopted : notAdopted).push(slice);
     }
 
-    compatible.sort((a, b) => b.blockCount - a.blockCount);
-    incompatible.sort((a, b) => b.blockCount - a.blockCount);
+    adopted.sort((a, b) => b.blockCount - a.blockCount);
+    notAdopted.sort((a, b) => b.blockCount - a.blockCount);
 
     return [
-      ...this.groupToSeriesData(compatible),
-      ...this.groupToSeriesData(incompatible),
+      ...this.groupToSeriesData(adopted),
+      ...this.groupToSeriesData(notAdopted),
     ];
   }
 
@@ -153,10 +156,10 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
    * mined nothing recently fall back to the window itself.
    */
   private hasAdoptedBip54(pool: SinglePoolStats): boolean {
-    if (pool.bip54Recent != null) {
+    if (typeof pool.bip54Recent === 'boolean') {
       return pool.bip54Recent;
     }
-    return pool.blockCount > 0 && pool.bip54BlockCount / pool.blockCount >= 0.5;
+    return pool.blockCount > 0 && (pool.bip54BlockCount ?? 0) / pool.blockCount >= 0.5;
   }
 
   private groupToSeriesData(slices: Slice[]): PieSeriesOption[] {
@@ -165,16 +168,16 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
     const collapsed = slices.filter(slice => slice.share < threshold);
 
     // sub-threshold pools are bucketed within their own group, never across it, or the
-    // compatible / not compatible split would no longer add up
+    // adopted / not adopted split would no longer add up
     if (collapsed.length) {
-      const compatible = slices[0].compatible;
+      const adopted = slices[0].adopted;
       kept.push({
-        name: compatible ? $localize`:@@mining.bip54-other-compatible:Other (compatible)` : $localize`:@@mining.bip54-other-incompatible:Other (not compatible)`,
+        name: adopted ? $localize`:@@mining.bip54-other-adopted:Other (adopted)` : $localize`:@@mining.bip54-other-not-adopted:Other (not adopted)`,
         slug: null,
         blockCount: collapsed.reduce((total, slice) => total + slice.blockCount, 0),
         bip54BlockCount: collapsed.reduce((total, slice) => total + slice.bip54BlockCount, 0),
         share: collapsed.reduce((total, slice) => total + slice.share, 0),
-        compatible,
+        adopted,
       });
     }
 
@@ -184,7 +187,7 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
     }
 
     return kept.map((slice, index) => {
-      const ramp = slice.compatible ? COMPATIBLE_COLORS : INCOMPATIBLE_COLORS;
+      const ramp = slice.adopted ? ADOPTED_COLORS : NOT_ADOPTED_COLORS;
       const share = slice.share.toFixed(2);
       return {
         itemStyle: {
@@ -209,12 +212,12 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
           borderColor: '#000',
           formatter: () => {
             const header = `<b style="color: white">${slice.name} (${share}%)</b><br>`;
-            if (!slice.compatible) {
+            if (!slice.adopted) {
               // no block count here: the line above already says the pool mines none, so a
               // number underneath reads as a BIP-54 count
-              return header + this.incompatibleLabel;
+              return header + this.notAdoptedLabel;
             }
-            const status = header + this.compatibleLabel + `<br>`;
+            const status = header + this.adoptedLabel + `<br>`;
             const bip54 = slice.bip54BlockCount.toString();
             if (slice.bip54BlockCount === slice.blockCount) {
               return status + $localize`${ bip54 }:INTERPOLATION: blocks`;
@@ -230,6 +233,14 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
   }
 
   prepareChartOptions(miningStats: MiningStats): void {
+    // a backend that predates these fields sends neither, which means "unknown", not "no pool
+    // has adopted" — reporting 0% here would be a claim about mining pools that we can't make
+    this.bip54DataAvailable = miningStats.pools.some(pool => typeof pool.bip54BlockCount === 'number');
+    if (!this.bip54DataAvailable) {
+      this.chartOptions = {};
+      return;
+    }
+
     let pieSize = ['40%', '75%']; // Desktop
     if (isMobile()) {
       pieSize = ['30%', '60%'];
@@ -246,14 +257,14 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
       animation: false,
       title: {
         text: `${share.toFixed(1)}%`,
-        subtext: this.compatibleLabel,
+        subtext: this.adoptedLabel,
         left: 'center',
         top: 'center',
         itemGap: 0,
         textStyle: {
           fontSize: fontSize,
           lineHeight: fontSize,
-          color: COMPATIBLE_COLORS[0],
+          color: ADOPTED_COLORS[0],
         },
         subtextStyle: {
           fontSize: isMobile() ? 11 : 13,
@@ -272,15 +283,15 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
         selectedMode: false,
         data: [
           {
-            name: this.compatibleLabel,
+            name: this.adoptedLabel,
             icon: 'roundRect',
-            itemStyle: { color: COMPATIBLE_COLORS[0], borderWidth: 0 },
+            itemStyle: { color: ADOPTED_COLORS[0], borderWidth: 0 },
             textStyle: { color: 'var(--fg)' },
           },
           {
-            name: this.incompatibleLabel,
+            name: this.notAdoptedLabel,
             icon: 'roundRect',
-            itemStyle: { color: INCOMPATIBLE_COLORS[0], borderWidth: 0 },
+            itemStyle: { color: NOT_ADOPTED_COLORS[0], borderWidth: 0 },
             textStyle: { color: 'var(--fg)' },
           },
         ],
@@ -309,9 +320,9 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
               },
               borderColor: '#000',
               formatter: () => {
-                const adopted = adoptedBlockCount.toString();
+                const adoptedBlocks = adoptedBlockCount.toString();
                 const total = miningStats.blockCount.toString();
-                return $localize`:@@mining.bip54-summary:Pools that mine a compatible BIP-54 coinbase transaction found ${ adopted }:ADOPTED_BLOCKS: of the ${ total }:TOTAL_BLOCKS: blocks mined in this period.`;
+                return $localize`:@@mining.bip54-summary:Pools that have adopted BIP-54 found ${ adoptedBlocks }:ADOPTED_BLOCKS: of the ${ total }:TOTAL_BLOCKS: blocks mined in this period.`;
               }
             },
             data: 9999 as any,
@@ -352,8 +363,8 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
         // empty series that exist only to give the two legend entries a name to match:
         // echarts drops legend data that names neither a series nor a data item
         ...[
-          { label: this.compatibleLabel, color: COMPATIBLE_COLORS[0] },
-          { label: this.incompatibleLabel, color: INCOMPATIBLE_COLORS[0] },
+          { label: this.adoptedLabel, color: ADOPTED_COLORS[0] },
+          { label: this.notAdoptedLabel, color: NOT_ADOPTED_COLORS[0] },
         ].map(entry => ({
           type: 'pie' as const,
           name: entry.label,
