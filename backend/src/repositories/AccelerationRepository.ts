@@ -422,6 +422,12 @@ class AccelerationRepository {
     } catch (e) {
       logger.err('Cannot delete indexed accelerations. Reason: ' + (e instanceof Error ? e.message : e));
     }
+    // Separate from the delete above so a failure here is not reported as a failed delete.
+    try {
+      await BlocksRepository.$invalidateMinFeeRateFromHeight(blockHeight);
+    } catch (e) {
+      logger.err(`Cannot invalidate min_fee_rate from height ${blockHeight}. Reason: ` + (e instanceof Error ? e.message : e));
+    }
   }
 }
 

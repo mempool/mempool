@@ -124,8 +124,6 @@ const BLOCK_DB_FIELDS = `
 class BlocksRepository {
   static version = 1;
 
-  private minFeeRateStartHeight: number | null = null;
-
   /**
    * Save indexed block data in the database
    * @asyncSafe
@@ -1484,27 +1482,21 @@ class BlocksRepository {
     }
   }
   /**
-   * First canonical block at or after the metric's start date.
+   * First canonical block at or after the metric's start date. Not memoized: an instance
+   * still filling `blocks` backwards would otherwise cache a partial answer for good.
    * @asyncSafe
    */
   private async $getMinFeeRateStartHeight(): Promise<number> {
-    if (this.minFeeRateStartHeight === null) {
-      try {
-        const [rows]: any[] = await DB.query(
-          `SELECT MIN(height) AS height FROM blocks WHERE blockTimestamp >= FROM_UNIXTIME(?) AND stale = 0`,
-          [MIN_FEE_RATE_START_TIMESTAMP]
-        );
-        if (rows[0]?.height == null) {
-          // No in-range block yet; don't cache, the next block may be the first one.
-          return Number.MAX_SAFE_INTEGER;
-        }
-        this.minFeeRateStartHeight = rows[0].height;
-      } catch (e) {
-        logger.err(`Cannot resolve min_fee_rate start height. Reason: ` + (e instanceof Error ? e.message : e));
-        throw e;
-      }
+    try {
+      const [rows]: any[] = await DB.query(
+        `SELECT MIN(height) AS height FROM blocks WHERE blockTimestamp >= FROM_UNIXTIME(?) AND stale = 0`,
+        [MIN_FEE_RATE_START_TIMESTAMP]
+      );
+      return rows[0]?.height ?? Number.MAX_SAFE_INTEGER;
+    } catch (e) {
+      logger.err(`Cannot resolve min_fee_rate start height. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
     }
-    return this.minFeeRateStartHeight as number;
   }
 
   /** Blocks whose persisted metric is older than the current algorithm. */
@@ -1545,15 +1537,35 @@ class BlocksRepository {
     }
   }
 
-  /** @asyncSafe */
-  private async $updateMinFeeRate(height: number, hash: string, rate: number | null): Promise<void> {
+  /**
+   * The reorg counterpart: accelerations are dropped in bulk from a fork point.
+   * @asyncSafe
+   */
+  public async $invalidateMinFeeRateFromHeight(height: number): Promise<void> {
     try {
+      await DB.query(
+        `UPDATE blocks SET min_fee_rate_version = 0 WHERE height >= ? AND stale = 0`,
+        [height]
+      );
+    } catch (e) {
+      logger.err(`Cannot invalidate min_fee_rate from height ${height}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /** @asyncSafe */
+  private async $updateMinFeeRate(height: number, hash: string, rate: number | null, seenAccelerations: number): Promise<void> {
+    try {
+      // Compare-and-set on the acceleration count read before computing. An acceleration
+      // landing mid-computation invalidates the block; without this the stale result
+      // would overwrite that invalidation and never be recomputed.
       await DB.query(
         `UPDATE blocks SET
           min_fee_rate = ?,
           min_fee_rate_version = ?
-        WHERE height = ? AND hash = ?`,
-        [rate, MIN_FEE_RATE_VERSION, height, hash]
+        WHERE height = ? AND hash = ?
+          AND (SELECT COUNT(*) FROM accelerations WHERE height = ?) = ?`,
+        [rate, MIN_FEE_RATE_VERSION, height, hash, height, seenAccelerations]
       );
     } catch (e) {
       logger.err(`Cannot update min_fee_rate for block ${height} (${hash}). Reason: ` + (e instanceof Error ? e.message : e));
@@ -1581,6 +1593,10 @@ class BlocksRepository {
           FROM scoped
         ) sequence
         WHERE nextHeight IS NULL OR nextHeight <> height + 1
+        UNION ALL
+        -- Nothing is known about the block before the oldest one in scope, so the day it
+        -- falls in may be missing an earlier stretch of its own.
+        SELECT MIN(height) - 1 FROM scoped
       ),
       days AS (
         SELECT
@@ -1718,16 +1734,27 @@ class BlocksRepository {
             throw new Error(`missing transaction data`);
           }
 
-          const acceleratedTxids = new Set(await AccelerationRepository.$getAcceleratedTxidsAtHeight(row.height));
+          const accelerated = await AccelerationRepository.$getAcceleratedTxidsAtHeight(row.height);
 
           const template = makeBlockTemplate(transactions, [], 1, Infinity, Infinity);
           const templateMap = new Map(template.map(tx => [tx.txid, tx]));
+
+          // Every member of a CPFP package carries the package's effective fee rate, so
+          // excluding only the accelerated child would leave its ancestors eligible.
+          const acceleratedTxids = new Set(accelerated);
+          for (const txid of accelerated) {
+            for (const member of templateMap.get(txid)?.cluster ?? []) {
+              acceleratedTxids.add(member);
+            }
+          }
+
           const orderedTxs: MinFeeRateTx[] = transactions.map(tx => ({
             txid: tx.txid,
             effectiveFeePerVsize: templateMap.get(tx.txid)?.effectiveFeePerVsize ?? 0,
           }));
 
-          await this.$updateMinFeeRate(row.height, row.hash, computeMinFeeRate(orderedTxs, acceleratedTxids));
+          await this.$updateMinFeeRate(
+            row.height, row.hash, computeMinFeeRate(orderedTxs, acceleratedTxids), accelerated.length);
 
           blocksProcessed++;
           processedThisWindow++;
