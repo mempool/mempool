@@ -124,6 +124,8 @@ class Mining {
     const poolsInfoPerInterval: Record<string, PoolInfo[]> = await PoolsRepository.$getPoolsInfoPerInterval();
     const estimatedHashrates = await this.$getEstimatedHashrates();
 
+    const bip54Recent = this.bip54AdoptionByPool(poolsInfoPerInterval);
+
     const statsByInterval: Record<string, PoolsStats> = {};
     for (const interval of POOLS_STATS_INTERVALS) {
       let rank = 1;
@@ -138,6 +140,8 @@ class Mining {
           blockCount: poolInfo.blockCount,
           rank: rank++,
           emptyBlocks: poolInfo.emptyBlocks,
+          bip54BlockCount: poolInfo.bip54BlockCount,
+          bip54Recent: bip54Recent.get(poolInfo.poolUniqueId) ?? null,
           slug: poolInfo.slug,
           avgMatchRate: poolInfo.avgMatchRate !== null ? Math.round(100 * poolInfo.avgMatchRate) / 100 : null,
           avgFeeDelta: poolInfo.avgFeeDelta,
@@ -150,6 +154,22 @@ class Mining {
     }
 
     return statsByInterval;
+  }
+
+  /**
+   * Whether each pool currently mines BIP-54 forward-compatible coinbases, keyed by pool
+   * unique id. Read from a fixed recent window rather than the requested one
+   */
+  private bip54AdoptionByPool(poolsInfoPerInterval: Record<string, PoolInfo[]>): Map<number, boolean> {
+    const adoption = new Map<number, boolean>();
+    // a week is long enough to cover all but the smallest pools, and short enough that a
+    // pool turning BIP-54 back off shows up quickly.
+    for (const poolInfo of poolsInfoPerInterval['1w'] ?? []) {
+      if (poolInfo.blockCount > 0) {
+        adoption.set(poolInfo.poolUniqueId, poolInfo.bip54BlockCount / poolInfo.blockCount >= 0.5);
+      }
+    }
+    return adoption;
   }
 
   public async $getPoolsStats(interval: string | null): Promise<PoolsStats> {
