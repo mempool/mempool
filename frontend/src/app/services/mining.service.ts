@@ -134,7 +134,10 @@ export class MiningService {
         lastEstimatedHashrate1w: poolStat.blockCount / stats.blockCount * stats.lastEstimatedHashrate1w / hashrateDivider,
         emptyBlockRatio: (poolStat.emptyBlocks / poolStat.blockCount * 100).toFixed(2),
         logo: `/resources/mining-pools/` + poolStat.slug + '.svg',
-        ...poolStat
+        ...poolStat,
+        // after the spread: backends older than the BIP-54 pool stats send neither field
+        bip54BlockCount: poolStat.bip54BlockCount ?? 0,
+        bip54Recent: poolStat.bip54Recent ?? null,
       };
     });
 
