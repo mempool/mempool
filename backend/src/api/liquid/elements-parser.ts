@@ -539,7 +539,7 @@ class ElementsParser {
 
   /** @asyncUnsafe */
   public async $getPegDataByMonth(): Promise<any> {
-    const query = `SELECT SUM(amount) AS amount, DATE_FORMAT(FROM_UNIXTIME(datetime), '%Y-%m-01') AS date FROM elements_pegs GROUP BY DATE_FORMAT(FROM_UNIXTIME(datetime), '%Y%m')`;
+    const query = `SELECT SUM(amount) AS amount, DATE_FORMAT(FROM_UNIXTIME(datetime), '%Y-%m-01') AS date FROM elements_pegs GROUP BY date ORDER BY date`;
     const [rows] = await DB.query(query);
     return rows;
   }
@@ -547,15 +547,40 @@ class ElementsParser {
   /** @asyncUnsafe */
   public async $getFederationReservesByMonth(): Promise<any> {
     const query = `
-    SELECT SUM(amount) AS amount, DATE_FORMAT(FROM_UNIXTIME(blocktime), '%Y-%m-01') AS date FROM federation_txos 
-    WHERE
-        (blocktime > UNIX_TIMESTAMP(LAST_DAY(FROM_UNIXTIME(blocktime) - INTERVAL 1 MONTH) + INTERVAL 1 DAY))
-      AND 
-        ((unspent = 1) OR (unspent = 0 AND lasttimeupdate > UNIX_TIMESTAMP(LAST_DAY(FROM_UNIXTIME(blocktime)) + INTERVAL 1 DAY)))
-      AND 
-        (expiredAt = 0 OR expiredAt > UNIX_TIMESTAMP(LAST_DAY(FROM_UNIXTIME(blocktime)) + INTERVAL 1 DAY))
-    GROUP BY 
-        date;`;
+      WITH months AS (
+        SELECT DISTINCT
+          EXTRACT(YEAR_MONTH FROM FROM_UNIXTIME(datetime)) AS month_key,
+          DATE_FORMAT(FROM_UNIXTIME(datetime), '%Y-%m-01') AS date
+        FROM elements_pegs
+      ),
+      reserve_events AS (
+        SELECT
+          EXTRACT(YEAR_MONTH FROM FROM_UNIXTIME(blocktime)) AS month_key,
+          SUM(CAST(amount AS SIGNED)) AS delta
+        FROM federation_txos
+        GROUP BY month_key
+
+        UNION ALL
+
+        SELECT
+          EXTRACT(YEAR_MONTH FROM FROM_UNIXTIME(
+            CASE
+              WHEN expiredAt > 0 THEN expiredAt
+              ELSE lasttimeupdate
+            END
+          )) AS month_key,
+          -SUM(CAST(amount AS SIGNED)) AS delta
+        FROM federation_txos
+        WHERE expiredAt > 0 OR (unspent = 0 AND lasttimeupdate > 0)
+        GROUP BY month_key
+      )
+      SELECT
+        COALESCE(SUM(reserve_events.delta), 0) AS amount,
+        months.date
+      FROM months
+      LEFT JOIN reserve_events ON reserve_events.month_key <= months.month_key
+      GROUP BY months.month_key, months.date
+      ORDER BY months.month_key;`;
     const [rows] = await DB.query(query);
     return rows;
   }
