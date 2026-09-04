@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 113;
+  private static currentVersion = 114;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -1264,6 +1264,27 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 113) {
       await this.$executeQuery('ALTER TABLE `blocks` ADD coinbase_bip_54 TINYINT(1) NULL DEFAULT NULL');
       await this.updateToSchemaVersion(113);
+    }
+
+    if (databaseSchemaVersion < 114) {
+      // DDL is mainnet only, the version bump is not: other networks would otherwise sit
+      // below currentVersion and re-run migration initialization on every startup.
+      if (config.MEMPOOL.NETWORK === 'mainnet') {
+        // Issue #6639. Split from the index below to keep the column add on
+        // ALGORITHM=INSTANT; combining them rebuilds the whole blocks table.
+        await this.$executeQuery(`
+          ALTER TABLE blocks
+            ADD min_fee_rate DOUBLE UNSIGNED NULL DEFAULT NULL,
+            ADD min_fee_rate_version TINYINT UNSIGNED NOT NULL DEFAULT 0
+        `);
+        // blockTimestamp leads: the aggregation has to see every block in a day, computed
+        // or not, so a version-first index would leave that range scan unseekable.
+        await this.$executeQuery(`
+          ALTER TABLE blocks
+            ADD INDEX min_fee_rate_series (blockTimestamp, stale, min_fee_rate_version, min_fee_rate, height)
+        `);
+      }
+      await this.updateToSchemaVersion(114);
     }
   }
 
