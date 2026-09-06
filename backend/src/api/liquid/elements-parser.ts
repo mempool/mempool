@@ -32,8 +32,7 @@ class ElementsParser {
       this.isRunning = true;
       const startedAt = Date.now() / 1000;
       const stopAt = startedAt + 3600; // Limit one parse run to 1 hour to keep the tip sufficiently up to date
-      const result = await bitcoinClient.getChainTips();
-      const tip = result[0].height;
+      const tip = await bitcoinClient.getBlockCount();
       const latestBlockHeight = await this.$getLatestBlockHeightFromDatabase();
       for (let height = latestBlockHeight + 1; height <= tip; height++) {
         if ((Date.now() / 1000) >= stopAt) {
