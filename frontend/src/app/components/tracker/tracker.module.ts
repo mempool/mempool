@@ -47,6 +47,9 @@ export class TrackerRoutingModule { }
   declarations: [
     TrackerComponent,
     TrackerBarComponent,
+  ],
+  exports: [
+    TrackerBarComponent
   ]
 })
 export class TrackerModule { }

@@ -335,3 +335,16 @@ h2 .cpfp-beta {
     color: var(--info);
   }
 }
+
+.alert {
+  div {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+  }
+}
+
+.btn-close:hover,
+.btn-close:focus {
+  opacity: 1;
+}

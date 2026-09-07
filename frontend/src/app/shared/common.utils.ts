@@ -160,6 +160,17 @@ export function seoDescriptionNetwork(network: string): string {
   return '';
 }
 
+// bech32 addresses are valid in either case, every other type is case sensitive
+export function addressesMatch(a: string, b: string): boolean {
+  if (!a || !b) {
+    return false;
+  }
+  if (a === b) {
+    return true;
+  }
+  return /^(bc1|tb1|bcrt1|ex1|lq1|tex1|tlq1)/i.test(a) && a.toLowerCase() === b.toLowerCase();
+}
+
 export function uncompressTx(tx: TransactionCompressed): TransactionStripped {
   return {
     txid: tx[0],

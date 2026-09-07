@@ -26,7 +26,7 @@ import { AudioService } from '@app/services/audio.service';
 import { ApiService } from '@app/services/api.service';
 import { SeoService } from '@app/services/seo.service';
 import { StorageService } from '@app/services/storage.service';
-import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { addressesMatch, seoDescriptionNetwork } from '@app/shared/common.utils';
 import { getTransactionFlags, getUnacceleratedFeeRate } from '@app/shared/transaction.utils';
 import { Filter, TransactionFlags, toFilters } from '@app/shared/filters.utils';
 import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition } from '@interfaces/node-api.interface';
@@ -39,6 +39,7 @@ import { PartnerCodeService } from '@app/services/partner-code.service';
 import { ZONE_SERVICE } from '@app/injection-tokens';
 import { MiningService, MiningStats } from '@app/services/mining.service';
 import { ETA, EtaService } from '@app/services/eta.service';
+import { getRegex } from '@app/shared/regex.utils';
 
 export interface Pool {
   id: number;
@@ -172,6 +173,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
   isMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
   partnerCode: string | undefined;
+  destinationAlert: string | undefined;
 
   graphContainer: ElementRef;
   private txList: TransactionsListComponent;
@@ -373,6 +375,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         });
         this.txChanged$.next(true);
+        this.showDestinationAlert();
       }
     });
 
@@ -736,6 +739,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               this.fetchCpfp$.next(this.tx.txid);
             }
           }
+          
           this.fetchRbfHistory$.next(this.tx.txid);
           this.currencyChangeSubscription?.unsubscribe();
           this.currencyChangeSubscription = this.stateService.fiatCurrency$.pipe(
@@ -745,6 +749,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               ) : of(undefined);
             })
           ).subscribe();
+
+          this.showDestinationAlert();
 
           this.cd.detectChanges();
         },
@@ -1106,6 +1112,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isAccelerated$.next(this.isAcceleration);
     this.eligibleForAcceleration = false;
     this.leaveTransaction();
+    this.showDestinationAlert();
   }
 
   leaveTransaction() {
@@ -1273,6 +1280,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.storageService.setValue('hide-accelerator-pref', 'false');
   }
 
+  closeDestinationAlert(): void {
+    this.router.navigate([], { queryParams: this.route.snapshot.queryParams });
+    this.destinationAlert = undefined;
+  }
+
   get showAccelerationSummary(): boolean {
     return (
       this.tx
@@ -1317,4 +1329,18 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.partnerCode = partnerCode;
     });
   }
-}
+
+  showDestinationAlert(): void {
+    if (!this.tx) {
+      this.destinationAlert = undefined;
+      return;
+    }
+    const destinationAlert = (new URLSearchParams(this.route.snapshot.fragment || '')).get('destinationAlert');
+    // the fragment is user supplied, so only alert on an address this
+    // transaction genuinely does not pay, and never echo anything else
+    if (getRegex('address', (this.network || 'mainnet') as any).test(destinationAlert) &&
+        !this.tx.vout?.some((vout) => addressesMatch(destinationAlert, vout.scriptpubkey_address))) {
+      this.destinationAlert = destinationAlert;
+    }
+  }
+ }
