@@ -44,13 +44,6 @@
   align-self: center;
 }
 
-.row {
-  flex-direction: column;
-  @media (min-width: 850px) {
-    flex-direction: row;
-  }
-}
-
 .td-width {
   width: 150px;
   @media (max-width: 768px) {
@@ -61,6 +54,7 @@
 .table {
   width: 100%;
   table-layout: fixed;
+  margin-bottom: 0;
   tr td {
     padding: 0.75rem 0.5rem;
     @media (min-width: 576px) {
@@ -68,9 +62,6 @@
     }
     &:last-child {
       text-align: right;
-      @media (min-width: 850px) {
-        text-align: left;
-      }
     }
 
     &.wrap-cell {
@@ -81,9 +72,6 @@
 
 .address ::ng-deep .truncate {
   justify-content: end !important;
-  @media (min-width: 850px) {
-    justify-content: start !important;
-  }
 }
 
 .details-button {
@@ -91,10 +79,42 @@
   text-align: center;
 }
 
+.summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--stat-box-bg);
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+}
+
 .tracker-bar {
   padding: 1em 0.5em 0;
   margin-bottom: 1em;
   width: 100%;
+
+  @media (min-width: 768px) {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0 0.5em;
+    margin-bottom: 0;
+  }
+
+  @media (min-width: 850px) {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+.box {
+  padding-bottom: 0.75em;
 }
 
 .settled {
@@ -107,23 +127,26 @@
   gap: 12px;
   align-items: center;
   justify-content: end;
-
-  @media (min-width: 850px) {
-    justify-content: start;
-  }
 }
 
 .alert-replaced,
 .alert-removed {
   display: flex;
   flex-direction: column;
+  width: 100%;
   min-width: 0;
   margin-bottom: 1em;
   padding: 0.5em;
   border-radius: 0.5em;
 
-  @media (max-width: 850px) {
+  @media (max-width: 767.98px) {
     margin-top: 1em;
+  }
+
+  @media (min-width: 768px) {
+    flex: 0 0 50%;
+    max-width: 50%;
+    margin-bottom: 0;
   }
 
   app-truncate ::ng-deep span {
@@ -135,57 +158,46 @@
   background: var(--red);
 }
 
-.amount-side {
-  @media (min-width: 850px) {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .amount-wrapper {
-    position: relative;
-    height: 100%;
-  }
-}
-
-.amount-col {
+.amount-block {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  padding: 1.5rem 1rem;
-  height: 100%;
-  background-color: var(--stat-box-bg);
+  padding: 2em;
 
-  .text {
+  @media (min-width: 768px) {
+    flex: 0 0 auto;
+    align-items: flex-start;
+    padding: 0.5em;
+  }
+
+  @media (min-width: 850px) {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .label {
     font-size: 0.8125rem;
     letter-spacing: 0.05em;
     color: var(--transparent-fg);
   }
 
   .amount-link {
-    text-decoration: none; 
+    text-decoration: none;
     color: var(--fg);
-    width: 100%;
-    text-align: center;
   }
 
   app-amount {
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: 600;
-    line-height: 1.1;
+    line-height: 1.2;
   }
 
   .fiat {
-    display: block;
-    margin-left: 0;
     font-size: 1rem;
-    text-align: center;
-    color: var(--transparent-fg);
   }
 
   .amount-loader {
-    padding: 1em;
+    padding: 0.5em 0;
   }
 }
 

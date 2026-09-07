@@ -17,31 +17,15 @@
     <div class="clearfix"></div>
 
     <div class="box">
-      <div class="row">
-        @if (isMobile) {
-        <div class="col-sm">
-          <ng-container *ngTemplateOutlet="amountSection"></ng-container>
-          <ng-container *ngTemplateOutlet="trackerPanel"></ng-container>
-          <table class="table table-borderless table-striped">
-            <tbody>
-              <ng-container *ngTemplateOutlet="rows"></ng-container>
-            </tbody>
-          </table>
-        </div>
-        } @else {
-        <div class="col-sm">
-          <ng-container *ngTemplateOutlet="trackerPanel"></ng-container>
-          <table class="table table-borderless table-striped">
-            <tbody>
-              <ng-container *ngTemplateOutlet="rows"></ng-container>
-            </tbody>
-          </table>
-        </div>
-        <div class="col-sm amount-side">
-          <ng-container *ngTemplateOutlet="amountSection"></ng-container>
-        </div>
-        }
+      <div class="summary">
+        <ng-container *ngTemplateOutlet="amountSection"></ng-container>
+        <ng-container *ngTemplateOutlet="trackerPanel"></ng-container>
       </div>
+      <table class="table table-borderless table-striped">
+        <tbody>
+          <ng-container *ngTemplateOutlet="rows"></ng-container>
+        </tbody>
+      </table>
     </div>
 
     @if (!tx?.status?.confirmed && showAccelerationSummary) {
@@ -100,23 +84,21 @@
 </ng-template>
 
 <ng-template #amountSection>
-  <div class="amount-wrapper">
-    @if (viewAmountMode$ | async; as mode) {
-      <div class="amount-col">
-        <span class="text" i18n="transaction.amount|Amount">Amount</span>
-        @if (!isLoadingTx && tx) {
-          <a class="amount-link" href="" (click)="changeMode(mode === 'sats' ? 'btc' : 'sats')">
-            <app-amount [satoshis]="amount" [noFiat]="true"></app-amount>
-          </a>
-          <app-fiat class="fiat" [value]="amount" [blockConversion]="tx.price"></app-fiat>
-        } @else {
-          <div class="amount-loader">
-            <div class="spinner-border text-light"></div>
-          </div>
-        }
-      </div>
-    }
-  </div>
+  @if (viewAmountMode$ | async; as mode) {
+    <div class="amount-block">
+      <span class="label" i18n="transaction.amount|Amount">Amount</span>
+      @if (!isLoadingTx && tx) {
+        <a class="amount-link" href="" (click)="changeMode(mode === 'sats' ? 'btc' : 'sats')">
+          <app-amount [satoshis]="amount" [noFiat]="true"></app-amount>
+        </a>
+        <app-fiat class="fiat" [value]="amount" [blockConversion]="tx.price"></app-fiat>
+      } @else {
+        <div class="amount-loader">
+          <div class="spinner-border text-light"></div>
+        </div>
+      }
+    </div>
+  }
 </ng-template>
 
 <ng-template #rows>
