@@ -299,17 +299,8 @@ export class AddressComponent implements OnInit, OnDestroy {
         times.forEach((time, index) => {
           this.tempTransactions[this.timeTxIndexes[index]].firstSeen = time;
         });
-        this.tempTransactions.sort((a, b) => {
-          if (b.status.confirmed) {
-            if (b.status.block_height === a.status.block_height) {
-              return b.status.block_time - a.status.block_time;
-            }
-            return b.status.block_height - a.status.block_height;
-          }
-          return b.firstSeen - a.firstSeen;
-        });
-
         this.transactions = this.tempTransactions;
+        this.sortTransactions();
         if (this.transactions.length === (this.mempoolStats.tx_count + this.chainStats.tx_count)) {
           this.fullyLoaded = true;
         }
@@ -362,7 +353,7 @@ export class AddressComponent implements OnInit, OnDestroy {
         const tx = this.transactions.find((t) => t.txid === transaction.txid);
         if (tx) {
           tx.status = transaction.status;
-          this.transactions = this.transactions.slice();
+          this.sortTransactions();
           this.mempoolStats.removeTx(transaction);
           this.audioService.playSound('magic');
           this.confirmTransaction(tx);
@@ -381,7 +372,7 @@ export class AddressComponent implements OnInit, OnDestroy {
     }
 
     this.transactions.unshift(transaction);
-    this.transactions = this.transactions.slice();
+    this.sortTransactions();
 
     if (playSound) {
       if (transaction.vout.some((vout) => vout?.scriptpubkey_address === this.address.address)) {
@@ -487,6 +478,18 @@ export class AddressComponent implements OnInit, OnDestroy {
     }
   }
 
+  private sortTransactions(): void {
+    this.transactions = this.transactions.slice().sort((a, b) => {
+      if (a.status.confirmed !== b.status.confirmed) {
+        return a.status.confirmed ? 1 : -1;
+      }
+      if (!a.status.confirmed) {
+        return (b.firstSeen ?? 0) - (a.firstSeen ?? 0);
+      }
+      return (b.status.block_height ?? -1) - (a.status.block_height ?? -1);
+    });
+  }
+
   loadMore(): void {
     if (this.isLoadingTransactions || this.fullyLoaded) {
       return;
@@ -498,8 +501,11 @@ export class AddressComponent implements OnInit, OnDestroy {
     : this.electrsApiService.getAddressTransactions$(this.address.address, this.lastTransactionTxId))
       .subscribe((transactions: Transaction[]) => {
         if (transactions && transactions.length) {
+          // Keep the API cursor independent of the display order and live updates.
           this.lastTransactionTxId = transactions[transactions.length - 1].txid;
-          this.transactions = this.transactions.concat(transactions);
+          const known = new Set(this.transactions.map(tx => tx.txid));
+          this.transactions = this.transactions.concat(transactions.filter(tx => !known.has(tx.txid)));
+          this.sortTransactions();
         } else {
           this.fullyLoaded = true;
         }
