@@ -2,7 +2,7 @@ import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, E
 import { StateService, SignaturesMode } from '@app/services/state.service';
 import { CacheService } from '@app/services/cache.service';
 import { Observable, ReplaySubject, BehaviorSubject, merge, Subscription, of, forkJoin } from 'rxjs';
-import { Outspend, Transaction, Vin, Vout } from '@interfaces/electrs.interface';
+import { Outspend, Status, Transaction, Vin, Vout } from '@interfaces/electrs.interface';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { environment } from '@environments/environment';
 import { AssetsService } from '@app/services/assets.service';
@@ -33,6 +33,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   showMoreIncrement = 1000;
 
   @Input() transactions: Transaction[];
+  @Input() groupByBlock = false;
   @Input() cached: boolean = false;
   @Input() showConfirmations = false;
   @Input() transactionPage = false;
@@ -61,6 +62,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   showDetails$ = new BehaviorSubject<boolean>(false);
   assetsMinimal: any = {};
   transactionsLength: number = 0;
+  groupStarts: boolean[] = [];
   inputRowLimit: number = 12;
   outputRowLimit: number = 12;
   showFullScript: { [vinIndex: number]: boolean } = {};
@@ -128,20 +130,24 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
               for (let i = 0; i < txIds.length; i += 50) {
                 batches.push(txIds.slice(i, i + 50));
               }
-              return forkJoin(batches.map(batch => { return this.electrsApiService.cachedRequest(this.electrsApiService.getOutspendsBatched$, 250, batch); }));
+              return forkJoin(batches.map(batch => { return this.electrsApiService.cachedRequest(this.electrsApiService.getOutspendsBatched$, 250, batch); })).pipe(
+                map(batchedOutspends => ({ txIds, outspends: batchedOutspends.flat(1) })),
+              );
             } else {
-              return of([]);
+              return of({ txIds, outspends: [] });
             }
           }),
-          tap((batchedOutspends: Outspend[][][]) => {
-            // flatten batched results back into a single array
-            const outspends = batchedOutspends.flat(1);
+          tap(({ txIds, outspends }: { txIds: string[]; outspends: Outspend[][] }) => {
             if (!this.transactions) {
               return;
             }
-            const transactions = this.transactions.filter((tx) => !tx._outspends);
+            // The list may have been reordered or a transaction removed while loading.
+            const txByTxid = new Map(this.transactions.map(tx => [tx.txid, tx]));
             outspends.forEach((outspend, i) => {
-              transactions[i]._outspends = outspend;
+              const tx = txByTxid.get(txIds[i]);
+              if (tx) {
+                tx._outspends = outspend;
+              }
             });
             this.ref.markForCheck();
           }),
@@ -161,7 +167,9 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
         this.refreshChannels$
           .pipe(
             filter(() => this.stateService.networkSupportsLightning() && !this.txPreview),
-            switchMap((txIds) => this.apiService.getChannelByTxIds$(txIds)),
+            switchMap((txIds) => this.apiService.getChannelByTxIds$(txIds).pipe(
+              map(channels => channels.map((channel, i) => ({ txid: txIds[i], channel }))),
+            )),
             catchError((error) => {
               // handle 404
               return of([]);
@@ -170,9 +178,12 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
               if (!this.transactions) {
                 return;
               }
-              const transactions = this.transactions.filter((tx) => !tx._channels);
-              channels.forEach((channel, i) => {
-                transactions[i]._channels = channel;
+              const txByTxid = new Map(this.transactions.map(tx => [tx.txid, tx]));
+              channels.forEach(({ txid, channel }) => {
+                const tx = txByTxid.get(txid);
+                if (tx) {
+                  tx._channels = channel;
+                }
               });
             }),
           )
@@ -212,6 +223,9 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes): void {
+    if (changes.transactions || changes.groupByBlock) {
+      this.updateGroupStarts();
+    }
     if (changes.inputIndex || changes.outputIndex || changes.rowLimit) {
       this.inputRowLimit = Math.max(this.rowLimit, (this.inputIndex || 0) + 3);
       this.outputRowLimit = Math.max(this.rowLimit, (this.outputIndex || 0) + 3);
@@ -480,6 +494,22 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   fakeScriptHashRegex = new RegExp(/(.+?)\1{11,}/);
   isFakeScripthash(vout: Vout): boolean {
     return this.fakeScriptHashRegex.test(vout.scriptpubkey_address);
+  }
+
+  private updateGroupStarts(): void {
+    if (!this.groupByBlock || !this.transactions?.length) {
+      this.groupStarts = [];
+      return;
+    }
+
+    let previous: Status | null = null;
+    this.groupStarts = this.transactions.map(({ status }) => {
+      // Without a block hash, confirmed transactions must remain separate.
+      const first = !previous || status.confirmed !== previous.confirmed
+        || (status.confirmed && (!status.block_hash || status.block_hash !== previous.block_hash));
+      previous = status;
+      return first;
+    });
   }
 
   onScroll(): void {
