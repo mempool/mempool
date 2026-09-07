@@ -1,6 +1,27 @@
 <div infiniteScroll [alwaysCallback]="true" [infiniteScrollDistance]="2" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50" (scrolled)="onScroll()">
 
 <ng-container *ngFor="let tx of transactions; let i = index; trackBy: trackByFn">
+  @if (groupStarts[i]) {
+    <div class="transaction-group-header" [class.first-group]="i === 0">
+      @if (tx.status.confirmed) {
+        <h3>
+          @if (tx.status.block_height != null) {
+            <span i18n="shared.block-title">Block</span>&nbsp;
+            @if (tx.status.block_hash) {
+              <a [routerLink]="['/block' | relativeUrl, tx.status.block_hash]">{{ tx.status.block_height }}</a>
+            } @else {
+              {{ tx.status.block_height }}
+            }
+          } @else {
+            <span i18n="transaction.confirmed|Transaction confirmed state">Confirmed</span>
+          }
+        </h3>
+        <app-timestamp [customFormat]="'yyyy-MM-dd HH:mm:ss'" [unixTime]="tx.status.block_time" [hideTimeSince]="true"></app-timestamp>
+      } @else {
+        <h3 i18n="dashboard.unconfirmed|Unconfirmed count">Unconfirmed</h3>
+      }
+    </div>
+  }
   <div *ngIf="!transactionPage" class="header-bg box tx-page-container">
     <a class="tx-link" [routerLink]="['/tx/' | relativeUrl, tx.txid]">
       <app-truncate [text]="tx.txid"></app-truncate>
