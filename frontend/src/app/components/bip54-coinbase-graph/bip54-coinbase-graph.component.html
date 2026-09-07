@@ -35,6 +35,20 @@
           <input type="radio" class="btn-check" id="bip54-6m" [value]="'6m'" fragment="6m" [routerLink]="['/graphs/mining/bip54-coinbase' | relativeUrl]" [attr.data-cy]="'6m'" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="bip54-6m">6M</label>
         </ng-container>
+        <ng-container *ngIf="stats.totalBlockCount >= 52560">
+          <input type="radio" class="btn-check" id="bip54-1y" [value]="'1y'" fragment="1y" [routerLink]="['/graphs/mining/bip54-coinbase' | relativeUrl]" [attr.data-cy]="'1y'" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="bip54-1y">1Y</label>
+        </ng-container>
+        <ng-container *ngIf="stats.totalBlockCount >= 105120">
+          <input type="radio" class="btn-check" id="bip54-2y" [value]="'2y'" fragment="2y" [routerLink]="['/graphs/mining/bip54-coinbase' | relativeUrl]" [attr.data-cy]="'2y'" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="bip54-2y">2Y</label>
+        </ng-container>
+        <ng-container *ngIf="stats.totalBlockCount >= 157680">
+          <input type="radio" class="btn-check" id="bip54-3y" [value]="'3y'" fragment="3y" [routerLink]="['/graphs/mining/bip54-coinbase' | relativeUrl]" [attr.data-cy]="'3y'" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="bip54-3y">3Y</label>
+        </ng-container>
+        <input type="radio" class="btn-check" id="bip54-all" [value]="'all'" fragment="all" [routerLink]="['/graphs/mining/bip54-coinbase' | relativeUrl]" [attr.data-cy]="'all'" formControlName="dateSpan">
+        <label class="btn btn-primary btn-sm" for="bip54-all"><span i18n>All</span></label>
       </div>
     </form>
   </div>
