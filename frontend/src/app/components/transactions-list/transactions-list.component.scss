@@ -242,6 +242,32 @@ td.amount.large {
 	margin-bottom: 10px;
 	margin-top: 10px;
 }
+
+.transaction-group-header {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem 1rem;
+	margin-top: 1rem;
+	padding-bottom: 0.5rem;
+
+	&.first-group {
+		margin-top: 0;
+	}
+
+	h3 {
+		font-size: 1.1rem;
+		margin-bottom: 0;
+	}
+
+	app-timestamp {
+		color: var(--transparent-fg);
+		font-size: 14px;
+		white-space: nowrap;
+	}
+}
+
 .assetBox {
 	background: color-mix(in srgb, var(--tertiary) 56%, transparent);
 
