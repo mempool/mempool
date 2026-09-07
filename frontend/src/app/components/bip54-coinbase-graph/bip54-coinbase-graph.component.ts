@@ -13,9 +13,7 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
 import { download, lerpColor } from '@app/shared/graphs.utils';
 import { isMobile } from '@app/shared/common.utils';
 
-// Windows longer than 6m would average in the blocks mined before any pool had adopted
-// BIP-54, which reads as "adoption" but isn't.
-const WINDOWS = ['24h', '3d', '1w', '1m', '3m', '6m'];
+const WINDOWS = ['24h', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', 'all'];
 
 const ADOPTED_COLORS = ['#43A047', '#C5E1A5'];
 const NOT_ADOPTED_COLORS = ['#6b6b6b', '#3d3d3d'];
@@ -75,9 +73,7 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
     this.seoService.setTitle($localize`:@@mining.bip54-coinbase-title:BIP-54 Coinbase Adoption`);
     this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.bip54-coinbase:See what share of Bitcoin blocks is mined with a coinbase transaction that is forward-compatible with BIP-54, broken down by mining pool.`);
 
-    // the preference is shared with the pools ranking, which offers windows this page doesn't
-    const preference = this.miningService.getDefaultTimespan('24h');
-    this.miningWindowPreference = WINDOWS.includes(preference) ? preference : '1w';
+    this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
 
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
@@ -85,8 +81,8 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
     this.fragmentSubscription = this.route
       .fragment
       .subscribe((fragment) => {
-        if (WINDOWS.indexOf(fragment) > -1) {
-          this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
+        if (WINDOWS.indexOf(fragment) > -1 && fragment !== this.radioGroupForm.controls.dateSpan.value) {
+          this.radioGroupForm.controls.dateSpan.setValue(fragment);
         }
       });
 
