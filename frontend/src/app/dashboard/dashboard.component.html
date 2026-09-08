@@ -180,7 +180,7 @@
       <div class="col" style="margin-bottom: 1.47rem">
         <div class="card-liquid card"> 
           <div class="card-body">
-            <app-reserves-ratio-stats [fullHistory$]="fullHistory$" [emergencyUtxosStats$]="emergencySpentUtxosStats$"></app-reserves-ratio-stats>
+            <app-reserves-ratio-stats [fullHistory$]="fullHistory$" [currentReserves$]="currentReserves$" [currentPeg$]="currentPeg$" [emergencyUtxosStats$]="emergencySpentUtxosStats$"></app-reserves-ratio-stats>
             <app-reserves-ratio [currentPeg]="currentPeg$ | async" [currentReserves]="currentReserves$ | async"></app-reserves-ratio>
           </div>
         </div>

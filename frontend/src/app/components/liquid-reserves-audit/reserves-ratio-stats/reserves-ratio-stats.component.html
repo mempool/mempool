@@ -1,31 +1,32 @@
 <div class="fee-estimation-container">
   <div class="item"> 
-    <h5 class="card-title" i18n="liquid.reserve-deficit">Reserve Deficit</h5> 
-    <div *ngIf="(unbackedMonths$ | async) as unbackedMonths; else loadingData" class="card-text">
-      <ng-container *ngIf="unbackedMonths.historyComplete; else loadingData">
-        <div class="fee-text" i18n-ngbTooltip="liquid.unpeg-info" ngbTooltip="Number of times that the Federation's BTC holdings fall below 95% of the total LBTC supply">
-          {{ unbackedMonths.total }}
-          <span *ngIf="unbackedMonths.total === 1; else occurrencePlural" i18n="shared.occurrence">occurrence</span>
-          <ng-template #occurrencePlural>
-            <span i18n="shared.occurrences">occurrences</span>
-          </ng-template>
-        </div>
-      </ng-container>
-    </div>
-  </div>
-
-  <div class="item avg-ratio"> 
-    <h5 class="card-title" i18n="dashboard.30d-change">Change (30d)</h5>
-    <div *ngIf="(unbackedMonths$ | async) as unbackedMonths; else loadingData" class="card-text">
-      <ng-container *ngIf="unbackedMonths.historyComplete; else loadingData">
-        <div class="fee-text">
-          {{ unbackedMonths.delta1m > 0 ? '+' : ''}}{{ unbackedMonths.delta1m | number: '1.2-2' }} <span i18n="shared.btc|BTC">BTC</span>
-        </div>
-      </ng-container>
+    <h5 class="card-title" i18n="liquid.incident-count">Incident Count</h5>
+    <div *ngIf="(incidentCount$ | async) as incidentCount; else loadingData" class="card-text">
+      <div *ngIf="incidentCount.total !== null; else loadingData" class="fee-text" i18n-ngbTooltip="liquid.unpeg-info" ngbTooltip="Number of times that the Federation's BTC holdings fall below 95% of the total LBTC supply">
+        {{ incidentCount.total }}
+      </div>
     </div>
   </div>
 
   <div class="item">
+    <ng-container *ngIf="(reserveBalance$ | async) as reserveBalance; else loadingBalance">
+      <h5 *ngIf="reserveBalance.amount < 0; else surplusTitle" class="card-title" i18n="liquid.reserve-deficit">Reserve Deficit</h5>
+      <ng-template #surplusTitle>
+        <h5 class="card-title" i18n="liquid.reserve-surplus">Reserve Surplus</h5>
+      </ng-template>
+      <div class="card-text">
+        <div class="fee-text">
+          {{ reserveBalance.amount | number: '1.2-2' }} <span i18n="shared.btc|BTC">BTC</span>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #loadingBalance>
+      <h5 class="card-title" i18n="liquid.reserve-deficit">Reserve Deficit</h5>
+      <ng-container *ngTemplateOutlet="loadingData"></ng-container>
+    </ng-template>
+  </div>
+
+  <div class="item emergency-keys">
     <!-- <a class="title-link" [routerLink]="['/audit/emergency-spends' | relativeUrl]">
       <h5 class="card-title"><ng-container i18n="liquid.forfeited-utxos">Forfeited UTXOs</ng-container>&nbsp;<fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="font-size: 13px; color: var(--title-fg)"></fa-icon></h5>
     </a> -->
