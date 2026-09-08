@@ -8,6 +8,18 @@
 .treemap-col {
   width: 45%;
   height: 300px;
+
+  @media (max-width: 767.98px) {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .treemap-col app-addresses-treemap {
+    display: block;
+    width: 100%;
+  }
 }
 
 .fiat {
