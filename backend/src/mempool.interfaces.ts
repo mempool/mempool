@@ -18,14 +18,19 @@ export interface PoolInfo {
   link: string;
   blockCount: number;
   emptyBlocks: number;
-  bip54BlockCount: number;
   slug: string;
   avgMatchRate: number | null;
   avgFeeDelta: number | null;
   poolUniqueId: number;
 }
 
-export interface PoolStats extends PoolInfo {
+// only $getPoolsInfoPerInterval selects the BIP-54 count, so the other PoolInfo producers
+// must not claim to return it
+export interface PoolIntervalInfo extends PoolInfo {
+  bip54BlockCount: number;
+}
+
+export interface PoolStats extends PoolIntervalInfo {
   rank: number;
   bip54Recent: boolean | null;
 }
