@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, LOCALE_ID, NgZone, OnInit } from '@angular/core';
+import { afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, Inject, Input, LOCALE_ID, NgZone, OnInit, ViewChild } from '@angular/core';
 import { EChartsOption } from '@app/graphs/echarts';
 import { BehaviorSubject, combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, filter, map, share, startWith, switchMap, tap } from 'rxjs/operators';
@@ -65,6 +65,9 @@ export class BlockGogglesGraphComponent implements OnInit {
   @Input() right: number | string = 45;
   @Input() left: number | string = 75;
 
+  @ViewChild('graphContainer')
+  graphContainer: ElementRef<HTMLDivElement>;
+
   miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
   unitGroupForm: UntypedFormGroup;
@@ -99,6 +102,9 @@ export class BlockGogglesGraphComponent implements OnInit {
 
   private prefs: { unit: string, bucket: number, mode: string } = { unit: 'txCount', bucket: 1008, mode: 'abs' };
 
+
+  cssWidth: number;
+
   constructor(
     @Inject(LOCALE_ID) public locale: string,
     private apiService: ApiService,
@@ -121,6 +127,11 @@ export class BlockGogglesGraphComponent implements OnInit {
     this.bucketGroupForm.controls.bucketSize.setValue(1008);
     this.modeGroupForm = this.formBuilder.group({ mode: 'abs' });
     this.modeGroupForm.controls.mode.setValue('abs');
+
+    afterNextRender(() => {
+      this.cssWidth = this.graphContainer.nativeElement.offsetWidth;
+      this.cd.detectChanges();
+    })
   }
 
   ngOnInit(): void {
@@ -663,5 +674,11 @@ export class BlockGogglesGraphComponent implements OnInit {
     // @ts-ignore
     this.chartOptions.yAxis.nameTextStyle = prevYAxisNameStyle;
     this.chartInstance.setOption(this.chartOptions);
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.cssWidth = this.graphContainer.nativeElement.offsetWidth;
+    this.cd.detectChanges();
   }
 }
