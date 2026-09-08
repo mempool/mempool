@@ -1,4 +1,4 @@
-import { BlockPrice, PoolInfo, PoolStats, RewardStats } from '../../mempool.interfaces';
+import { BlockPrice, PoolIntervalInfo, PoolStats, RewardStats } from '../../mempool.interfaces';
 import BlocksRepository from '../../repositories/BlocksRepository';
 import PoolsRepository, { POOLS_STATS_INTERVALS } from '../../repositories/PoolsRepository';
 import HashratesRepository from '../../repositories/HashratesRepository';
@@ -121,7 +121,7 @@ class Mining {
 
   /** @asyncUnsafe */
   private async $queryAllPoolsStats(): Promise<Record<string, PoolsStats>> {
-    const poolsInfoPerInterval: Record<string, PoolInfo[]> = await PoolsRepository.$getPoolsInfoPerInterval();
+    const poolsInfoPerInterval: Record<string, PoolIntervalInfo[]> = await PoolsRepository.$getPoolsInfoPerInterval();
     const estimatedHashrates = await this.$getEstimatedHashrates();
 
     const bip54Recent = this.bip54AdoptionByPool(poolsInfoPerInterval);
@@ -160,7 +160,7 @@ class Mining {
    * Whether each pool currently mines BIP-54 forward-compatible coinbases, keyed by pool
    * unique id. Read from a fixed recent window rather than the requested one
    */
-  private bip54AdoptionByPool(poolsInfoPerInterval: Record<string, PoolInfo[]>): Map<number, boolean> {
+  private bip54AdoptionByPool(poolsInfoPerInterval: Record<string, PoolIntervalInfo[]>): Map<number, boolean> {
     const adoption = new Map<number, boolean>();
     // a week is long enough to cover all but the smallest pools, and short enough that a
     // pool turning BIP-54 back off shows up quickly.
