@@ -20,6 +20,14 @@
   & > * {
     flex-shrink: 0;
   }
+
+  // X’s iOS in-app browser overlays bottom controls without reporting a safe-area inset.
+  // Its incorrect svh value reveals the obscured strip via svh - dvh so correct browsers collapse it to zero.
+  &::after {
+    content: '';
+    flex-shrink: 0;
+    height: max(0px, 100svh - 100dvh);
+  }
 }
 
 .heading {

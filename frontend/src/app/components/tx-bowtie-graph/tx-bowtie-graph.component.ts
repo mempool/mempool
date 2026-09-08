@@ -555,12 +555,13 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
       const output = this.tx.vout[index];
       const outspend = this.outspends[index];
       if (side === 'output-connector' && output && outspend && outspend.spent && outspend.txid) {
+        const fragmentParams = new URLSearchParams({ flow: '' });
+        if (outspend.vin !== undefined) {
+          fragmentParams.set('vin', outspend.vin.toString());
+        }
         this.router.navigate([this.relativeUrlPipe.transform('/tx'), outspend.txid], {
           queryParamsHandling: 'merge',
-          fragment: (new URLSearchParams({
-            flow: '',
-            vin: outspend.vin.toString(),
-          })).toString(),
+          fragment: fragmentParams.toString(),
         });
       } else if (index != null) {
         this.router.navigate([this.relativeUrlPipe.transform('/tx'), this.tx.txid], {

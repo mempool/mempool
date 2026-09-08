@@ -23,12 +23,14 @@ import { calculateMempoolTxCpfp } from '../cpfp';
 import { handleError } from '../../utils/api';
 import poolsUpdater from '../../tasks/pools-updater';
 import chainTips from '../chain-tips';
+import FlagValueRepository, { INTERVAL_PRESETS } from '../../repositories/FlagValueRepository';
 
 const TXID_REGEX = /^[a-f0-9]{64}$/i;
 const BLOCK_HASH_REGEX = /^[a-f0-9]{64}$/i;
 const ADDRESS_REGEX = /^[a-z0-9]{2,120}$/i;
 const SCRIPT_HASH_REGEX = /^([a-f0-9]{2})+$/i;
 const MAX_TRANSACTION_TIMES = 100;
+const JUST_NUMBERS_REGEX = /^[1-9]\d*$/;
 
 class BitcoinRoutes {
   public initRoutes(app: Application) {
@@ -70,6 +72,10 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'internal/blocks/definition/list', this.getBlockDefinitionHashes)
       .get(config.MEMPOOL.API_URL_PREFIX + 'internal/blocks/definition/current', this.getCurrentBlockDefinitionHash)
       .get(config.MEMPOOL.API_URL_PREFIX + 'internal/blocks/:definitionHash', this.getBlocksByDefinitionHash)
+
+      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval/', this.getTxCountPerFlagValue)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval/:bucketSize', this.getTxCountPerFlagValue)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval/:bucketSize/:op/:mask', this.getTxCountPerFlagValue)
       ;
 
       if (config.MEMPOOL.BACKEND !== 'esplora') {
@@ -1129,6 +1135,63 @@ class BitcoinRoutes {
       }
     } catch (e) {
       handleError(req, res, 500, 'Failed to get difficulty change');
+    }
+  }
+
+  private async getTxCountPerFlagValue(req: Request, res: Response) {
+    try {
+      if (!Common.blocksSummariesIndexingEnabled()) {
+        handleError(req, res, 404, `Block summaries indexing is required for this API`);
+        return;
+      }
+
+      const presets = INTERVAL_PRESETS;
+      const operations = ['and', 'or', 'nor', undefined];
+      const intervals = Object.keys(presets);
+      const interval = req.params.interval;
+
+      if (!intervals.includes(interval)) {
+        handleError(req, res, 400, `Invalid interval, must be one of ${intervals.toString()}`);
+        return;
+      }
+
+      const validBucketSizes = presets[interval].bucketSizes;
+      const rawBucketSize = req.params.bucketSize;
+      const bucketSize: number = rawBucketSize === undefined ? validBucketSizes[0] : Number(rawBucketSize);
+      if (!Number.isInteger(bucketSize) || !validBucketSizes.includes(bucketSize)) {
+        handleError(req, res, 400, `Invalid bucket size, must be ${validBucketSizes.toString()}`);
+        return;
+      }
+
+      if (!operations.includes(req.params.op)) {
+        handleError(req, res, 400, `Invalid operation, must be 'and', 'or', 'nor' or undefined.`);
+        return;
+      }
+
+      if (req.params.mask && !JUST_NUMBERS_REGEX.test(req.params.mask)) {
+        handleError(req, res, 400, `Invalid mask value, must be a positive integer`);
+        return;
+      }
+
+      const op = (req.params.op) as 'and' | 'or' | 'nor' | undefined;
+      const mask = BigInt(req.params.mask ?? 0n);
+
+      const { tip, tail }  = await FlagValueRepository.$getTipAndTailIndexedByBucketSize(bucketSize) || { tip: undefined, tail: undefined };
+
+      if (tip === undefined || tail === undefined) {
+        handleError(req, res, 400, `Failed to get latest indexed flag values for ${interval}`);
+        return;
+      }
+
+      const totalCount = await FlagValueRepository.$getTotalBlocksIndexedByBucketSize(bucketSize === 1 ? 1008 : bucketSize) ?? tip - tail;
+
+      const startHeight = presets[interval].retentionSpan !== -1 ? (tip - presets[interval].retentionSpan) : -1;
+      const txsCount = await FlagValueRepository.$queryTxCountBasedOnMask(mask, bucketSize, op, startHeight);
+      res.header('X-total-count', totalCount.toString());
+      res.header('Expires', new Date(Date.now() + 1000 * 3600 * 24 * (presets[interval].bucketSizes[0] / 144)).toUTCString());
+      res.send(txsCount);
+    } catch (e: any) {
+      handleError(req, res, 400, e instanceof Error ? e.message : 'Failed to get flag values');
     }
   }
 

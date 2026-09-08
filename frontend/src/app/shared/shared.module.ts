@@ -10,7 +10,7 @@ import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, fa
   faCircleXmark, faCalendarCheck, faMoneyBillTrendUp, faRobot, faShareNodes, faCreditCard, faMicroscope, faExclamationTriangle, faLockOpen, faPaperclip, faAddressCard,
   faMedal, faBug, faFilePdf, faPiggyBank, faLayerGroup, faHeart, faCashRegister, faCodeFork, faCode, 
   faCalendar, faPause, faPlay, faExpand, faCompress} from '@fortawesome/free-solid-svg-icons';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { InfiniteScrollDirective } from '@app/shared/directives/infinite-scroll.directive';
 import { MenuComponent } from '@components/menu/menu.component';
 import { PreviewTitleComponent } from '@components/master-page-preview/preview-title.component';
 import { VbytesPipe } from '@app/shared/pipes/bytes-pipe/vbytes.pipe';
@@ -106,6 +106,7 @@ import { ConfirmationsComponent } from '@app/shared/components/confirmations/con
 import { ToggleComponent } from '@app/shared/components/toggle/toggle.component';
 import { GeolocationComponent } from '@app/shared/components/geolocation/geolocation.component';
 import { TestnetAlertComponent } from '@app/shared/components/testnet-alert/testnet-alert.component';
+import { LiquidIncidentAlertComponent } from '@app/shared/components/liquid-incident-alert/liquid-incident-alert.component';
 import { GlobalFooterComponent } from '@app/shared/components/global-footer/global-footer.component';
 import { MempoolErrorComponent } from '@app/shared/components/mempool-error/mempool-error.component';
 import { MiningPoolComponent } from '@app/shared/components/mining-pool/mining-pool.component';
@@ -169,6 +170,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     ColoredPriceDirective,
     BrowserOnlyDirective,
     ServerOnlyDirective,
+    InfiniteScrollDirective,
     BlockchainComponent,
     BlockViewComponent,
     EightBlocksComponent,
@@ -233,6 +235,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     ToggleComponent,
     GeolocationComponent,
     TestnetAlertComponent,
+    LiquidIncidentAlertComponent,
     GlobalFooterComponent,
     MiningPoolComponent,
     CalculatorComponent,
@@ -273,7 +276,6 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     NgbDropdownModule,
     NgbCollapseModule,
     NgbDatepickerModule,
-    InfiniteScrollModule,
     FontAwesomeModule,
   ],
   providers: [
@@ -297,7 +299,6 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     NgbTypeaheadModule,
     NgbDropdownModule,
     NgbCollapseModule,
-    InfiniteScrollModule,
     FontAwesomeModule,
     TimeComponent,
     ClipboardComponent,
@@ -329,6 +330,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     ColoredPriceDirective,
     BrowserOnlyDirective,
     ServerOnlyDirective,
+    InfiniteScrollDirective,
     NoSanitizePipe,
     BlockchainComponent,
     MempoolBlocksComponent,
@@ -388,6 +390,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     ToggleComponent,
     GeolocationComponent,
     TestnetAlertComponent,
+    LiquidIncidentAlertComponent,
     MiningPoolComponent,
     PreviewTitleComponent,
     GlobalFooterComponent,

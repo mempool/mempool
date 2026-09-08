@@ -1,1 +1,2 @@
-backend/src/api/database-migration.ts	@wiz @softsimon
+backend/src/api/database-migration.ts	@wiz @mononaut
+production/	@wiz

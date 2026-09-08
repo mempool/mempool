@@ -150,7 +150,7 @@ class MiningRoutes {
 
   private async $getPoolsHistoricalHashrate(req: Request, res: Response) {
     try {
-      const hashrates = await HashratesRepository.$getPoolsWeeklyHashrate(req.params.interval);
+      const hashrates = await mining.$getPoolsHistoricalHashrate(req.params.interval);
       const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');

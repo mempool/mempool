@@ -220,6 +220,7 @@ class Server {
 
     if (config.MEMPOOL.ENABLED) {
       void this.runMainUpdateLoop();
+      indexer.scheduleSingleTask('poolsStats', 0);
     }
 
     setInterval(() => { this.healthCheck(); }, 2500);
@@ -349,13 +350,17 @@ class Server {
     }
 
     if (Common.isLiquid() && config.DATABASE.ENABLED) {
-      blocks.setNewBlockCallback(async () => {
+      /** @asyncSafe */
+      const parseElements = async (): Promise<void> => {
         try {
           await elementsParser.$parse();
         } catch (e) {
           logger.warn('Elements parsing error: ' + (e instanceof Error ? e.message : e));
         }
-      });
+      };
+      blocks.setNewBlockCallback(parseElements);
+      void parseElements();
+      setInterval(() => { void parseElements(); }, 60_000);
     }
     websocketHandler.setupConnectionHandling();
     if (config.MEMPOOL.ENABLED) {

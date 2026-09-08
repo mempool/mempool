@@ -93,6 +93,8 @@
 }
 
 .widget .latest-transactions {
+  overflow-anchor: none;
+
   .table-cell-satoshis {
     @media (min-width: 768px) {
       display: none;

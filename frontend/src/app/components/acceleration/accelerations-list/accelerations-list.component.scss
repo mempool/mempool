@@ -97,6 +97,10 @@ tr, td, th {
 }
 
 .widget {
+  .acceleration-list {
+    overflow-anchor: none;
+  }
+
   .txid {
     width: 30%;
     overflow: hidden;

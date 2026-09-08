@@ -35,7 +35,6 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
 import { PriceService } from '@app/services/price.service';
 import { isFeatureActive } from '@app/bitcoin.utils';
 import { ServicesApiServices } from '@app/services/services-api.service';
-import { EnterpriseService } from '@app/services/enterprise.service';
 import { PartnerCodeService } from '@app/services/partner-code.service';
 import { ZONE_SERVICE } from '@app/injection-tokens';
 import { MiningService, MiningStats } from '@app/services/mining.service';
@@ -217,7 +216,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private seoService: SeoService,
     private priceService: PriceService,
     private storageService: StorageService,
-    private enterpriseService: EnterpriseService,
     private partnerCodeService: PartnerCodeService,
     private miningService: MiningService,
     private etaService: EtaService,
@@ -228,7 +226,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.setupPartnerCode();
 
-    this.enterpriseService.page();
     this.isDetailsOpen = this.route.snapshot.queryParams['showDetails'] === 'true';
     this.cpfpMode = this.route.snapshot.queryParams['cpfp'] === 'true';
 

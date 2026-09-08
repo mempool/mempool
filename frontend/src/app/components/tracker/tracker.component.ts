@@ -167,8 +167,6 @@ export class TrackerComponent implements OnInit, OnDestroy {
       this.miningStats = stats;
     });
 
-    this.enterpriseService.page();
-
     this.enterpriseInfo$ = this.enterpriseService.info$.subscribe(info => {
       this.enterpriseInfo = info;
     });

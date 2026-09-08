@@ -25,6 +25,7 @@ import { AccelerationsListComponent } from '@components/acceleration/acceleratio
 import { AddressComponent } from '@components/address/address.component';
 import { WalletComponent } from '@components/wallet/wallet.component';
 import { CalculatorComponent } from '@components/calculator/calculator.component';
+import { BlockGogglesGraphComponent } from '@components/block-goggles-graph/block-goggles-graph.component';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -115,6 +116,11 @@ const routes: Routes = [
             component: StatisticsComponent,
           },
           {
+            path: 'goggles',
+            data: { networks: [ 'bitcoin' ]},
+            component: BlockGogglesGraphComponent,
+          },
+          {
             path: 'mining/hashrate-difficulty',
             data: { networks: ['bitcoin'] },
             component: HashrateChartComponent,
@@ -136,7 +142,7 @@ const routes: Routes = [
           },
           {
             path: 'mining/block-fees-subsidy',
-            data: { networks: ['bitcoin'] },
+            data: { networks: ['bitcoin'], networkSpecific: true, onlySubnet: [''] },
             component: BlockFeesSubsidyGraphComponent,
           },
           {

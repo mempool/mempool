@@ -6,6 +6,7 @@ export const MempoolErrors = {
   'internal_server_error': `Something went wrong, please try again later`,
   'temporarily_unavailable': `Acceleration temporarily unavailable`,
   'acceleration_duplicated': `This transaction has already been accelerated.`,
+  'transaction_confirmed': `This transaction is already confirmed.`,
   'acceleration_outbid': `Your fee delta is too low.`,
   'cannot_accelerate_tx': `Cannot accelerate this transaction.`,
   'cannot_decode_raw_tx': `Cannot decode this raw transaction.`,

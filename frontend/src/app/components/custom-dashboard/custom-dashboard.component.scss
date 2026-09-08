@@ -135,6 +135,7 @@
 }
 
 .latest-transactions {
+  overflow-anchor: none;
   width: 100%;
   text-align: left;
   table-layout:fixed;
@@ -223,6 +224,7 @@
 }
 
 .lastest-replacements-table {
+  overflow-anchor: none;
   width: 100%;
   text-align: left;
   table-layout:fixed;

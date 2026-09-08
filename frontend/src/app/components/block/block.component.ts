@@ -226,7 +226,7 @@ export class BlockComponent implements OnInit, OnDestroy {
                 switchMap((hash) => {
                   this.blockHash = hash;
                   this.location.replaceState(
-                    this.router.createUrlTree([(this.network ? '/' + this.network : '') + '/block/', hash]).toString()
+                    this.router.createUrlTree([this.relativeUrlPipe.transform('/block/'), hash]).toString()
                   );
                   this.seoService.updateCanonical(this.location.path());
                   return this.apiService.getBlock$(hash).pipe(
