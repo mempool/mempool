@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, HostListener, ChangeDetectorRef, Inject }
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { switchMap, filter, catchError, map, startWith, distinctUntilChanged, tap, retryWhen, mergeMap, delay } from 'rxjs/operators';
-import { Transaction } from '@interfaces/electrs.interface';
+import { Transaction, Vout } from '@interfaces/electrs.interface';
 import { of, merge, Subscription, Observable, combineLatest, BehaviorSubject, Subject, throwError, timer, retry } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 import { AudioService } from '@app/services/audio.service';
@@ -534,7 +534,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
       tap((eta) => {
         if (this.replaced) {
           this.trackerStage = 'replaced';
-        } else if (this.tx.status?.confirmed) {
+        } else if (this.tx?.status?.confirmed) {
           this.trackerStage = 'confirmed';
         } else if (eta?.blocks === 0) {
           this.trackerStage = 'next';
@@ -579,8 +579,13 @@ export class PaymentComponent implements OnInit, OnDestroy {
           });
   }
 
-  private destinationMatches(address?: string): boolean {
-    return this.destination === address;
+  private destinationMatches(vout?: Vout): boolean {
+    if (vout.scriptpubkey_type !== 'p2pk') {
+      return vout.scriptpubkey_address === this.destination;
+    }
+
+    const pushOpcode = this.destination.length === 130 ? '41' : '21';
+    return vout.scriptpubkey === `${pushOpcode}${this.destination}ac`
   }
 
   private destinationIsAddress(): boolean {
@@ -589,7 +594,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
   }
 
   private destinationInOutputs(tx: Transaction): boolean {
-    return !!tx?.vout?.some(vout => this.destinationMatches(vout.scriptpubkey_address));
+    return !!tx?.vout?.some(vout => this.destinationMatches(vout));
   }
 
   isValidDestination(tx: Transaction): boolean {
@@ -598,7 +603,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
 
   setAmount(): void {
     this.amount = (this.tx?.vout || []).reduce((total, vout) => {
-      return this.destinationMatches(vout.scriptpubkey_address) ? total + vout.value : total;
+      return this.destinationMatches(vout) ? total + vout.value : total;
     }, 0);
   }
 

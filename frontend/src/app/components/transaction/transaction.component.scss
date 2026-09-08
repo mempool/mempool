@@ -349,7 +349,16 @@ h2 .cpfp-beta {
     min-width: 0;
     @media (min-width: 676px) {
       flex-direction: row;
+      flex-wrap: wrap;
       gap: 0.5rem;
+    }
+
+    > span {
+      flex-shrink: 0;
+    }
+
+    app-truncate {
+      min-width: 0;
     }
   }
 
