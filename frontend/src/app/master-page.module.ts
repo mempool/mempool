@@ -17,7 +17,6 @@ import { ServerStatusComponent } from '@components/server-health/server-status.c
 import { FaucetComponent } from '@components/faucet/faucet.component';
 import { SimpleProofWidgetComponent } from '@components/simpleproof-widget/simpleproof-widget.component';
 import { SimpleProofCuboWidgetComponent } from '@components/simpleproof-widget/simpleproof-cubo-widget.component';
-import { PaymentGuard } from '@app/route-guards';
 
 const browserWindow = window || {};
 // @ts-ignore
@@ -90,14 +89,6 @@ const routes: Routes = [
       {
         path: 'trademark-policy',
         loadChildren: () => import('@components/trademark-policy/trademark-policy.module').then(m => m.TrademarkModule),
-      },
-      {
-        path: 'tx',
-        component: StartComponent,
-        canMatch: [PaymentGuard],
-        runGuardsAndResolvers: 'always',
-        data: { preload: false, networkSpecific: true },
-        loadChildren: () => import('@components/payment/payment.module').then(m => m.PaymentModule),
       },
       {
         path: 'tx',

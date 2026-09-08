@@ -107,17 +107,13 @@
 </ng-template>
 
 <ng-template #addressRow>
-  @if (isValidView) {
-    <tr>
-      <td class="td-width" i18n="shared.address">Address</td>
-      <td>
-        <app-truncate class="address" [text]="destination" [lastChars]="4"
-          [link]="['/address/' | relativeUrl, destination]"></app-truncate>
-      </td>
-    </tr>
-  } @else {
-    <ng-container *ngTemplateOutlet="skeletonRow"></ng-container>
-  }
+  <tr>
+    <td class="td-width" i18n="shared.address">Address</td>
+    <td>
+      <app-truncate [text]="destination" [textAlign]="'end'" [lastChars]="4"
+        [link]="['/address/' | relativeUrl, destination]"></app-truncate>
+    </td>
+  </tr>
 </ng-template>
 
 <ng-template #statusRow>
@@ -164,7 +160,7 @@
 <ng-template #status>
   @if (settled) {
     <span class="settled" i18n="transaction.status.settled|Settled">Settled</span>
-  } @else if (isValidView && confsRequired > 1) {
+  } @else if (confsRequired > 1) {
     <span class="confs-cell">
       @if (isMobile) {
         <div>

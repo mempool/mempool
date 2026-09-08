@@ -336,11 +336,26 @@ h2 .cpfp-beta {
   }
 }
 
-.alert {
-  div {
-    display: flex;
-    align-items: center;
-    gap: 1em;
+.destination-alert {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+
+  .message-container {
+    display: inline-flex;
+    flex-direction: column;
+    min-width: 0;
+    @media (min-width: 676px) {
+      flex-direction: row;
+      gap: 0.5rem;
+    }
+  }
+
+  .btn-close {
+    flex-shrink: 0;
+    margin-left: auto;
   }
 }
 

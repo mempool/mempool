@@ -70,10 +70,6 @@
   }
 }
 
-.address ::ng-deep .truncate {
-  justify-content: end !important;
-}
-
 .details-button {
   align-self: center;
   text-align: center;
@@ -115,6 +111,7 @@
 
 .box {
   padding-bottom: 0.75em;
+  word-wrap: normal;
 }
 
 .settled {
@@ -147,10 +144,6 @@
     flex: 0 0 50%;
     max-width: 50%;
     margin-bottom: 0;
-  }
-
-  app-truncate ::ng-deep span {
-    word-wrap: normal;
   }
 }
 

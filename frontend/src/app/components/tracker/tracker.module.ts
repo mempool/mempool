@@ -5,7 +5,7 @@ import { SharedModule } from '@app/shared/shared.module';
 import { TxBowtieModule } from '@components/tx-bowtie-graph/tx-bowtie.module';
 import { GraphsModule } from '@app/graphs/graphs.module';
 import { TrackerComponent } from '@components/tracker/tracker.component';
-import { TrackerBarComponent } from '@components/tracker/tracker-bar.component';
+import { TrackerBarModule } from '@components/tracker/tracker-bar.module';
 import { TransactionModule } from '@components/transaction/transaction.module';
 
 const routes: Routes = [
@@ -43,13 +43,13 @@ export class TrackerRoutingModule { }
     SharedModule,
     GraphsModule,
     TxBowtieModule,
+    TrackerBarModule,
   ],
   declarations: [
     TrackerComponent,
-    TrackerBarComponent,
   ],
   exports: [
-    TrackerBarComponent
+    TrackerBarModule
   ]
 })
 export class TrackerModule { }

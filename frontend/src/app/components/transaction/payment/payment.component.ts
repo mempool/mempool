@@ -9,7 +9,7 @@ import { AudioService } from '@app/services/audio.service';
 import { CacheService } from '@app/services/cache.service';
 import { WebsocketService } from '@app/services/websocket.service';
 import { SeoService } from '@app/services/seo.service';
-import { addressesMatch, seoDescriptionNetwork } from '@app/shared/common.utils';
+import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { getUnacceleratedFeeRate, getTransactionFlags } from '@app/shared/transaction.utils';
 import { BlockExtended, MempoolPosition, Acceleration, AccelerationPosition, RbfTree, CpfpInfo, DifficultyAdjustment } from '@interfaces/node-api.interface';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
@@ -25,7 +25,7 @@ import { TransactionFlags } from '@app/shared/filters.utils';
 import { Pool } from '@components/transaction/transaction.component';
 
 const DEFAULT_CONFS = 6;
-const MAX_CONFS = 24;
+const MAX_CONFS = 48;
 
 @Component({
   selector: 'app-payment',
@@ -43,7 +43,6 @@ export class PaymentComponent implements OnInit, OnDestroy {
   error: any = undefined;
   waitingForTransaction = false;
   isMobile: boolean;
-  isValidView = false;
   rbfTransaction: Transaction | null;
 
   fetchAccelerationSubscription: Subscription;
@@ -104,7 +103,6 @@ export class PaymentComponent implements OnInit, OnDestroy {
   hasEffectiveFeeRate: boolean;
   sigops: number | null;
   adjustedVsize: number | null;
-
 
   pool: Pool | null;
   fetchCpfpSubscription: Subscription;
@@ -536,9 +534,11 @@ export class PaymentComponent implements OnInit, OnDestroy {
       tap((eta) => {
         if (this.replaced) {
           this.trackerStage = 'replaced';
+        } else if (this.tx.status?.confirmed) {
+          this.trackerStage = 'confirmed';
         } else if (eta?.blocks === 0) {
           this.trackerStage = 'next';
-        } else if (eta?.blocks < 3){
+        } else if (eta?.blocks != null && eta?.blocks < 3){
           this.trackerStage = 'soon';
         } else {
           this.trackerStage = 'pending';
@@ -580,7 +580,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
   }
 
   private destinationMatches(address?: string): boolean {
-    return addressesMatch(this.destination, address);
+    return this.destination === address;
   }
 
   private destinationIsAddress(): boolean {
@@ -593,12 +593,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
   }
 
   isValidDestination(tx: Transaction): boolean {
-    if (!this.destinationIsAddress()) {
-      return false;
-    }
-
-    this.isValidView = this.destinationInOutputs(tx);
-    return this.isValidView;
+    return this.destinationIsAddress() && this.destinationInOutputs(tx);
   }
 
   setAmount(): void {
@@ -619,6 +614,10 @@ export class PaymentComponent implements OnInit, OnDestroy {
   updateFragmentParams(fragment: string | null): void {
     const params = new URLSearchParams(fragment ?? '');
 
+    if (params.has('destination')) {
+      this.destination = this.formatAddress(params.get('destination') || '');
+    }
+
     if (params.has('confs')) {
       const confsRequired = Number(params.get('confs'));
       if (Number.isInteger(confsRequired) && confsRequired > 0) {
@@ -629,20 +628,20 @@ export class PaymentComponent implements OnInit, OnDestroy {
     } else {
       this.confsRequired = DEFAULT_CONFS;
     }
-    this.updateConfirmations();
 
     this.forceAccelerationSummary = params.has('accelerate');
 
-    if (params.has('destination')) {
-      this.destination = params.get('destination') || '';
-      if (this.tx) {
-        if (this.isValidDestination(this.tx)) {
-          this.setAmount();
-        } else {
-          this.viewFullDetails();
-        }
-      }
+    if (!this.tx) {
+      return;
     }
+
+    if (!this.isValidDestination(this.tx)) {
+      this.viewFullDetails();
+      return;
+    }
+
+    this.setAmount();
+    this.updateConfirmations();
   }
 
   markBlock(): void {
@@ -680,12 +679,14 @@ export class PaymentComponent implements OnInit, OnDestroy {
           mode: 'details',
         },
         fragment: 'destinationAlert=' + this.destination,
+        replaceUrl: true
       });
     } else {
       this.router.navigate(baseRoute, {
         queryParams: {
           mode: 'details',
-        }
+        },
+        replaceUrl: true
       });
     }
   }
@@ -705,18 +706,22 @@ export class PaymentComponent implements OnInit, OnDestroy {
     return of(false);
   }
 
+  private formatAddress(address: string) {
+    let formattedAddress = address;
+    if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(formattedAddress)) {
+      formattedAddress = formattedAddress.toLowerCase();
+    }
+    return formattedAddress;
+  }
+
   resetTransaction(): void {
-    const fragmentParams = new URLSearchParams(this.route.snapshot.fragment || '');
-    this.destination = fragmentParams.get('destination') || '';
-    const parsedConfs = Math.min(Math.ceil(parseInt((fragmentParams.get('confs') || DEFAULT_CONFS.toString()), 10)), MAX_CONFS);
-    this.confsRequired = (!isNaN(parsedConfs) && parsedConfs >= 1) ? parsedConfs : DEFAULT_CONFS;
+    this.updateFragmentParams(this.route.snapshot.fragment);
 
     this.error = undefined;
     this.tx = null;
     this.txChanged$.next(true);
     this.waitingForTransaction = false;
     this.isLoadingTx = true;
-    this.isValidView = false;
     this.replaced = false;
     this.rbfTransaction = null;
     this.rbfInfo = null;
@@ -825,6 +830,13 @@ export class PaymentComponent implements OnInit, OnDestroy {
     this.storageService.setValue('hide-accelerator-pref', 'true');
   }
 
+  openAccelerator(): void {
+    this.router.navigate([], { fragment: this.paymentFragment('accelerate'), queryParamsHandling: 'merge' });
+    this.accelerationFlowCompleted = false;
+    this.hideAccelerationSummary = false;
+    this.storageService.setValue('hide-accelerator-pref', 'false');
+  }
+
   checkAccelerationEligibility(): void {
     if (this.tx) {
       const txHeight = this.tx.status?.block_height || (this.stateService.latestBlockHeight >= 0 ? this.stateService.latestBlockHeight + 1 : null);
@@ -845,22 +857,19 @@ export class PaymentComponent implements OnInit, OnDestroy {
     this.accelerateCtaType = 'button';
   }
 
-  openAccelerator(): void {
-    this.router.navigate([], { fragment: this.paymentFragment('accelerate'), queryParamsHandling: 'merge' });
-    this.accelerationFlowCompleted = false;
-    this.hideAccelerationSummary = false;
-    this.storageService.setValue('hide-accelerator-pref', 'false');
-  }
-
   paymentFragment(anchor?: string): string {
-    const parts = [`destination=${this.destination}`];
-    if (this.confsRequired !== DEFAULT_CONFS) {
-      parts.push(`confs=${this.confsRequired}`);
+    const params = new URLSearchParams(this.route.snapshot.fragment);
+
+    for (const [key, value] of Array.from(params.entries())) {
+      if (value === '') {
+        params.delete(key);
+      }
     }
     if (anchor) {
-      parts.push(anchor);
+      params.set(anchor, '');
     }
-    return parts.join('&');
+
+    return Array.from(params.entries()).map(([key, value]) => value ? `${key}=${value}` : key).join('&');
   }
 
   setIsAccelerated(initialState: boolean = false) {

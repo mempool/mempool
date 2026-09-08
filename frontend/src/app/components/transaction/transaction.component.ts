@@ -26,7 +26,7 @@ import { AudioService } from '@app/services/audio.service';
 import { ApiService } from '@app/services/api.service';
 import { SeoService } from '@app/services/seo.service';
 import { StorageService } from '@app/services/storage.service';
-import { addressesMatch, seoDescriptionNetwork } from '@app/shared/common.utils';
+import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { getTransactionFlags, getUnacceleratedFeeRate } from '@app/shared/transaction.utils';
 import { Filter, TransactionFlags, toFilters } from '@app/shared/filters.utils';
 import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition } from '@interfaces/node-api.interface';
@@ -1335,11 +1335,19 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.destinationAlert = undefined;
       return;
     }
-    const destinationAlert = (new URLSearchParams(this.route.snapshot.fragment || '')).get('destinationAlert');
+    let destinationAlert = (new URLSearchParams(this.route.snapshot.fragment || '')).get('destinationAlert') ?? '';
     // the fragment is user supplied, so only alert on an address this
     // transaction genuinely does not pay, and never echo anything else
     if (getRegex('address', (this.network || 'mainnet') as any).test(destinationAlert) &&
-        !this.tx.vout?.some((vout) => addressesMatch(destinationAlert, vout.scriptpubkey_address))) {
+        !this.tx.vout?.some((vout) => {
+
+          let address: string = vout.scriptpubkey_address ?? vout.scriptpubkey;
+          if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(destinationAlert)) {
+            destinationAlert = destinationAlert.toLowerCase();
+          }
+
+          return address === destinationAlert;
+        })) {
       this.destinationAlert = destinationAlert;
     }
   }
