@@ -86,13 +86,24 @@
 <ng-template #amountSection>
   @if (viewAmountMode$ | async; as mode) {
     <div class="amount-block">
-      <span class="label" i18n="transaction.amount|Amount">Amount</span>
       @if (!isLoadingTx && tx) {
+        @switch (paymentKind) {
+          @case ('received') {
+            <span class="label" i18n="payment.kind.received|Received payment">Received</span>
+          }
+          @case ('sent') {
+            <span class="label" i18n="payment.kind.sent|Sent payment">Sent</span>
+          }
+          @case ('self-transfer') {
+            <span class="label" i18n="payment.kind.self-transfer|Self transfer">Self-transfer</span>
+          }
+        }
         <a class="amount-link" href="" (click)="changeMode(mode === 'sats' ? 'btc' : 'sats')">
           <app-amount [satoshis]="amount" [noFiat]="true"></app-amount>
         </a>
         <app-fiat class="fiat" [value]="amount" [blockConversion]="tx.price"></app-fiat>
       } @else {
+        <span class="label" i18n="transaction.amount|Amount">Amount</span>
         <div class="amount-loader">
           <div class="spinner-border text-light"></div>
         </div>

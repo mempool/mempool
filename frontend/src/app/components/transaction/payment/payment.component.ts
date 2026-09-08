@@ -27,6 +27,10 @@ import { Pool } from '@components/transaction/transaction.component';
 const DEFAULT_CONFS = 6;
 const MAX_CONFS = 48;
 
+// how this transaction reads from the destination's point of view: a pure
+// receive, a spend from a reused address, or coins moved back to itself
+export type PaymentKind = 'received' | 'sent' | 'self-transfer';
+
 @Component({
   selector: 'app-payment',
   templateUrl: './payment.component.html',
@@ -68,6 +72,9 @@ export class PaymentComponent implements OnInit, OnDestroy {
   destination = '';
   confsRequired = DEFAULT_CONFS;
   amount = 0;
+  received = 0;
+  sent = 0;
+  paymentKind: PaymentKind = 'received';
   confirmations = 0;
   settled = false;
   replaced = false;
@@ -580,6 +587,10 @@ export class PaymentComponent implements OnInit, OnDestroy {
   }
 
   private destinationMatches(vout?: Vout): boolean {
+    if (!vout) { // coinbase inputs have no prevout
+      return false;
+    }
+
     if (vout.scriptpubkey_type !== 'p2pk') {
       return vout.scriptpubkey_address === this.destination;
     }
@@ -602,9 +613,27 @@ export class PaymentComponent implements OnInit, OnDestroy {
   }
 
   setAmount(): void {
-    this.amount = (this.tx?.vout || []).reduce((total, vout) => {
+    this.received = (this.tx?.vout || []).reduce((total, vout) => {
       return this.destinationMatches(vout) ? total + vout.value : total;
     }, 0);
+    this.sent = (this.tx?.vin || []).reduce((total, { prevout }) => {
+      return this.destinationMatches(prevout) ? total + prevout.value : total;
+    }, 0);
+    this.amount = this.received - this.sent;
+    this.paymentKind = this.getPaymentKind();
+  }
+
+  private getPaymentKind(): PaymentKind {
+    if (!this.sent) {
+      // the address only appears in the outputs, so this is a plain payment
+      return 'received';
+    }
+    if (this.tx?.vout?.length && this.tx.vout.every(vout => this.destinationMatches(vout))) {
+      // every output returns to the address, so nothing left it but the fee
+      return 'self-transfer';
+    }
+    // a reused address on both sides: the net decides whether it came out ahead
+    return this.amount > 0 ? 'received' : 'sent';
   }
 
   updateConfirmations(): void {
@@ -736,6 +765,9 @@ export class PaymentComponent implements OnInit, OnDestroy {
     this.loadingCachedTx = false;
     this.trackerStage = 'waiting';
     this.amount = 0;
+    this.received = 0;
+    this.sent = 0;
+    this.paymentKind = 'received';
     this.confirmations = 0;
     this.settled = false;
     this.mempoolPosition = null;
