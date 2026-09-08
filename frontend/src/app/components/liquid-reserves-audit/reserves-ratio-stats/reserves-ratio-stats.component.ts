@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { Observable, combineLatest, map } from 'rxjs';
+import { Observable, combineLatest, map, shareReplay } from 'rxjs';
 import { CurrentPegs } from '@interfaces/node-api.interface';
 
 @Component({
@@ -10,29 +10,12 @@ import { CurrentPegs } from '@interfaces/node-api.interface';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReservesRatioStatsComponent implements OnInit {
-  @Input() fullHistory$: Observable<any>;
   @Input() currentReserves$: Observable<CurrentPegs>;
   @Input() currentPeg$: Observable<CurrentPegs>;
   @Input() emergencyUtxosStats$: Observable<any>;
-  incidentCount$: Observable<{ total: number | null }>;
   reserveBalance$: Observable<{ amount: number }>;
 
   ngOnInit(): void {
-    if (this.fullHistory$) {
-      this.incidentCount$ = this.fullHistory$.pipe(
-        map((fullHistory) => {
-          const pegsSeries = fullHistory?.liquidPegs?.series || [];
-          const reservesSeries = fullHistory?.liquidReserves?.series || [];
-          if (pegsSeries.length < 2 || pegsSeries.length !== reservesSeries.length) {
-            return { total: null };
-          }
-          // Only check the last 3 years
-          let ratioSeries = reservesSeries.map((value: number, index: number) => value / pegsSeries[index]);
-          return { total: ratioSeries.slice(-36).filter((ratio: number) => ratio < 0.95).length };
-        })
-      );
-    }
-
     if (!this.currentReserves$ || !this.currentPeg$) {
       return;
     }

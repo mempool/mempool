@@ -1,11 +1,21 @@
 <div class="fee-estimation-container">
-  <div class="item"> 
-    <h5 class="card-title" i18n="liquid.incident-count">Incident Count</h5>
-    <div *ngIf="(incidentCount$ | async) as incidentCount; else loadingData" class="card-text">
-      <div *ngIf="incidentCount.total !== null; else loadingData" class="fee-text" i18n-ngbTooltip="liquid.unpeg-info" ngbTooltip="Number of times that the Federation's BTC holdings fall below 95% of the total LBTC supply">
-        {{ incidentCount.total }}
+  <div class="item">
+    <ng-container *ngIf="(reserveBalance$ | async) as reserveBalance; else loadingSolvency">
+      <h5 *ngIf="reserveBalance.amount >= 0; else insolventTitle" class="card-title" i18n="liquid.solvent">Solvent</h5>
+      <ng-template #insolventTitle>
+        <h5 class="card-title" i18n="liquid.insolvent">Insolvent</h5>
+      </ng-template>
+      <div class="card-text">
+        <div *ngIf="reserveBalance.amount >= 0; else insolvent" class="fee-text" role="img" aria-label="Solvent" i18n-aria-label="liquid.solvent-status">✅</div>
+        <ng-template #insolvent>
+          <div class="fee-text" role="img" tabindex="0" aria-label="Insolvent" i18n-aria-label="liquid.insolvent-status" ngbTooltip="Federation reserves are below LBTC circulation." i18n-ngbTooltip="liquid.insolvent-tooltip">🚨</div>
+        </ng-template>
       </div>
-    </div>
+    </ng-container>
+    <ng-template #loadingSolvency>
+      <h5 class="card-title" i18n="liquid.solvency">Solvency</h5>
+      <ng-container *ngTemplateOutlet="loadingData"></ng-container>
+    </ng-template>
   </div>
 
   <div class="item">
@@ -32,13 +42,10 @@
     </a> -->
     <h5 class="card-title" i18n="liquid.emergency-keys">Emergency Keys</h5>
     <div *ngIf="(emergencyUtxosStats$ | async) as emergencyUtxosStats; else loadingData" class="card-text">
-      <div class="fee-text">
-        {{ emergencyUtxosStats.utxo_count }}
-        <span *ngIf="emergencyUtxosStats.utxo_count === 1; else usagePlural" i18n="shared.usage">usage</span>
-        <ng-template #usagePlural>
-          <span i18n="shared.usages">usages</span>
-        </ng-template>
-      </div>
+      <div *ngIf="emergencyUtxosStats.utxo_count > 0; else noEmergencyKeyUsage" class="fee-text" role="img" tabindex="0" aria-label="Emergency key usage recorded" i18n-aria-label="liquid.emergency-keys-used" ngbTooltip="Emergency key usage has been recorded." i18n-ngbTooltip="liquid.emergency-keys-used-tooltip">🚨</div>
+      <ng-template #noEmergencyKeyUsage>
+        <div class="fee-text" role="img" tabindex="0" aria-label="No recorded emergency key usage" i18n-aria-label="liquid.emergency-keys-unused" ngbTooltip="No emergency key usage has been recorded." i18n-ngbTooltip="liquid.emergency-keys-unused-tooltip">🔒</div>
+      </ng-template>
     </div>
   </div>
 </div>
@@ -48,4 +55,3 @@
     <div class="skeleton-loader"></div>
   </div>
 </ng-template>
-
