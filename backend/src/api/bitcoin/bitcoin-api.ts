@@ -367,6 +367,10 @@ class BitcoinApi implements AbstractBitcoinApi {
       };
     }
 
+    if (esploraTransaction.vin[0].is_coinbase) {
+      return esploraTransaction;
+    }
+
     if (addPrevout) {
       try {
         esploraTransaction = await this.$calculateFeeFromInputs(esploraTransaction, false, lazyPrevouts);
