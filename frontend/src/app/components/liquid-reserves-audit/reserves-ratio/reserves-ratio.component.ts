@@ -53,8 +53,6 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
 
   createChartOptions(currentPeg: CurrentPegs, currentReserves: CurrentPegs): EChartsOption {
     const value = parseFloat(currentReserves.amount) / parseFloat(currentPeg.amount);
-    const hideMaxAxisLabels = value >= 1.001;
-    const hideMinAxisLabels = value <= 0.999;
 
     let axisFontSize = 14;
     let pointerLength = '50%';
@@ -64,22 +62,22 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
       axisFontSize = 14;
       pointerLength = '50%';
       pointerWidth = 16;
-      offsetCenter = value >= 1.0007 || value <= 0.9993 ? ['0%', '-30%'] : ['0%', '-22%'];
+      offsetCenter = ['0%', '-22%'];
     } else if (window.innerWidth >= 768) {
       axisFontSize = 10;
       pointerLength = '35%';
       pointerWidth = 12;
-      offsetCenter = value >= 1.0007 || value <= 0.9993 ? ['0%', '-37%'] : ['0%', '-27%'];
+      offsetCenter = ['0%', '-27%'];
     } else if (window.innerWidth >= 450) {
       axisFontSize = 14;
       pointerLength = '45%';
       pointerWidth = 14;
-      offsetCenter = value >= 1.0007 || value <= 0.9993 ? ['0%', '-32%'] : ['0%', '-22%'];
+      offsetCenter = ['0%', '-22%'];
     } else {
       axisFontSize = 10;
       pointerLength = '35%';
       pointerWidth = 12;
-      offsetCenter = value >= 1.0007 || value <= 0.9993 ? ['0%', '-37%'] : ['0%', '-27%'];
+      offsetCenter = ['0%', '-27%'];
     }
 
     return {
@@ -91,9 +89,9 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
           endAngle: 0,
           center: ['50%', '75%'],
           radius: '100%',
-          min: 0.999,
-          max: 1.001,
-          splitNumber: 2,
+          min: 0,
+          max: 2,
+          splitNumber: 10,
           axisLine: {
             lineStyle: {
               width: 6,
@@ -108,13 +106,8 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
             fontFamily: 'inherit',
             fontSize: axisFontSize,
             formatter: function (value) {
-              if (value === 0.999) {
-                return hideMinAxisLabels ? '' : '99.9%';
-              } else if (value === 1.001) {
-                return hideMaxAxisLabels ? '' : '100.1%';
-              } else {
-                return '100%';
-              }
+              const percentage = Math.round(value * 100);
+              return percentage === 0 || percentage === 100 ? `${percentage}%` : '';
             },
           },
           pointer: {
@@ -127,6 +120,7 @@ export class ReservesRatioComponent implements OnInit, OnChanges {
             }
           },
           axisTick: {
+            splitNumber: 1,
             length: 12,
             lineStyle: {
               color: 'auto',
