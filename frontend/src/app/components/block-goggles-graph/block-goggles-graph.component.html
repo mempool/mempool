@@ -64,8 +64,8 @@
     </div>
   </div>
 
-  <div class="goggles-chart-wrapper" [class.chart]="!widget" [class.chart-widget]="widget">
-    <app-block-filters *ngIf="!widget" class="goggles-filters" [showTint]="false" (onFilterChanged)="onFilterChanged($event)"></app-block-filters>
+  <div class="goggles-chart-wrapper" [class.chart]="!widget" [class.chart-widget]="widget" #graphContainer>
+    <app-block-filters *ngIf="!widget" class="goggles-filters" [cssWidth]="cssWidth" [showTint]="false" (onFilterChanged)="onFilterChanged($event)"></app-block-filters>
     <div class="echarts-container" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions"
       (chartInit)="onChartInit($event)" [style]="{opacity: isLoading ? 0.5 : 1}">
     </div>
