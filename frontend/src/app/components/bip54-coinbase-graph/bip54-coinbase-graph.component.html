@@ -5,7 +5,7 @@
   <div class="card-header">
     <div class="d-flex d-md-table-cell align-items-baseline">
       <span i18n="mining.bip54-coinbase">BIP-54 Coinbase Adoption</span>
-      <button class="btn p-0 ps-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
+      <button class="btn p-0 ps-2" style="margin: 0 0 4px 0px" *ngIf="bip54DataAvailable" (click)="onSaveChart()">
         <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
       </button>
     </div>

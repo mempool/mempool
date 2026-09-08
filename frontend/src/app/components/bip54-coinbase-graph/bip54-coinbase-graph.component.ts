@@ -393,6 +393,9 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
   }
 
   onSaveChart(): void {
+    if (!this.chartInstance) {
+      return;
+    }
     const now = new Date();
     this.chartOptions.backgroundColor = 'var(--active-bg)';
     this.chartInstance.setOption(this.chartOptions);
