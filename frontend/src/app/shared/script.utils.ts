@@ -563,13 +563,15 @@ export const LOCKTIME_THRESHOLD = 500000000;
 /**
  * Detects OP_CLTV operands in an ASM instruction list.
  *
- * Returns a map of instruction index -> locktime value for every instruction
- * that is part of a `<push> OP_CLTV` pair (both the push and the CLTV opcode).
+ * Returns a map of instruction index -> locktime value, keyed on the push that
+ * carries the operand.
  *
- * Assumes the standard pattern of a 1-4 byte data push immediately followed by
- * OP_CLTV is a locktime operand. 4 bytes is the maximum operand size accepted
- * by CLTV consensus rules. The pushed bytes are interpreted as an unsigned
- * little-endian integer; this is purely a display hint, not consensus validation.
+ * Assumes the standard pattern of a 1-5 byte data push immediately followed by
+ * OP_CLTV is a locktime operand. BIP65 raises the CScriptNum limit to 5 bytes so
+ * the whole uint32 nLockTime range stays reachable: a locktime at or above 2^31
+ * needs a fifth byte to keep the sign bit clear. The pushed bytes are interpreted
+ * as an unsigned little-endian integer; this is purely a display hint, not
+ * consensus validation.
  *
  * @param instructions ASM instructions (already split on 'OP_')
  */
@@ -581,7 +583,7 @@ export function detectCltvTimestamps(instructions: string[]): Map<number, number
     const opcode = parts[0];
     const args = parts.slice(1);
 
-    const pushMatch = opcode.match(/^PUSHBYTES_([1-4])$/);
+    const pushMatch = opcode.match(/^PUSHBYTES_([1-5])$/);
     if (pushMatch && args.length > 0) {
       const byteCount = parseInt(pushMatch[1], 10);
       const expectedLength = byteCount * 2;
@@ -594,7 +596,6 @@ export function detectCltvTimestamps(instructions: string[]): Map<number, number
             const littleEndianValue = bytes.reverse().join('');
             const timestamp = parseInt(littleEndianValue, 16);
             cltvTimestamps.set(i, timestamp);
-            cltvTimestamps.set(i + 1, timestamp);
           }
         }
       }
