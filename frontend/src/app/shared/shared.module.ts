@@ -123,6 +123,7 @@ import { MempoolBlockOverviewComponent } from '@components/mempool-block-overvie
 import { ClockchainComponent } from '@components/clockchain/clockchain.component';
 import { ClockFaceComponent } from '@components/clock-face/clock-face.component';
 import { ClockComponent } from '@components/clock/clock.component';
+import { DifficultyFullscreenComponent } from '@components/difficulty-fullscreen/difficulty-fullscreen.component';
 import { CalculatorComponent } from '@components/calculator/calculator.component';
 import { BitcoinsatoshisPipe } from '@app/shared/pipes/bitcoinsatoshis.pipe';
 import { HttpErrorComponent } from '@app/shared/components/http-error/http-error.component';
@@ -246,6 +247,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     MempoolBlockOverviewComponent,
     ClockchainComponent,
     ClockComponent,
+    DifficultyFullscreenComponent,
     ClockFaceComponent,
     OnlyVsizeDirective,
     OnlyWeightDirective,
@@ -412,6 +414,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     MempoolBlockOverviewComponent,
     ClockchainComponent,
     ClockComponent,
+    DifficultyFullscreenComponent,
     ClockFaceComponent,
 
     OnlyVsizeDirective,
