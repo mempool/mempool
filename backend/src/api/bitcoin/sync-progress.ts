@@ -80,9 +80,10 @@ export class SyncProgress {
   /** @asyncUnsafe */
   private async $sample(): Promise<IBDProgress> {
     const info = await bitcoinClient.getBlockchainInfo();
-    // Idle development chains can retain Core's IBD flag despite having all
-    // known blocks. A fresh node with no headers must still report IBD.
-    const ibd = info.initialblockdownload && (info.blocks !== info.headers || info.headers === 0);
+    // Only regtest may treat an idle chain as synced. On public networks,
+    // matching local heights does not establish that the node has caught up.
+    const idleRegtest = config.MEMPOOL.NETWORK === 'regtest' && info.blocks === info.headers && info.headers > 0;
+    const ibd = info.initialblockdownload && !idleRegtest;
     const indicators = loadingIndicators.getLoadingIndicators();
     const inSync = mempool.isInSync();
     const indexed = !Common.indexingEnabled() || indexer.isInitialIndexingComplete();
