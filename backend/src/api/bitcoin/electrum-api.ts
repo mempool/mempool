@@ -237,7 +237,7 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
   // blockchain.headers.subscribe returns the server's current header.
   /** @asyncUnsafe */
   async $getElectrsHeightTip(): Promise<number> {
-    const header: IElectrumApi.BlockHeader = await this.electrumClient.blockchainHeaders_subscribe();
+    const header: IElectrumApi.BlockHeader = await this.electrumClient.request('blockchain.headers.subscribe', []);
     return header.height;
   }
 
