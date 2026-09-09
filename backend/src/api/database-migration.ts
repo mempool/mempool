@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 113;
+  private static currentVersion = 114;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -1264,6 +1264,18 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 113) {
       await this.$executeQuery('ALTER TABLE `blocks` ADD coinbase_bip_54 TINYINT(1) NULL DEFAULT NULL');
       await this.updateToSchemaVersion(113);
+    }
+
+    if (databaseSchemaVersion < 114) {
+      await this.$executeQuery(`INSERT IGNORE INTO state VALUES ('last_bitcoin_block_scanned', 0, NULL)`);
+      if (config.MEMPOOL.NETWORK === 'liquid') {
+        const [stateRows]: any[] = await DB.query(`SELECT name, number FROM state WHERE name = 'last_bitcoin_block_audit'`);
+        const lastBlockAudit = Number(stateRows?.find((row: any) => row.name === 'last_bitcoin_block_audit')?.number ?? 0);
+        if (lastBlockAudit > 966051) {
+          await this.$executeQuery(`UPDATE state SET number = 966051 WHERE name = 'last_bitcoin_block_scanned'`);
+        }
+      }
+      await this.updateToSchemaVersion(114);
     }
   }
 

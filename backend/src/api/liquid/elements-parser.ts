@@ -260,8 +260,7 @@ class ElementsParser {
   public async $updateFederationUtxos(stopAt: number) {
     try {
       let auditProgress = await this.$getAuditProgress();
-      // If no peg in transaction was found in the database, return
-      if (!auditProgress.lastBlockAudit) {
+      if (!auditProgress.lastBlockAudit && !auditProgress.lastBlockScanned) {
         logger.debug(`No Federation UTXOs found in the database. Waiting for some to be confirmed before starting the Federation UTXOs audit`);
         return;
       }
@@ -273,7 +272,11 @@ class ElementsParser {
         return;
       }
 
-      auditProgress.lastBlockAudit++;
+      if (!auditProgress.lastBlockScanned) {
+        auditProgress.lastBlockScanned = auditProgress.lastBlockAudit;
+        await this.$saveLastBlockScannedToDatabase(auditProgress.lastBlockScanned);
+      }
+      let height = Math.min(auditProgress.lastBlockAudit || auditProgress.lastBlockScanned, auditProgress.lastBlockScanned) + 1;
 
       // Logging
       let indexedThisRun = 0;
@@ -281,10 +284,11 @@ class ElementsParser {
       const startedAt = Date.now() / 1000;
       const indexingSpeeds: number[] = [];
 
-      while (auditProgress.lastBlockAudit <= auditProgress.confirmedTip) {
+      while (height <= auditProgress.confirmedTip) {
+        const forceFullBlockScan = height > auditProgress.lastBlockScanned;
 
         // First, get the current UTXOs that need to be scanned in the block
-        const utxos = await this.$getFederationUtxosToScan(auditProgress.lastBlockAudit);
+        const utxos = await this.$getFederationUtxosToScan(height);
 
         // Get the peg-out addresses that need to be scanned
         const redeemAddresses = await this.$getRedeemAddressesToScan();
@@ -301,11 +305,11 @@ class ElementsParser {
         // The fast way: check if these UTXOs are still unspent as of the current block with gettxout
         let spentAsTip: Map<string, any>;
         let unspentAsTip: Map<string, any>;
-        if (auditProgress.confirmedTip - auditProgress.lastBlockAudit <= 150) { // If the audit status is not too far in the past, we can use gettxout (fast way)
+        if (!forceFullBlockScan || auditProgress.confirmedTip - height <= 150) { // If the audit status is not too far in the past, we can use gettxout (fast way)
           const utxosToParse = await this.$getFederationUtxosToParse(utxos);
           spentAsTip = utxosToParse.spentAsTip;
           unspentAsTip = utxosToParse.unspentAsTip;
-          logger.debug(`Found ${utxos.length} Federation UTXOs and ${redeemAddresses.length} Peg-Out Addresses to scan in Bitcoin block height #${auditProgress.lastBlockAudit} / #${auditProgress.confirmedTip}`);
+          logger.debug(`Found ${utxos.length} Federation UTXOs and ${redeemAddresses.length} Peg-Out Addresses to scan in Bitcoin block height #${height} / #${auditProgress.confirmedTip}`);
           logger.debug(`${unspentAsTip.size} / ${utxos.length} Federation UTXOs are unspent as of tip`);
         } else { // If the audit status is too far in the past, it is useless and wasteful to look for still unspent txos since they will all be spent as of the tip
           spentAsTip = new Map<string, any>(utxos.map(utxo => [`${utxo.txid}:${utxo.txindex}`, utxo]));
@@ -319,24 +323,34 @@ class ElementsParser {
             indexingSpeeds.push(blockPerSeconds);
             if (indexingSpeeds.length > 100) {indexingSpeeds.shift();} // Keep the length of the up to 100 last indexing speeds
             const meanIndexingSpeed = indexingSpeeds.reduce((a, b) => a + b, 0) / indexingSpeeds.length;
-            const eta = (auditProgress.confirmedTip - auditProgress.lastBlockAudit) / meanIndexingSpeed;
-            logger.debug(`Scanning ${utxos.length} Federation UTXOs and ${redeemAddresses.length} Peg-Out Addresses at Bitcoin block height #${auditProgress.lastBlockAudit} / #${auditProgress.confirmedTip} | ~${meanIndexingSpeed.toFixed(2)} blocks/sec | elapsed: ${(runningFor / 60).toFixed(0)} minutes | ETA: ${(eta / 60).toFixed(0)} minutes`);
+            const eta = (auditProgress.confirmedTip - height) / meanIndexingSpeed;
+            logger.debug(`Scanning ${utxos.length} Federation UTXOs and ${redeemAddresses.length} Peg-Out Addresses at Bitcoin block height #${height} / #${auditProgress.confirmedTip} | ~${meanIndexingSpeed.toFixed(2)} blocks/sec | elapsed: ${(runningFor / 60).toFixed(0)} minutes | ETA: ${(eta / 60).toFixed(0)} minutes`);
             timer = Date.now() / 1000;
             indexedThisRun = 0;
           }
         }
 
         // The slow way: parse the block to look for the spending tx
-        const blockHash: IBitcoinApi.ChainTips = await bitcoinSecondClient.getBlockHash(auditProgress.lastBlockAudit);
-        const block: IBitcoinApi.Block = await bitcoinSecondClient.getBlock(blockHash, 2);
-        await this.$parseBitcoinBlock(block, spentAsTip, unspentAsTip, auditProgress.confirmedTip, redeemAddressesByAddress);
+        const blockHash: IBitcoinApi.ChainTips = await bitcoinSecondClient.getBlockHash(height);
+        let block: Pick<IBitcoinApi.Block, 'height' | 'time'>;
+        if (forceFullBlockScan || spentAsTip.size > 0) {
+          const fullBlock: IBitcoinApi.Block = await bitcoinSecondClient.getBlock(blockHash, 2);
+          await this.$parseBitcoinBlock(fullBlock, spentAsTip, redeemAddressesByAddress);
+          block = fullBlock;
+        } else {
+          block = await bitcoinSecondClient.getBlockHeader(blockHash, true);
+        }
+        await this.$updateFederationUtxoProgress(block, spentAsTip, unspentAsTip, auditProgress.confirmedTip);
+        if (forceFullBlockScan) {
+          await this.$saveLastBlockScannedToDatabase(height);
+        }
 
         // Finally, update the lastblockupdate of the remaining UTXOs and save to the database
         const [minBlockUpdate] = await DB.query(`SELECT MIN(lastblockupdate) AS lastblockupdate FROM federation_txos WHERE unspent = 1`);
-        await this.$saveLastBlockAuditToDatabase(minBlockUpdate[0]['lastblockupdate']);
+        await this.$saveLastBlockAuditToDatabase(minBlockUpdate[0]['lastblockupdate'] ?? auditProgress.confirmedTip);
 
         auditProgress = await this.$getAuditProgress();
-        auditProgress.lastBlockAudit++;
+        height = Math.min(auditProgress.lastBlockAudit, auditProgress.lastBlockScanned) + 1;
         indexedThisRun++;
 
         if ((Date.now() / 1000) >= stopAt) {
@@ -374,7 +388,7 @@ class ElementsParser {
   }
 
   /** @asyncUnsafe */
-  protected async $parseBitcoinBlock(block: IBitcoinApi.Block, spentAsTip: Map<string, any>, unspentAsTip: Map<string, any>, confirmedTip: number, redeemAddressesByAddress: Map<string, any[]>) {
+  protected async $parseBitcoinBlock(block: IBitcoinApi.Block, spentAsTip: Map<string, any>, redeemAddressesByAddress: Map<string, any[]>) {
     const federationTimelockByAddress = new Map<string, number>((await this.$getFederationPegScripts()).map(fedAddress => [fedAddress.address, fedAddress.timelock]));
     for (const tx of block.tx) {
       let mightRedeemInThisTx = false;
@@ -457,7 +471,10 @@ class ElementsParser {
         }
       }
     }
+  }
 
+  /** @asyncUnsafe */
+  protected async $updateFederationUtxoProgress(block: Pick<IBitcoinApi.Block, 'height' | 'time'>, spentAsTip: Map<string, any>, unspentAsTip: Map<string, any>, confirmedTip: number) {
     for (const utxo of spentAsTip.values()) {
       if (utxo.expiredAt === 0 && block.height >= utxo.blocknumber + utxo.timelock) { // The UTXO is expiring in this block
         await DB.query(`UPDATE federation_txos SET lastblockupdate = ?, expiredAt = ? WHERE txid = ? AND txindex = ?`, [block.height, block.time, utxo.txid, utxo.txindex]);
@@ -483,13 +500,20 @@ class ElementsParser {
     await DB.query(query, [blockHeight]);
   }
 
+  /** @asyncUnsafe */
+  protected async $saveLastBlockScannedToDatabase(blockHeight: number) {
+    await DB.query(`UPDATE state SET number = ? WHERE name = 'last_bitcoin_block_scanned'`, [blockHeight]);
+  }
+
   // Get the bitcoin block where the audit process was last updated
   /** @asyncUnsafe */
   protected async $getAuditProgress(): Promise<any> {
-    const lastblockaudit = await this.$getLastBlockAudit();
+    const [rows] = await DB.query(`SELECT name, number FROM state WHERE name IN ('last_bitcoin_block_audit', 'last_bitcoin_block_scanned')`);
+    const progress = Object.fromEntries((rows as { name: string; number: number }[]).map(row => [row.name, row.number]));
     const bitcoinBlocksToSync = await this.$getBitcoinBlockchainState();
     return {
-      lastBlockAudit: lastblockaudit,
+      lastBlockAudit: progress.last_bitcoin_block_audit,
+      lastBlockScanned: progress.last_bitcoin_block_scanned,
       confirmedTip: bitcoinBlocksToSync.bitcoinBlocks - auditBlockOffsetWithTip,
     };
   }
@@ -506,7 +530,7 @@ class ElementsParser {
 
   /** @asyncUnsafe */
   protected async $getLastBlockAudit(): Promise<number> {
-    const query = `SELECT number FROM state WHERE name = 'last_bitcoin_block_audit'`;
+    const query = `SELECT MIN(number) AS number FROM state WHERE name IN ('last_bitcoin_block_audit', 'last_bitcoin_block_scanned')`;
     const [rows] = await DB.query(query);
     return rows[0]['number'];
   }
