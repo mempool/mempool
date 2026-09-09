@@ -26,8 +26,18 @@ hr {
   cursor: pointer;
 }
 
-.purple-filter {
-  filter: brightness(0) saturate(100%) invert(30%) sepia(90%) saturate(5000%) hue-rotate(260deg);
+.purple-icon {
+  display: inline-block;
+  background-color: var(--tertiary);
+  filter: brightness(1.3);
+  -webkit-mask-image: url(/resources/mempool-accelerator-sparkles-light.svg);
+  mask-image: url(/resources/mempool-accelerator-sparkles-light.svg);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
 }
 
 .default-slot:not(:only-child) {

@@ -366,13 +366,13 @@
                         } @else {
                           <a placement="bottom" style="cursor: pointer;">
                             @if ((vout.scriptpubkey_asm | hex2ascii).length > 200) {
-                              <span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" class="badge bg-secondary scriptmessage opreturn-msg" (click)="toggleShowFullOpReturnPreview(vindex)">{{ vout.scriptpubkey_asm | hex2ascii | slice:0:200 }}</span>
+                              <span *ngIf="vout.scriptpubkey_asm !== 'OP_RETURN'" class="badge bg-secondary scriptmessage opreturn-msg" (click)="toggleShowFullOpReturnPreview(tx.txid, vindex)">{{ vout.scriptpubkey_asm | hex2ascii | slice:0:200 }}</span>
                               <ng-container *ngIf="(showDetails$ | async) === false">
                                 @if ((vout.scriptpubkey_asm | hex2ascii).length > 200) {
-                                  @if (!showFullOpReturnPreview[vindex]) {
-                                    <span class="badge bg-primary" (click)="toggleShowFullOpReturnPreview(vindex)">Show more</span>
+                                  @if (!showFullOpReturnPreview[tx.txid + '-vout-' + vindex]) {
+                                    <span class="badge bg-primary" (click)="toggleShowFullOpReturnPreview(tx.txid, vindex)">Show more</span>
                                   } @else {
-                                    <span class="badge bg-primary" (click)="toggleShowFullOpReturnPreview(vindex)">Show less</span>
+                                    <span class="badge bg-primary" (click)="toggleShowFullOpReturnPreview(tx.txid, vindex)">Show less</span>
                                   }
                                 }
                               </ng-container>
@@ -430,7 +430,7 @@
                     <app-ord-data [runestone]="showOrdData[tx.txid + '-vout-' + vindex]['runestone']" [runeInfo]="showOrdData[tx.txid + '-vout-' + vindex]['runeInfo']" [type]="'vout'"></app-ord-data>
                 </td>
               </tr>
-              <tr *ngIf="vout.scriptpubkey_type === 'op_return' && showFullOpReturnPreview[vindex]" [ngClass]="{
+              <tr *ngIf="vout.scriptpubkey_type === 'op_return' && showFullOpReturnPreview[tx.txid + '-vout-' + vindex]" [ngClass]="{
                 'assetBox': assetsMinimal && assetsMinimal[vout.asset] && vout.scriptpubkey_address && tx.vin && !tx.vin[0].is_coinbase && tx._unblinded || outputIndex === vindex,
                 'highlight': addresses?.length && (addresses.includes(vout.scriptpubkey_address)),
                 'sigged': selectedSig && selectedSig.txIndex === i && sigHighlights.vout[vindex],
@@ -476,16 +476,16 @@
                       <tr *ngIf="vout.scriptpubkey_type == 'op_return'">
                         <td>OP_RETURN <span>data</span></td>
                         <td style="text-align: left; word-break: break-word; white-space: pre-line;">
-                          @if (!showFullOpReturnData[vindex]) {
+                          @if (!showFullOpReturnData[tx.txid + '-vout-' + vindex]) {
                             {{ (vout.scriptpubkey_asm | hex2ascii | slice:0:1000) }}
                           } @else {
                             {{ vout.scriptpubkey_asm | hex2ascii }}
                           }
                           <div *ngIf="(vout.scriptpubkey_asm | hex2ascii).length > 1000" style="display: flex;">
-                            <span *ngIf="!showFullOpReturnData[vindex]">...</span>
-                            <label class="btn btn-sm btn-primary mt-2" (click)="toggleShowFullOpReturnData(vindex)" style="margin-left: auto;">
-                              <span *ngIf="!showFullOpReturnData[vindex]" i18n="show-all">Show all</span>
-                              <span *ngIf="showFullOpReturnData[vindex]" i18n="show-less">Show less</span>
+                            <span *ngIf="!showFullOpReturnData[tx.txid + '-vout-' + vindex]">...</span>
+                            <label class="btn btn-sm btn-primary mt-2" (click)="toggleShowFullOpReturnData(tx.txid, vindex)" style="margin-left: auto;">
+                              <span *ngIf="!showFullOpReturnData[tx.txid + '-vout-' + vindex]" i18n="show-all">Show all</span>
+                              <span *ngIf="showFullOpReturnData[tx.txid + '-vout-' + vindex]" i18n="show-less">Show less</span>
                             </label>
                           </div>
                         </td>

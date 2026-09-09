@@ -1,4 +1,3 @@
-import { v4 as uuid } from 'uuid';
 import { WebSocket, Server } from 'mock-socket';
 
 declare global {

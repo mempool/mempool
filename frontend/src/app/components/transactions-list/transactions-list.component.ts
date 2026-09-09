@@ -67,8 +67,8 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   showFullWitness: { [vinIndex: number]: { [witnessIndex: number]: boolean } } = {};
   showFullScriptPubkeyAsm: { [voutIndex: number]: boolean } = {};
   showFullScriptPubkeyHex: { [voutIndex: number]: boolean } = {};
-  showFullOpReturnData: { [voutIndex: number]: boolean } = {};
-  showFullOpReturnPreview: { [voutIndex: number]: boolean } = {};
+  showFullOpReturnData: { [key: string]: boolean } = {};
+  showFullOpReturnPreview: { [key: string]: boolean } = {};
   showTaprootControlBlock: { [vinIndex: number]: boolean } = {};
   showOrdData: { [key: string]: { show: boolean; inscriptions?: Inscription[]; runestone?: Runestone, runeInfo?: { [id: string]: { etching: Etching; txid: string; } }; } } = {};
   similarityMatches: Map<string, Map<string, { score: number, match: AddressMatch, group: number }>> = new Map();
@@ -614,12 +614,14 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
     this.showFullScriptPubkeyHex[voutIndex] = !this.showFullScriptPubkeyHex[voutIndex];
   }
 
-  toggleShowFullOpReturnData(voutIndex: number): void {
-    this.showFullOpReturnData[voutIndex] = !this.showFullOpReturnData[voutIndex];
+  toggleShowFullOpReturnData(txid: string, voutIndex: number): void {
+    const key = txid + '-vout-' + voutIndex;
+    this.showFullOpReturnData[key] = !this.showFullOpReturnData[key];
   }
 
-  toggleShowFullOpReturnPreview(voutIndex: number): void {
-    this.showFullOpReturnPreview[voutIndex] = !this.showFullOpReturnPreview[voutIndex];
+  toggleShowFullOpReturnPreview(txid: string, voutIndex: number): void {
+    const key = txid + '-vout-' + voutIndex;
+    this.showFullOpReturnPreview[key] = !this.showFullOpReturnPreview[key];
   }
 
   toggleTaprootControlBlock(vinIndex: number): void {
