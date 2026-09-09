@@ -109,11 +109,13 @@
 
 .sync-stats {
   display: flex;
+  flex-wrap: wrap;
+  row-gap: 0.75rem;
   justify-content: space-around;
   margin-top: 0.75rem;
 
   .item {
-    width: 100%;
+    flex: 1 1 140px;
     padding: 0 5px;
     text-align: center;
 
@@ -184,4 +186,11 @@
   display: block;
   width: fit-content;
   margin: 1.5rem auto 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse,
+  .scan-segment {
+    animation: none;
+  }
 }

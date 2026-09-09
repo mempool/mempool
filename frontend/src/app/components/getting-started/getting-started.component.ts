@@ -6,7 +6,14 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { EMPTY, Subscription, timer } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import {
+  catchError,
+  distinctUntilChanged,
+  startWith,
+  switchMap,
+  tap,
+  timeout,
+} from 'rxjs/operators';
 import { ApiService } from '@app/services/api.service';
 import { StateService } from '@app/services/state.service';
 import { SyncProgress } from '@interfaces/node-api.interface';
@@ -30,10 +37,6 @@ export class GettingStartedComponent implements OnInit, OnDestroy {
     private stateService: StateService,
     private cd: ChangeDetectorRef
   ) {}
-
-  get networkDisplayName(): string {
-    return this.stateService.networkDisplayName;
-  }
 
   get bitcoinStatus(): StageStatus {
     return this.syncProgress?.ibd ? 'active' : 'complete';
@@ -99,19 +102,34 @@ export class GettingStartedComponent implements OnInit, OnDestroy {
     if (this.mempoolStatus === 'complete') {
       return $localize`:@@getting-started.mempool.desc.complete:Backend and block indexing complete.`;
     }
-    return $localize`:@@getting-started.mempool.desc.waiting:Waiting for the transaction indexer before backend indexing can begin.`;
+    return $localize`:@@getting-started.mempool.desc.waiting:Waiting for blockchain synchronization and transaction indexing to finish.`;
   }
 
   ngOnInit(): void {
-    this.syncProgressSubscription = timer(0, 30000)
+    if (!this.stateService.isBrowser) {
+      return;
+    }
+    this.syncProgressSubscription = this.stateService.networkChanged$
       .pipe(
+        startWith(this.stateService.network),
+        distinctUntilChanged(),
+        tap(() => {
+          this.syncProgress = null;
+          this.loadError = false;
+          this.cd.markForCheck();
+        }),
         switchMap(() =>
-          this.apiService.getSyncProgress$().pipe(
-            catchError(() => {
-              this.loadError = true;
-              this.cd.markForCheck();
-              return EMPTY;
-            })
+          timer(0, 30000).pipe(
+            switchMap(() =>
+              this.apiService.getSyncProgress$().pipe(
+                timeout({ first: 10000 }),
+                catchError(() => {
+                  this.loadError = true;
+                  this.cd.markForCheck();
+                  return EMPTY;
+                })
+              )
+            )
           )
         )
       )
@@ -127,7 +145,7 @@ export class GettingStartedComponent implements OnInit, OnDestroy {
   }
 
   formatETA(seconds: number | null): string {
-    if (seconds === null) {
+    if (seconds === null || !Number.isFinite(seconds) || seconds < 0) {
       return $localize`:@@getting-started.eta.calculating:Calculating...`;
     }
     if (seconds < 60) {
@@ -140,11 +158,11 @@ export class GettingStartedComponent implements OnInit, OnDestroy {
     }
     if (seconds < 86400) {
       const hours = Math.floor(seconds / 3600);
-      const minutes = Math.round((seconds % 3600) / 60);
+      const minutes = Math.floor((seconds % 3600) / 60);
       return $localize`:@@getting-started.eta.hours:~${hours}:hours:h ${minutes}:minutes:m`;
     }
     const days = Math.floor(seconds / 86400);
-    const remainingHours = Math.round((seconds % 86400) / 3600);
+    const remainingHours = Math.floor((seconds % 86400) / 3600);
     return $localize`:@@getting-started.eta.days:~${days}:days:d ${remainingHours}:hours:h`;
   }
 }

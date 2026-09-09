@@ -542,11 +542,9 @@ export interface SyncProgress {
   electrs?: {
     reachable: boolean;
     indexed: boolean;
-    progress: number | null;
   };
-  mempool?: {
+  mempool: {
     inSync: boolean;
-    indexing: boolean;
     indexed: boolean;
     progress: number | null;
     estimatedTimeRemaining: number | null;
