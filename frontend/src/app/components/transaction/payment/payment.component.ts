@@ -749,10 +749,10 @@ export class PaymentComponent implements OnInit, OnDestroy {
   }
 
   resetTransaction(): void {
+    this.tx = null;
     this.updateFragmentParams(this.route.snapshot.fragment);
 
     this.error = undefined;
-    this.tx = null;
     this.txChanged$.next(true);
     this.waitingForTransaction = false;
     this.isLoadingTx = true;

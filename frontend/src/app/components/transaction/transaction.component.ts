@@ -1235,6 +1235,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.firstFragmentScroll = false;
       }
     }
+    this.showDestinationAlert(this.fragmentParams);
   }
 
   setHasAccelerationDetails(hasDetails: boolean): void {
@@ -1281,7 +1282,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   closeDestinationAlert(): void {
-    this.router.navigate([], { queryParams: this.route.snapshot.queryParams });
+    this.fragmentParams.delete('destinationAlert');
+    this.router.navigate([], { fragment: this.formatFragment(this.fragmentParams), queryParamsHandling: 'merge'});
     this.destinationAlert = undefined;
   }
 
@@ -1330,25 +1332,34 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  showDestinationAlert(): void {
+  showDestinationAlert(fragment: URLSearchParams = new URLSearchParams(this.route.snapshot.fragment)): void {
     if (!this.tx) {
       this.destinationAlert = undefined;
       return;
     }
-    let destinationAlert = (new URLSearchParams(this.route.snapshot.fragment || '')).get('destinationAlert') ?? '';
+    let destinationAlert = new URLSearchParams(fragment).get('destinationAlert') || '';
     // the fragment is user supplied, so only alert on an address this
     // transaction genuinely does not pay, and never echo anything else
     if (getRegex('address', (this.network || 'mainnet') as any).test(destinationAlert) &&
         !this.tx.vout?.some((vout) => {
 
           let address: string = vout.scriptpubkey_address ?? vout.scriptpubkey;
+
+          if (vout.scriptpubkey_type === 'p2pk') { // strip out push and checksig opcodes
+            address = address.slice(2);
+            address = address.slice(0, -2);
+          }
           if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(destinationAlert)) {
             destinationAlert = destinationAlert.toLowerCase();
           }
 
           return address === destinationAlert;
         })) {
+      this.fragmentParams.set('destinationAlert', destinationAlert);
       this.destinationAlert = destinationAlert;
+    } else {
+      this.fragmentParams.delete('destinationAlert');
+      this.destinationAlert = undefined;
     }
   }
  }
