@@ -2,33 +2,40 @@
   @for (instruction of instructions; track instruction.instruction; let i = $index) {
     <span [class]='opcodeStyles.get(instruction.instruction)'>OP_{{instruction.instruction}}</span>
     @for (arg of instruction.args; track arg; let j = $index) {
-      <ng-container *ngIf="annotations.signatures?.[arg] as sigInfo; else plainArg">
-        <span class="sig sig-key sig-inline sighash-{{sigInfo.sig.sighash}}"
-              [class.hovered]="annotations.selectedSig && annotations.selectedSig === sigInfo.sig"
-              (mouseenter)="doShowSigInfo(sigInfo.sig)"
-              (mouseleave)="doHideSigInfo()"
-              [title]="sighashLabels[sigInfo.sig.sighash]">
-          <fa-icon [icon]="['fas', 'key']" [fixedWidth]="true"></fa-icon>
+      @if (j === 0 && arg && instruction.cltvTimestamp !== undefined) {
+        <span class="cltv" [ngbTooltip]="formatTimestamp(instruction.cltvTimestamp)">
+          <fa-icon [icon]="['fas', 'clock']" [fixedWidth]="true"></fa-icon>
         </span>
-        <ng-container *ngIf="sigInfo.sig.sighash !== 0; else plainSig">
-            {{arg.slice(0, -2)}}<span class="sig sighash-{{sigInfo.sig.sighash}}"
+        {{ arg }}
+      } @else {
+        <ng-container *ngIf="annotations.signatures?.[arg] as sigInfo; else plainArg">
+          <span class="sig sig-key sig-inline sighash-{{sigInfo.sig.sighash}}"
                 [class.hovered]="annotations.selectedSig && annotations.selectedSig === sigInfo.sig"
                 (mouseenter)="doShowSigInfo(sigInfo.sig)"
                 (mouseleave)="doHideSigInfo()"
-                [title]="sighashLabels[sigInfo.sig.sighash]">{{arg.slice(-2)}}</span>
+                [title]="sighashLabels[sigInfo.sig.sighash]">
+            <fa-icon [icon]="['fas', 'key']" [fixedWidth]="true"></fa-icon>
+          </span>
+          <ng-container *ngIf="sigInfo.sig.sighash !== 0; else plainSig">
+              {{arg.slice(0, -2)}}<span class="sig sighash-{{sigInfo.sig.sighash}}"
+                  [class.hovered]="annotations.selectedSig && annotations.selectedSig === sigInfo.sig"
+                  (mouseenter)="doShowSigInfo(sigInfo.sig)"
+                  (mouseleave)="doHideSigInfo()"
+                  [title]="sighashLabels[sigInfo.sig.sighash]">{{arg.slice(-2)}}</span>
+          </ng-container>
+          <ng-template #plainSig>
+            {{ arg }}
+          </ng-template>
         </ng-container>
-        <ng-template #plainSig>
+        <ng-template #plainArg>
+          @if (annotations.p2sh && i === instructions.length - 1) {
+            <span class="script" ngbTooltip="script">
+              <fa-icon [icon]="['fas', 'code']" [fixedWidth]="true"></fa-icon>
+            </span>
+          }
           {{ arg }}
         </ng-template>
-      </ng-container>
-      <ng-template #plainArg>
-        @if (annotations.p2sh && i === instructions.length - 1) {
-          <span class="script" ngbTooltip="script">
-            <fa-icon [icon]="['fas', 'code']" [fixedWidth]="true"></fa-icon>
-          </span>
-        }
-        {{ arg }}
-      </ng-template>
+      }
     }
     <br>
   }

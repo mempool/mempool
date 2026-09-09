@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { SigInfo, SighashLabels } from '@app/shared/transaction.utils';
+import { detectCltvTimestamps, formatCltvTimestamp } from '@app/shared/script.utils';
 
 @Component({
   selector: 'app-asm',
@@ -23,7 +24,7 @@ export class AsmComponent {
   @Output() showSigInfo = new EventEmitter<SigInfo>();
   @Output() hideSigInfo = new EventEmitter<void>();
 
-  instructions: { instruction: string, args: string[] }[] = [];
+  instructions: { instruction: string, args: string[], cltvTimestamp?: number }[] = [];
   sighashLabels: Record<number, string> = SighashLabels;
 
   ngOnInit(): void {
@@ -37,7 +38,11 @@ export class AsmComponent {
   }
 
   parseASM(): void {
-    let instructions = this.asm.split('OP_');
+    const allInstructions = this.asm.split('OP_').filter(instruction => instruction.trim() !== '');
+
+    const cltvTimestamps = detectCltvTimestamps(allInstructions);
+
+    let instructions = allInstructions;
     // trim instructions to a whole number of instructions with at most `crop` characters total
     if (this.crop && this.asm.length > this.crop) {
       let chars = 0;
@@ -70,11 +75,16 @@ export class AsmComponent {
         chars += instructions[i].length + 3;
       }
     }
-    this.instructions = instructions.filter(instruction => instruction.trim() !== '').map(instruction => {
+
+    this.instructions = instructions.map((instruction, index) => {
       const parts = instruction.split(' ');
+      const instructionName = parts[0];
+      const args = parts.slice(1);
+
       return {
-        instruction: parts[0],
-        args: parts.slice(1)
+        instruction: instructionName,
+        args: args,
+        cltvTimestamp: cltvTimestamps.get(index)
       };
     });
   }
@@ -86,6 +96,8 @@ export class AsmComponent {
   doHideSigInfo(): void {
     this.hideSigInfo.emit();
   }
+
+  readonly formatTimestamp = formatCltvTimestamp;
 
   readonly opcodeStyles: Map<string, string> = new Map([
     // Constants

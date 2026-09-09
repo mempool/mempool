@@ -556,3 +556,62 @@ export function isPoint(pointHex: string): boolean {
     return (y * y) % curveP === ySquared;
   }
 }
+
+/** BIP65 locktime threshold: values below are block heights, values at or above are UNIX timestamps */
+export const LOCKTIME_THRESHOLD = 500000000;
+
+/**
+ * Detects OP_CLTV operands in an ASM instruction list.
+ *
+ * Returns a map of instruction index -> locktime value, keyed on the push that
+ * carries the operand.
+ *
+ * Assumes the standard pattern of a 1-5 byte data push immediately followed by
+ * OP_CLTV is a locktime operand. BIP65 raises the CScriptNum limit to 5 bytes so
+ * the whole uint32 nLockTime range stays reachable: a locktime at or above 2^31
+ * needs a fifth byte to keep the sign bit clear. The pushed bytes are interpreted
+ * as an unsigned little-endian integer; this is purely a display hint, not
+ * consensus validation.
+ *
+ * @param instructions ASM instructions (already split on 'OP_')
+ */
+export function detectCltvTimestamps(instructions: string[]): Map<number, number> {
+  const cltvTimestamps: Map<number, number> = new Map();
+  for (let i = 0; i < instructions.length; i++) {
+    const instruction = instructions[i];
+    const parts = instruction.split(' ');
+    const opcode = parts[0];
+    const args = parts.slice(1);
+
+    const pushMatch = opcode.match(/^PUSHBYTES_([1-5])$/);
+    if (pushMatch && args.length > 0) {
+      const byteCount = parseInt(pushMatch[1], 10);
+      const expectedLength = byteCount * 2;
+
+      if (args[0].length === expectedLength && /^[0-9a-fA-F]+$/.test(args[0])) {
+        if (i + 1 < instructions.length) {
+          const nextOpcode = instructions[i + 1].split(' ')[0];
+          if (nextOpcode === 'CLTV') {
+            const bytes = args[0].match(/.{2}/g) || [];
+            const littleEndianValue = bytes.reverse().join('');
+            const timestamp = parseInt(littleEndianValue, 16);
+            cltvTimestamps.set(i, timestamp);
+          }
+        }
+      }
+    }
+  }
+  return cltvTimestamps;
+}
+
+/** Formats a BIP65 locktime value as a human-readable block height or UTC timestamp */
+export function formatCltvTimestamp(timestamp: number): string {
+  if (isNaN(timestamp) || timestamp < 0 || timestamp > 4294967295) {
+    return 'Invalid locktime';
+  }
+  if (timestamp < LOCKTIME_THRESHOLD) {
+    return `Block height: ${timestamp}`;
+  }
+  const date = new Date(timestamp * 1000);
+  return date.toISOString().replace('T', ' ').replace(/\.\d{3}Z$/, ' UTC');
+}
