@@ -24,6 +24,7 @@ type TaskName = 'blocksPrices' | 'coinStatsIndex' | 'poolsStats';
 class Indexer {
   private runIndexer = true;
   private indexerRunning = false;
+  // Completion of this process's first indexing pass, including checks of persisted data.
   private indexingCompleted = false;
   private tasksRunning: { [key in TaskName]?: boolean; } = {};
   private tasksScheduled: { [key in TaskName]?: NodeJS.Timeout; } = {};

@@ -152,9 +152,10 @@ export class GettingStartedComponent implements OnInit, OnDestroy {
       return $localize`:@@getting-started.eta.less-than-minute:Less than a minute`;
     }
     if (seconds < 3600) {
-      return $localize`:@@getting-started.eta.minutes:~${Math.round(
-        seconds / 60
-      )}:minutes: minutes`;
+      const minutes = Math.round(seconds / 60);
+      return minutes === 1
+        ? $localize`:@@getting-started.eta.one-minute:~1 minute`
+        : $localize`:@@getting-started.eta.minutes:~${minutes}:minutes: minutes`;
     }
     if (seconds < 86400) {
       const hours = Math.floor(seconds / 3600);
