@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, Input, OnChanges, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, ViewChild, Input, OnChanges, AfterViewChecked, ChangeDetectorRef, ApplicationRef } from '@angular/core';
 import { Position } from '@components/block-overview-graph/sprite-types.js';
 import { Price } from '@app/services/price.service';
 import { TransactionStripped } from '@interfaces/node-api.interface.js';
@@ -40,23 +40,12 @@ export class BlockOverviewTooltipComponent implements OnChanges {
 
   constructor(
     private cd: ChangeDetectorRef,
-  ) {}
+    private appRef: ApplicationRef,
+  ) { }
 
   ngOnChanges(changes): void {
     if (changes.cursorPosition && changes.cursorPosition.currentValue) {
-      let x = changes.cursorPosition.currentValue.x + 10;
-      let y = changes.cursorPosition.currentValue.y + 10;
-      if (this.tooltipElement) {
-        const elementBounds = this.tooltipElement.nativeElement.getBoundingClientRect();
-        const parentBounds = this.tooltipElement.nativeElement.offsetParent.getBoundingClientRect();
-        if ((parentBounds.left + x + elementBounds.width) > parentBounds.right) {
-          x = Math.max(0, parentBounds.width - elementBounds.width - 10);
-        }
-        if (y + elementBounds.height > parentBounds.height) {
-          y = y - elementBounds.height - 20;
-        }
-      }
-      this.tooltipPosition = { x, y };
+      this.updateTooltipPosition(changes.cursorPosition.currentValue, false);
     }
 
     if (this.tx && (changes.tx || changes.filterFlags || changes.filterMode)) {
@@ -78,7 +67,6 @@ export class BlockOverviewTooltipComponent implements OnChanges {
           this.activeFilters[filter.key] = true;
         }
       }
-
       if (!this.relativeTime) {
         this.timeMode = 'mempool';
       } else {
@@ -93,9 +81,53 @@ export class BlockOverviewTooltipComponent implements OnChanges {
           }
         }
       }
-
       this.cd.markForCheck();
+      if (this.cursorPosition) {
+        this.schedulePositionRecalc();
+      }
     }
+  }
+
+  private schedulePositionRecalc(): void {
+    requestAnimationFrame(() => {
+      this.updateTooltipPosition(this.cursorPosition, true);
+      this.appRef.tick();
+    });
+  }
+
+  private updateTooltipPosition(cursor: Position, yOnly: boolean = false): void {
+    const baseX = cursor.x;
+    const baseY = cursor.y;
+    let x = baseX + 10;
+    let y = baseY + 10;
+    if (this.tooltipElement?.nativeElement?.offsetParent) {
+      const elementBounds = this.tooltipElement.nativeElement.getBoundingClientRect();
+      const parentBounds = this.tooltipElement.nativeElement.offsetParent.getBoundingClientRect();
+      const belowY = baseY + 10;
+      const aboveY = baseY - elementBounds.height - 20;
+      const maxYInParent = parentBounds.height - elementBounds.height;
+
+      if (!yOnly) {
+        if ((parentBounds.left + x + elementBounds.width) > parentBounds.right) {
+          x = Math.max(0, parentBounds.width - elementBounds.width - 10);
+        }
+      }
+
+      if (belowY <= maxYInParent) {
+        y = belowY;
+      } else if (aboveY <= maxYInParent) {
+        y = aboveY;
+      } else {
+        y = maxYInParent;
+      }
+    }
+    
+    if (yOnly) {
+      this.tooltipPosition = { ...this.tooltipPosition, y };
+    } else {
+      this.tooltipPosition = { x, y };
+    }
+    this.cd.markForCheck();
   }
 
   getTooltipLeftPosition(): string {
