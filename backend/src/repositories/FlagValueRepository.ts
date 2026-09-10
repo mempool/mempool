@@ -1,5 +1,6 @@
 import DB from '../database';
 import logger from '../logger';
+import { TransactionFlags } from '../mempool.interfaces';
 
 export const INDEXING_PRESETS = [
   {name: 'per block', bucketSize: 1,  retentionSpan: 144}, // block span of ~1 day
@@ -118,11 +119,12 @@ class FlagValuesRepository {
   }
 
   /** @asyncSafe */
-  public async $deleteFlagValuesFromHeight(height: number): Promise<void> {
+  public async $deleteFlagValuesFromHeight(height: number, bucketSize?: number): Promise<void> {
     try {
-      for (const preset of INDEXING_PRESETS) {
-        const startHeight = Math.floor(height / preset.bucketSize) * preset.bucketSize;
-        await DB.query(`DELETE FROM flag_values WHERE start_height >= ? AND bucket_size = ?`, [startHeight, preset.bucketSize.toString()]);
+      const bucketSizes = bucketSize !== undefined ? [bucketSize] : INDEXING_PRESETS.map((preset) => preset.bucketSize);
+      for (const size of bucketSizes) {
+        const startHeight = Math.floor(height / size) * size;
+        await DB.query(`DELETE FROM flag_values WHERE start_height >= ? AND bucket_size = ?`, [startHeight, size.toString()]);
       }
     } catch (e) {
       logger.err(`Cannot delete flag values above ${height}. Reason: ` + (e instanceof Error ? e.message : e));
@@ -139,6 +141,19 @@ class FlagValuesRepository {
       logger.err(`Cannot get total blocks indexed in flag_values. Reason: ` + (e instanceof Error ? e.message : e));
     }
     return null;
+  }
+
+  /** Verifies the bucket type above start height contains acceleration flags */
+  public async $accelerationsIndexed(bucketSize: number, height: number): Promise<boolean> {
+    const startHeight = Math.floor(height / bucketSize) * bucketSize;
+    try {
+      const [rows]: any[] = await DB.query("SELECT 1 FROM flag_values WHERE bucket_size = ? AND start_height >= ? AND (flag_value & ?) > 0 LIMIT 1", [bucketSize.toString(), startHeight, TransactionFlags.acceleration]);
+
+      return rows.length > 0;
+    } catch (e) {
+      logger.err(`Cannot verify acceleration flags from #${startHeight} are indexed. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
   }
 }
 

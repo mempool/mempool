@@ -702,6 +702,7 @@ class Blocks {
    */
   public async $generateFlagValuesDatabase(): Promise<void> {
     const MAX_BLOCKS_PERQUERY = 144;
+    const INDEX_ACCELERATIONS = config.MEMPOOL.NETWORK === 'mainnet' && config.MEMPOOL_SERVICES.ACCELERATIONS;
     if (this.indexingFlagValues) {
       return;
     }
@@ -747,6 +748,31 @@ class Blocks {
         continue; // no complete bucket in range
       }
 
+      if (INDEX_ACCELERATIONS) {
+        try {
+          const firstAccelerationHeight = await AccelerationRepository.$getFirstAccelerationHeightFrom(lastBucket);
+
+          if (firstAccelerationHeight !== undefined) { // There are accelerations
+            const accFlagsIndexed = await FlagValueRepository.$accelerationsIndexed(preset.bucketSize, firstAccelerationHeight);
+
+            if (!accFlagsIndexed) { // flag values table doesn't contain any acceleration flags
+              const lastSyncedHeight = await AccelerationRepository.$getLastSyncedHeight();
+              const rangeTop = firstBucket + preset.bucketSize - 1;
+              // Do not delete flag values above unless accelerations are synced to tip
+              if (lastSyncedHeight < rangeTop) {
+                logger.debug(`Deferring ${preset.name} flag values rebuild: accelerations synced to #${lastSyncedHeight} and need #${rangeTop}`, logger.tags.goggles);
+              } else {
+                const firstAccStartHeight = Math.floor(firstAccelerationHeight / preset.bucketSize) * preset.bucketSize;
+                logger.notice(`Rebuilding ${preset.name} flag values from #${firstAccStartHeight} to add acceleration flags`, logger.tags.goggles);
+                await FlagValueRepository.$deleteFlagValuesFromHeight(firstAccelerationHeight, preset.bucketSize);
+              }
+            }
+          }
+        } catch {
+          logger.err(`Failed to rebuild acceleration flags.`, logger.tags.goggles);
+        }
+      }
+
       const indexedBuckets = await FlagValueRepository.$getIndexedStartHeights(preset.bucketSize, firstBucket, lastBucket);
       const isBucketIndexed = {};
       // We map the buckets that are already indexed to skip them
@@ -771,7 +797,7 @@ class Blocks {
 
           // accelerations mapping
           let accelerations: string[] = [];
-          if (config.MEMPOOL.NETWORK === 'mainnet' && config.MEMPOOL_SERVICES.ACCELERATIONS) {
+          if (INDEX_ACCELERATIONS) {
             const lastSyncedHeight = await AccelerationRepository.$getLastSyncedHeight();
 
             if (lastSyncedHeight < bucketFirstHeight) {
