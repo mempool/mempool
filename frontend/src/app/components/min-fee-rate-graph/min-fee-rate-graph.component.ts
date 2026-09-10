@@ -11,18 +11,12 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
 import { StateService } from '@app/services/state.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MinFeeRateDay } from '@app/interfaces/node-api.interface';
-import { DEFAULT_MIN_FEE_RATE_THRESHOLD, MinFeeRateService, RATE_EPSILON } from '@app/services/min-fee-rate.service';
+import {
+  DEFAULT_MIN_FEE_RATE_THRESHOLD, MIN_FEE_RATE_TIMESPANS, MinFeeRateService, RATE_EPSILON, THRESHOLD_GRAB_RADIUS,
+} from '@app/services/min-fee-rate.service';
 
-// Days at or below the threshold are highlighted green; the rest keep the warm
-// fee-gradient tone the other mining charts use.
 const HIGHLIGHT_COLOR = '#7CB342';
 const DEFAULT_BAR_COLOR = '#FB8C00';
-
-// The series is one point per day, so anything shorter than a month is degenerate.
-const TIMESPANS = ['1m', '3m', '6m', '1y', '2y', '3y', 'all'];
-
-// The line is one pixel tall, so hit-testing it literally would make it ungrabbable.
-const THRESHOLD_GRAB_RADIUS = 6;
 
 @Component({
   selector: 'app-min-fee-rate-graph',
@@ -47,8 +41,7 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
 
   miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
-  // Kept out of radioGroupForm: that group lives inside the timespan <form>, which is
-  // only rendered once the stats arrive, and a control may only belong to one container.
+  // Outside radioGroupForm: a control may only belong to one container.
   thresholdControl: UntypedFormControl;
 
   chartOptions: EChartsOption = {};
@@ -88,8 +81,6 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.seoService.setTitle($localize`:@@0d0e7374a2ff84cfdaf3f96c455885328747d359:Minimum Daily Fee Rate`);
     this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.min-fee-rate:See the lowest fee rate that earned block inclusion on fee merit each day, excluding prioritized and accelerated transactions.`);
-    // miningWindowPreference is shared across every mining graph, so floor whatever it
-    // holds at the shortest timespan this chart offers.
     this.miningWindowPreference = this.miningService.getDefaultTimespan('1m');
     this.radioGroupForm = this.formBuilder.group({ dateSpan: this.miningWindowPreference });
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
@@ -97,12 +88,11 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
     this.route.fragment
       .pipe(takeUntil(this.destroy$))
       .subscribe((fragment) => {
-        if (TIMESPANS.indexOf(fragment) > -1) {
+        if (MIN_FEE_RATE_TIMESPANS.indexOf(fragment) > -1) {
           this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
         }
       });
 
-    // Threshold changes only recolour the bars and move the marker, no refetch.
     this.thresholdControl.valueChanges
       .pipe(takeUntil(this.destroy$))
       .subscribe((value) => {
@@ -148,8 +138,6 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
     return this.minFeeRateService.formatFeeRate(val);
   }
 
-  // UTC: west of Greenwich a UTC-midnight month boundary would render as the previous
-  // month. Granularity follows the tick, since ECharts sizes intervals by pixel density.
   private formatAxisDate(value: number): string {
     const date = new Date(value);
     const isMonthStart = date.getUTCDate() === 1 && date.getUTCHours() === 0 &&
@@ -178,8 +166,6 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
       },
       color: [DEFAULT_BAR_COLOR],
       animation: false,
-      // Buckets are UTC calendar days, so ticks must land on UTC boundaries rather than
-      // the viewer's local midnight.
       useUTC: true,
       grid: {
         right: this.right,
@@ -190,7 +176,6 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
       tooltip: {
         show: !this.isMobile(),
         trigger: 'axis',
-        // The threshold line is the only rule worth reading against.
         axisPointer: {
           type: 'none'
         },
@@ -212,8 +197,6 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
           return tooltip;
         }.bind(this)
       },
-      // A time axis, not a category axis: days with no data must render as proportional
-      // gaps instead of collapsing into their neighbours.
       xAxis: !hasData ? undefined : {
         type: 'time',
         axisLine: { onZero: true },
@@ -249,8 +232,7 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
         barWidth: '90%',
         barMaxWidth: 50,
         markLine: {
-          // zrender drops events whose topmost hit is silent, which left the line
-          // draggable only where a bar happened to sit under it.
+          // zrender drops events whose topmost hit is silent, which would block the drag.
           silent: false,
           symbol: 'none',
           lineStyle: {
@@ -304,8 +286,6 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
   }
 
   private thresholdPieces(): { lte?: number, gt?: number, color: string }[] {
-    // Same tolerance the CDF counts with, so a day on the threshold is not green in one
-    // chart and orange in the other.
     const edge = this.threshold + RATE_EPSILON;
     return [
       { lte: edge, color: HIGHLIGHT_COLOR },
@@ -313,12 +293,12 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
     ];
   }
 
-  private isOnThresholdLine(offsetY: number, point: number[]): boolean {
+  private isOnThresholdLine(point: number[]): boolean {
     if (!this.chartInstance.containPixel('grid', point)) {
       return false;
     }
     const lineY = this.chartInstance.convertToPixel({ yAxisIndex: 0 }, this.threshold);
-    return Math.abs(offsetY - lineY) <= THRESHOLD_GRAB_RADIUS;
+    return Math.abs(point[1] - lineY) <= THRESHOLD_GRAB_RADIUS;
   }
 
   onChartInit(ec): void {
@@ -329,12 +309,10 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
     this.chartInstance = ec;
 
     this.chartInstance.on('click', (e) => {
-      // A drag that ends over a bar still emits a click.
       if (this.suppressClick) {
         this.suppressClick = false;
         return;
       }
-      // The threshold line reports clicks of its own and carries no block height.
       if (e.componentType !== 'series') {
         return;
       }
@@ -348,7 +326,7 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
 
     zr.on('mousedown', (e) => {
       this.suppressClick = false;
-      if (!this.isOnThresholdLine(e.offsetY, [e.offsetX, e.offsetY])) {
+      if (!this.isOnThresholdLine([e.offsetX, e.offsetY])) {
         return;
       }
       this.dragging = true;
@@ -359,7 +337,7 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
       if (this.dragging) {
         this.dragThresholdTo(e.offsetY);
         zr.setCursorStyle('ns-resize');
-      } else if (this.isOnThresholdLine(e.offsetY, [e.offsetX, e.offsetY])) {
+      } else if (this.isOnThresholdLine([e.offsetX, e.offsetY])) {
         zr.setCursorStyle('ns-resize');
       }
     });
@@ -378,8 +356,6 @@ export class MinFeeRateGraphComponent implements OnInit, OnDestroy {
     zr.on('globalout', endDrag);
   }
 
-  // Redraws go straight to the instance: a full option rebuild per mousemove would
-  // re-issue the whole series.
   private dragThresholdTo(offsetY: number): void {
     const rate = this.chartInstance.convertFromPixel({ yAxisIndex: 0 }, offsetY);
     this.threshold = Math.max(0, parseFloat(this.formatFeeRate(rate)));

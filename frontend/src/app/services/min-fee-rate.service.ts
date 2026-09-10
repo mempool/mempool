@@ -4,13 +4,14 @@ import { Observable } from 'rxjs';
 import { ApiService } from '@app/services/api.service';
 import { MinFeeRateDay } from '@app/interfaces/node-api.interface';
 
-// Bitcoin Core 30.0 lowered the default -minrelaytxfee to 0.1 sat/vB, which is the
-// reference threshold both charts open on.
 export const DEFAULT_MIN_FEE_RATE_THRESHOLD = 0.1;
 
-// minRate is a fee/vsize double, so a day sitting exactly on the threshold can land a few
-// ulps either side of it. Well below the precision formatFeeRate prints.
+// minRate is a fee/vsize double, so a day sitting exactly on the threshold can land either side.
 export const RATE_EPSILON = 1e-9;
+
+export const MIN_FEE_RATE_TIMESPANS = ['1m', '3m', '6m', '1y', '2y', '3y', 'all'];
+
+export const THRESHOLD_GRAB_RADIUS = 6;
 
 @Injectable({ providedIn: 'root' })
 export class MinFeeRateService {
@@ -27,7 +28,6 @@ export class MinFeeRateService {
     return (data.filter(d => d.minRate <= threshold + RATE_EPSILON).length / data.length) * 100;
   }
 
-  // Duplicate rates collapse to one step, so the staircase stays monotonic.
   buildCdf(data: MinFeeRateDay[]): number[][] {
     if (data.length === 0) {
       return [];
@@ -46,7 +46,6 @@ export class MinFeeRateService {
     return cdf;
   }
 
-  // Sub-1 sat/vB values need more decimals to stay distinguishable from each other.
   formatFeeRate(val: number): string {
     if (val >= 100) {
       return val.toFixed(0);
