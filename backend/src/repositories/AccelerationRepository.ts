@@ -397,6 +397,17 @@ class AccelerationRepository {
       logger.err('Cannot delete indexed accelerations. Reason: ' + (e instanceof Error ? e.message : e));
     }
   }
+
+  public async $getAccelerationsBetweenHeights(startHeight: number, latestHeight: number): Promise<string[]> {
+    try {
+      const [rows]: any[] = await DB.query(`SELECT txid FROM accelerations WHERE height <= ? AND height > ?`, [startHeight, latestHeight]);
+
+      return rows.map((row) => row.txid);
+    } catch (e) {
+      logger.err(`Cannot get accelerations between ${startHeight} and ${latestHeight}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
 }
 
 export default new AccelerationRepository();
