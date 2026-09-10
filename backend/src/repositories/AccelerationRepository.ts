@@ -408,6 +408,21 @@ class AccelerationRepository {
       throw e;
     }
   }
+
+  public async $getFirstAccelerationHeightFrom(from: number): Promise<number | undefined> {
+    try {
+      const [rows]: any[] = await DB.query("SELECT height FROM accelerations WHERE height >= ? ORDER BY height ASC LIMIT 1", [from]);
+
+      if (rows.length === 0) { // No accelerations
+        return undefined;
+      }
+
+      return rows[0].height;
+    } catch (e) {
+      logger.err(`Couldn't get the first acceleration height. Reason: ${(e instanceof Error ? e.message : e)}`);
+      throw e;
+    }
+  }
 }
 
 export default new AccelerationRepository();
