@@ -2,7 +2,7 @@ import config from '../config';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
-import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended, TransactionClassified, BlockAudit, TransactionAudit, TemplateAlgorithm } from '../mempool.interfaces';
+import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended, TransactionClassified, BlockAudit, TransactionAudit, TemplateAlgorithm, TransactionFlags } from '../mempool.interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
@@ -769,6 +769,23 @@ class Blocks {
           const bucketFirstHeight = bucketStart + preset.bucketSize - 1;
           const bucketLastHeight = bucketStart - 1;
 
+          // accelerations mapping
+          let accelerations: string[] = [];
+          if (config.MEMPOOL.NETWORK === 'mainnet' && config.MEMPOOL_SERVICES.ACCELERATIONS) {
+            const lastSyncedHeight = await AccelerationRepository.$getLastSyncedHeight();
+
+            if (lastSyncedHeight < bucketFirstHeight) {
+              logger.debug(`Skipping flag values bucket #${bucketStart} until acceleration sync past #${bucketFirstHeight}. Currently synced to #${lastSyncedHeight}`, logger.tags.goggles);
+              continue; // Incomplete accelerations
+            }
+
+            accelerations = await AccelerationRepository.$getAccelerationsBetweenHeights(bucketFirstHeight, bucketLastHeight);
+          }
+          const isAccelerated = {};
+          for (const txid of accelerations) {
+            isAccelerated[txid] = true;
+          }
+
           let step = bucketFirstHeight;
 
           const dataPerFlag: Record<string, Record<string, number>> = {};
@@ -791,16 +808,17 @@ class Blocks {
 
             // Flag values processing
             for (const block of blocks) {
-              const txData = JSON.parse(block.transactions).map((tx) => ({flags: tx.flags, vsize: tx.vsize}));
+              const txData = JSON.parse(block.transactions).map((tx) => ({txid: tx.txid, flags: tx.flags, vsize: tx.vsize}));
               for (const data of txData) {
-                if (dataPerFlag[data.flags] === undefined || Object.keys(dataPerFlag[data.flags]).length === 0) {
-                  dataPerFlag[data.flags] = {
+                const flags = (BigInt(data.flags ?? 0) | (isAccelerated[data.txid] ? TransactionFlags.acceleration : 0n)).toString();
+                if (dataPerFlag[flags] === undefined || Object.keys(dataPerFlag[flags]).length === 0) {
+                  dataPerFlag[flags] = {
                     txCount: 0,
                     vSizeTotal: 0
                   };
                 }
-                dataPerFlag[data.flags].txCount = dataPerFlag[data.flags].txCount + 1;
-                dataPerFlag[data.flags].vSizeTotal = dataPerFlag[data.flags].vSizeTotal + data.vsize;
+                dataPerFlag[flags].txCount = dataPerFlag[flags].txCount + 1;
+                dataPerFlag[flags].vSizeTotal = dataPerFlag[flags].vSizeTotal + data.vsize;
               }
               sumTimestamps += block.timestamp;
               blocksComputedInTotal++;
