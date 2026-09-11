@@ -335,3 +335,40 @@ h2 .cpfp-beta {
     color: var(--info);
   }
 }
+
+.destination-alert {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+
+  .message-container {
+    display: inline-flex;
+    flex-direction: column;
+    min-width: 0;
+    @media (min-width: 676px) {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    > span {
+      flex-shrink: 0;
+    }
+
+    app-truncate {
+      min-width: 0;
+    }
+  }
+
+  .btn-close {
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+}
+
+.btn-close:hover,
+.btn-close:focus {
+  opacity: 1;
+}
