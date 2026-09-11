@@ -12,6 +12,7 @@ import statisticsReplicator from './replication/StatisticsReplication';
 import AccelerationRepository from './repositories/AccelerationRepository';
 import BlocksAuditsRepository from './repositories/BlocksAuditsRepository';
 import BlocksRepository from './repositories/BlocksRepository';
+import { MIN_FEE_RATE_BATCH_SIZE } from './api/mining/min-fee-rate';
 
 export interface CoreIndex {
   name: string;
@@ -19,7 +20,7 @@ export interface CoreIndex {
   best_block_height: number;
 }
 
-type TaskName = 'blocksPrices' | 'coinStatsIndex' | 'poolsStats';
+type TaskName = 'blocksPrices' | 'coinStatsIndex' | 'poolsStats' | 'minFeeRate';
 
 class Indexer {
   private runIndexer = true;
@@ -171,6 +172,22 @@ class Indexer {
           logger.debug('failed to sync pools stats cache: ' + (e instanceof Error ? e.message : e));
         }
       } break;
+
+      case 'minFeeRate': {
+        if (config.MEMPOOL.NETWORK !== 'mainnet') {
+          break;
+        }
+        logger.debug(`Backfilling min_fee_rate now`, logger.tags.mining);
+        try {
+          // One batch per pass, so a long queue never holds the indexer loop. A full
+          // batch means there is more of it, so the task re-queues itself.
+          if (await BlocksRepository.$backfillMinFeeRate() >= MIN_FEE_RATE_BATCH_SIZE) {
+            this.scheduleSingleTask('minFeeRate', 1000);
+          }
+        } catch (e) {
+          logger.debug(`failed to backfill min_fee_rate: ` + (e instanceof Error ? e.message : e));
+        }
+      } break;
     }
 
     this.tasksRunning[task] = false;
@@ -233,6 +250,10 @@ class Indexer {
       await auditReplicator.$sync();
       await statisticsReplicator.$sync();
       await AccelerationRepository.$indexPastAccelerations();
+      // After the acceleration sync, or the backfill would compute blocks whose
+      // exclusion set is still being written. Also the cold-start trigger: the block
+      // handler never fires on an instance that is not receiving blocks yet.
+      void this.runSingleTask('minFeeRate');
       await BlocksAuditsRepository.$migrateAuditsV0toV1();
       await BlocksRepository.$migrateBlocks();
 
