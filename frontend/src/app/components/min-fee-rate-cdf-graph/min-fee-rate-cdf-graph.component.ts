@@ -212,6 +212,13 @@ export class MinFeeRateCdfGraphComponent implements OnInit, OnDestroy {
           fontSize: 11,
           formatter: (val): string => this.formatFeeRate(val),
         },
+        splitLine: {
+          lineStyle: {
+            type: 'dotted',
+            color: 'var(--transparent-fg)',
+            opacity: 0.25,
+          }
+        },
       },
       yAxis: !hasData ? undefined : {
         position: 'left',
