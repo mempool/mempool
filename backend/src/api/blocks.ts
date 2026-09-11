@@ -753,9 +753,9 @@ class Blocks {
           const firstAccelerationHeight = await AccelerationRepository.$getFirstAccelerationHeightFrom(lastBucket);
 
           if (firstAccelerationHeight !== undefined) { // There are accelerations
-            const accFlagsIndexed = await FlagValueRepository.$accelerationsIndexed(preset.bucketSize, firstAccelerationHeight);
+            const shouldRebuild = await FlagValueRepository.$shouldRebuildAccFlags(preset.bucketSize, firstAccelerationHeight);
 
-            if (!accFlagsIndexed) { // flag values table doesn't contain any acceleration flags
+            if (shouldRebuild) { // flag values table doesn't contain any acceleration flags
               const lastSyncedHeight = await AccelerationRepository.$getLastSyncedHeight();
               const rangeTop = firstBucket + preset.bucketSize - 1;
               // Do not delete flag values above unless accelerations are synced to tip

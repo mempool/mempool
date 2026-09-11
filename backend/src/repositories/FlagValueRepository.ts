@@ -143,13 +143,16 @@ class FlagValuesRepository {
     return null;
   }
 
-  /** Verifies the bucket type above start height contains acceleration flags */
-  public async $accelerationsIndexed(bucketSize: number, height: number): Promise<boolean> {
+  /** returns true if flag_values contains rows above bucketSize and there are no acceleration flags in these */
+  public async $shouldRebuildAccFlags(bucketSize: number, height: number): Promise<boolean> {
     const startHeight = Math.floor(height / bucketSize) * bucketSize;
     try {
-      const [rows]: any[] = await DB.query("SELECT 1 FROM flag_values WHERE bucket_size = ? AND start_height >= ? AND (flag_value & ?) > 0 LIMIT 1", [bucketSize.toString(), startHeight, TransactionFlags.acceleration]);
+      const [rows]: any[] = await DB.query(`
+        SELECT EXISTS(SELECT 1 FROM flag_values WHERE bucket_size = ? AND start_height >= ?) AS hasRows,
+        EXISTS(SELECT 1 FROM flag_values WHERE bucket_size = ? AND start_height >= ? AND (flag_value & ?) > 0) AS hasAccelerationFlags
+        `, [bucketSize.toString(), startHeight, bucketSize.toString(), startHeight, TransactionFlags.acceleration]);
 
-      return rows.length > 0;
+      return (!!rows[0].hasRows && !rows[0].hasAccelerationFlags);
     } catch (e) {
       logger.err(`Cannot verify acceleration flags from #${startHeight} are indexed. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
