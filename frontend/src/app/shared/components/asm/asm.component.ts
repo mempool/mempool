@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { SigInfo, SighashLabels } from '@app/shared/transaction.utils';
-import { detectCltvTimestamps, formatCltvTimestamp } from '@app/shared/script.utils';
+import { detectTimelockTooltips } from '@app/shared/script.utils';
 
 @Component({
   selector: 'app-asm',
@@ -24,7 +24,7 @@ export class AsmComponent {
   @Output() showSigInfo = new EventEmitter<SigInfo>();
   @Output() hideSigInfo = new EventEmitter<void>();
 
-  instructions: { instruction: string, args: string[], cltvTimestamp?: number }[] = [];
+  instructions: { instruction: string, args: string[], timelockTooltip?: string }[] = [];
   sighashLabels: Record<number, string> = SighashLabels;
 
   ngOnInit(): void {
@@ -40,7 +40,7 @@ export class AsmComponent {
   parseASM(): void {
     const allInstructions = this.asm.split('OP_').filter(instruction => instruction.trim() !== '');
 
-    const cltvTimestamps = detectCltvTimestamps(allInstructions);
+    const timelockTooltips = detectTimelockTooltips(allInstructions);
 
     let instructions = allInstructions;
     // trim instructions to a whole number of instructions with at most `crop` characters total
@@ -84,7 +84,7 @@ export class AsmComponent {
       return {
         instruction: instructionName,
         args: args,
-        cltvTimestamp: cltvTimestamps.get(index)
+        timelockTooltip: timelockTooltips.get(index)
       };
     });
   }
@@ -96,8 +96,6 @@ export class AsmComponent {
   doHideSigInfo(): void {
     this.hideSigInfo.emit();
   }
-
-  readonly formatTimestamp = formatCltvTimestamp;
 
   readonly opcodeStyles: Map<string, string> = new Map([
     // Constants
