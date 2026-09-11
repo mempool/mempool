@@ -1,8 +1,0 @@
-<div class="container p-lg-0 pb-0" style="max-width: 100%; margin-top: 7px" *ngIf="(showWarning$ | async) && storageService.getValue('hideLiquidIncidentWarning') !== 'hidden'">
-  <div class="alert alert-danger alert-dismissible mb-0 text-center" role="alert">
-    <div class="message-container">
-      <span i18n="liquid-incident-warning">Liquid Network activity is currently paused due to a security incident. For more updates follow <a href="https://x.com/Liquid_BTC" target="_blank" rel="noopener">@Liquid_BTC</a>.</span>
-    </div>
-    <button type="button" class="btn-close btn-close-white" aria-label="Close" i18n-aria-label (click)="dismissWarning()"></button>
-  </div>
-</div>
