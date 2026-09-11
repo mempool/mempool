@@ -31,33 +31,42 @@ export interface PublicAcceleration {
 class AccelerationRepository {
   private bidBoostV2Activated = 831580;
 
-  /** @asyncSafe */
-  public async $saveAcceleration(acceleration: AccelerationInfo, block: IEsploraApi.Block, pool_id: number, accelerationData: Acceleration[]): Promise<void> {
+  public async $saveBatchAccelerations(accelerations: AccelerationInfo[], block: IEsploraApi.Block, pool_id: number, accelerationData: Acceleration[]): Promise<void> {
+    if (!accelerations.length) {
+      return;
+    }
+
     const accelerationMap: { [txid: string]: Acceleration } = {};
     for (const acc of accelerationData) {
       accelerationMap[acc.txid] = acc;
     }
+
     try {
+      const params: any[] = [];
+      for (const acc of accelerations) {
+        params.push(
+          [
+            acc.txSummary.txid,
+            new Date(accelerationMap[acc.txSummary.txid].added * 1000),
+            new Date(block.timestamp * 1000),
+            block.height,
+            pool_id,
+            acc.txSummary.effectiveVsize,
+            acc.txSummary.effectiveFee,
+            acc.targetFeeRate,
+            acc.cost
+          ]
+        );
+      }
       await DB.query(`
         INSERT INTO accelerations(txid, requested, added, height, pool, effective_vsize, effective_fee, boost_rate, boost_cost)
-        VALUE (?, FROM_UNIXTIME(?), FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?)
+        VALUES ?
         ON DUPLICATE KEY UPDATE
-          height = ?
-      `, [
-        acceleration.txSummary.txid,
-        accelerationMap[acceleration.txSummary.txid].added,
-        block.timestamp,
-        block.height,
-        pool_id,
-        acceleration.txSummary.effectiveVsize,
-        acceleration.txSummary.effectiveFee,
-        acceleration.targetFeeRate,
-        acceleration.cost,
-        block.height,
-      ]);
+          height = VALUES(height)
+      `, [params]);
     } catch (e: any) {
-      logger.err(`Cannot save acceleration (${acceleration.txSummary.txid}) into db. Reason: ` + (e instanceof Error ? e.message : e));
-      // We don't throw, not a critical issue if we miss some accelerations
+      logger.err(`Cannot save ${accelerations.length} accelerations for block ${block.height} into db. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
     }
   }
 
@@ -236,6 +245,7 @@ class AccelerationRepository {
     }
     const successfulAccelerations = accelerations.filter(acc => acc.pools.includes(block.extras.pool.id));
     let boostRate: number | null = null;
+    const accelerationsInfo: AccelerationInfo[] = [];
     for (const acc of successfulAccelerations) {
       if (boostRate === null) {
         boostRate = accelerationCosts.calculateBoostRate(
@@ -247,7 +257,7 @@ class AccelerationRepository {
         const tx = blockTxs[acc.txid];
         const accelerationInfo = accelerationCosts.getAccelerationInfo(tx, boostRate, transactions);
         accelerationInfo.cost = Math.max(0, Math.min(acc.feeDelta, accelerationInfo.cost));
-        void this.$saveAcceleration(accelerationInfo, block, block.extras.pool.id, successfulAccelerations);
+        accelerationsInfo.push(accelerationInfo);
       }
     }
     let anyConfirmed = false;
@@ -259,10 +269,15 @@ class AccelerationRepository {
     if (anyConfirmed) {
       accelerationApi.accelerationConfirmed();
     }
-    const lastSyncedHeight = await this.$getLastSyncedHeight();
-    // if we've missed any blocks, let the indexer catch up from the last synced height on the next run
-    if (block.height === lastSyncedHeight + 1) {
-      await this.$setLastSyncedHeight(block.height);
+    try {
+      await this.$saveBatchAccelerations(accelerationsInfo, block, block.extras.pool.id, successfulAccelerations);
+      const lastSyncedHeight = await this.$getLastSyncedHeight();
+      // if we've missed any blocks, let the indexer catch up from the last synced height on the next run
+      if (block.height === lastSyncedHeight + 1) {
+        await this.$setLastSyncedHeight(block.height);
+      }
+    } catch {
+      // Logging happens on each method inside the try
     }
   }
 
@@ -289,13 +304,18 @@ class AccelerationRepository {
     let done = false;
     let page = 1;
     let count = 0;
+    let fetchFailed = false;
     try {
       while (!done) {
         // don't DDoS the services backend
         await Common.sleep$(500 + (Math.random() * 1000));
         const accelerations = await accelerationApi.$fetchAccelerationHistory(page);
         page++;
-        if (!accelerations?.length) {
+        if (accelerations === null) {
+          fetchFailed = true;
+          break;
+        }
+        if (!accelerations.length) {
           done = true;
           break;
         }
@@ -316,6 +336,7 @@ class AccelerationRepository {
         }
       }
     } catch (e) {
+      fetchFailed = true;
       logger.err(`Failed to fetch full acceleration history. Reason: ` + (e instanceof Error ? e.message : e));
     }
 
@@ -357,20 +378,30 @@ class AccelerationRepository {
           ...acc,
           pools: acc.pools,
         }));
+        const accelerationsInfo: AccelerationInfo[] = [];
         for (const acc of accelerations) {
           if (blockTxs[acc.txid] && acc.pools.includes(block.extras.pool.id)) {
             const tx = blockTxs[acc.txid];
             const accelerationInfo = accelerationCosts.getAccelerationInfo(tx, boostRate, transactions);
             accelerationInfo.cost = Math.max(0, Math.min(acc.feeDelta, accelerationInfo.cost));
-            await this.$saveAcceleration(accelerationInfo, block, block.extras.pool.id, accelerationSummaries);
+            accelerationsInfo.push(accelerationInfo);
           }
         }
-        await this.$setLastSyncedHeight(height);
+        await this.$saveBatchAccelerations(accelerationsInfo, block, block.extras.pool.id, accelerationSummaries);
+
+        if (!fetchFailed) {
+          await this.$setLastSyncedHeight(height);
+        }
       } catch (e) {
         logger.err(`Failed to process accelerations for block ${height}. Reason: ` + (e instanceof Error ? e.message : e));
         return;
       }
-      logger.debug(`Indexed ${accelerations.length} accelerations in block  ${height}`);
+      logger.debug(`Indexed ${accelerations.length} accelerations in block ${height}`);
+    }
+
+    if (fetchFailed) {
+      logger.warn(`Acceleration history fetch was incomplete, leaving the sync marker at #${lastSyncedHeight} to retry on the next run`);
+      return;
     }
 
     await this.$setLastSyncedHeight(currentHeight);
