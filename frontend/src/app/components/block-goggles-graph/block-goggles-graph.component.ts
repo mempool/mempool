@@ -104,6 +104,7 @@ export class BlockGogglesGraphComponent implements OnInit {
 
 
   cssWidth: number;
+  excludeFilters: string[] = [];
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -295,6 +296,10 @@ export class BlockGogglesGraphComponent implements OnInit {
       }),
       share(),
     );
+
+    if (this.stateService.network !== '' || !this.stateService.env.PUBLIC_ACCELERATIONS) {
+      this.excludeFilters.push('acceleration');
+    }
   }
 
   onFilterChanged(activeFilter: ActiveFilter | null): void {
