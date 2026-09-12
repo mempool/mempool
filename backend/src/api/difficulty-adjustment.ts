@@ -91,6 +91,7 @@ export function calcDifficultyAdjustment(
   const EPOCH_BLOCK_LENGTH = 2016; // Bitcoin mainnet
   const BLOCK_SECONDS_TARGET = 600; // Bitcoin mainnet
   const TESTNET_MAX_BLOCK_SECONDS = 1200; // Bitcoin testnet
+  const MAX_TIMESTAMP_INVERSION = 2 * 60 * 60; // normal block timestamp jitter (seconds)
 
   const diffSeconds = Math.max(0, nowSeconds - DATime);
   const blocksInEpoch = (blockHeight >= 0) ? blockHeight % EPOCH_BLOCK_LENGTH : 0;
@@ -105,10 +106,12 @@ export function calcDifficultyAdjustment(
   let adjustedTimeAvgSecs = timeAvgSecs;
 
   // for the first 504 blocks of the epoch, calculate the expected avg block interval
-  // from a sliding window over the last 504 blocks
-  if (quarterEpochTime && blocksInEpoch < 503) {
-    const timeLastEpoch = DATime - quarterEpochTime;
-    const adjustedTimeLastEpoch = timeLastEpoch * (1 + (previousRetarget / 100));
+  // from a sliding window over the last 504 blocks, unless the inputs are unusable:
+  // a window start newer than the last retarget (beyond timestamp jitter) means the
+  // retarget time is stale, and a NaN previous retarget can't scale the window
+  const windowStartLag = quarterEpochTime ? DATime - quarterEpochTime : 0;
+  if (quarterEpochTime && windowStartLag >= -MAX_TIMESTAMP_INVERSION && Number.isFinite(previousRetarget) && blocksInEpoch < 503) {
+    const adjustedTimeLastEpoch = windowStartLag * (1 + (previousRetarget / 100));
     const adjustedTimeSpan = diffSeconds + adjustedTimeLastEpoch;
     adjustedTimeAvgSecs = adjustedTimeSpan / 503;
     difficultyChange = (BLOCK_SECONDS_TARGET / (adjustedTimeSpan / 504) - 1) * 100;
@@ -140,7 +143,7 @@ export function calcDifficultyAdjustment(
   }
 
   const timeAvg = Math.floor(timeAvgSecs * 1000);
-  const adjustedTimeAvg = Math.floor(adjustedTimeAvgSecs * 1000);
+  const adjustedTimeAvg = Math.max(0, Math.floor(adjustedTimeAvgSecs * 1000));
   const remainingTime = remainingBlocks * adjustedTimeAvg;
   const estimatedRetargetDate = remainingTime + nowSeconds * 1000;
 
