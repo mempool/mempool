@@ -530,3 +530,23 @@ export interface StaleTip extends ChainTip {
   stale: BlockExtended;
   canonical: BlockExtended;
 }
+
+export interface SyncProgress {
+  ibd: boolean;
+  bitcoind: {
+    blocks: number;
+    headers: number;
+    verificationprogress: number;
+    estimatedTimeRemaining: number | null;
+  };
+  electrs?: {
+    reachable: boolean;
+    indexed: boolean;
+  };
+  mempool: {
+    inSync: boolean;
+    indexed: boolean;
+    progress: number | null;
+    estimatedTimeRemaining: number | null;
+  };
+}
