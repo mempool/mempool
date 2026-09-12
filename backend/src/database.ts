@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import path from 'path';
 import config from './config';
 import { createPool, Pool, PoolConnection } from 'mysql2/promise';
+import { AsyncLocalStorage } from 'async_hooks';
 import logger, { LogLevel } from './logger';
 import { FieldPacket, OkPacket, PoolOptions, ResultSetHeader, RowDataPacket } from 'mysql2/typings/mysql';
 import { execSync } from 'child_process';
@@ -15,6 +16,7 @@ import { execSync } from 'child_process';
     }
   }
   private pool: Pool | null = null;
+  private transactionContext = new AsyncLocalStorage<PoolConnection>();
   private poolConfig: PoolOptions = {
     port: config.DATABASE.PORT,
     database: config.DATABASE.DATABASE,
@@ -51,8 +53,9 @@ import { execSync } from 'child_process';
           reject(new Error(`DB query failed to return, reject or time out within ${hardTimeout / 1000}s - ${query?.sql?.slice(0, 160) || (typeof(query) === 'string' || query instanceof String ? query?.slice(0, 160) : 'unknown query')}`));
         }, hardTimeout);
 
-        // Use a specific connection if provided, otherwise delegate to the pool
-        const connectionPromise = connection ? Promise.resolve(connection) : this.getPool();
+        // Use a specific connection if provided, else the enclosing $transaction's, else the pool
+        const boundConnection = connection ?? this.transactionContext.getStore();
+        const connectionPromise = boundConnection ? Promise.resolve(boundConnection) : this.getPool();
         connectionPromise.then((pool: PoolConnection | Pool) => {
           return pool.query(query, params) as Promise<[T, FieldPacket[]]>;
         }).then(result => {
@@ -68,7 +71,7 @@ import { execSync } from 'child_process';
       });
     } else {
       try {
-        const pool = await this.getPool();
+        const pool = connection ?? this.transactionContext.getStore() ?? await this.getPool();
         return pool.query(query, params);
       } catch (e) {
         if (errorLogLevel !== 'silent') {
@@ -93,6 +96,20 @@ import { execSync } from 'child_process';
   public async $atomicQuery<T extends RowDataPacket[][] | RowDataPacket[] | OkPacket |
     OkPacket[] | ResultSetHeader>(queries: { query, params }[], errorLogLevel: LogLevel | 'silent' = 'debug'): Promise<[T, FieldPacket[]][]>
   {
+    if (this.transactionContext.getStore()) {
+      // inside a $transaction: run on its connection, it commits or rolls back as a whole
+      try {
+        const results: [T, FieldPacket[]][] = [];
+        for (const query of queries) {
+          results.push(await this.query(query.query, query.params, errorLogLevel) as [T, FieldPacket[]]);
+        }
+        return results;
+      } catch (e) {
+        logger.warn('Could not complete db queries, the enclosing transaction will roll back: ' + (e instanceof Error ? e.message : e));
+        throw e;
+      }
+    }
+
     const pool = await this.getPool();
     let connection;
     try {
@@ -121,6 +138,37 @@ import { execSync } from 'child_process';
     }
   }
 
+
+  /**
+   * Run `fn` inside a database transaction on a dedicated connection. Every DB.query issued
+   * while `fn` runs, directly or through any call chain, uses that connection, so the
+   * transaction, its statements and the commit or rollback can't land on different pooled
+   * connections. Nested calls join the enclosing transaction.
+   *
+   * @asyncUnsafe
+   */
+  public async $transaction<T>(fn: () => Promise<T>): Promise<T> {
+    if (this.transactionContext.getStore()) {
+      return fn();
+    }
+    const pool = await this.getPool();
+    const connection = await pool.getConnection();
+    try {
+      await connection.beginTransaction();
+      const result = await this.transactionContext.run(connection, fn);
+      await connection.commit();
+      return result;
+    } catch (e) {
+      try {
+        await connection.rollback();
+      } catch (rollbackError) {
+        logger.warn('Failed to rollback db transaction: ' + (rollbackError instanceof Error ? rollbackError.message : rollbackError));
+      }
+      throw e;
+    } finally {
+      connection.release();
+    }
+  }
 
   /** @asyncSafe */
   public async checkDbConnection() {

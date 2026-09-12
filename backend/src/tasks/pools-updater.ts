@@ -89,13 +89,12 @@ class PoolsUpdater {
       }
 
       try {
-        await DB.query('START TRANSACTION;');
-        await this.updateDBSha(githubSha);
-        await poolsParser.migratePoolsJson();
-        await DB.query('COMMIT;');
+        await DB.$transaction(async () => {
+          await this.updateDBSha(githubSha);
+          await poolsParser.migratePoolsJson();
+        });
       } catch (e) {
-        logger.err(`Could not migrate mining pools, rolling back. Exception: ${JSON.stringify(e)}`, this.tag);
-        await DB.query('ROLLBACK;');
+        logger.err(`Could not migrate mining pools, rolled back. Exception: ${JSON.stringify(e)}`, this.tag);
       }
       logger.info(`Mining pools-v2.json (${githubSha}) import completed`, this.tag);
 
