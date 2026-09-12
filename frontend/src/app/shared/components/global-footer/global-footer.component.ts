@@ -9,6 +9,7 @@ import { NavigationService } from '@app/services/navigation.service';
 import { StorageService } from '@app/services/storage.service';
 import { WebsocketService } from '@app/services/websocket.service';
 import { EnterpriseService } from '@app/services/enterprise.service';
+import { SERVICES_POPUP_ACTION } from '@app/shared/services-popup-action.token';
 
 @Component({
   selector: 'app-global-footer',
@@ -48,7 +49,8 @@ export class GlobalFooterComponent implements OnInit, OnDestroy, OnChanges {
     private route: ActivatedRoute,
     private cd: ChangeDetectorRef,
     private websocketService: WebsocketService,
-    private router: Router
+    private router: Router,
+    @Inject(SERVICES_POPUP_ACTION) private openServicesPopupAction: () => void
   ) {}
 
   ngOnInit(): void {
@@ -92,6 +94,10 @@ export class GlobalFooterComponent implements OnInit, OnDestroy, OnChanges {
     if (this.enterpriseInfo$) {
       this.enterpriseInfo$.unsubscribe();
     }
+  }
+
+  openServicesPopup(): void {
+    this.openServicesPopupAction();
   }
 
   networkLink(network) {

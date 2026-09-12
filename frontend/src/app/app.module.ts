@@ -57,23 +57,25 @@ const providers = [
   { provide: ZONE_SERVICE, useClass: ZoneService },
 ];
 
-@NgModule({ declarations: [
-        AppComponent,
-    ],
-    bootstrap: [AppComponent], imports: [BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        SharedModule
-      ],
-      providers: [
-        provideHttpClient(withInterceptorsFromDi()),
-        DatePipe,
-        ...providers
-      ] })
+@NgModule({
+  declarations: [
+    AppComponent,
+  ],
+  bootstrap: [AppComponent], imports: [BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    SharedModule
+  ],
+  providers: [
+    provideHttpClient(withInterceptorsFromDi()),
+    DatePipe,
+    ...providers
+  ]
+})
 export class AppModule { }
 
 @NgModule({})
-export class MempoolSharedModule{
+export class MempoolSharedModule {
   static forRoot(): ModuleWithProviders<MempoolSharedModule> {
     return {
       ngModule: AppModule,

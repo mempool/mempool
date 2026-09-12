@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, map, Observable, of, ReplaySubject, switchMap, tap } from 'rxjs';
+import { catchError, map, Observable, of, ReplaySubject, tap } from 'rxjs';
 import { ServicesApiServices } from '@app/services/services-api.service';
 
 export interface IAuth {
@@ -67,9 +67,7 @@ export class AuthServiceMempool {
 
   getAuth$(): Observable<IAuth | null> {
     if (!localStorage.getItem('auth')) {
-      return this.refreshAuth$().pipe(
-        switchMap(() => this.auth$.asObservable())
-      );
+      this.refreshAuth$().subscribe();
     }
     return this.auth$.asObservable();
   }
