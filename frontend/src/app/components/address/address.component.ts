@@ -252,7 +252,7 @@ export class AddressComponent implements OnInit, OnDestroy {
             address.is_pubkey
               ? this.electrsApiService.getScriptHashTransactions$((address.address.length === 66 ? '21' : '41') + address.address + 'ac')
               : this.electrsApiService.getAddressTransactions$(address.address),
-            (utxoCount > 2 && utxoCount <= 500 ? (address.is_pubkey
+            ((utxoCount > 2 && utxoCount <= 500) || this.address.electrum ? (address.is_pubkey
               ? this.electrsApiService.getScriptHashUtxos$((address.address.length === 66 ? '21' : '41') + address.address + 'ac')
               : this.electrsApiService.getAddressUtxos$(address.address)) : of(null)).pipe(
                 catchError(() => {
