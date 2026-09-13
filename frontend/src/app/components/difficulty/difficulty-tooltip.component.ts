@@ -1,22 +1,5 @@
 import { Component, ElementRef, ViewChild, Input, OnChanges, HostListener } from '@angular/core';
-
-interface EpochProgress {
-  base: string;
-  change: number;
-  progress: number;
-  minedBlocks: number;
-  remainingBlocks: number;
-  expectedBlocks: number;
-  newDifficultyHeight: number;
-  colorAdjustments: string;
-  colorPreviousAdjustments: string;
-  estimatedRetargetDate: number;
-  previousRetarget: number;
-  blocksUntilHalving: number;
-  timeUntilHalving: number;
-}
-
-const EPOCH_BLOCK_LENGTH = 2016; // Bitcoin mainnet
+import { EpochProgress } from '@app/shared/difficulty.utils';
 
 @Component({
   selector: 'app-difficulty-tooltip',
