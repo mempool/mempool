@@ -487,6 +487,11 @@ class ElectrsApi implements AbstractBitcoinApi {
     return this.failoverRouter.$get<number>('/blocks/tip/height');
   }
 
+  // For esplora the block tip already reflects electrs' indexed height.
+  $getElectrsHeightTip(): Promise<number> {
+    return this.$getBlockHeightTip();
+  }
+
   $getBlockHashTip(): Promise<string> {
     return this.failoverRouter.$get<string>('/blocks/tip/hash');
   }

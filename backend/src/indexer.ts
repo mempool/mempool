@@ -24,6 +24,8 @@ type TaskName = 'blocksPrices' | 'coinStatsIndex' | 'poolsStats';
 class Indexer {
   private runIndexer = true;
   private indexerRunning = false;
+  // Completion of this process's first indexing pass, including checks of persisted data.
+  private indexingCompleted = false;
   private tasksRunning: { [key in TaskName]?: boolean; } = {};
   private tasksScheduled: { [key in TaskName]?: NodeJS.Timeout; } = {};
   private reindexTimeout: NodeJS.Timeout | undefined;
@@ -31,6 +33,10 @@ class Indexer {
 
   public indexerIsRunning(): boolean {
     return this.indexerRunning;
+  }
+
+  public isInitialIndexingComplete(): boolean {
+    return this.indexingCompleted;
   }
 
   /**
@@ -241,6 +247,7 @@ class Indexer {
       void blocks.$classifyBlocks();
       void blocks.$updateBlocksMissingBip54Tag();
       runSuccessful = true;
+      this.indexingCompleted = true;
     } catch (e) {
       nextRunDelay = retryDelay;
       logger.err(`Indexer failed, trying again in 10 seconds. Reason: ` + (e instanceof Error ? e.message : e));
