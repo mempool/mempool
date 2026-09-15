@@ -2,8 +2,8 @@
   @for (instruction of instructions; track instruction.instruction; let i = $index) {
     <span [class]='opcodeStyles.get(instruction.instruction)'>OP_{{instruction.instruction}}</span>
     @for (arg of instruction.args; track arg; let j = $index) {
-      @if (j === 0 && arg && instruction.cltvTimestamp !== undefined) {
-        <span class="cltv" [ngbTooltip]="formatTimestamp(instruction.cltvTimestamp)">
+      @if (j === 0 && arg && instruction.timelockTooltip !== undefined) {
+        <span class="timelock" [ngbTooltip]="instruction.timelockTooltip">
           <fa-icon [icon]="['fas', 'clock']" [fixedWidth]="true"></fa-icon>
         </span>
         {{ arg }}
