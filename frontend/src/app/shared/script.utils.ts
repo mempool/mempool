@@ -1,5 +1,4 @@
-import { Vin } from '../interfaces/electrs.interface';
-import { AddressType, detectAddressType } from './address-utils';
+import { dates } from './i18n/dates';
 import { ParsedTaproot } from './transaction.utils';
 
 const opcodes = {
@@ -555,4 +554,103 @@ export function isPoint(pointHex: string): boolean {
     // If we square and it's equal, then it was a perfect root and valid point.
     return (y * y) % curveP === ySquared;
   }
+}
+
+/** BIP65 locktime threshold: values below are block heights, values at or above are UNIX timestamps */
+export const LOCKTIME_THRESHOLD = 500000000;
+
+/**
+ * Detects OP_CLTV and OP_CSV operands in an ASM instruction list.
+ *
+ * Returns a map of instruction index -> tooltip, keyed on the push that
+ * carries the operand.
+ *
+ * Assumes the standard pattern of a 1-5 byte data push immediately followed by
+ * OP_CLTV is a locktime operand. BIP65 raises the CScriptNum limit to 5 bytes so
+ * the whole uint32 nLockTime range stays reachable: a locktime at or above 2^31
+ * needs a fifth byte to keep the sign bit clear. The pushed bytes are interpreted
+ * as an unsigned little-endian integer; this is purely a display hint, not
+ * consensus validation.
+ *
+ * For OP_CSV: the highest bit of the last byte is the sign, negative values display as invalid.
+ * Bit 31 disables the check, the low 16 bits give the delay in blocks
+ * or in 512-second units if bit 22 is set.
+ *
+ * @param instructions ASM instructions (already split on 'OP_')
+ */
+export function detectTimelockTooltips(instructions: string[]): Map<number, string> {
+  const timelockTooltips: Map<number, string> = new Map();
+  for (let i = 0; i < instructions.length; i++) {
+    const instruction = instructions[i];
+    const parts = instruction.split(' ');
+    const opcode = parts[0];
+    const args = parts.slice(1);
+
+    const pushMatch = opcode.match(/^PUSHBYTES_([1-5])$/);
+    if (pushMatch && args.length > 0) {
+      const byteCount = parseInt(pushMatch[1], 10);
+      const expectedLength = byteCount * 2;
+
+      if (args[0].length === expectedLength && /^[0-9a-fA-F]+$/.test(args[0])) {
+        if (i + 1 < instructions.length) {
+          const nextOpcode = instructions[i + 1].split(' ')[0];
+          if (nextOpcode === 'CLTV' || nextOpcode === 'CSV') {
+            const bytes = args[0].match(/.{2}/g) || [];
+            const littleEndianValue = bytes.reverse().join('');
+            const value = parseInt(littleEndianValue, 16);
+            if (nextOpcode === 'CSV') {
+              const signBit = 2 ** (byteCount * 8 - 1);
+              const sequence = value >= signBit ? -(value - signBit) : value;
+              timelockTooltips.set(i, formatCsvSequence(sequence));
+            } else {
+              timelockTooltips.set(i, formatCltvTimestamp(value));
+            }
+          }
+        }
+      }
+    }
+  }
+  return timelockTooltips;
+}
+
+/** Formats a BIP68/112 operand as a relative block count or time interval */
+export function formatCsvSequence(sequence: number): string {
+  if (!Number.isInteger(sequence) || sequence < 0 || sequence > 0x7fffffffff) {
+    return 'Invalid relative locktime';
+  }
+  if (sequence & 0x80000000) {
+    return 'Relative locktime disabled (CSV acts as NOP)';
+  }
+  const value = sequence & 0xffff;
+  if (!(sequence & 0x00400000)) {
+    return `Relative locktime: ${value} block${value === 1 ? '' : 's'}`;
+  }
+  let seconds = value * 512;
+  const duration: string[] = [];
+  for (const [size, singular, plural] of [
+    [86400, 'i18nDay', 'i18nDays'],
+    [3600, 'i18nHour', 'i18nHours'],
+    [60, 'i18nMinute', 'i18nMinutes'],
+    [1, 'i18nSecond', 'i18nSeconds'],
+  ] as const) {
+    const count = Math.floor(seconds / size);
+    if (count) {
+      const dateStrings = dates(count);
+      duration.push(dateStrings[count === 1 ? singular : plural]);
+      seconds %= size;
+    }
+  }
+  return `Relative locktime: ${duration.join(' ') || dates(0).i18nSeconds}`;
+}
+
+/** Formats a BIP65 locktime value as a human-readable block height or UTC timestamp */
+export function formatCltvTimestamp(timestamp: number): string {
+  if (isNaN(timestamp) || timestamp < 0 || timestamp > 4294967295) {
+    return 'Invalid locktime';
+  }
+  if (timestamp < LOCKTIME_THRESHOLD) {
+    return `Block height: ${timestamp}`;
+  }
+  const date = new Date(timestamp * 1000);
+  return date.toISOString().replace('T', ' ').replace(/\.\d{3}Z$/, ' UTC');
 }

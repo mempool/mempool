@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, Observable, Subject, combineLatest, of, timer } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, combineLatest, merge, of, timer } from 'rxjs';
 import { delayWhen, filter, map, share, shareReplay, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import { ApiService } from '@app/services/api.service';
 import { Env, StateService } from '@app/services/state.service';
@@ -58,7 +58,8 @@ export class FederationUtxosListComponent implements OnInit {
 
       this.websocketService.want(['blocks']);
 
-      this.auditStatus$ = this.stateService.blocks$.pipe(
+      // Bitcoin reserves can change even when no new Liquid block arrives.
+      this.auditStatus$ = merge(this.stateService.blocks$, timer(0, 60_000)).pipe(
         takeUntil(this.destroy$),
         throttleTime(40000),
         delayWhen(_ => this.isLoad ? timer(0) : timer(2000)),

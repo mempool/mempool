@@ -18,6 +18,18 @@ interface FederationAddress {
   blocknumber: number;
 }
 
+interface AuditUtxo {
+  unspent: number;
+  txid: string;
+  txindex: number;
+  bitcoinaddress: string;
+  amount: number;
+  blocknumber: number;
+  timelock: number;
+  expiredAt: number;
+  lastblockupdate: number;
+}
+
 class ElementsParser {
   private isRunning = false;
   private federationPegScripts: FederationAddress[] = [];
@@ -32,8 +44,7 @@ class ElementsParser {
       this.isRunning = true;
       const startedAt = Date.now() / 1000;
       const stopAt = startedAt + 3600; // Limit one parse run to 1 hour to keep the tip sufficiently up to date
-      const result = await bitcoinClient.getChainTips();
-      const tip = result[0].height;
+      const tip = await bitcoinClient.getBlockCount();
       const latestBlockHeight = await this.$getLatestBlockHeightFromDatabase();
       for (let height = latestBlockHeight + 1; height <= tip; height++) {
         if ((Date.now() / 1000) >= stopAt) {
@@ -116,7 +127,8 @@ class ElementsParser {
       const params_utxos: (string | number)[] = [bitcointxid, bitcoinindex, bitcoinaddress, amount, bitcoinblock, bitcoinBlockTime, 1, bitcoinblock - 1, 0, pegInTimelock, 0, 0, txid, txindex, blockTime];
       await DB.query(query_utxos, params_utxos);
       const [minBlockUpdate] = await DB.query(`SELECT MIN(lastblockupdate) AS lastblockupdate FROM federation_txos WHERE unspent = 1`);
-      await this.$saveLastBlockAuditToDatabase(minBlockUpdate[0]['lastblockupdate']);
+      const heightToAudit = minBlockUpdate[0]['lastblockupdate'];
+      await DB.query(`UPDATE state SET number = ? WHERE name = 'last_bitcoin_block_audit' AND (number IS NULL OR number = 0 OR number > ?)`, [heightToAudit, heightToAudit]);
       logger.debug(`Saved new Federation UTXO ${bitcointxid}:${bitcoinindex} belonging to ${bitcoinaddress} to federation txos`);
 
     }
@@ -260,9 +272,8 @@ class ElementsParser {
 
   public async $updateFederationUtxos(stopAt: number) {
     try {
-      let auditProgress = await this.$getAuditProgress();
-      // If no peg in transaction was found in the database, return
-      if (!auditProgress.lastBlockAudit) {
+      const auditProgress = await this.$getAuditProgress();
+      if (!auditProgress.lastBlockAudit && !auditProgress.lastBlockScanned) {
         logger.debug(`No Federation UTXOs found in the database. Waiting for some to be confirmed before starting the Federation UTXOs audit`);
         return;
       }
@@ -274,7 +285,37 @@ class ElementsParser {
         return;
       }
 
-      auditProgress.lastBlockAudit++;
+      if (!auditProgress.lastBlockScanned) {
+        auditProgress.lastBlockScanned = auditProgress.lastBlockAudit;
+      }
+      let height = Math.min(auditProgress.lastBlockAudit || auditProgress.lastBlockScanned, auditProgress.lastBlockScanned) + 1;
+      if (height > auditProgress.confirmedTip) {
+        return;
+      }
+
+      // Keep the unspent UTXOs in memory, bucketed by the last block they were updated in
+      const utxosByHeight = new Map<number, AuditUtxo[]>();
+      for (const utxo of await this.$getFederationUtxosToScan(height)) {
+        // Replay persisted spends and outputs inserted before an interrupted block finished
+        if (utxo.unspent === 0 || (utxo.lastblockupdate === utxo.blocknumber && utxo.blocknumber >= height)) {
+          utxo.lastblockupdate--;
+        }
+        this.bucketFederationUtxo(utxosByHeight, utxo);
+      }
+      let checkpointBlocks = 0;
+      let checkpointTime = Date.now();
+
+      // Get the peg-out addresses that need to be scanned
+      const redeemAddresses = await this.$getRedeemAddressesToScan();
+      const redeemAddressesByAddress = new Map<string, any[]>();
+      for (const redeemAddress of redeemAddresses) {
+        const entries = redeemAddressesByAddress.get(redeemAddress.bitcoinaddress);
+        if (entries) {
+          entries.push(redeemAddress);
+        } else {
+          redeemAddressesByAddress.set(redeemAddress.bitcoinaddress, [redeemAddress]);
+        }
+      }
 
       // Logging
       let indexedThisRun = 0;
@@ -282,33 +323,23 @@ class ElementsParser {
       const startedAt = Date.now() / 1000;
       const indexingSpeeds: number[] = [];
 
-      while (auditProgress.lastBlockAudit <= auditProgress.confirmedTip) {
+      while (height <= auditProgress.confirmedTip) {
+        const forceFullBlockScan = height > auditProgress.lastBlockScanned;
 
         // First, get the current UTXOs that need to be scanned in the block
-        const utxos = await this.$getFederationUtxosToScan(auditProgress.lastBlockAudit);
-
-        // Get the peg-out addresses that need to be scanned
-        const redeemAddresses = await this.$getRedeemAddressesToScan();
-        const redeemAddressesByAddress = new Map<string, any[]>();
-        for (const redeemAddress of redeemAddresses) {
-          const entries = redeemAddressesByAddress.get(redeemAddress.bitcoinaddress);
-          if (entries) {
-            entries.push(redeemAddress);
-          } else {
-            redeemAddressesByAddress.set(redeemAddress.bitcoinaddress, [redeemAddress]);
-          }
-        }
+        const utxos = utxosByHeight.get(height - 1) || [];
+        utxosByHeight.delete(height - 1);
 
         // The fast way: check if these UTXOs are still unspent as of the current block with gettxout
         let spentAsTip: Map<string, any>;
         let unspentAsTip: Map<string, any>;
-        if (auditProgress.confirmedTip - auditProgress.lastBlockAudit <= 150) { // If the audit status is not too far in the past, we can use gettxout (fast way)
+        if (!forceFullBlockScan) {
           const utxosToParse = await this.$getFederationUtxosToParse(utxos);
           spentAsTip = utxosToParse.spentAsTip;
           unspentAsTip = utxosToParse.unspentAsTip;
-          logger.debug(`Found ${utxos.length} Federation UTXOs and ${redeemAddresses.length} Peg-Out Addresses to scan in Bitcoin block height #${auditProgress.lastBlockAudit} / #${auditProgress.confirmedTip}`);
+          logger.debug(`Found ${utxos.length} Federation UTXOs and ${redeemAddresses.length} Peg-Out Addresses to scan in Bitcoin block height #${height} / #${auditProgress.confirmedTip}`);
           logger.debug(`${unspentAsTip.size} / ${utxos.length} Federation UTXOs are unspent as of tip`);
-        } else { // If the audit status is too far in the past, it is useless and wasteful to look for still unspent txos since they will all be spent as of the tip
+        } else { // Unscanned blocks are parsed in full anyway, so every UTXO can be checked against the block instead of gettxout
           spentAsTip = new Map<string, any>(utxos.map(utxo => [`${utxo.txid}:${utxo.txindex}`, utxo]));
           unspentAsTip = new Map<string, any>();
 
@@ -320,27 +351,41 @@ class ElementsParser {
             indexingSpeeds.push(blockPerSeconds);
             if (indexingSpeeds.length > 100) {indexingSpeeds.shift();} // Keep the length of the up to 100 last indexing speeds
             const meanIndexingSpeed = indexingSpeeds.reduce((a, b) => a + b, 0) / indexingSpeeds.length;
-            const eta = (auditProgress.confirmedTip - auditProgress.lastBlockAudit) / meanIndexingSpeed;
-            logger.debug(`Scanning ${utxos.length} Federation UTXOs and ${redeemAddresses.length} Peg-Out Addresses at Bitcoin block height #${auditProgress.lastBlockAudit} / #${auditProgress.confirmedTip} | ~${meanIndexingSpeed.toFixed(2)} blocks/sec | elapsed: ${(runningFor / 60).toFixed(0)} minutes | ETA: ${(eta / 60).toFixed(0)} minutes`);
+            const eta = (auditProgress.confirmedTip - height) / meanIndexingSpeed;
+            logger.debug(`Scanning ${utxos.length} Federation UTXOs and ${redeemAddresses.length} Peg-Out Addresses at Bitcoin block height #${height} / #${auditProgress.confirmedTip} | ~${meanIndexingSpeed.toFixed(2)} blocks/sec | elapsed: ${(runningFor / 60).toFixed(0)} minutes | ETA: ${(eta / 60).toFixed(0)} minutes`);
             timer = Date.now() / 1000;
             indexedThisRun = 0;
           }
         }
 
         // The slow way: parse the block to look for the spending tx
-        const blockHash: IBitcoinApi.ChainTips = await bitcoinSecondClient.getBlockHash(auditProgress.lastBlockAudit);
-        const block: IBitcoinApi.Block = await bitcoinSecondClient.getBlock(blockHash, 2);
-        await this.$parseBitcoinBlock(block, spentAsTip, unspentAsTip, auditProgress.confirmedTip, redeemAddressesByAddress);
+        const blockHash: IBitcoinApi.ChainTips = await bitcoinSecondClient.getBlockHash(height);
+        let block: Pick<IBitcoinApi.Block, 'height' | 'time'>;
+        if (forceFullBlockScan || spentAsTip.size > 0) {
+          const fullBlock: IBitcoinApi.Block = await bitcoinSecondClient.getBlock(blockHash, 2);
+          await this.$parseBitcoinBlock(fullBlock, spentAsTip, redeemAddressesByAddress);
+          block = fullBlock;
+        } else {
+          block = await bitcoinSecondClient.getBlockHeader(blockHash, true);
+        }
+        await this.$updateFederationUtxoProgress(block, spentAsTip, unspentAsTip, auditProgress.confirmedTip, utxosByHeight);
+        if (forceFullBlockScan) {
+          auditProgress.lastBlockScanned = height;
+        }
 
-        // Finally, update the lastblockupdate of the remaining UTXOs and save to the database
-        const [minBlockUpdate] = await DB.query(`SELECT MIN(lastblockupdate) AS lastblockupdate FROM federation_txos WHERE unspent = 1`);
-        await this.$saveLastBlockAuditToDatabase(minBlockUpdate[0]['lastblockupdate']);
-
-        auditProgress = await this.$getAuditProgress();
-        auditProgress.lastBlockAudit++;
+        auditProgress.lastBlockAudit = Math.min(auditProgress.confirmedTip, ...utxosByHeight.keys());
+        height = Math.min(auditProgress.lastBlockAudit, auditProgress.lastBlockScanned) + 1;
         indexedThisRun++;
+        checkpointBlocks++;
+        const stopping = (Date.now() / 1000) >= stopAt;
 
-        if ((Date.now() / 1000) >= stopAt) {
+        if (checkpointBlocks >= 25 || Date.now() - checkpointTime >= 5000 || stopping || height > auditProgress.confirmedTip) {
+          await this.$saveAuditCheckpoint(auditProgress);
+          checkpointBlocks = 0;
+          checkpointTime = Date.now();
+        }
+
+        if (stopping) {
           logger.debug(`Reached max federation audit runtime, pausing audit to let Liquid parsing run and resuming later`);
           break;
         }
@@ -351,12 +396,21 @@ class ElementsParser {
     }
   }
 
-  // Get the UTXOs that need to be scanned in block height (UTXOs that were last updated in the block height - 1)
+  // Include spent outputs from the interval that may need replay after an interrupted run
   /** @asyncUnsafe */
-  protected async $getFederationUtxosToScan(height: number) {
-    const query = `SELECT txid, txindex, bitcoinaddress, amount, blocknumber, timelock, expiredAt FROM federation_txos WHERE lastblockupdate = ? AND unspent = 1`;
-    const [rows] = await DB.query(query, [height - 1]);
-    return rows as any[];
+  protected async $getFederationUtxosToScan(height: number): Promise<AuditUtxo[]> {
+    const query = `SELECT txid, txindex, bitcoinaddress, amount, blocknumber, timelock, expiredAt, lastblockupdate, unspent FROM federation_txos WHERE unspent = 1 OR (unspent = 0 AND lastblockupdate >= ?)`;
+    const [rows] = await DB.query(query, [height]);
+    return rows as AuditUtxo[];
+  }
+
+  protected bucketFederationUtxo(utxosByHeight: Map<number, AuditUtxo[]>, utxo: AuditUtxo): void {
+    const bucket = utxosByHeight.get(utxo.lastblockupdate);
+    if (bucket) {
+      bucket.push(utxo);
+    } else {
+      utxosByHeight.set(utxo.lastblockupdate, [utxo]);
+    }
   }
 
   // Returns the UTXOs that are spent as of tip and need to be scanned
@@ -375,7 +429,7 @@ class ElementsParser {
   }
 
   /** @asyncUnsafe */
-  protected async $parseBitcoinBlock(block: IBitcoinApi.Block, spentAsTip: Map<string, any>, unspentAsTip: Map<string, any>, confirmedTip: number, redeemAddressesByAddress: Map<string, any[]>) {
+  protected async $parseBitcoinBlock(block: IBitcoinApi.Block, spentAsTip: Map<string, any>, redeemAddressesByAddress: Map<string, any[]>) {
     const federationTimelockByAddress = new Map<string, number>((await this.$getFederationPegScripts()).map(fedAddress => [fedAddress.address, fedAddress.timelock]));
     for (const tx of block.tx) {
       let mightRedeemInThisTx = false;
@@ -435,6 +489,10 @@ class ElementsParser {
           // Find the number of times output.scriptPubKey.address appears in the candidates. There can be address reuse for peg-outs...
           const matchingAddress: any[] = redeemCandidates.filter(redeemAddress => -redeemAddress.amount === Math.round(output.value * 100000000));
           if (matchingAddress.length > 0) {
+            const [redeemed] = await DB.query(`SELECT 1 FROM elements_pegs WHERE bitcointxid = ? AND bitcoinindex = ? AND amount < 0 LIMIT 1`, [tx.txid, output.n]) as any[];
+            if (redeemed.length > 0) {
+              continue;
+            }
             if (matchingAddress.length > 1) {
               // If there are more than one peg out address with the same amount, we can't know which one redeemed the UTXO: we take the oldest one
               matchingAddress.sort((a, b) => a.datetime - b.datetime);
@@ -442,7 +500,7 @@ class ElementsParser {
             } else {
               logger.debug(`Found redeem txid ${tx.txid}:${output.n} to peg-out address ${matchingAddress[0].bitcoinaddress}, amount ${matchingAddress[0].amount}`);
             }
-            const query_add_redeem = `UPDATE elements_pegs SET bitcointxid = ?, bitcoinindex = ? WHERE bitcoinaddress = ? AND amount = ? AND datetime = ?`;
+            const query_add_redeem = `UPDATE elements_pegs SET bitcointxid = ?, bitcoinindex = ? WHERE bitcoinaddress = ? AND amount = ? AND datetime = ? AND bitcointxid = ''`;
             const params_add_redeem: (string | number)[] = [tx.txid, output.n, matchingAddress[0].bitcoinaddress, matchingAddress[0].amount, matchingAddress[0].datetime];
             await DB.query(query_add_redeem, params_add_redeem);
             const index = redeemCandidates.indexOf(matchingAddress[0]);
@@ -458,24 +516,44 @@ class ElementsParser {
         }
       }
     }
+  }
 
+  /** @asyncUnsafe */
+  protected async $updateFederationUtxoProgress(block: Pick<IBitcoinApi.Block, 'height' | 'time'>, spentAsTip: Map<string, AuditUtxo>, unspentAsTip: Map<string, AuditUtxo>, confirmedTip: number, utxosByHeight: Map<number, AuditUtxo[]>) {
+    // UTXOs that keep walking block by block all share the same lastblockupdate, which is only saved at the next checkpoint
     for (const utxo of spentAsTip.values()) {
+      utxo.lastblockupdate = block.height;
       if (utxo.expiredAt === 0 && block.height >= utxo.blocknumber + utxo.timelock) { // The UTXO is expiring in this block
+        utxo.expiredAt = block.time;
         await DB.query(`UPDATE federation_txos SET lastblockupdate = ?, expiredAt = ? WHERE txid = ? AND txindex = ?`, [block.height, block.time, utxo.txid, utxo.txindex]);
-      } else {
-        await DB.query(`UPDATE federation_txos SET lastblockupdate = ? WHERE txid = ? AND txindex = ?`, [block.height, utxo.txid, utxo.txindex]);
       }
     }
 
     for (const utxo of unspentAsTip.values()) {
+      utxo.lastblockupdate = confirmedTip;
       if (utxo.expiredAt === 0 && block.height >= utxo.blocknumber + utxo.timelock) { // The UTXO is expiring in this block
+        utxo.expiredAt = block.time;
         await DB.query(`UPDATE federation_txos SET lastblockupdate = ?, expiredAt = ? WHERE txid = ? AND txindex = ?`, [confirmedTip, block.time, utxo.txid, utxo.txindex]);
       } else if (utxo.expiredAt === 0 && confirmedTip >= utxo.blocknumber + utxo.timelock) { // The UTXO is expiring before the tip: we need to keep track of it
+        utxo.lastblockupdate = utxo.blocknumber + utxo.timelock - 1;
         await DB.query(`UPDATE federation_txos SET lastblockupdate = ? WHERE txid = ? AND txindex = ?`, [utxo.blocknumber + utxo.timelock - 1, utxo.txid, utxo.txindex]);
       } else {
       await DB.query(`UPDATE federation_txos SET lastblockupdate = ? WHERE txid = ? AND txindex = ?`, [confirmedTip, utxo.txid, utxo.txindex]);
       }
     }
+
+    for (const utxo of [...spentAsTip.values(), ...unspentAsTip.values()]) {
+      this.bucketFederationUtxo(utxosByHeight, utxo);
+    }
+  }
+
+  // Every unspent UTXO still behind the scan height has been walked up to it since the last checkpoint
+  /** @asyncUnsafe */
+  protected async $saveAuditCheckpoint(auditProgress: { lastBlockAudit: number; lastBlockScanned: number }): Promise<void> {
+    const height = Math.min(auditProgress.lastBlockAudit, auditProgress.lastBlockScanned);
+    await DB.query(`UPDATE federation_txos SET lastblockupdate = ? WHERE unspent = 1 AND lastblockupdate < ?`, [height, height]);
+    await this.$saveLastBlockAuditToDatabase(auditProgress.lastBlockAudit);
+    await this.$saveLastBlockScannedToDatabase(auditProgress.lastBlockScanned);
   }
 
   /** @asyncUnsafe */
@@ -484,13 +562,20 @@ class ElementsParser {
     await DB.query(query, [blockHeight]);
   }
 
+  /** @asyncUnsafe */
+  protected async $saveLastBlockScannedToDatabase(blockHeight: number) {
+    await DB.query(`UPDATE state SET number = ? WHERE name = 'last_bitcoin_block_scanned'`, [blockHeight]);
+  }
+
   // Get the bitcoin block where the audit process was last updated
   /** @asyncUnsafe */
   protected async $getAuditProgress(): Promise<any> {
-    const lastblockaudit = await this.$getLastBlockAudit();
+    const [rows] = await DB.query(`SELECT name, number FROM state WHERE name IN ('last_bitcoin_block_audit', 'last_bitcoin_block_scanned')`);
+    const progress = Object.fromEntries((rows as { name: string; number: number }[]).map(row => [row.name, row.number]));
     const bitcoinBlocksToSync = await this.$getBitcoinBlockchainState();
     return {
-      lastBlockAudit: lastblockaudit,
+      lastBlockAudit: progress.last_bitcoin_block_audit,
+      lastBlockScanned: progress.last_bitcoin_block_scanned,
       confirmedTip: bitcoinBlocksToSync.bitcoinBlocks - auditBlockOffsetWithTip,
     };
   }
@@ -507,7 +592,7 @@ class ElementsParser {
 
   /** @asyncUnsafe */
   protected async $getLastBlockAudit(): Promise<number> {
-    const query = `SELECT number FROM state WHERE name = 'last_bitcoin_block_audit'`;
+    const query = `SELECT MIN(number) AS number FROM state WHERE name IN ('last_bitcoin_block_audit', 'last_bitcoin_block_scanned')`;
     const [rows] = await DB.query(query);
     return rows[0]['number'];
   }
@@ -539,7 +624,7 @@ class ElementsParser {
 
   /** @asyncUnsafe */
   public async $getPegDataByMonth(): Promise<any> {
-    const query = `SELECT SUM(amount) AS amount, DATE_FORMAT(FROM_UNIXTIME(datetime), '%Y-%m-01') AS date FROM elements_pegs GROUP BY DATE_FORMAT(FROM_UNIXTIME(datetime), '%Y%m')`;
+    const query = `SELECT SUM(amount) AS amount, DATE_FORMAT(FROM_UNIXTIME(datetime), '%Y-%m-01') AS date FROM elements_pegs GROUP BY date ORDER BY date`;
     const [rows] = await DB.query(query);
     return rows;
   }
@@ -547,15 +632,40 @@ class ElementsParser {
   /** @asyncUnsafe */
   public async $getFederationReservesByMonth(): Promise<any> {
     const query = `
-    SELECT SUM(amount) AS amount, DATE_FORMAT(FROM_UNIXTIME(blocktime), '%Y-%m-01') AS date FROM federation_txos 
-    WHERE
-        (blocktime > UNIX_TIMESTAMP(LAST_DAY(FROM_UNIXTIME(blocktime) - INTERVAL 1 MONTH) + INTERVAL 1 DAY))
-      AND 
-        ((unspent = 1) OR (unspent = 0 AND lasttimeupdate > UNIX_TIMESTAMP(LAST_DAY(FROM_UNIXTIME(blocktime)) + INTERVAL 1 DAY)))
-      AND 
-        (expiredAt = 0 OR expiredAt > UNIX_TIMESTAMP(LAST_DAY(FROM_UNIXTIME(blocktime)) + INTERVAL 1 DAY))
-    GROUP BY 
-        date;`;
+      WITH months AS (
+        SELECT DISTINCT
+          EXTRACT(YEAR_MONTH FROM FROM_UNIXTIME(datetime)) AS month_key,
+          DATE_FORMAT(FROM_UNIXTIME(datetime), '%Y-%m-01') AS date
+        FROM elements_pegs
+      ),
+      reserve_events AS (
+        SELECT
+          EXTRACT(YEAR_MONTH FROM FROM_UNIXTIME(blocktime)) AS month_key,
+          SUM(CAST(amount AS SIGNED)) AS delta
+        FROM federation_txos
+        GROUP BY month_key
+
+        UNION ALL
+
+        SELECT
+          EXTRACT(YEAR_MONTH FROM FROM_UNIXTIME(
+            CASE
+              WHEN expiredAt > 0 THEN expiredAt
+              ELSE lasttimeupdate
+            END
+          )) AS month_key,
+          -SUM(CAST(amount AS SIGNED)) AS delta
+        FROM federation_txos
+        WHERE expiredAt > 0 OR (unspent = 0 AND lasttimeupdate > 0)
+        GROUP BY month_key
+      )
+      SELECT
+        COALESCE(SUM(reserve_events.delta), 0) AS amount,
+        months.date
+      FROM months
+      LEFT JOIN reserve_events ON reserve_events.month_key <= months.month_key
+      GROUP BY months.month_key, months.date
+      ORDER BY months.month_key;`;
     const [rows] = await DB.query(query);
     return rows;
   }
