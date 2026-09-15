@@ -1,8 +1,9 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ElementRef, QueryList, ViewChildren } from '@angular/core';
 import { StateService, SignaturesMode } from '@app/services/state.service';
 import { CacheService } from '@app/services/cache.service';
 import { Observable, ReplaySubject, BehaviorSubject, merge, Subscription, of, forkJoin } from 'rxjs';
-import { Outspend, Status, Transaction, Vin, Vout } from '@interfaces/electrs.interface';
+import { Outspend, Transaction, Vin, Vout } from '@interfaces/electrs.interface';
+import { AddressBlockGroup } from '@components/address-blocks/address-blocks.component';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { environment } from '@environments/environment';
 import { AssetsService } from '@app/services/assets.service';
@@ -34,6 +35,8 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() transactions: Transaction[];
   @Input() groupByBlock = false;
+  @Input() fullyLoaded = false;
+  @Input() loading = false;
   @Input() cached: boolean = false;
   @Input() showConfirmations = false;
   @Input() transactionPage = false;
@@ -62,7 +65,12 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   showDetails$ = new BehaviorSubject<boolean>(false);
   assetsMinimal: any = {};
   transactionsLength: number = 0;
-  groupStarts: boolean[] = [];
+  blockGroups: AddressBlockGroup[] = [];
+  groupStarts: Record<number, AddressBlockGroup> = {};
+  transactionGroupIds: string[] = [];
+  collapsedGroups = new Set<string>();
+  selectedGroup: string | null = null;
+  @ViewChildren('groupHeader') groupHeaders: QueryList<ElementRef<HTMLElement>>;
   inputRowLimit: number = 12;
   outputRowLimit: number = 12;
   showFullScript: { [vinIndex: number]: boolean } = {};
@@ -223,9 +231,6 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes): void {
-    if (changes.transactions || changes.groupByBlock) {
-      this.updateGroupStarts();
-    }
     if (changes.inputIndex || changes.outputIndex || changes.rowLimit) {
       this.inputRowLimit = Math.max(this.rowLimit, (this.inputIndex || 0) + 3);
       this.outputRowLimit = Math.max(this.rowLimit, (this.outputIndex || 0) + 3);
@@ -242,6 +247,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
       this.similarityMatches.clear();
       this.updateAddressSimilarities();
       if (!this.transactions || !this.transactions.length) {
+        this.updateBlockGroups();
         return;
       }
 
@@ -377,6 +383,9 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
     }
+    if (changes.transactions || changes.addresses || changes.groupByBlock || changes.fullyLoaded) {
+      this.updateBlockGroups();
+    }
   }
 
   private loadLiquidAssetData(): void {
@@ -496,20 +505,61 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
     return this.fakeScriptHashRegex.test(vout.scriptpubkey_address);
   }
 
-  private updateGroupStarts(): void {
-    if (!this.groupByBlock || !this.transactions?.length) {
-      this.groupStarts = [];
-      return;
+  private updateBlockGroups(): void {
+    this.blockGroups = [];
+    this.groupStarts = {};
+    this.transactionGroupIds = [];
+    if (this.groupByBlock) {
+      let group: AddressBlockGroup;
+      this.transactions?.forEach((tx, index) => {
+        const id = tx.status.confirmed ? tx.status.block_hash || tx.txid : 'unconfirmed';
+        if (group?.id !== id) {
+          const previousHeight = group?.status.block_height;
+          group = {
+            id, status: tx.status, count: 0, net: 0, partial: false, feeRates: [],
+            skippedBlocks: Number.isFinite(previousHeight) && Number.isFinite(tx.status.block_height)
+              ? Math.max(0, previousHeight - tx.status.block_height - 1) : 0,
+          };
+          this.blockGroups.push(group);
+          this.groupStarts[index] = group;
+        }
+        group.count++;
+        if (!tx.status.confirmed) {
+          group.feeRates.push(tx.fee / (tx.weight / 4));
+        }
+        // Reuse the address delta calculated for each transaction, including P2PK scripts.
+        // Liquid can contain multiple assets and confidential values, so omit its aggregate.
+        group.net = !this.isLiquid && group.net !== null && Number.isFinite(tx['addressValue'])
+          ? group.net + tx['addressValue'] : null;
+        this.transactionGroupIds.push(id);
+      });
+      const lastConfirmed = this.blockGroups.filter(group => group.status.confirmed).pop();
+      if (lastConfirmed && !this.fullyLoaded) {
+        lastConfirmed.partial = true;
+      }
     }
+    const ids = new Set(this.blockGroups.map(group => group.id));
+    this.collapsedGroups = new Set([...this.collapsedGroups].filter(id => ids.has(id)));
+    if (!ids.has(this.selectedGroup)) {
+      this.selectedGroup = this.blockGroups[0]?.id ?? null;
+    }
+  }
 
-    let previous: Status | null = null;
-    this.groupStarts = this.transactions.map(({ status }) => {
-      // Without a block hash, confirmed transactions must remain separate.
-      const first = !previous || status.confirmed !== previous.confirmed
-        || (status.confirmed && (!status.block_hash || status.block_hash !== previous.block_hash));
-      previous = status;
-      return first;
-    });
+  toggleGroup(id: string): void {
+    if (this.collapsedGroups.has(id)) {
+      this.collapsedGroups.delete(id);
+    } else {
+      this.collapsedGroups.add(id);
+    }
+  }
+
+  selectBlockGroup(id: string): void {
+    this.selectedGroup = id;
+    this.collapsedGroups.delete(id);
+    this.ref.detectChanges();
+    const header = this.groupHeaders.find(element => element.nativeElement.dataset.blockGroup === id)?.nativeElement;
+    header?.scrollIntoView({ block: 'start' });
+    header?.focus({ preventScroll: true });
   }
 
   onScroll(): void {
