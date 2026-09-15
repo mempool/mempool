@@ -506,6 +506,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           const known = new Set(this.transactions.map(tx => tx.txid));
           this.transactions = this.transactions.concat(transactions.filter(tx => !known.has(tx.txid)));
           this.sortTransactions();
+          this.fullyLoaded = this.transactions.length === this.mempoolStats.tx_count + this.chainStats.tx_count;
         } else {
           this.fullyLoaded = true;
         }
