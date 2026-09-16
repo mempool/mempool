@@ -7,6 +7,7 @@ import { EnterpriseService } from '@app/services/enterprise.service';
 import { NavigationService } from '@app/services/navigation.service';
 import { MenuComponent } from '@components/menu/menu.component';
 import { StorageService } from '@app/services/storage.service';
+import { AuthServiceMempool } from '@app/services/auth.service';
 
 @Component({
   selector: 'app-master-page',
@@ -37,6 +38,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
 
   enterpriseInfo: any;
   enterpriseInfo$: Subscription;
+  authSubscription$: Subscription;
 
   @ViewChild(MenuComponent)
   public menuComponent!: MenuComponent;
@@ -47,6 +49,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     private enterpriseService: EnterpriseService,
     private navigationService: NavigationService,
     private storageService: StorageService,
+    private authService: AuthServiceMempool,
     private router: Router,
   ) { }
 
@@ -73,7 +76,9 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     });
 
     this.servicesEnabled = this.officialMempoolSpace && this.stateService.env.ACCELERATOR === true && this.stateService.network === '';
-    this.refreshAuth();
+    this.authSubscription$ = this.authService.getAuth$().subscribe((auth) => {
+      this.user = auth?.user ?? null;
+    });
 
     const isServicesPage = this.router.url.includes('/services/');
     this.menuOpen = isServicesPage && !this.isSmallScreen();
@@ -137,6 +142,9 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.enterpriseInfo$) {
       this.enterpriseInfo$.unsubscribe();
+    }
+    if (this.authSubscription$) {
+      this.authSubscription$.unsubscribe();
     }
   }
 

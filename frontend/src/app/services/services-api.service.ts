@@ -57,17 +57,18 @@ export class ServicesApiServices {
       });
     }
 
-    this.getUserInfo$().subscribe();
+    this.fetchUserInfo$().subscribe();
     this.router.events.pipe(
       filter((event) => event instanceof NavigationStart && this.currentAuth !== localStorage.getItem('auth')),
-      switchMap(() => this.getUserInfo$()),
+      switchMap(() => this.fetchUserInfo$()),
     ).subscribe();
   }
 
   /**
-   * Do not call directly, userSubject$ instead
+   * Subscribe to userSubject$ for user state.
+   * Use refreshUserInfo$() when a hard refresh from the API is needed.
    */
-  private getUserInfo$() {
+  private fetchUserInfo$() {
     return this.getUserInfoApi$().pipe(
       tap((user) => {
         this.userSubject$.next(user);
@@ -83,6 +84,10 @@ export class ServicesApiServices {
       }),
       share(),
     );
+  }
+
+  refreshUserInfo$(): Observable<IUser | null> {
+    return this.fetchUserInfo$();
   }
 
   /**
