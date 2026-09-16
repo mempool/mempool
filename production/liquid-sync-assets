@@ -3,7 +3,23 @@ set -e
 
 export NVM_DIR="$HOME/.nvm"
 source "$NVM_DIR/nvm.sh"
-nvm use v24.13.0
+
+# pin node/npm to the versions tracked in the repo
+NODE_VERSION=$(cat "${HOME}/mempool/.nvmrc")
+NPM_VERSION=$(cat "${HOME}/mempool/.npm-version")
+
+if ! nvm use "${NODE_VERSION}" 2>/dev/null;then
+    echo "[!] node ${NODE_VERSION} not installed; run: nvm install ${NODE_VERSION} --shared-zlib" >&2
+    exit 1
+fi
+
+if [ "$(npm -v)" != "${NPM_VERSION}" ];then
+    npm install -g "npm@${NPM_VERSION}" || exit 1
+fi
+
+echo "Using versions of node/npm: "
+echo "node: $(node -v)"
+echo "npm: $(npm -v)"
 
 cd "$HOME/liquid/frontend"
 npm run sync-assets

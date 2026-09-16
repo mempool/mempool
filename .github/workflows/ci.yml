@@ -15,7 +15,7 @@ jobs:
     if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
     strategy:
       matrix:
-        node: ["24.13.0"]
+        node: ["24.21.0"]
         flavor: ["dev", "prod"]
       fail-fast: false
     runs-on: mempool-ci
@@ -35,8 +35,8 @@ jobs:
           cache: 'npm'
           cache-dependency-path: '${{ matrix.node }}/${{ matrix.flavor }}/backend/package-lock.json'
 
-      - name: Install npm 11.12.0
-        run: npm install -g npm@11.12.0
+      - name: Install npm 12.0.0
+        run: npm install -g npm@12.0.0
 
       - name: Cache node modules
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -100,7 +100,7 @@ jobs:
     name: "Cache assets for builds"
     strategy:
       matrix:
-        node: ["24.13.0"]
+        node: ["24.21.0"]
     runs-on: mempool-ci
     steps:
       - name: Checkout
@@ -116,8 +116,8 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'assets/frontend/package-lock.json'
 
-      - name: Install npm 11.12.0
-        run: npm install -g npm@11.12.0
+      - name: Install npm 12.0.0
+        run: npm install -g npm@12.0.0
 
       - name: Cache node modules for frontend
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -209,7 +209,7 @@ jobs:
     if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
     strategy:
       matrix:
-        node: ["24.13.0"]
+        node: ["24.21.0"]
         flavor: ["dev", "prod"]
       fail-fast: false
     runs-on: mempool-ci
@@ -229,8 +229,8 @@ jobs:
           cache: 'npm'
           cache-dependency-path: '${{ matrix.node }}/${{ matrix.flavor }}/frontend/package-lock.json'
 
-      - name: Install npm 11.12.0
-        run: npm install -g npm@11.12.0
+      - name: Install npm 12.0.0
+        run: npm install -g npm@12.0.0
 
       - name: Cache node modules
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -314,7 +314,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: ["24.13.0"]
+        node: ["24.21.0"]
         module: ["mempool", "liquid", "testnet4"]
 
     name: E2E tests for ${{ matrix.module }}
@@ -331,8 +331,8 @@ jobs:
           cache: "npm"
           cache-dependency-path: ${{ matrix.module }}/frontend/package-lock.json
 
-      - name: Install npm 11.12.0
-        run: npm install -g npm@11.12.0
+      - name: Install npm 12.0.0
+        run: npm install -g npm@12.0.0
 
       - name: Cache node modules for e2e
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
