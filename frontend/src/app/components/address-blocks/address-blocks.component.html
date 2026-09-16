@@ -33,14 +33,30 @@
               <span i18n="shared.transaction-count.plural">{{ group.count | number }} transactions</span>
             }
           </span>
-          <span class="net-amount" [class.positive]="group.net > 0" [class.negative]="group.net < 0">
+          <span class="activity-direction">
+            <span class="direction-icons" aria-hidden="true">
+              @if (group.sent) {
+                <fa-icon class="red-color" [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
+              }
+              @if (group.received) {
+                <fa-icon class="green-color" [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
+              }
+            </span>
+            @if (group.sent && group.received) {
+              <span i18n="address.blocks.sent-received">Sent &amp; received</span>
+            } @else if (group.sent) {
+              <span i18n="address.blocks.sent">Sent</span>
+            } @else if (group.received) {
+              <span i18n="address.blocks.received">Received</span>
+            }
+          </span>
+          <span class="net-amount">
             @if (group.net !== null) {
               <app-amount [satoshis]="group.net" [addPlus]="group.net > 0" [noFiat]="true" digitsInfo="1.0-8"></app-amount>
             } @else {
               <span>—</span>
             }
           </span>
-          <span class="net-label" i18n="address.blocks.net">Net change</span>
           <span class="block-time">
             @if (group.status.block_time) {
               {{ group.status.block_time * 1000 | date:'MMM d, HH:mm' }}

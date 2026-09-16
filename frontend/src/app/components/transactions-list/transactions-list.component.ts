@@ -516,7 +516,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
         if (group?.id !== id) {
           const previousHeight = group?.status.block_height;
           group = {
-            id, status: tx.status, count: 0, net: 0, partial: false, feeRates: [],
+            id, status: tx.status, count: 0, net: 0, received: false, sent: false, partial: false, feeRates: [],
             skippedBlocks: Number.isFinite(previousHeight) && Number.isFinite(tx.status.block_height)
               ? Math.max(0, previousHeight - tx.status.block_height - 1) : 0,
           };
@@ -524,6 +524,8 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
           this.groupStarts[index] = group;
         }
         group.count++;
+        group.received ||= tx.vout.some(output => this.isAddressOutput(output));
+        group.sent ||= tx.vin.some(input => this.isAddressOutput(input.prevout));
         if (!tx.status.confirmed) {
           group.feeRates.push(tx.fee / (tx.weight / 4));
         }
@@ -543,6 +545,15 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
     if (!ids.has(this.selectedGroup)) {
       this.selectedGroup = this.blockGroups[0]?.id ?? null;
     }
+  }
+
+  private isAddressOutput(output: Vout): boolean {
+    return !!output && this.addresses.some(address => {
+      if (address.length === 66 || address.length === 130) {
+        return output.scriptpubkey === (address.length === 66 ? '21' : '41') + address + 'ac';
+      }
+      return output.scriptpubkey_address === address;
+    });
   }
 
   toggleGroup(id: string): void {

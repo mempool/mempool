@@ -9,6 +9,8 @@ export interface AddressBlockGroup {
   status: Status;
   count: number;
   net: number | null;
+  received: boolean;
+  sent: boolean;
   partial: boolean;
   skippedBlocks: number;
   feeRates: number[];
