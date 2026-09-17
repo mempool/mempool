@@ -131,6 +131,23 @@ ship_frontend()
 export NVM_DIR="${HOME}/.nvm"
 source "${NVM_DIR}/nvm.sh"
 
+# pin node/npm to the versions tracked in repo
+NODE_VERSION=$(cat "${HOME}/mempool/.nvmrc")
+NPM_VERSION=$(cat "${HOME}/mempool/.npm-version")
+
+if ! nvm use "${NODE_VERSION}" 2>/dev/null;then
+    echo "[!] node ${NODE_VERSION} not installed; run: nvm install ${NODE_VERSION} --shared-zlib" >&2
+    exit 1
+fi
+
+if [ "$(npm -v)" != "${NPM_VERSION}" ];then
+    npm install -g npm@$NPM_VERSION || exit 1
+fi;
+
+echo "Using versions of node/npm: "
+echo "node: $(node -v)"
+echo "npm: $(npm -v)"
+
 # what to look for
 frontends=(mainnet liquid onbtc bitb meta river strategy xxi)
 backends=(mainnet testnet testnet4 signet liquid liquidtestnet onbtc bitb)
@@ -152,24 +169,6 @@ done
 for repo in $frontend_repos $backend_repos;do
     update_repo "${repo}"
 done
-
-# pin node/npm to the versions tracked in the revision we just checked out
-PIN_REPO="${frontend_repos[1]:-${backend_repos[1]}}"
-NODE_VERSION=$(cat "${HOME}/${PIN_REPO}/.nvmrc")
-NPM_VERSION=$(cat "${HOME}/${PIN_REPO}/.npm-version" 2>/dev/null)
-
-if ! nvm use "${NODE_VERSION}" 2>/dev/null;then
-    echo "[!] node ${NODE_VERSION} not installed; run: nvm install ${NODE_VERSION} --shared-zlib" >&2
-    exit 1
-fi
-
-if [ -n "${NPM_VERSION}" ] && [ "$(npm -v)" != "${NPM_VERSION}" ];then
-    npm install -g npm@$NPM_VERSION || exit 1
-fi;
-
-echo "Using versions of node/npm: "
-echo "node: $(node -v)"
-echo "npm: $(npm -v)"
 
 # fix backend configs
 for repo in $backend_repos;do
