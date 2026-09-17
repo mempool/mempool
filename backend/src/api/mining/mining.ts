@@ -92,10 +92,11 @@ class Mining {
   /**
    * Get historical block fee rates percentiles
    */
-  public async $getHistoricalBlockFeeRates(interval: string | null = null): Promise<any> {
+  public async $getHistoricalBlockFeeRates(interval: string | null = null, precise = false): Promise<any> {
     return await BlocksRepository.$getHistoricalBlockFeeRates(
       this.getTimeRange(interval),
-      Common.getSqlInterval(interval)
+      Common.getSqlInterval(interval),
+      precise
     );
   }
 
