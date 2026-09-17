@@ -135,7 +135,12 @@ source "${NVM_DIR}/nvm.sh"
 NODE_VERSION=$(cat "${HOME}/mempool/.nvmrc")
 NPM_VERSION=$(cat "${HOME}/mempool/.npm-version")
 
-if ! nvm use "${NODE_VERSION}" 2>/dev/null;then
+if [ -z "${NPM_VERSION}" ] || [ -z "${NODE_VERSION}" ]; then
+    echo "[!] Missing node/npm version in ${HOME}/mempool/[.nvmrc | .npm-version]" >&2
+    exit 1
+fi
+
+if ! nvm use "${NODE_VERSION}";then
     echo "[!] node ${NODE_VERSION} not installed; run: nvm install ${NODE_VERSION} --shared-zlib" >&2
     exit 1
 fi
