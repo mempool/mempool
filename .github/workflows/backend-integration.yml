@@ -15,7 +15,7 @@ jobs:
     if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
     strategy:
       matrix:
-        node: ["24.13.0"]
+        node: ["24.21.0"]
       fail-fast: false
     runs-on: mempool-ci
 
@@ -34,6 +34,9 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           cache: 'npm'
           cache-dependency-path: '${{ matrix.node }}/integration/backend/package-lock.json'
+
+      - name: Install npm 12.0.0
+        run: npm install -g npm@12.0.0
 
       - name: Cache node modules
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
