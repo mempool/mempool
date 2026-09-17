@@ -842,18 +842,22 @@ class BlocksRepository {
    * Get the historical averaged block fee rate percentiles
    * @asyncSafe
    */
-   public async $getHistoricalBlockFeeRates(div: number, interval: string | null): Promise<any> {
+   public async $getHistoricalBlockFeeRates(div: number, interval: string | null, precise = false): Promise<any> {
     try {
+      const avgFee = (index: number): string => precise
+        ? `ROUND(AVG(JSON_EXTRACT(fee_span, '$[${index}]')), 3)`
+        : `CAST(AVG(JSON_EXTRACT(fee_span, '$[${index}]')) as INT)`;
+
       let query = `SELECT
         CAST(AVG(height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[0]')) as INT) as avgFee_0,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[1]')) as INT) as avgFee_10,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[2]')) as INT) as avgFee_25,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[3]')) as INT) as avgFee_50,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[4]')) as INT) as avgFee_75,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[5]')) as INT) as avgFee_90,
-        CAST(AVG(JSON_EXTRACT(fee_span, '$[6]')) as INT) as avgFee_100
+        ${avgFee(0)} as avgFee_0,
+        ${avgFee(1)} as avgFee_10,
+        ${avgFee(2)} as avgFee_25,
+        ${avgFee(3)} as avgFee_50,
+        ${avgFee(4)} as avgFee_75,
+        ${avgFee(5)} as avgFee_90,
+        ${avgFee(6)} as avgFee_100
       FROM blocks
       WHERE stale = 0`;
 
