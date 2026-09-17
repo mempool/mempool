@@ -503,8 +503,18 @@ export class AddressComponent implements OnInit, OnDestroy {
         if (transactions && transactions.length) {
           // Keep the API cursor independent of the display order and live updates.
           this.lastTransactionTxId = transactions[transactions.length - 1].txid;
-          const known = new Set(this.transactions.map(tx => tx.txid));
-          this.transactions = this.transactions.concat(transactions.filter(tx => !known.has(tx.txid)));
+          const txByTxid = new Map(this.transactions.map(tx => [tx.txid, tx]));
+          for (const tx of transactions) {
+            const existing = txByTxid.get(tx.txid);
+            if (!existing) {
+              txByTxid.set(tx.txid, tx);
+            } else if (tx.status.confirmed) {
+              // Preserve cached transaction data and don't undo a live confirmation
+              // when an older request returns a pending transaction.
+              existing.status = tx.status;
+            }
+          }
+          this.transactions = [...txByTxid.values()];
           this.sortTransactions();
           this.fullyLoaded = this.transactions.length === this.mempoolStats.tx_count + this.chainStats.tx_count;
         } else {

@@ -256,11 +256,7 @@ td.amount.large {
 	@media (max-width: 575px) { scroll-margin-top: 120px; }
 
 	&:focus-visible { outline: 1px solid var(--info); }
-	.group-toggle {
-		margin-left: auto;
-		white-space: nowrap;
-	}
-	.group-count, .group-partial { font-size: 0.85rem; color: var(--transparent-fg); }
+	.group-count, .group-partial { font-size: 0.85rem; }
 
 	&.first-group {
 		margin-top: 0;
@@ -269,10 +265,10 @@ td.amount.large {
 	h3 {
 		font-size: 1.1rem;
 		margin-bottom: 0;
+		@media (max-width: 575px) { flex-basis: 100%; }
 	}
 
 	app-timestamp {
-		color: var(--transparent-fg);
 		font-size: 14px;
 		white-space: nowrap;
 	}
