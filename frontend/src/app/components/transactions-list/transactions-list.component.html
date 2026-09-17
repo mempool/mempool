@@ -40,17 +40,8 @@
       @if (tx.status.confirmed) {
         <app-timestamp [customFormat]="'yyyy-MM-dd HH:mm:ss'" [unixTime]="tx.status.block_time" [hideTimeSince]="true"></app-timestamp>
       }
-      <button type="button" class="btn btn-outline-info btn-sm group-toggle" (click)="toggleGroup(group.id)"
-        [attr.aria-expanded]="!collapsedGroups.has(group.id)">
-        @if (collapsedGroups.has(group.id)) {
-          <span i18n="address.blocks.show-transactions">Show Transactions</span>
-        } @else {
-          <span i18n="address.blocks.hide-transactions">Hide Transactions</span>
-        }
-      </button>
     </div>
   }
-  @if (!groupByBlock || !collapsedGroups.has(transactionGroupIds[i])) {
   <div *ngIf="!transactionPage" class="header-bg box tx-page-container">
     <a class="tx-link" [routerLink]="['/tx/' | relativeUrl, tx.txid]">
       <app-truncate [text]="tx.txid"></app-truncate>
@@ -606,7 +597,6 @@
 
   <br />
 
-  }
 </ng-container>
 
 </div>
