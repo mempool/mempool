@@ -67,8 +67,6 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   transactionsLength: number = 0;
   blockGroups: AddressBlockGroup[] = [];
   groupStarts: Record<number, AddressBlockGroup> = {};
-  transactionGroupIds: string[] = [];
-  collapsedGroups = new Set<string>();
   selectedGroup: string | null = null;
   @ViewChildren('groupHeader') groupHeaders: QueryList<ElementRef<HTMLElement>>;
   inputRowLimit: number = 12;
@@ -508,7 +506,6 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   private updateBlockGroups(): void {
     this.blockGroups = [];
     this.groupStarts = {};
-    this.transactionGroupIds = [];
     if (this.groupByBlock) {
       let group: AddressBlockGroup;
       this.transactions?.forEach((tx, index) => {
@@ -533,15 +530,13 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
         // Liquid can contain multiple assets and confidential values, so omit its aggregate.
         group.net = !this.isLiquid && group.net !== null && Number.isFinite(tx['addressValue'])
           ? group.net + tx['addressValue'] : null;
-        this.transactionGroupIds.push(id);
       });
-      const lastConfirmed = this.blockGroups.filter(group => group.status.confirmed).pop();
-      if (lastConfirmed && !this.fullyLoaded) {
-        lastConfirmed.partial = true;
+      const lastGroup = this.blockGroups[this.blockGroups.length - 1];
+      if (lastGroup && !this.fullyLoaded) {
+        lastGroup.partial = true;
       }
     }
     const ids = new Set(this.blockGroups.map(group => group.id));
-    this.collapsedGroups = new Set([...this.collapsedGroups].filter(id => ids.has(id)));
     if (!ids.has(this.selectedGroup)) {
       this.selectedGroup = this.blockGroups[0]?.id ?? null;
     }
@@ -556,18 +551,8 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  toggleGroup(id: string): void {
-    if (this.collapsedGroups.has(id)) {
-      this.collapsedGroups.delete(id);
-    } else {
-      this.collapsedGroups.add(id);
-    }
-  }
-
   selectBlockGroup(id: string): void {
     this.selectedGroup = id;
-    this.collapsedGroups.delete(id);
-    this.ref.detectChanges();
     const header = this.groupHeaders.find(element => element.nativeElement.dataset.blockGroup === id)?.nativeElement;
     header?.scrollIntoView({ block: 'start' });
     header?.focus({ preventScroll: true });
