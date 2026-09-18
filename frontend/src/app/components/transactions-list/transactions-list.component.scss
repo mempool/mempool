@@ -242,6 +242,38 @@ td.amount.large {
 	margin-bottom: 10px;
 	margin-top: 10px;
 }
+
+.transaction-group-header {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: flex-start;
+	gap: 0.5rem 1rem;
+	margin-top: 1rem;
+	padding-bottom: 0.5rem;
+	margin-bottom: 0.75rem;
+	scroll-margin-top: 90px;
+	@media (max-width: 575px) { scroll-margin-top: 120px; }
+
+	&:focus-visible { outline: 1px solid var(--info); }
+	.group-count, .group-partial { font-size: 0.85rem; }
+
+	&.first-group {
+		margin-top: 0;
+	}
+
+	h3 {
+		font-size: 1.1rem;
+		margin-bottom: 0;
+		@media (max-width: 575px) { flex-basis: 100%; }
+	}
+
+	app-timestamp {
+		font-size: 14px;
+		white-space: nowrap;
+	}
+}
+
 .assetBox {
 	background: color-mix(in srgb, var(--tertiary) 56%, transparent);
 

@@ -1,0 +1,84 @@
+<section class="address-blocks" aria-label="Blocks with address activity" i18n-aria-label="address.blocks.activity">
+  <div #strip class="activity-strip" [class.dragging]="dragging"
+    (pointerdown)="onPointerDown($event)" (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp($event)" (pointercancel)="onPointerUp($event)"
+    (lostpointercapture)="onPointerUp($event)" (dragstart)="$event.preventDefault()">
+    @for (group of groups; track group.id) {
+      @if ($index > 0 && group.status.confirmed && !groups[$index - 1].status.confirmed) {
+        <span class="pending-divider" aria-hidden="true"></span>
+      }
+      @if (group.skippedBlocks > 0) {
+        <span class="block-gap" [ngbTooltip]="skippedBlocks" tabindex="0">
+          <span aria-hidden="true">···</span>
+          <span class="visually-hidden" i18n="address.blocks.skipped">{{ group.skippedBlocks | number }} blocks without activity</span>
+        </span>
+        <ng-template #skippedBlocks><span i18n="address.blocks.skipped">{{ group.skippedBlocks | number }} blocks without activity</span></ng-template>
+      }
+      <div class="activity-block" [class.selected]="selectedGroup === group.id" [class.pending]="!group.status.confirmed">
+        <div class="block-height">
+          @if (group.status.block_hash) {
+            <a [routerLink]="['/block' | relativeUrl, group.status.block_hash]">{{ group.status.block_height }}</a>
+          } @else if (group.status.confirmed) {
+            <span i18n="transaction.confirmed|Transaction confirmed state">Confirmed</span>
+          } @else {
+            <span i18n="dashboard.unconfirmed|Unconfirmed count">Unconfirmed</span>
+          }
+        </div>
+        <button type="button" class="block-face" [style.background]="!group.status.confirmed ? pendingBackground : null"
+          [attr.aria-pressed]="selectedGroup === group.id" (click)="selectGroup.emit(group.id)">
+          <span class="transaction-count">
+            @if (group.count === 1) {
+              <span i18n="shared.transaction-count.singular">{{ group.count | number }} transaction</span>
+            } @else {
+              <span i18n="shared.transaction-count.plural">{{ group.count | number }} transactions</span>
+            }
+          </span>
+          <span class="activity-direction">
+            <span class="direction-icons" aria-hidden="true">
+              @if (group.sent) {
+                <fa-icon class="red-color" [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
+              }
+              @if (group.received) {
+                <fa-icon class="green-color" [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
+              }
+            </span>
+            @if (group.sent && group.received) {
+              <span i18n="address.blocks.sent-received">Sent &amp; received</span>
+            } @else if (group.sent) {
+              <span i18n="address.blocks.sent">Sent</span>
+            } @else if (group.received) {
+              <span i18n="address.blocks.received">Received</span>
+            }
+          </span>
+          <span class="net-amount">
+            @if (group.net !== null) {
+              <app-amount [satoshis]="group.net" [addPlus]="group.net > 0" [noFiat]="true" digitsInfo="1.0-8"></app-amount>
+            } @else {
+              <span>—</span>
+            }
+          </span>
+          <span class="block-time">
+            @if (group.status.block_time) {
+              <app-timestamp [customFormat]="'MMM d, HH:mm'" [unixTime]="group.status.block_time" [hideTimeSince]="true"></app-timestamp>
+            } @else {
+              <span i18n="address.blocks.pending">Awaiting confirmation</span>
+            }
+          </span>
+          @if (group.partial) {
+            <span class="partial-label" i18n="address.blocks.partial">Partial activity</span>
+          }
+        </button>
+        <span class="selection-marker" aria-hidden="true"></span>
+      </div>
+    }
+    @if (!fullyLoaded) {
+      <button type="button" class="load-older btn btn-outline-secondary" [disabled]="loading" (click)="loadMore.emit()">
+        @if (loading) {
+          <span i18n="shared.loading">Loading...</span>
+        } @else {
+          <span i18n="address.blocks.load">Load older activity</span>
+        }
+      </button>
+    }
+  </div>
+</section>
