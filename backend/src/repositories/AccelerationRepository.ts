@@ -12,6 +12,7 @@ import bitcoinApi from '../api/bitcoin/bitcoin-api-factory';
 import transactionUtils from '../api/transaction-utils';
 import { BlockExtended, MempoolTransactionExtended } from '../mempool.interfaces';
 import { makeBlockTemplate } from '../api/mini-miner';
+import BlocksRepository from './BlocksRepository';
 
 export interface PublicAcceleration {
   txid: string,
@@ -59,6 +60,13 @@ class AccelerationRepository {
       logger.err(`Cannot save acceleration (${acceleration.txSummary.txid}) into db. Reason: ` + (e instanceof Error ? e.message : e));
       // We don't throw, not a critical issue if we miss some accelerations
     }
+    // Separate from the insert above so a failure here is not reported as a failed
+    // acceleration save.
+    try {
+      await BlocksRepository.$invalidateMinFeeRateAtHeight(block.height);
+    } catch (e) {
+      logger.err(`Cannot invalidate min_fee_rate at height ${block.height}. Reason: ` + (e instanceof Error ? e.message : e));
+    }
   }
 
   /** @asyncSafe */
@@ -91,6 +99,24 @@ class AccelerationRepository {
       return null;
     }
     return null;
+  }
+
+  /**
+   * Reads straight from the accelerations table rather than going through
+   * MEMPOOL_SERVICES, so the min fee rate exclusion set matches what was persisted.
+   * @asyncSafe
+   */
+  public async $getAcceleratedTxidsAtHeight(height: number): Promise<string[]> {
+    try {
+      const [rows]: any[] = await DB.query(
+        `SELECT txid FROM accelerations WHERE height = ?`,
+        [height]
+      );
+      return rows.map(row => row.txid);
+    } catch (e) {
+      logger.err(`Cannot get accelerated txids at height ${height}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
   }
 
   public async $getAccelerationInfo(poolSlug: string | null = null, height: number | null = null, interval: string | null = null): Promise<PublicAcceleration[]> {
@@ -395,6 +421,12 @@ class AccelerationRepository {
       await DB.query(`DELETE FROM accelerations where height >= ${blockHeight}`);
     } catch (e) {
       logger.err('Cannot delete indexed accelerations. Reason: ' + (e instanceof Error ? e.message : e));
+    }
+    // Separate from the delete above so a failure here is not reported as a failed delete.
+    try {
+      await BlocksRepository.$invalidateMinFeeRateFromHeight(blockHeight);
+    } catch (e) {
+      logger.err(`Cannot invalidate min_fee_rate from height ${blockHeight}. Reason: ` + (e instanceof Error ? e.message : e));
     }
   }
 }
