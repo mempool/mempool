@@ -59,7 +59,7 @@
           </span>
           <span class="block-time">
             @if (group.status.block_time) {
-              {{ group.status.block_time * 1000 | date:'MMM d, HH:mm' }}
+              <app-timestamp [customFormat]="'MMM d, HH:mm'" [unixTime]="group.status.block_time" [hideTimeSince]="true"></app-timestamp>
             } @else {
               <span i18n="address.blocks.pending">Awaiting confirmation</span>
             }
