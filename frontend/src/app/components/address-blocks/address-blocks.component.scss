@@ -49,19 +49,25 @@
 }
 
 .block-height {
+  width: calc(1.16 * var(--block-size));
+  margin-left: calc(-0.16 * var(--block-size));
   height: 28px;
-  margin-bottom: calc(0.192 * var(--block-size) + 7px);
-  font-size: 1rem;
+  margin-bottom: calc(0.192 * var(--block-size) + 10px);
+  font-size: 1.125rem;
+  line-height: 28px;
+  font-variant-numeric: tabular-nums;
 }
 
 .block-face {
   @include block-cube.faces;
   position: relative;
   overflow: visible;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  // Reserve every row, including the optional partial-activity label.
+  grid-template-rows: 28px 28px 28px 32px 16px;
   align-items: center;
-  justify-content: center;
+  align-content: center;
   width: var(--block-size);
   height: var(--block-size);
   padding: 12px 6px;
@@ -83,13 +89,16 @@
   &::after { background: var(--mempool-block-top); }
   &::before { background: var(--mempool-block-side); }
 }
-.transaction-count { font-size: 0.9rem; }
+.transaction-count {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
 .activity-direction {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  margin-top: 10px;
   font-size: 0.75rem;
   line-height: 1.2;
 }
@@ -100,13 +109,13 @@
 }
 .net-amount {
   color: white;
-  font-size: 1rem;
-  font-weight: 600;
-  margin-top: 4px;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-.block-time { font-size: 0.8rem; margin-top: 12px; }
-.partial-label { font-size: 0.7rem; margin-top: 4px; color: #ffe082; }
+.block-time { font-size: 0.75rem; line-height: 1.2; }
+.partial-label { font-size: 0.7rem; line-height: 1.2; color: #ffe082; }
 .selection-marker {
   display: block;
   width: 0;
@@ -130,20 +139,23 @@
   }
   .block-height {
     height: 20px;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
+    line-height: 20px;
+    margin-bottom: calc(0.192 * var(--block-size) + 6px);
   }
-  .block-face { padding: 6px 3px; }
-  .transaction-count { font-size: 0.65rem; }
+  .block-face {
+    padding: 4px 3px;
+    grid-template-rows: 18px 22px 22px 22px 12px;
+  }
+  .transaction-count { font-size: 0.7rem; }
   .net-amount {
     font-size: 0.65rem;
-    margin-top: 4px;
     max-width: 100%;
     white-space: normal;
     overflow-wrap: anywhere;
   }
   .activity-direction, .block-time, .partial-label { font-size: 0.6rem; }
-  .activity-direction { margin-top: 4px; gap: 2px; }
-  .block-time { margin-top: 4px; }
+  .activity-direction { gap: 2px; }
   .block-gap { flex-basis: 6px; letter-spacing: 0; }
   .pending-divider { margin-left: 0; margin-right: 0; }
   .load-older { flex-basis: 104px; font-size: 0.75rem; }
