@@ -19,7 +19,7 @@ export interface CoreIndex {
   best_block_height: number;
 }
 
-type TaskName = 'blocksPrices' | 'coinStatsIndex';
+type TaskName = 'blocksPrices' | 'coinStatsIndex' | 'poolsStats';
 
 class Indexer {
   private runIndexer = true;
@@ -113,12 +113,11 @@ class Indexer {
       }
     }
     this.tasksScheduled[task] = setTimeout(async () => {
+      delete this.tasksScheduled[task];
       try {
         await this.runSingleTask(task);
       } catch (e) {
         logger.err(`Unexpected error in scheduled task ${task}: ` + (e instanceof Error ? e.message : e));
-      } finally {
-        clearTimeout(this.tasksScheduled[task]);
       }
     }, timeout);
   }
@@ -138,13 +137,14 @@ class Indexer {
 
     switch (task) {
       case 'blocksPrices': {
-        if (!['testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK) && config.FIAT_PRICE.ENABLED) {
+        if (Common.blockPricesIndexingEnabled()) {
           let latestPriceId;
           try {
             latestPriceId = await PricesRepository.$getLatestPriceId();
           } catch (e) {
             logger.debug('failed to fetch latest price id from db: ' + (e instanceof Error ? e.message : e));
-          }          if (priceUpdater.historyInserted === false || latestPriceId === null) {
+          }
+          if (priceUpdater.historyInserted === false || latestPriceId === null) {
             logger.debug(`Blocks prices indexer is waiting for the price updater to complete`, logger.tags.mining);
             this.scheduleSingleTask(task, 10000);
           } else {
@@ -160,6 +160,15 @@ class Indexer {
           await mining.$indexCoinStatsIndex();
         } catch (e) {
           logger.debug(`failed to index coinstatsindex: ` + (e instanceof Error ? e.message : e));
+        }
+      } break;
+
+      case 'poolsStats': {
+        logger.debug('Syncing pools stats');
+        try {
+          await mining.$rebuildPoolsStatsCache();
+        } catch (e) {
+          logger.debug('failed to sync pools stats cache: ' + (e instanceof Error ? e.message : e));
         }
       } break;
     }
@@ -226,8 +235,11 @@ class Indexer {
       await AccelerationRepository.$indexPastAccelerations();
       await BlocksAuditsRepository.$migrateAuditsV0toV1();
       await BlocksRepository.$migrateBlocks();
+
+      void blocks.$generateFlagValuesDatabase();
       // do not wait for classify blocks to finish
       void blocks.$classifyBlocks();
+      void blocks.$updateBlocksMissingBip54Tag();
       runSuccessful = true;
     } catch (e) {
       nextRunDelay = retryDelay;

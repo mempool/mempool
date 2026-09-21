@@ -7,7 +7,10 @@
           @if (enterpriseInfo?.footer_img) {
             <img [src]="enterpriseInfo?.footer_img" [alt]="enterpriseInfo.title" height="60px" class="enterprise-logo">
           } @else {
-            <app-svg-images *ngIf="officialMempoolSpace" name="officialMempoolSpace" viewBox="0 0 500 126"></app-svg-images>
+            <a *ngIf="officialMempoolSpace" class="footer-logo-wrapper" href="https://mempool.holdings" target="_blank" aria-label="Mempool Holdings">
+              <app-svg-images name="blocks-3-2" width="500" height="126" style="display: block; width: 100%; height: auto; transform: scale(1.22);"></app-svg-images>
+              <span class="footer-logo-reg">&trade;</span>
+            </a>
             <app-svg-images *ngIf="!officialMempoolSpace" name="mempoolSpace" viewBox="0 0 500 126"></app-svg-images>
           }
         </div>
@@ -15,10 +18,10 @@
           <p class="explore-tagline-mobile">
             @if (officialMempoolSpace) {
               <ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container>
-              <ng-template [ngIf]="locale.substr(0, 2) === 'en'">&reg;</ng-template>  
+              <ng-template [ngIf]="locale.substr(0, 2) === 'en'"><sup>&reg;</sup></ng-template>
             } @else {
               <ng-container i18n="shared.be-your-own-explorer">Be your own explorer</ng-container>
-              <ng-template [ngIf]="locale.substr(0, 2) === 'en'">&trade;</ng-template>
+              <ng-template [ngIf]="locale.substr(0, 2) === 'en'"><sup>&trade;</sup></ng-template>
             }
           </p>
         }
@@ -59,10 +62,10 @@
           <p class="explore-tagline-desktop">
             @if (officialMempoolSpace) {
               <ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container>
-              <ng-template [ngIf]="locale.substr(0, 2) === 'en'">&reg;</ng-template>  
+              <ng-template [ngIf]="locale.substr(0, 2) === 'en'"><sup>&reg;</sup></ng-template>
             } @else {
               <ng-container i18n="shared.be-your-own-explorer">Be your own explorer</ng-container>
-              <ng-template [ngIf]="locale.substr(0, 2) === 'en'">&trade;</ng-template>
+              <ng-template [ngIf]="locale.substr(0, 2) === 'en'"><sup>&trade;</sup></ng-template>
             }
           </p>
         }

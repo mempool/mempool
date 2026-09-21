@@ -110,7 +110,7 @@
             <ng-container *ngTemplateOutlet="restOfTable"></ng-container>
           </tbody>
         </table>
-        <div class="col-sm chart-container" *ngIf="webGlEnabled && !showComparison">
+        <div class="col-sm chart-container block-graph-wrapper" *ngIf="webGlEnabled && !showComparison">
           <app-block-overview-graph
             #blockGraphActual
             [isLoading]="!stateService.isBrowser || isLoadingOverview"
@@ -212,6 +212,16 @@
         </span>
         </td>
       </tr>
+      @if (network !== 'liquid' && network !== 'liquidtestnet' && block.extras.coinbaseBip54) {
+        <tr>
+          <td i18n="transaction.features|Transaction features">Features</td>
+          <td>
+            <span class="badge bg-success" i18n="block.bip54" i18n-ngbTooltip="bip54-tooltip" ngbTooltip="Coinbase is forward-compatible with BIP-54 (nLockTime = height − 1, nSequence ≠ 0xffffffff)." placement="bottom">
+              BIP-54 coinbase
+            </span>
+          </td>
+        </tr>
+      }
     </ng-container>
     <ng-template #loadingRest>
       <tr>

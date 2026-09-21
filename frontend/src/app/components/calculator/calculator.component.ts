@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { distinctUntilChanged, map, shareReplay, switchMap } from 'rxjs/operators';
+import { distinctUntilChanged, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { StateService } from '@app/services/state.service';
 import { ApiService } from '@app/services/api.service';
 import { Price } from '@app/services/price.service';
@@ -28,6 +28,7 @@ export class CalculatorComponent implements OnInit {
   isMaxSupply = false;
   currentCurrency = 'USD';
   currencyDecimals = 2;
+  lastInput: 'fiat' | 'bitcoin' | 'satoshis' = 'bitcoin';
 
   currency$ = this.stateService.fiatCurrency$;
   price$: Observable<number>;
@@ -87,8 +88,13 @@ export class CalculatorComponent implements OnInit {
 
     combineLatest([
       this.price$,
-      this.form.get('fiat').valueChanges
+      this.form.get('fiat').valueChanges.pipe(
+        tap(() => this.lastInput = 'fiat')
+      )
     ]).subscribe(([price, value]) => {
+      if (this.lastInput !== 'fiat') {
+        return;
+      }
       this.currentPrice = price;
       const maxFiat = price * MAX_BTC_SUPPLY;
       const isMaxSupply = value >= maxFiat;
@@ -111,8 +117,13 @@ export class CalculatorComponent implements OnInit {
 
     combineLatest([
       this.price$,
-      this.form.get('bitcoin').valueChanges
+      this.form.get('bitcoin').valueChanges.pipe(
+        tap(() => this.lastInput = 'bitcoin')
+      )
     ]).subscribe(([price, value]) => {
+      if (this.lastInput !== 'bitcoin') {
+        return;
+      }
       this.currentPrice = price;
       const isMaxSupply = parseFloat(value) >= MAX_BTC_SUPPLY;
       this.isMaxSupply = isMaxSupply;
@@ -126,8 +137,13 @@ export class CalculatorComponent implements OnInit {
 
     combineLatest([
       this.price$,
-      this.form.get('satoshis').valueChanges
+      this.form.get('satoshis').valueChanges.pipe(
+        tap(() => this.lastInput = 'satoshis')
+      )
     ]).subscribe(([price, value]) => {
+      if (this.lastInput !== 'satoshis') {
+        return;
+      }
       this.currentPrice = price;
       let bitcoinValue = value / 100_000_000;
       const isMaxSupply = bitcoinValue >= MAX_BTC_SUPPLY;

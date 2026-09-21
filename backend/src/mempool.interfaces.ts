@@ -17,6 +17,7 @@ export interface PoolInfo {
   name: string;
   link: string;
   blockCount: number;
+  emptyBlocks: number;
   slug: string;
   avgMatchRate: number | null;
   avgFeeDelta: number | null;
@@ -25,7 +26,6 @@ export interface PoolInfo {
 
 export interface PoolStats extends PoolInfo {
   rank: number;
-  emptyBlocks: number;
 }
 
 export enum TemplateAlgorithm {
@@ -319,6 +319,7 @@ export interface BlockExtension {
   coinbaseAddresses: string[] | null;
   coinbaseSignature: string | null;
   coinbaseSignatureAscii: string | null;
+  coinbaseBip54: boolean | null;
   virtualSize: number;
   avgTxSize: number;
   totalInputs: number;

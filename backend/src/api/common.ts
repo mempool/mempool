@@ -902,6 +902,15 @@ export class Common {
     );
   }
 
+  // must match the conditions under which the indexer runs the 'blocksPrices' task,
+  // otherwise queries will join against a blocks_prices table that is never populated
+  static blockPricesIndexingEnabled(): boolean {
+    return (
+      !['testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK) &&
+      config.FIAT_PRICE.ENABLED === true
+    );
+  }
+
   static setDateMidnight(date: Date): void {
     date.setUTCHours(0);
     date.setUTCMinutes(0);
@@ -1154,6 +1163,20 @@ export class Common {
       // Guaranteed to pass validation (see function below)
       return this.validateTransactionHex(matches[1].toLowerCase());
     });
+  }
+
+  static isBip54Coinbase (block: IEsploraApi.Block | {id: string, height: number, timestamp: number}, coinbaseTx: IEsploraApi.Transaction): boolean | null {
+    if (typeof block.height !== 'number' || typeof block.timestamp !== 'number') {
+      return null;
+    }
+
+    const timeFirstMainnetBip54Coinbase = 1771507776;
+    if (block.timestamp < timeFirstMainnetBip54Coinbase) {
+      return null;
+    }
+
+    const seq = coinbaseTx.vin[0].sequence;
+    return (block.height > 0 && coinbaseTx.locktime === block.height - 1 && typeof seq === 'number' && seq !== 0xffffffff);
   }
 
   private static validateTransactionHex(txhex: string): string {

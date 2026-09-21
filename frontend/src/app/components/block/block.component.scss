@@ -13,6 +13,10 @@
   .alert-mempool {
     flex-direction: row;
     flex-wrap: wrap;
+
+    app-truncate {
+      min-width: 0;
+    }
   }
 
   .container-button {

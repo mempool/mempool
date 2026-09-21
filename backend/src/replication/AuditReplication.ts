@@ -7,6 +7,7 @@ import { $sync } from './replicator';
 import config from '../config';
 import { Common } from '../api/common';
 import blocks from '../api/blocks';
+import mining from '../api/mining/mining';
 
 const BATCH_SIZE = 16;
 
@@ -51,6 +52,11 @@ class AuditReplication {
     }
 
     logger.debug(`Fetched ${totalSynced} audits, ${totalMissed} still missing`, 'Replication');
+
+    if (totalSynced > 0) {
+      // imported audits carry match_rate and expected_fees, which the pools stats averages read
+      void mining.$rebuildPoolsStatsCache();
+    }
 
     this.inProgress = false;
   }

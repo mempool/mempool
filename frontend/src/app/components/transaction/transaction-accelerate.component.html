@@ -1,0 +1,72 @@
+<div class="container-xl">
+  <span id="accelerate" #accelerate class="anchor"></span>
+
+  <div class="title-block">
+    <div class="title mb-1">
+      <h2>
+        <a [href]="[ isMempoolSpaceBuild ? '/accelerator' : 'https://mempool.space/accelerator']" [target]="isMempoolSpaceBuild ? '' : 'blank'">
+          <app-svg-images name="accelerator" [height]="isMobile ? '35px' : '45px'"></app-svg-images>
+        </a>
+      </h2>
+    </div>
+    <button *ngIf="hasAccelerationDetails" class="btn btn-sm btn-outline-info details-button ms-2" (click)="showAccelerationDetails = !showAccelerationDetails" i18n="transaction.details|Transaction Details">Details</button>
+  </div>
+
+  @if (waitingForTransaction) {
+    <div class="text-center">
+      <h3 i18n="transaction.error.transaction-not-found">Transaction not found.</h3>
+      <h5 i18n="transaction.error.waiting-for-it-to-appear">Waiting for it to appear in the mempool...</h5>
+      <div class="spinner-border text-light mt-2"></div>
+    </div>
+  } @else if (error && !loadingCachedTx) {
+    <app-http-error [error]="error">
+      <span i18n="transaction.error.loading-transaction-data">Error loading transaction data.</span>
+    </app-http-error>
+  } @else if (acceleratorCheckoutLoading) {
+    <ng-container *ngTemplateOutlet="acceleratorCheckoutLoadingWidget"></ng-container>
+  } @else {
+    @if (showAccelerationSummary) {
+      <app-accelerate-checkout
+        *ngIf="(da$ | async) && (ETA$ | async) as eta; else acceleratorCheckoutLoadingWidget"
+        [advancedEnabled]="true"
+        [tx]="tx"
+        [accelerating]="isAcceleration"
+        [eta]="eta"
+        [miningStats]="miningStats"
+        [showDetails]="showAccelerationDetails"
+        [noCTA]="true"
+        [initialStep]="'checkout'"
+        [partnerCode]="partnerCode"
+        (hasDetails)="setHasAccelerationDetails($event)"
+        (completed)="onAccelerationCompleted()"
+        (unavailable)="onAcceleratorUnavailable()"
+        class="h-100 w-100"
+      ></app-accelerate-checkout>
+    } @else {
+      <ng-container *ngTemplateOutlet="acceleratorUnavailable"></ng-container>
+    }
+  }
+
+  <ng-template #acceleratorCheckoutLoadingWidget>
+    <div class="box card w-100 accelerate-checkout-inner" style="background: var(--box-bg)">
+      <div class="row">
+        <div class="col-md">
+          <div class="d-flex flex-row justify-content-center align-items-center">
+            <div class="m-4 spinner-border text-light" style="width: 25px; height: 25px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #acceleratorUnavailable>
+    <div class="box w-100" style="background: var(--box-bg)">
+      <app-mempool-error [error]="acceleratorError"></app-mempool-error>
+      <div class="text-center">
+        <a class="btn btn-secondary btn-sm rounded-pill" [routerLink]="['/tx/' | relativeUrl, txId]" queryParamsHandling="merge">
+          <span i18n="transaction.view-transaction|View Transaction">View Transaction</span>
+        </a>
+      </div>
+    </div>
+  </ng-template>
+</div>

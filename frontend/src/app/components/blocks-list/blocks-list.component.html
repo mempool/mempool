@@ -1,4 +1,4 @@
-<app-indexing-progress *ngIf="!widget"></app-indexing-progress>
+<app-indexing-progress *ngIf="!widget" [showNetworkHashrate]="false" [showPoolsHashrate]="false"></app-indexing-progress>
 
 <div class="container-xl" style="min-height: 335px" [ngClass]="{'widget': widget, 'full-height': !widget, 'legacy': !isMempoolModule}">
   <div *ngIf="!widget" class="float-start" style="display: flex; width: 100%; align-items: center;">

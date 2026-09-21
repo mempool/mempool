@@ -35,7 +35,6 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
 import { PriceService } from '@app/services/price.service';
 import { isFeatureActive } from '@app/bitcoin.utils';
 import { ServicesApiServices } from '@app/services/services-api.service';
-import { EnterpriseService } from '@app/services/enterprise.service';
 import { PartnerCodeService } from '@app/services/partner-code.service';
 import { ZONE_SERVICE } from '@app/injection-tokens';
 import { MiningService, MiningStats } from '@app/services/mining.service';
@@ -148,6 +147,14 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   hideFlow: boolean = this.stateService.hideFlow.value;
   overrideFlowPreference: boolean = null;
   flowEnabled: boolean;
+  showRbfDiff: boolean = false;
+
+  // The structural diff compares amounts and destinations, and on Liquid neither
+  // is well defined: an output carries an arbitrary asset, and a confidential one
+  // has no value at all. It stays off there until it is asset aware.
+  get isLiquid(): boolean {
+    return this.network === 'liquid' || this.network === 'liquidtestnet';
+  }
   isDetailsOpen: boolean = false;
   tooltipPosition: { x: number, y: number };
   isMobile: boolean;
@@ -217,7 +224,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private seoService: SeoService,
     private priceService: PriceService,
     private storageService: StorageService,
-    private enterpriseService: EnterpriseService,
     private partnerCodeService: PartnerCodeService,
     private miningService: MiningService,
     private etaService: EtaService,
@@ -228,7 +234,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.setupPartnerCode();
 
-    this.enterpriseService.page();
     this.isDetailsOpen = this.route.snapshot.queryParams['showDetails'] === 'true';
     this.cpfpMode = this.route.snapshot.queryParams['cpfp'] === 'true';
 

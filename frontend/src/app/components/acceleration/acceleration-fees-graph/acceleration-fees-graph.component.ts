@@ -220,6 +220,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
         },
       },
       legend: {
+        top: 'top',
         data: [
           {
             name: this.totalBidBoostLabel,

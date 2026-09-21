@@ -192,9 +192,9 @@ export interface MempoolStats {
 
 export interface Outspend {
   spent: boolean;
-  txid: string;
-  vin: number;
-  status: Status;
+  txid?: string;
+  vin?: number;
+  status?: Status;
 }
 
 export interface Asset {

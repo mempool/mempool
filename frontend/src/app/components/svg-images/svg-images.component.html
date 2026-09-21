@@ -318,24 +318,24 @@
   </ng-container>
   <ng-container *ngSwitchCase="'blocks-3-2'">
     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" [attr.width]="width" [attr.height]="height" [style]="style" viewBox="0 0 1500 500">
-      <defs> <style> .cls-1 { clip-path: url(#clippath); } .cls-2 { fill: none; } .cls-2, .cls-3, .cls-4, .cls-5, .cls-6, .cls-7, .cls-8, .cls-9, .cls-10, .cls-11 { stroke-width: 0px; } .cls-12 { mask: url(#mask); } .cls-3 { fill: url(#linear-gradient); } .cls-4 { fill: var(--nav-icon); fill-rule: evenodd; } .cls-5 { fill: url(#linear-gradient-2); } .cls-6 { fill: #2b2725; } .cls-7 { fill: #3d3634; } .cls-8 { fill: #1a1c26; } .cls-9 { fill: #11131f; } .cls-10 { fill: #242837; } .cls-11 { fill: #c4c4c4; } </style> <mask id="mask" x="-13.45" y="-212.96" width="1500" height="750" maskUnits="userSpaceOnUse"> <rect class="cls-11" x="856.55" y="69.38" width="33.44" height="364.27"/> </mask> <clipPath id="clippath"> <rect class="cls-2" x="-13.45" y="-212.96" width="1500" height="750"/> </clipPath> <linearGradient id="linear-gradient" x1="110.04" y1="266.73" x2="804.8" y2="266.73" gradientUnits="userSpaceOnUse"> <stop offset="0" stop-color="#9c8a00"/> <stop offset="1" stop-color="#cc4f00"/> </linearGradient> <linearGradient id="linear-gradient-2" x1="916.96" y1="272.7" x2="916.96" y2="473.09" gradientTransform="translate(2113.22 640.03) rotate(-180)" gradientUnits="userSpaceOnUse"> <stop offset="0" stop-color="#2c5eab"/> <stop offset="1" stop-color="#8242e1"/> </linearGradient> </defs>
-      <polygon class="cls-10" points="604.4 166.89 572.36 122.93 772.75 122.93 804.79 166.89 604.4 166.89"/>
-      <polygon class="cls-8" points="604.4 166.89 572.36 122.94 572.36 322.67 604.4 366.62 604.4 166.89"/>
-      <polygon class="cls-10" points="357.19 166.89 325.15 122.93 525.54 122.93 557.58 166.89 357.19 166.89"/>
-      <polygon class="cls-8" points="357.19 166.89 325.15 122.94 325.15 322.67 357.19 366.62 357.19 166.89"/>
-      <polygon class="cls-10" points="109.98 166.89 77.94 122.93 278.33 122.93 310.38 166.89 109.98 166.89"/>
-      <polygon class="cls-8" points="109.98 166.89 77.94 122.94 77.94 322.67 109.98 366.62 109.98 166.89"/>
-      <polygon class="cls-7" points="1219.59 166.89 1187.55 122.94 1387.94 122.94 1419.99 166.89 1219.59 166.89"/>
-      <polygon class="cls-7" points="972.38 166.89 940.34 122.94 1140.73 122.94 1172.77 166.89 972.38 166.89"/>
-      <polygon class="cls-6" points="1219.59 166.9 1187.55 122.95 1187.55 322.68 1219.59 366.63 1219.59 166.9"/>
-      <polygon class="cls-6" points="972.38 166.9 940.34 122.95 940.34 322.68 972.38 366.63 972.38 166.9"/>
-      <g class="cls-12">
-        <g class="cls-1">
-          <path class="cls-4" d="m872.31,455.56v-9.29h5.29v9.29h-5.29Zm0-27.87v-18.58h5.29v18.58h-5.29Zm0-37.16v-18.58h5.29v18.58h-5.29Zm0-37.16v-18.58h5.29v18.58h-5.29Zm0-37.16v-18.58h5.29v18.58h-5.29Zm0-37.16v-18.58h5.29v18.58h-5.29Zm0-37.16v-18.58h5.29v18.58h-5.29Zm0-37.16v-18.58h5.29v18.58h-5.29Zm0-37.16v-18.58h5.29v18.58h-5.29Zm0-37.16v-18.58h5.29v18.58h-5.29Zm0-37.16v-18.58h5.29v18.58h-5.29Zm0-37.16v-9.29h5.29v9.29h-5.29Z"/>
+      <defs> <mask [id]="'blocks-3-2-mask-' + randomId" x="-13.45" y="-212.96" width="1500" height="750" maskUnits="userSpaceOnUse"> <rect fill="#c4c4c4" x="856.55" y="69.38" width="33.44" height="364.27"/> </mask> <clipPath [id]="'blocks-3-2-clippath-' + randomId"> <rect x="-13.45" y="-212.96" width="1500" height="750"/> </clipPath> <linearGradient [id]="'blocks-3-2-linear-gradient-' + randomId" x1="110.04" y1="266.73" x2="804.8" y2="266.73" gradientUnits="userSpaceOnUse"> <stop offset="0" stop-color="#9c8a00"/> <stop offset="1" stop-color="#cc4f00"/> </linearGradient> <linearGradient [id]="'blocks-3-2-linear-gradient-2-' + randomId" x1="916.96" y1="272.7" x2="916.96" y2="473.09" gradientTransform="translate(2113.22 640.03) rotate(-180)" gradientUnits="userSpaceOnUse"> <stop offset="0" stop-color="#2c5eab"/> <stop offset="1" stop-color="#8242e1"/> </linearGradient> </defs>
+      <polygon fill="#4d4542" points="604.4 166.89 572.36 122.93 772.75 122.93 804.79 166.89 604.4 166.89"/>
+      <polygon fill="#393330" points="604.4 166.89 572.36 122.94 572.36 322.67 604.4 366.62 604.4 166.89"/>
+      <polygon fill="#4d4542" points="357.19 166.89 325.15 122.93 525.54 122.93 557.58 166.89 357.19 166.89"/>
+      <polygon fill="#393330" points="357.19 166.89 325.15 122.94 325.15 322.67 357.19 366.62 357.19 166.89"/>
+      <polygon fill="#4d4542" points="109.98 166.89 77.94 122.93 278.33 122.93 310.38 166.89 109.98 166.89"/>
+      <polygon fill="#393330" points="109.98 166.89 77.94 122.94 77.94 322.67 109.98 366.62 109.98 166.89"/>
+      <polygon fill="#2f3649" points="1219.59 166.89 1187.55 122.94 1387.94 122.94 1419.99 166.89 1219.59 166.89"/>
+      <polygon fill="#2f3649" points="972.38 166.89 940.34 122.94 1140.73 122.94 1172.77 166.89 972.38 166.89"/>
+      <polygon fill="#222634" points="1219.59 166.9 1187.55 122.95 1187.55 322.68 1219.59 366.63 1219.59 166.9"/>
+      <polygon fill="#222634" points="972.38 166.9 940.34 122.95 940.34 322.68 972.38 366.63 972.38 166.9"/>
+      <g [attr.mask]="'url(#blocks-3-2-mask-' + randomId + ')'">
+        <g [attr.clip-path]="'url(#blocks-3-2-clippath-' + randomId + ')'">
+          <path fill="var(--nav-icon)" fill-rule="evenodd" d="M872.31,74.67h5.29v32.0927273h-5.29Z M872.31,138.8554545h5.29v32.0927273h-5.29Z M872.31,203.0409091h5.29v32.0927273h-5.29Z M872.31,267.2263636h5.29v32.0927273h-5.29Z M872.31,331.4118182h5.29v32.0927273h-5.29Z M872.31,395.5972727h5.29v32.0927273h-5.29Z"/>
         </g>
       </g>
-      <path class="cls-3" d="m804.8,166.86v199.74h-200.39v-199.74h200.39Zm-447.62,0v199.74h200.39v-199.74h-200.39Zm-247.14,0v199.74h200.39v-199.74H110.04Z"/>
-      <path class="cls-5" d="m972.45,367.33v-200.39h200.43v200.39h-200.43Zm447.63-200.39h-200.45v200.39h200.45v-200.39Z"/>
+      <path [attr.fill]="'url(#blocks-3-2-linear-gradient-' + randomId + ')'" d="m804.8,166.86v199.74h-200.39v-199.74h200.39Zm-447.62,0v199.74h200.39v-199.74h-200.39Zm-247.14,0v199.74h200.39v-199.74H110.04Z"/>
+      <path [attr.fill]="'url(#blocks-3-2-linear-gradient-2-' + randomId + ')'" d="m972.45,367.33v-200.39h200.43v200.39h-200.43Zm447.63-200.39h-200.45v200.39h200.45v-200.39Z"/>
     </svg>
   </ng-container>
 </ng-container>

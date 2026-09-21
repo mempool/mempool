@@ -1,6 +1,6 @@
 import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnInit, ChangeDetectionStrategy, Input, Inject, LOCALE_ID, ChangeDetectorRef } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, Subscription, combineLatest, of, timer } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, Subscription, combineLatest, merge, of, timer } from 'rxjs';
 import { delayWhen, filter, map, share, shareReplay, switchMap, take, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import { ApiService } from '@app/services/api.service';
 import { Env, StateService } from '@app/services/state.service';
@@ -98,7 +98,8 @@ export class RecentPegsListComponent implements OnInit {
         this.pageChange(this.page);
       });
 
-      this.auditStatus$ = this.stateService.blocks$.pipe(
+      // Bitcoin reserves can change even when no new Liquid block arrives.
+      this.auditStatus$ = merge(this.stateService.blocks$, timer(0, 60_000)).pipe(
         takeUntil(this.destroy$),
         throttleTime(40000),
         delayWhen(_ => this.isLoad ? timer(0) : timer(2000)),

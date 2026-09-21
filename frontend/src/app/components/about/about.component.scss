@@ -104,6 +104,7 @@
   .alliances-logos {
     align-items: center;
     margin-bottom: 80px;
+    justify-content: center;
   }
   .alliance-logo {
     height: 80px;
@@ -112,6 +113,12 @@
     margin-top: 25px;
     @media (min-width: 768px) {
       margin-top: 45px;
+    }
+  }
+  .stratum-v2-logo {
+    object-fit: contain;
+    @media (max-width: 767px) {
+      width: 300px;
     }
   }
   .copa {

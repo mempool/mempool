@@ -58,6 +58,12 @@ warmUnfurl()
 sipURLs=(
 	'/'
 	'/mining'
+	'/lightning'
+	'/graphs'
+	'/docs'
+	'/docs/faq'
+	'/docs/api/rest'
+	'/about'
 )
 
 unfurlURLs=(

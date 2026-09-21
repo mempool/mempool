@@ -1,44 +1,17 @@
 #!/usr/bin/env zsh
-delay=0.15
-hostname=$(hostname)
-slugs=(`curl -sSL https://${hostname}/api/v1/mining/pools/3y|jq -r -S '(.pools[].slug)'`)
-
-warmSlurp()
-{
-	echo "$1"
-	curl -o /dev/null -s -H 'User-Agent: Googlebot' "$1"
-}
-
-warmUnfurl()
-{
-	echo "$1"
-	curl -o /dev/null -s -H 'User-Agent: Twitterbot' "$1"
-}
+delay=0.5
+hostnameBitcoin=127.0.0.1:82
+hostnameLiquid=127.0.0.1:83
 
 warm()
 {
 	echo "$1"
-	curl -o /dev/null -s "$1"
+	time curl -o /dev/null -s "$1"
+	sleep $delay # delay between queries to not DoS mariadb
+	echo
 }
 
-warmSlurpURLs=(
-	'/'
-	'/mining'
-	'/lightning'
-	'/graphs'
-	'/docs'
-	'/docs/faq'
-	'/docs/api/rest'
-	'/about'
-)
-
-warmUnfurlURLs=(
-	'/'
-	'/mining'
-	'/lightning'
-)
-
-warmURLs=(
+warmCommonURLs=(
 	'/api/v1/blocks'
 	'/api/v1/statistics/2h'
 	'/api/v1/statistics/24h'
@@ -51,6 +24,9 @@ warmURLs=(
 	'/api/v1/statistics/3y'
 	'/api/v1/statistics/4y'
 	'/api/v1/statistics/all'
+)
+
+warmMiningURLs=(
 	'/api/v1/mining/pools/24h'
 	'/api/v1/mining/pools/3d'
 	'/api/v1/mining/pools/1w'
@@ -114,6 +90,9 @@ warmURLs=(
 	'/api/v1/mining/difficulty-adjustments/2y'
 	'/api/v1/mining/difficulty-adjustments/3y'
 	'/api/v1/mining/difficulty-adjustments/all'
+)
+
+warmLightningURLs=(
 	'/api/v1/lightning/channels-geo?style=widget'
 	'/api/v1/lightning/channels-geo?style=graph'
 	'/api/v1/lightning/statistics/latest'
@@ -137,7 +116,7 @@ warmURLs=(
 	'/api/v1/lightning/nodes/isp/34197' `# SHRD SARL`
 	'/api/v1/lightning/nodes/isp/42275' `# Three Fourteen SASU`
 	'/api/v1/lightning/nodes/isp/16276' `# OVH SAS`
-	'/api/v1/lightning/nodes/isp/10796,11351,11426,11427,12271,20001,2$delay,33363' `# Spectrum`
+	'/api/v1/lightning/nodes/isp/10796,11351,11426,11427,12271,20001,20115,33363' `# Spectrum` \
 	'/api/v1/lightning/nodes/isp/701' `# Verizon`
 	'/api/v1/lightning/nodes/isp/12876' `# Scaleway`
 	'/api/v1/lightning/nodes/isp/33915' `# Ziggo`
@@ -153,40 +132,80 @@ warmURLs=(
 	'/api/v1/lightning/nodes/rankings/age'
 )
 
-echo "waiting for mempool backend to start..."
+warmLiquidURLs=(
+	'/api/v1/assets/icons'
+	'/api/v1/assets/featured'
+	'/api/v1/liquid/pegs'
+	'/api/v1/liquid/pegs/month'
+	'/api/v1/liquid/pegs/volume'
+	'/api/v1/liquid/pegs/count'
+	'/api/v1/liquid/reserves'
+	'/api/v1/liquid/reserves/month'
+	'/api/v1/liquid/reserves/addresses'
+	'/api/v1/liquid/reserves/addresses/total'
+	'/api/v1/liquid/reserves/utxos'
+	'/api/v1/liquid/reserves/utxos/total'
+	'/api/v1/liquid/reserves/utxos/expired'
+	'/api/v1/liquid/reserves/utxos/emergency-spent'
+	'/api/v1/liquid/reserves/utxos/emergency-spent/stats'
+	'/api/v1/liquid/reserves/status'
+)
+
+echo "[*] Wait 60s for mempool backend to start..."
 sleep 60
 
 while true
 do
-	echo "starting warm cache cycle..."
+	echo "[*] Starting warm cache cycle..."
+	date
 
-	for url in $warmSlurpURLs
+	for url in $warmCommonURLs
 	do
-		warmSlurp "https://${hostname}${url}"
-		sleep $delay # delay between queries to not DoS unfurler
+		warm "http://${hostnameBitcoin}${url}"
+		warm "http://${hostnameBitcoin}/testnet${url}"
+		warm "http://${hostnameBitcoin}/testnet4${url}"
+		warm "http://${hostnameBitcoin}/signet${url}"
+		warm "http://${hostnameLiquid}${url}"
+		warm "http://${hostnameLiquid}/testnet${url}"
 	done
 
-	for url in $warmUnfurlURLs
+	for url in $warmMiningURLs
 	do
-		warmUnfurl "https://${hostname}${url}"
-		sleep $delay # delay between queries to not DoS unfurler
+		warm "http://${hostnameBitcoin}${url}"
+		# only warm cache for testnet URLs 10% of the time
+		if (( RANDOM % 100 < 10 )); then
+			warm "http://${hostnameBitcoin}/testnet${url}"
+			warm "http://${hostnameBitcoin}/testnet4${url}"
+			warm "http://${hostnameBitcoin}/signet${url}"
+		fi
 	done
 
-	for url in $warmURLs
+	for url in $warmLightningURLs
 	do
-		warm "https://${hostname}${url}"
-		sleep $delay # delay between queries to not DoS mariadb
+		warm "http://${hostnameBitcoin}${url}"
+		# only warm cache for testnet URLs 10% of the time
+		if (( RANDOM % 100 < 10 )); then
+			warm "http://${hostnameBitcoin}/testnet${url}"
+			warm "http://${hostnameBitcoin}/signet${url}"
+		fi
 	done
 
+	for url in $warmLiquidURLs
+	do
+		warm "http://${hostnameLiquid}${url}"
+		warm "http://${hostnameLiquid}/testnet${url}"
+	done
+
+	slugs=(`curl -sSL http://${hostnameBitcoin}/api/v1/mining/pools/3y|jq -r -S '(.pools[].slug)'`)
 	for slug in $slugs
 	do
-		warm "https://${hostname}/api/v1/mining/pool/${slug}"
-		sleep $delay # delay between queries to not DoS mariadb
-		warm "https://${hostname}/api/v1/mining/pool/${slug}/hashrate"
-		sleep $delay # delay between queries to not DoS mariadb
-		warm "https://${hostname}/api/v1/mining/pool/${slug}/blocks"
-		sleep $delay # delay between queries to not DoS mariadb
+		warm "http://${hostnameBitcoin}/api/v1/mining/pool/${slug}"
+		warm "http://${hostnameBitcoin}/api/v1/mining/pool/${slug}/hashrate"
+		warm "http://${hostnameBitcoin}/api/v1/mining/pool/${slug}/blocks"
 	done
+
+	date
+	echo "[*] Completed warm cache cycle"
 
 	sleep 1
 done

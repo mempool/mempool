@@ -206,6 +206,13 @@ export namespace IBitcoinApi {
     'utxo_increase': number;
     'utxo_size_inc': number;
   }
+
+  export interface TxSpendingPrevout {
+    txid: string;
+    vout: number;
+    spendingtxid?: string; // the transaction id of the transaction spending this output (omitted if unspent)
+    blockhash?: string; // the hash of the block containing the spending transaction (omitted if unspent or the spending tx is not confirmed)
+  }
 }
 
 export interface TestMempoolAcceptResult {
