@@ -510,3 +510,49 @@ export function checkedCompareAddressStrings(a: string, b: string, type: Address
   );
 }
 
+// most UTXOs the address page fetches and draws individually; above this the aggregate
+// average-coin view takes over (the fetch gate and the render gates must agree on it)
+export const UTXO_GRAPH_LIMIT = 500;
+
+export interface AverageCoinSplit {
+  mean: number;          // average coin value (sats)
+  feePerInput: number;   // sats the fee takes to spend one input
+  kept: number;          // sats the average coin keeps after the fee
+  keptFrac: number;      // kept / mean
+  takenFrac: number;     // feePerInput / mean, capped at 1
+  fStar: number;         // break-even feerate (sat/vB) where fee equals the average coin
+  mult: number;          // fee-to-value multiplier (feePerInput / mean); > 1 once uneconomical
+  uneconomical: boolean; // the fee costs at least as much as the average coin is worth (≥ f*)
+}
+
+/**
+ * Splits the average coin (balance / utxoCount) into the value it keeps vs the value the
+ * fee takes at a given feerate, for the aggregate "average coin" view shown when individual
+ * UTXOs are not fetched. Pure, aggregate-only.
+ * Returns null for unusable aggregates so the caller renders nothing.
+ */
+export function averageCoinSplit(
+  balanceSats: number,
+  utxoCount: number,
+  vsizePerInput: number,
+  feerate: number,
+): AverageCoinSplit | null {
+  // guard unusable aggregates (incl. div-by-zero and non-finite feerate) → no render, never NaN
+  if (!(utxoCount > 0) || !(vsizePerInput > 0) || !(balanceSats > 0) || !Number.isFinite(feerate)) {
+    return null;
+  }
+  const mean = balanceSats / utxoCount;
+  if (!(mean > 0)) {
+    return null;
+  }
+  const feePerInput = vsizePerInput * feerate;
+  const kept = Math.max(0, mean - feePerInput);
+  const keptFrac = kept / mean;
+  const takenFrac = Math.min(1, feePerInput / mean);
+  const fStar = mean / vsizePerInput;
+  const mult = feePerInput / mean;
+  // ≥ so the exact break-even (fee eats the whole coin, kept=0) counts as uneconomical
+  const uneconomical = feePerInput >= mean;
+  return { mean, feePerInput, kept, keptFrac, takenFrac, fStar, mult, uneconomical };
+}
+

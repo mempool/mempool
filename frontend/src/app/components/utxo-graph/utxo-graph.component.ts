@@ -6,11 +6,16 @@ import { StateService } from '@app/services/state.service';
 import { Router } from '@angular/router';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { renderSats } from '@app/shared/common.utils';
-import { colorToHex, hexToColor, mix } from '@components/block-overview-graph/utils';
+import { colorToHex, darken, desaturate, hexToColor, mix } from '@components/block-overview-graph/utils';
 import { TimeService } from '@app/services/time.service';
 import { WebsocketService } from '@app/services/websocket.service';
 import { Acceleration } from '@interfaces/node-api.interface';
 import { defaultAuditColors } from '@components/block-overview-graph/utils';
+import { UTXO_GRAPH_LIMIT } from '@app/shared/address-utils';
+
+// fee-wedge styling shared with the aggregate average-coin view so both regimes render identically
+export const FEE_WEDGE_OPACITY = 0.8;
+export const FEE_WEDGE_OPACITY_UNECONOMICAL = 0.9;
 
 const newColorHex = '1BF4AF';
 const oldColorHex = '3C39F4';
@@ -63,8 +68,16 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
   @Input() right: number | string = 10;
   @Input() left: number | string = 70;
   @Input() widget: boolean = false;
+  @Input() feeImpact: boolean = false;
+  // single-input spend cost = inputVsize * feeRate; both reused from the cost-to-spend feature, never recomputed here
+  @Input() inputVsize: number | null = null;
+  @Input() feeRate: number | null = null;
 
   subscription: Subscription;
+  // cached circle-packing layout, recomputed only when the utxo set changes (not on fee-impact changes)
+  placedCircles: UtxoCircle[] = [];
+  layoutBounds: { minX: number, minY: number, width: number, height: number } | null = null;
+  feeWedgeColor: string = '#ff3d00';
   accelerationsSubscription: Subscription;
   lastUpdate: number = 0;
   updateInterval;
@@ -90,8 +103,8 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
   ) {
     // re-render the chart every 10 seconds, to keep the age colors up to date
     this.updateInterval = setInterval(() => {
-      if (this.lastUpdate < Date.now() - 10000 && this.utxos) {
-        this.prepareChartOptions(this.utxos);
+      if (this.lastUpdate < Date.now() - 10000 && this.placedCircles.length) {
+        this.prepareChartOptions();
       }
     }, 10000);
 
@@ -103,23 +116,30 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
       }, {});
 
       this.applyAccelerations();
-      this.prepareChartOptions(this.utxos);
+      this.prepareChartOptions();
     });
 
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.isLoading = true;
     if (!this.utxos) {
       return;
     }
     if (changes.utxos) {
+      this.isLoading = true;
       this.applyAccelerations();
-      this.prepareChartOptions(this.utxos);
+      this.computeLayout(this.utxos);
+      this.prepareChartOptions();
+    } else if (changes.feeImpact || changes.feeRate || changes.inputVsize) {
+      // fee-impact inputs don't affect the packing, so re-render wedges over the cached layout
+      this.prepareChartOptions();
     }
   }
 
   applyAccelerations(): void {
+    if (!this.utxos) {
+      return;
+    }
     for (const utxo of this.utxos) {
       delete utxo.status['accelerated'];
       if (this.accelerationMap[utxo.txid]) {
@@ -128,12 +148,12 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
     }
   }
 
-  prepareChartOptions(utxos: Utxo[]): void {
+  computeLayout(utxos: Utxo[]): void {
     if (!utxos || utxos.length === 0) {
+      this.placedCircles = [];
+      this.layoutBounds = null;
       return;
     }
-
-    this.isLoading = false;
 
     // Helper functions
     const distance = (x1: number, y1: number, x2: number, y2: number): number => Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
@@ -152,7 +172,7 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
     // ~Linear algorithm to pack circles as tightly as possible without overlaps
     const placedCircles: UtxoCircle[] = [];
     const positions: { c1: Circle, c2: Circle, d: number, p: number, side?: boolean }[] = [];
-    // Pack in descending order of value, and limit to the top 500 to preserve performance
+    // Pack in descending order of value, and cap the circle count to preserve performance
     const sortedUtxos = utxos.sort((a, b) => {
       if (a.value === b.value) {
         if (a.status.confirmed && !b.status.confirmed) {
@@ -164,7 +184,7 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
         }
       }
       return b.value - a.value;
-    }).slice(0, 500);
+    }).slice(0, UTXO_GRAPH_LIMIT);
     const maxR = Math.sqrt(sortedUtxos.reduce((max, utxo) => Math.max(max, utxo.value), 0));
     sortedUtxos.forEach((utxo, index) => {
       // area proportional to value
@@ -248,10 +268,22 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
     const maxX = Math.max(...placedCircles.map(d => d.x + d.r));
     const minY = Math.min(...placedCircles.map(d => d.y - d.r));
     const maxY = Math.max(...placedCircles.map(d => d.y + d.r));
-    const width = maxX - minX;
-    const height = maxY - minY;
 
-    const data = placedCircles.map((circle) => [
+    this.placedCircles = placedCircles;
+    this.layoutBounds = { minX, minY, width: maxX - minX, height: maxY - minY };
+  }
+
+  prepareChartOptions(): void {
+    if (!this.placedCircles.length || !this.layoutBounds) {
+      return;
+    }
+
+    this.isLoading = false;
+    this.feeWedgeColor = this.resolveCssVariable('--red', '#ff3d00');
+
+    const { minX, minY, width, height } = this.layoutBounds;
+
+    const data = this.placedCircles.map((circle) => [
       circle.utxo.txid + circle.utxo.vout,
       circle.utxo,
       circle.x,
@@ -290,18 +322,45 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
           }
 
           const valueStr = renderSats(utxo.value, this.stateService.network);
+          const spendCost = (this.feeImpact && this.inputVsize && this.feeRate) ? this.inputVsize * this.feeRate : 0;
+          const showFee = spendCost > 0;
+          const uneconomical = showFee && spendCost >= utxo.value;
+          const feeFraction = showFee ? Math.min(1, spendCost / utxo.value) : 0;
+          const radius = (r * scale) - 1;
           const elements: any[] = [
             {
               type: 'circle',
               autoBatch: true,
               shape: {
-                r: (r * scale) - 1,
+                r: radius,
               },
               style: {
-                fill: '#' + this.getColor(utxo),
+                // dim the bubble when it costs more to spend than it's worth
+                fill: uneconomical
+                  ? '#' + colorToHex(desaturate(darken(hexToColor(this.getColor(utxo)), 0.6), 0.5))
+                  : '#' + this.getColor(utxo),
               }
             },
           ];
+          if (showFee && feeFraction > 0) {
+            const startAngle = -Math.PI / 2; // start the wedge at 12 o'clock
+            elements.push({
+              type: 'sector',
+              shape: {
+                cx: 0,
+                cy: 0,
+                r0: 0,
+                r: radius,
+                startAngle,
+                endAngle: startAngle + (2 * Math.PI * feeFraction),
+                clockwise: true,
+              },
+              style: {
+                fill: this.feeWedgeColor,
+                opacity: uneconomical ? FEE_WEDGE_OPACITY_UNECONOMICAL : FEE_WEDGE_OPACITY,
+              },
+            });
+          }
           const labelFontSize = Math.min(36, r * scale * 0.3);
           if (labelFontSize > 8) {
             elements.push({
@@ -335,6 +394,13 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
         formatter: (params: any): string => {
           const utxo = params.data[1] as Utxo;
           const valueStr = renderSats(utxo.value, this.stateService.network);
+          let feeInfo = '';
+          const spendCost = (this.feeImpact && this.inputVsize && this.feeRate) ? this.inputVsize * this.feeRate : 0;
+          if (spendCost > 0) {
+            feeInfo = spendCost >= utxo.value
+              ? '<br>Uneconomical to spend'
+              : `<br>${Math.min(100, (spendCost / utxo.value) * 100).toFixed(1)}% lost to fee`;
+          }
           return `
           <b style="color: white;">${utxo.txid.slice(0, 6)}...${utxo.txid.slice(-6)}:${utxo.vout}</b>
           <br>
@@ -346,6 +412,7 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
               ? 'Accelerated'
               : 'Pending'
           }
+          ${feeInfo}
           `;
         },
       }
@@ -408,5 +475,12 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
 
   isMobile(): boolean {
     return (window.innerWidth <= 767.98);
+  }
+
+  private resolveCssVariable(name: string, fallback: string): string {
+    if (typeof document === 'undefined') {
+      return fallback;
+    }
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
   }
 }

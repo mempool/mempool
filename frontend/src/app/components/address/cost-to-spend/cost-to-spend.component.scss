@@ -1,22 +1,88 @@
-.cost-to-spend-table {
-  margin-bottom: 0;
+// horizontal stats strip, replicating the .difficulty-stats / .item / .card-text / .symbol
+// pattern from difficulty.component.scss (those classes are local to that component, copied here)
+.cost-to-spend-stats {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: flex-start;
+  margin-top: 1rem;
 
-  tr td {
-    &:last-child {
-      text-align: right;
-    }
-
-    &.wrap-cell {
-      white-space: nowrap;
-      @media (max-width: 575.98px) {
-        white-space: normal;
-      }
-    }
+  // stack the three groups on narrow screens
+  @media (max-width: 767.98px) {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 
+.stat-group {
+  flex: 1;
+  text-align: center;
+
+  // subtle divider hinting the boundary between the static group and the reactive ones
+  & + .stat-group {
+    border-left: 1px solid var(--secondary);
+    @media (max-width: 767.98px) {
+      border-left: none;
+      border-top: 1px solid var(--secondary);
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+    }
+  }
+
+  // the static group is context, not a live readout: nudge it back visually so the user
+  // doesn't read it as "broken" when it stays put while dragging the slider
+  &.static {
+    opacity: 0.75;
+  }
+}
+
+.group-header {
+  margin-bottom: 0.5rem;
+}
+
+.stat-items {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.item {
+  padding: 0 5px;
+  width: 100%;
+}
+
+.card-text {
+  font-size: 18px;
+  margin: auto;
+  position: relative;
+  margin-bottom: 0.2rem;
+}
+
+// share-of-fees topline above the amount, reusing difficulty's caret + percent styling
+.fee-percent {
+  font-size: 15px;
+  margin-bottom: 0.1rem;
+}
+
+.retarget-sign {
+  margin-right: -3px;
+  font-size: 14px;
+  top: -2px;
+  position: relative;
+}
+
+.symbol {
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.unit {
+  color: var(--transparent-fg);
+}
+
+// fiat amounts hidden for now; markup kept in the template for easy re-enable
 .fiat {
-  margin-left: 10px;
+  display: none;
 }
 
 .estimate-marker {

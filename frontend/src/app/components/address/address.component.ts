@@ -2,17 +2,17 @@ import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
-import { switchMap, filter, catchError, map, tap } from 'rxjs/operators';
+import { switchMap, filter, catchError, map, tap, debounceTime } from 'rxjs/operators';
 import { Address, ChainStats, Transaction, Utxo, Vin } from '@interfaces/electrs.interface';
 import { WebsocketService } from '@app/services/websocket.service';
 import { StateService } from '@app/services/state.service';
 import { AudioService } from '@app/services/audio.service';
 import { ApiService } from '@app/services/api.service';
-import { of, merge, Subscription, Observable, forkJoin } from 'rxjs';
+import { of, merge, Subscription, Observable, forkJoin, Subject } from 'rxjs';
 import { SeoService } from '@app/services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { AddressInformation } from '@interfaces/node-api.interface';
-import { AddressTypeInfo, observedInputVsize } from '@app/shared/address-utils';
+import { AddressTypeInfo, observedInputVsize, estimateInputVsize, UTXO_GRAPH_LIMIT } from '@app/shared/address-utils';
 import { extractTapLeaves, fillTapTree, convertTextToBuffer, PsbtKeyValue } from '@app/shared/transaction.utils';
 
 class AddressStats implements ChainStats {
@@ -124,7 +124,16 @@ export class AddressComponent implements OnInit, OnDestroy {
   addressTypeInfo: null | AddressTypeInfo;
   tapTreeIncomplete: boolean = false;
   taprootPsbtExpanded: boolean = false;
-  showCostToSpend: boolean = false;
+  feeImpactEnabled: boolean = false;
+  feeImpactToggleLabel = $localize`:@@address.utxo-fee-impact:Fee impact`;
+  feeRateUserSet: boolean = false;
+  readonly feeRateSliderMin = 1;
+  readonly feeRateSliderMax = 500;
+  displayFeeRate: number | null = null; // immediate slider value, shown next to the slider
+  chartFeeRate: number | null = null; // debounced value fed to the bubble chart
+  private feeRateSlider$ = new Subject<number>();
+  recommendedFeesSubscription: Subscription;
+  feeRateSliderSubscription: Subscription;
   psbtForm: UntypedFormGroup;
   psbtError?: string;
   accelerationsSubscription: Subscription;
@@ -162,6 +171,20 @@ export class AddressComponent implements OnInit, OnDestroy {
     });
     this.websocketService.want(['blocks', 'mempool-blocks']);
     this.psbtForm = this.formBuilder.group({ psbt: [''], tapleaf: [''], taptree: [''], ikey: [''] });
+
+    // seed the fee-impact slider with the prevailing 30-min fee until the user overrides it
+    this.recommendedFeesSubscription = this.stateService.recommendedFees$.subscribe((fees) => {
+      if (!this.feeRateUserSet) {
+        this.displayFeeRate = fees.halfHourFee;
+        this.chartFeeRate = fees.halfHourFee;
+      }
+    });
+    // debounce slider drags so the chart re-renders at most every 40ms while the label stays live
+    this.feeRateSliderSubscription = this.feeRateSlider$
+      .pipe(debounceTime(40))
+      .subscribe((feeRate) => {
+        this.chartFeeRate = feeRate;
+      });
 
     this.onResize();
     this.fragmentSubscription = this.route.fragment.subscribe((fragment) => {
@@ -249,11 +272,15 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.isLoadingAddress = false;
           this.isLoadingTransactions = true;
           const utxoCount = this.chainStats.utxos + this.mempoolStats.utxos;
+          if (utxoCount > UTXO_GRAPH_LIMIT) {
+            // the aggregate average-coin view is primarily a fee-impact figure, so arm it by default
+            this.feeImpactEnabled = true;
+          }
           return forkJoin([
             address.is_pubkey
               ? this.electrsApiService.getScriptHashTransactions$((address.address.length === 66 ? '21' : '41') + address.address + 'ac')
               : this.electrsApiService.getAddressTransactions$(address.address),
-            (utxoCount > 2 && utxoCount <= 500 ? (address.is_pubkey
+            (utxoCount > 2 && utxoCount <= UTXO_GRAPH_LIMIT ? (address.is_pubkey
               ? this.electrsApiService.getScriptHashUtxos$((address.address.length === 66 ? '21' : '41') + address.address + 'ac')
               : this.electrsApiService.getAddressUtxos$(address.address)) : of(null)).pipe(
                 catchError(() => {
@@ -526,6 +553,42 @@ export class AddressComponent implements OnInit, OnDestroy {
     return this.chainStats.utxos + this.mempoolStats.utxos;
   }
 
+  get showUtxoGraph(): boolean {
+    return !!this.utxos && this.utxos.length > 2;
+  }
+
+  // above UTXO_GRAPH_LIMIT individual utxos are never fetched, so the aggregate view takes
+  // over; !showUtxoGraph keeps the two mutually exclusive when live txs cross the limit
+  get showAverageCoin(): boolean {
+    return !this.showUtxoGraph && this.spendableUtxoCount > UTXO_GRAPH_LIMIT && this.showCostToSpend;
+  }
+
+  get showCostToSpend(): boolean {
+    return this.network !== 'liquid' && this.network !== 'liquidtestnet' && !this.address?.electrum
+      && !!this.addressTypeInfo && this.spendableUtxoCount > 0 && this.chartFeeRate !== null;
+  }
+
+  // single per-address input vsize, reused verbatim by the cost-to-spend table and the bubble chart wedges
+  get addressInputVsize(): number | null {
+    if (!this.addressTypeInfo) {
+      return null;
+    }
+    return estimateInputVsize(this.addressTypeInfo, this.addressTypeInfo.observedInputVsize).vsize;
+  }
+
+  // colored portion of the slider track, from the left up to the thumb
+  get feeRateFillPercent(): string {
+    const value = this.displayFeeRate ?? this.feeRateSliderMin;
+    const pct = ((value - this.feeRateSliderMin) / (this.feeRateSliderMax - this.feeRateSliderMin)) * 100;
+    return `${Math.max(0, Math.min(100, pct))}%`;
+  }
+
+  onFeeRateSliderChange(feeRate: number): void {
+    this.feeRateUserSet = true;
+    this.displayFeeRate = feeRate;
+    this.feeRateSlider$.next(feeRate);
+  }
+
   setBalancePeriod(period: 'all' | '1m'): boolean {
     this.balancePeriod = period;
     return false;
@@ -667,6 +730,8 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.fragmentSubscription?.unsubscribe();
     this.networkChangeSubscription?.unsubscribe();
     this.accelerationsSubscription?.unsubscribe();
+    this.recommendedFeesSubscription?.unsubscribe();
+    this.feeRateSliderSubscription?.unsubscribe();
     this.websocketService.stopTrackAccelerations();
   }
 }

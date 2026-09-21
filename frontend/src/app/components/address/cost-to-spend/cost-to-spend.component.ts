@@ -5,9 +5,8 @@ import {
   OnChanges,
   OnInit,
 } from '@angular/core';
-import { BehaviorSubject, Observable, combineLatest, of } from 'rxjs';
-import { map, timeout, catchError, startWith } from 'rxjs/operators';
-import { StateService } from '@app/services/state.service';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import {
   AddressTypeInfo,
   TX_OVERHEAD_VSIZE,
@@ -15,15 +14,16 @@ import {
   estimateInputVsize,
 } from '@app/shared/address-utils';
 
-// give up waiting for fees over the websocket after this long
-const FEE_TIMEOUT_MS = 10000;
-
 interface CostToSpend {
   feeRate: number;
   inputVsize: number;
   estimated: boolean;
   minCost: number;
   maxCost: number;
+  minFeePercent: number;
+  maxFeePercent: number;
+  minFeeColor: string;
+  maxFeeColor: string;
   minEffectiveBalance: number;
   maxEffectiveBalance: number;
 }
@@ -39,27 +39,34 @@ export class CostToSpendComponent implements OnInit, OnChanges {
   @Input() addressTypeInfo: AddressTypeInfo;
   @Input() utxoCount: number;
   @Input() balance: number;
+  @Input() feeRate: number;
 
-  costToSpend$: Observable<CostToSpend | null | undefined>;
-  // Bridges @Input changes into the reactive pipeline so cost recalculates on live balance updates
+  costToSpend$: Observable<CostToSpend>;
+  // Bridges @Input changes (balance, feerate from the slider) into the reactive pipeline so cost recalculates live
   private inputs$ = new BehaviorSubject<void>(undefined);
 
-  constructor(private stateService: StateService) {}
-
   ngOnInit(): void {
-    this.costToSpend$ = combineLatest([
-      this.stateService.recommendedFees$,
-      this.inputs$,
-    ]).pipe(
-      map(([fees]) => this.calculate(fees.halfHourFee)),
-      timeout({ first: FEE_TIMEOUT_MS }), // fees never arrived (websocket failure)
-      catchError(() => of(null)), // null = unavailable; stream closes, but *ngIf recreates the component on navigation so the state can't persist across addresses
-      startWith(undefined),
+    this.costToSpend$ = this.inputs$.pipe(
+      map(() => this.calculate(this.feeRate)),
     );
   }
 
   ngOnChanges(): void {
     this.inputs$.next();
+  }
+
+  // fee-share thresholds (% of balance) at which spending reads as costly / uneconomical
+  private readonly FEE_PERCENT_COSTLY = 10;
+  private readonly FEE_PERCENT_UNECONOMICAL = 100;
+
+  private feeColor(percent: number): string {
+    if (percent >= this.FEE_PERCENT_UNECONOMICAL) {
+      return 'var(--red)';
+    }
+    if (percent >= this.FEE_PERCENT_COSTLY) {
+      return 'var(--orange)';
+    }
+    return 'var(--green)';
   }
 
   private calculate(feeRate: number): CostToSpend {
@@ -75,12 +82,19 @@ export class CostToSpendComponent implements OnInit, OnChanges {
     // max spend each UTXO in its own transaction, rounding each individual
     const maxCost =
       this.utxoCount * Math.ceil((inputVsize + overhead) * feeRate);
+    // share of the balance eaten by fees; can exceed 100% when fees outweigh a dusty balance
+    const minFeePercent = this.balance > 0 ? (minCost / this.balance) * 100 : 0;
+    const maxFeePercent = this.balance > 0 ? (maxCost / this.balance) * 100 : 0;
     return {
       feeRate,
       inputVsize,
       estimated,
       minCost,
       maxCost,
+      minFeePercent,
+      maxFeePercent,
+      minFeeColor: this.feeColor(minFeePercent),
+      maxFeeColor: this.feeColor(maxFeePercent),
       // min effective balance subtracts the max cost & max subtracts the min
       minEffectiveBalance: Math.max(0, this.balance - maxCost),
       maxEffectiveBalance: Math.max(0, this.balance - minCost),
