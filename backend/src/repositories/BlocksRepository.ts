@@ -1731,8 +1731,13 @@ class BlocksRepository {
           }
           if (!transactions) {
             const block = await bitcoinClient.getBlock(row.hash, 2);
-            transactions = block.tx.map(tx => {
-              tx.fee *= 100_000_000;
+            // Core omits fee without undo data. Failing leaves the block uncomputed, so its
+            // day is withheld instead of published from a subset of the block.
+            transactions = block.tx.map((tx, index) => {
+              if (index > 0 && tx.fee === undefined) {
+                throw new Error(`missing transaction fee data`);
+              }
+              tx.fee = (tx.fee ?? 0) * 100_000_000;
               return tx;
             });
           }
