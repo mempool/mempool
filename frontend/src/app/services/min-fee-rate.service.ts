@@ -11,6 +11,16 @@ export const RATE_EPSILON = 1e-9;
 
 export const MIN_FEE_RATE_TIMESPANS = ['1m', '3m', '6m', '1y', '2y', '3y', 'all'];
 
+// Days of published history a period needs before its button is shown.
+export const MIN_FEE_RATE_TIMESPAN_MIN_DAYS: Record<string, number> = {
+  '1m': 30,
+  '3m': 90,
+  '6m': 180,
+  '1y': 365,
+  '2y': 730,
+  '3y': 1095,
+};
+
 export const THRESHOLD_GRAB_RADIUS = 6;
 
 @Injectable({ providedIn: 'root' })
@@ -19,6 +29,12 @@ export class MinFeeRateService {
 
   getMinFeeRates$(interval: string | undefined): Observable<HttpResponse<MinFeeRateDay[]>> {
     return this.apiService.getMinFeeRates$(interval);
+  }
+
+  // The mining window preference is shared across graphs and can name a period this
+  // series has no button for yet. Over the whole history it returns what 'all' does.
+  fitTimespan(timespan: string, dayCount: number): string {
+    return dayCount < (MIN_FEE_RATE_TIMESPAN_MIN_DAYS[timespan] ?? 0) ? 'all' : timespan;
   }
 
   getPercentBelow(data: MinFeeRateDay[], threshold: number): number {
