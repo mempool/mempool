@@ -55,21 +55,7 @@
                 </div>
               </div>
               <div class="animated" *ngIf="chainTip.stale?.extras?.pool != undefined">
-                <a class="badge" [class.miner-name]="chainTip.stale.extras.pool.minerNames?.length > 1 && chainTip.stale.extras.pool.minerNames[1] != ''" [routerLink]="[('/mining/pool/' + chainTip.stale.extras.pool.slug) | relativeUrl]">
-                  <ng-container *ngIf="chainTip.stale.extras.pool.minerNames?.length > 1 && chainTip.stale.extras.pool.minerNames[1] != ''; else staleBlockCentralisedPool">
-                    <ng-container *ngIf="chainTip.stale.extras.pool.minerSlug && chainTip.stale.extras.pool.minerName; else minerName">
-                      <app-mining-pool [slug]="chainTip.stale.extras.pool.minerSlug" [name]="chainTip.stale.extras.pool.minerName" [showName]="false"></app-mining-pool>
-                      {{ chainTip.stale.extras.pool.minerName }}
-                    </ng-container>
-                    <ng-template #minerName>
-                      <app-mining-pool [slug]="chainTip.stale.extras.pool.slug" [name]="chainTip.stale.extras.pool.name" [logoStyle]="'filter: grayscale(100%) brightness(1.5);'" [showName]="false"></app-mining-pool>
-                      {{ chainTip.stale.extras.pool.minerNames[1] }}
-                    </ng-template>
-                  </ng-container>
-                  <ng-template #staleBlockCentralisedPool>
-                    <app-mining-pool [slug]="chainTip.stale.extras.pool.slug" [name]="chainTip.stale.extras.pool.name"></app-mining-pool>
-                  </ng-template>
-                </a>
+                <ng-container *ngTemplateOutlet="poolBadge; context: { $implicit: chainTip.stale }"></ng-container>
               </div>
             </div>
 
@@ -107,21 +93,43 @@
                 </div>
               </div>
               <div class="animated" *ngIf="chainTip.canonical?.extras?.pool != undefined">
-                <a class="badge" [class.miner-name]="chainTip.canonical.extras.pool.minerNames?.length > 1 && chainTip.canonical.extras.pool.minerNames[1] != ''" [routerLink]="[('/mining/pool/' + chainTip.canonical.extras.pool.slug) | relativeUrl]">
-                  <ng-container *ngIf="chainTip.canonical.extras.pool.minerNames?.length > 1 && chainTip.canonical.extras.pool.minerNames[1] != ''; else canonicalBlockCentralisedPool">
-                    <ng-container *ngIf="chainTip.canonical.extras.pool.minerSlug && chainTip.canonical.extras.pool.minerName; else minerName">
-                      <app-mining-pool [slug]="chainTip.canonical.extras.pool.minerSlug" [name]="chainTip.canonical.extras.pool.minerName" [showName]="false"></app-mining-pool>
-                      {{ chainTip.canonical.extras.pool.minerName }}
-                    </ng-container>
-                    <ng-template #minerName>
-                      <app-mining-pool [slug]="chainTip.canonical.extras.pool.slug" [name]="chainTip.canonical.extras.pool.name" [logoStyle]="'filter: grayscale(100%) brightness(1.5);'" [showName]="false"></app-mining-pool>
-                      {{ chainTip.canonical.extras.pool.minerNames[1] }}
-                    </ng-template>
-                  </ng-container>
-                  <ng-template #canonicalBlockCentralisedPool>
-                    <app-mining-pool [slug]="chainTip.canonical.extras.pool.slug" [name]="chainTip.canonical.extras.pool.name"></app-mining-pool>
-                  </ng-template>
-                </a>
+                <ng-container *ngTemplateOutlet="poolBadge; context: { $implicit: chainTip.canonical }"></ng-container>
+              </div>
+            </div>
+          </div>
+
+          <div class="tip-details" *ngIf="chainTip.details.seenDelta != null || chainTip.details.sharedPercent != null || chainTip.resolvedBy">
+            <div class="detail" *ngIf="chainTip.details.seenDelta != null">
+              <div class="detail-label" i18n="chain-tips.time-difference">Time difference</div>
+              <div class="detail-value" [ngSwitch]="chainTip.details.seenFirst">
+                <ng-container *ngSwitchCase="'both'">&lt; 1 s</ng-container>
+                <ng-container *ngSwitchDefault>{{ chainTip.details.seenDelta | number: '1.0-1' }} s</ng-container>
+              </div>
+              <div class="detail-sub" [ngSwitch]="chainTip.details.seenFirst">
+                <ng-container *ngSwitchCase="'stale'" i18n="chain-tips.stale-block-seen-first">Stale block seen first</ng-container>
+                <ng-container *ngSwitchCase="'canonical'" i18n="chain-tips.winning-block-seen-first">Winning block seen first</ng-container>
+                <ng-container *ngSwitchCase="'both'" i18n="chain-tips.seen-at-the-same-time">Seen at the same time</ng-container>
+              </div>
+            </div>
+
+            <div class="detail" *ngIf="chainTip.txOverlap && chainTip.details.sharedPercent != null">
+              <div class="detail-label" i18n="chain-tips.shared-transactions">Shared transactions</div>
+              <div class="detail-value">{{ chainTip.details.sharedPercent | number: '1.1-1' }}%</div>
+              <div class="overlap-bar" tabindex="0" [ngbTooltip]="overlapTooltip" [tooltipContext]="{ overlap: chainTip.txOverlap }" placement="bottom" container="body">
+                <div class="segment stale-only" *ngIf="chainTip.txOverlap.staleOnly" [style.width.%]="chainTip.details.staleOnlyPercent"></div>
+                <div class="segment shared" *ngIf="chainTip.txOverlap.shared" [style.width.%]="chainTip.details.sharedPercent"></div>
+                <div class="segment canonical-only" *ngIf="chainTip.txOverlap.canonicalOnly" [style.width.%]="chainTip.details.canonicalOnlyPercent"></div>
+              </div>
+            </div>
+
+            <div class="detail" *ngIf="chainTip.resolvedBy">
+              <div class="detail-label" i18n="chain-tips.resolved-by">Resolved by</div>
+              <div class="detail-value"><a [routerLink]="[('/block/' + chainTip.resolvedBy.id) | relativeUrl]">{{ chainTip.resolvedBy.height }}</a></div>
+              <div class="detail-sub resolved-by">
+                <span class="animated" *ngIf="chainTip.resolvedBy.extras?.pool != undefined">
+                  <ng-container *ngTemplateOutlet="poolBadge; context: { $implicit: chainTip.resolvedBy }"></ng-container>
+                </span>
+                <app-time kind="span" [time]="chainTip.details.resolvedAfter" [fastRender]="true" [lowercaseStart]="true"></app-time>
               </div>
             </div>
           </div>
@@ -142,5 +150,31 @@
       <button type="button" class="btn btn-sm btn-danger ms-2" (click)="retryLoadMore()" i18n="chain-tips.retry">Retry</button>
     </div>
   </div>
-  
+
 </div>
+
+<ng-template #poolBadge let-block>
+  <a class="badge" [class.miner-name]="block.extras.pool.minerNames?.length > 1 && block.extras.pool.minerNames[1] != ''" [routerLink]="[('/mining/pool/' + block.extras.pool.slug) | relativeUrl]">
+    <ng-container *ngIf="block.extras.pool.minerNames?.length > 1 && block.extras.pool.minerNames[1] != ''; else centralisedPool">
+      <ng-container *ngIf="block.extras.pool.minerSlug && block.extras.pool.minerName; else minerName">
+        <app-mining-pool [slug]="block.extras.pool.minerSlug" [name]="block.extras.pool.minerName" [showName]="false"></app-mining-pool>
+        {{ block.extras.pool.minerName }}
+      </ng-container>
+      <ng-template #minerName>
+        <app-mining-pool [slug]="block.extras.pool.slug" [name]="block.extras.pool.name" [logoStyle]="'filter: grayscale(100%) brightness(1.5);'" [showName]="false"></app-mining-pool>
+        {{ block.extras.pool.minerNames[1] }}
+      </ng-template>
+    </ng-container>
+    <ng-template #centralisedPool>
+      <app-mining-pool [slug]="block.extras.pool.slug" [name]="block.extras.pool.name"></app-mining-pool>
+    </ng-template>
+  </a>
+</ng-template>
+
+<ng-template #overlapTooltip let-overlap="overlap">
+  <div class="overlap-legend">
+    <div><span class="dot stale-only"></span><span i18n="chain-tips.only-in-stale">Only in stale</span><b>{{ overlap.staleOnly | number }}</b></div>
+    <div><span class="dot shared"></span><span i18n="chain-tips.in-both-blocks">In both blocks</span><b>{{ overlap.shared | number }}</b></div>
+    <div><span class="dot canonical-only"></span><span i18n="chain-tips.only-in-winning">Only in winning</span><b>{{ overlap.canonicalOnly | number }}</b></div>
+  </div>
+</ng-template>
