@@ -1531,6 +1531,9 @@ class BlocksRepository {
    * @asyncSafe
    */
   public async $invalidateMinFeeRateAtHeight(height: number): Promise<void> {
+    if (config.MEMPOOL.NETWORK !== 'mainnet') {
+      return;
+    }
     try {
       await DB.query(
         `UPDATE blocks SET min_fee_rate_version = 0 WHERE height = ? AND stale = 0`,
@@ -1547,6 +1550,9 @@ class BlocksRepository {
    * @asyncSafe
    */
   public async $invalidateMinFeeRateFromHeight(height: number): Promise<void> {
+    if (config.MEMPOOL.NETWORK !== 'mainnet') {
+      return;
+    }
     try {
       await DB.query(
         `UPDATE blocks SET min_fee_rate_version = 0 WHERE height >= ? AND stale = 0`,
