@@ -11,35 +11,48 @@
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="daysAvailable">
       <div class="btn-group" role="group" name="radioBasic">
         <ng-container *ngIf="daysAvailable >= 3">
-          <input type="radio" class="btn-check" id="accelerationfees-1w" [value]="'1w'" fragment="1w" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan">
+          <input type="radio" class="btn-check" id="accelerationfees-1w" [value]="'1w'" [fragment]="getFragment({time: '1w'})" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="accelerationfees-1w">1W</label>
         </ng-container>
         <ng-container *ngIf="daysAvailable >= 7">
-          <input type="radio" class="btn-check" id="accelerationfees-1m" [value]="'1m'" fragment="1m" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan">
+          <input type="radio" class="btn-check" id="accelerationfees-1m" [value]="'1m'" [fragment]="getFragment({time: '1m'})" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="accelerationfees-1m">1M</label>
         </ng-container>
         <ng-container *ngIf="daysAvailable >= 30">
-          <input type="radio" class="btn-check" id="accelerationfees-3m" [value]="'3m'" fragment="3m" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan">
+          <input type="radio" class="btn-check" id="accelerationfees-3m" [value]="'3m'" [fragment]="getFragment({time: '3m'})" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="accelerationfees-3m">3M</label>
         </ng-container>
         <ng-container *ngIf="daysAvailable >= 90">
-          <input type="radio" class="btn-check" id="accelerationfees-6m" [value]="'6m'" fragment="6m" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan">
+          <input type="radio" class="btn-check" id="accelerationfees-6m" [value]="'6m'" [fragment]="getFragment({time: '6m'})" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="accelerationfees-6m">6M</label>
         </ng-container>
         <ng-container *ngIf="daysAvailable >= 180">
-          <input type="radio" class="btn-check" id="accelerationfees-1y" [value]="'1y'" fragment="1y" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan">
+          <input type="radio" class="btn-check" id="accelerationfees-1y" [value]="'1y'" [fragment]="getFragment({time: '1y'})" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="accelerationfees-1y">1Y</label>
         </ng-container>
         <ng-container *ngIf="daysAvailable >= 360">
-          <input type="radio" class="btn-check" id="accelerationfees-2y" [value]="'2y'" fragment="2y" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan">
+          <input type="radio" class="btn-check" id="accelerationfees-2y" [value]="'2y'" [fragment]="getFragment({time: '2y'})" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="accelerationfees-2y">2Y</label>
         </ng-container>
         <ng-container *ngIf="daysAvailable >= 720">
-          <input type="radio" class="btn-check" id="accelerationfees-3y" [value]="'3y'" fragment="3y" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan">
+          <input type="radio" class="btn-check" id="accelerationfees-3y" [value]="'3y'" [fragment]="getFragment({time: '3y'})" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="accelerationfees-3y">3Y</label>
         </ng-container>
-        <input type="radio" class="btn-check" id="accelerationfees-all" [value]="'all'" fragment="all" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan">
+        <input type="radio" class="btn-check" id="accelerationfees-all" [value]="'all'" [fragment]="getFragment({time: 'all'})" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="dateSpan">
         <label class="btn btn-primary btn-sm" for="accelerationfees-all">ALL</label>
+      </div>
+    </form>
+
+    <form [formGroup]="scaleForm" class="formRadioGroup me-1">
+      <div class="btn-group" role="group" name="radioScale">
+        <ng-container>
+          <input type="radio" class="btn-check" id="accelerationfees-linear" [value]="'linear'" [fragment]="getFragment({scale: 'linear'})" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="scaleFunction">
+          <label class="btn btn-primary btn-sm" for="accelerationfees-linear" [class.active]="scaleForm.get('scaleFunction').value === 'linear'" i18n="charts.linear-scale">Linear</label>
+        </ng-container>
+        <ng-container>
+          <input type="radio" class="btn-check" id="accelerationfees-log" [value]="'log'" [fragment]="getFragment({scale: 'log'})" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]" formControlName="scaleFunction">
+          <label class="btn btn-primary btn-sm" for="accelerationfees-log" [class.active]="scaleForm.get('scaleFunction').value === 'log'" i18n="charts.log-scale">Log</label>
+        </ng-container>
       </div>
     </form>
   </div>
