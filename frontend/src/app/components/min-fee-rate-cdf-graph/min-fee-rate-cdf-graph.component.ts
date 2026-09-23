@@ -12,7 +12,7 @@ import { StateService } from '@app/services/state.service';
 import { ActivatedRoute } from '@angular/router';
 import { MinFeeRateDay } from '@app/interfaces/node-api.interface';
 import {
-  DEFAULT_MIN_FEE_RATE_THRESHOLD, MIN_FEE_RATE_TIMESPANS, MinFeeRateService, THRESHOLD_GRAB_RADIUS,
+  DEFAULT_MIN_FEE_RATE_THRESHOLD, MIN_FEE_RATE_TIMESPAN_MIN_DAYS, MIN_FEE_RATE_TIMESPANS, MinFeeRateService, THRESHOLD_GRAB_RADIUS,
 } from '@app/services/min-fee-rate.service';
 
 const CURVE_GRADIENT = new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -46,6 +46,7 @@ export class MinFeeRateCdfGraphComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   miningWindowPreference: string;
+  minDays = MIN_FEE_RATE_TIMESPAN_MIN_DAYS;
   radioGroupForm: UntypedFormGroup;
 
   chartOptions: EChartsOption = {};
@@ -113,9 +114,13 @@ export class MinFeeRateCdfGraphComponent implements OnInit, OnDestroy {
               this.cd.markForCheck();
             }),
             map((response) => {
-              return {
-                dayCount: parseInt(response.headers.get('x-total-count'), 10),
-              };
+              const dayCount = parseInt(response.headers.get('x-total-count'), 10);
+              const fitted = this.minFeeRateService.fitTimespan(timespan, dayCount);
+              if (fitted !== timespan) {
+                this.radioGroupForm.controls.dateSpan.setValue(fitted, { emitEvent: false });
+                this.timespan = fitted;
+              }
+              return { dayCount };
             }),
             catchError(() => {
               this.data = [];
