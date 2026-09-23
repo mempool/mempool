@@ -46,13 +46,14 @@ export class MinersService {
   }
 
   public applyStaleTipsMinerDetails$(staleTips: StaleTip[]): Observable<StaleTip[]> {
-    if (!staleTips?.some((staleTip) => staleTip.stale?.extras?.pool?.minerNames?.length || staleTip.canonical?.extras?.pool?.minerNames?.length)) {
+    if (!staleTips?.some((staleTip) => [staleTip.stale, staleTip.canonical, staleTip.resolvedBy].some((block) => block?.extras?.pool?.minerNames?.length))) {
       return of(staleTips);
     }
     return this.miners$.pipe(
       map((miners) => staleTips.map((staleTip) => {
         this.applyBlockMinerDetails(staleTip.stale, miners);
         this.applyBlockMinerDetails(staleTip.canonical, miners);
+        this.applyBlockMinerDetails(staleTip.resolvedBy, miners);
         return staleTip;
       }))
     );

@@ -16,9 +16,17 @@ export interface ChainTip {
   status: 'invalid' | 'active' | 'valid-fork' | 'valid-headers' | 'headers-only';
 };
 
+export interface TxOverlap {
+  shared: number;
+  staleOnly: number;
+  canonicalOnly: number;
+}
+
 export interface StaleTip extends ChainTip {
   stale: BlockExtended;
   canonical: BlockExtended;
+  resolvedBy?: BlockExtended;
+  txOverlap?: TxOverlap;
 }
 
 export interface OrphanedBlock {
@@ -33,6 +41,7 @@ class ChainTips {
   private chainTips: ChainTip[] = [];
   private validChainTips: ChainTip[] = []; // 'valid-fork' and 'valid-headers' only, in descending height order
   private staleBlocks: Record<string, BlockExtended> = {};
+  private txOverlaps = new Map<string, TxOverlap>();
   private orphanedBlocks: { [hash: string]: OrphanedBlock } = {};
   private blockCache: { [hash: string]: OrphanedBlock } = {};
   private orphansByHeight: { [height: number]: OrphanedBlock[] } = {};
@@ -40,6 +49,7 @@ class ChainTips {
   private indexingQueue: { blockhash?: string, block?: IEsploraApi.Block, tip: OrphanedBlock }[] = [];
 
   private staleBlocksCacheSize = 50;
+  private txOverlapsCacheSize = 200;
   private maxIndexingQueueSize = 100;
 
   /** @asyncSafe */
@@ -170,6 +180,9 @@ class ChainTips {
           // ensure the canonical block is correctly indexed
           await blocks.$indexBlockByHeight(staleBlock.height);
           this.cacheStaleBlock(staleBlock);
+          // warm the overlap cache so the stale tips page doesn't compute it on demand
+          const canonicalHash = await bitcoinApi.$getBlockHash(staleBlock.height);
+          await this.$getTxOverlap(staleBlock.id, canonicalHash);
         }
       } catch (e) {
         logger.err(`Failed to index orphaned block ${block?.id} at height ${block?.height}. Reason: ${e instanceof Error ? e.message : e}`);
@@ -266,15 +279,57 @@ class ChainTips {
         continue;
       }
 
+      const resolvedBy = blocks.getBlocks().find(block => block.height === staleTip.height + 1) || await BlocksRepository.$getBlockByHeight(staleTip.height + 1);
+      const txOverlap = await this.$getTxOverlap(stale.id, canonical.id);
+
       tips.push({
         ...staleTip,
         stale,
         canonical,
+        resolvedBy: resolvedBy ?? undefined,
+        txOverlap,
       });
       lastHeight = staleTip.height;
     }
 
     return tips;
+  }
+
+  /** @asyncSafe */
+  private async $getTxOverlap(staleHash: string, canonicalHash: string): Promise<TxOverlap | undefined> {
+    const key = `${staleHash}:${canonicalHash}`;
+    const cached = this.txOverlaps.get(key);
+    if (cached) {
+      return cached;
+    }
+
+    let staleTxids: string[];
+    let canonicalTxids: string[];
+    try {
+      staleTxids = await bitcoinApi.$getTxIdsForBlock(staleHash, true);
+      canonicalTxids = await bitcoinApi.$getTxIdsForBlock(canonicalHash, true);
+    } catch (e) {
+      logger.warn(`Cannot compare transactions of stale block ${staleHash} and canonical block ${canonicalHash}. Reason: ${e instanceof Error ? e.message : e}`);
+      return undefined;
+    }
+
+    // skip the coinbase, which always differs between competing blocks
+    const staleSet = new Set(staleTxids.slice(1));
+    const shared = canonicalTxids.slice(1).filter(txid => staleSet.has(txid)).length;
+    const txOverlap: TxOverlap = {
+      shared,
+      staleOnly: staleSet.size - shared,
+      canonicalOnly: canonicalTxids.length - 1 - shared,
+    };
+
+    this.txOverlaps.set(key, txOverlap);
+    if (this.txOverlaps.size > this.txOverlapsCacheSize) {
+      const oldestKey = this.txOverlaps.keys().next().value;
+      if (oldestKey !== undefined) {
+        this.txOverlaps.delete(oldestKey);
+      }
+    }
+    return txOverlap;
   }
 
   clearOrphanCacheAboveHeight(height: number): void {

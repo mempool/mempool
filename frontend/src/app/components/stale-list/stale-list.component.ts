@@ -7,6 +7,17 @@ import { StateService } from '@app/services/state.service';
 import { SeoService } from '@app/services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 
+interface StaleTipDetails {
+  seenDelta?: number;
+  seenFirst?: 'stale' | 'canonical' | 'both';
+  resolvedAfter?: number;
+  sharedPercent?: number;
+  staleOnlyPercent?: number;
+  canonicalOnlyPercent?: number;
+}
+
+type StaleTipWithDetails = StaleTip & { details: StaleTipDetails };
+
 @Component({
   selector: 'app-stale-list',
   templateUrl: './stale-list.component.html',
@@ -15,9 +26,9 @@ import { seoDescriptionNetwork } from '@app/shared/common.utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StaleList implements OnInit {
-  chainTips$: Observable<StaleTip[]>;
+  chainTips$: Observable<StaleTipWithDetails[]>;
   loadMoreSubject = new BehaviorSubject<number | undefined>(undefined);
-  chainTips: StaleTip[] = [];
+  chainTips: StaleTipWithDetails[] = [];
   isLoading = true;
   isLoadingMore = false;
   fullyLoaded = false;
@@ -75,7 +86,7 @@ export class StaleList implements OnInit {
               chainTip.canonical.extras.maxFee = this.getMaxBlockFee(chainTip.canonical);
             }
           });
-          this.chainTips = this.chainTips.concat(newChainTips);
+          this.chainTips = this.chainTips.concat(newChainTips.map((chainTip) => ({ ...chainTip, details: this.getDetails(chainTip) })));
         }
         this.isLoading = false;
         this.isLoadingMore = false;
@@ -105,6 +116,38 @@ export class StaleList implements OnInit {
     this.isLoadingMore = true;
     const height = this.chainTips[this.chainTips.length - 1]?.height;
     this.loadMoreSubject.next(height);
+  }
+
+  getDetails(chainTip: StaleTip): StaleTipDetails {
+    const details: StaleTipDetails = {};
+    const staleSeen = chainTip.stale?.extras?.firstSeen;
+    const canonicalSeen = chainTip.canonical?.extras?.firstSeen;
+    if (staleSeen && canonicalSeen) {
+      details.seenDelta = Math.abs(canonicalSeen - staleSeen);
+      if (staleSeen === canonicalSeen) {
+        details.seenFirst = 'both';
+      } else {
+        details.seenFirst = staleSeen < canonicalSeen ? 'stale' : 'canonical';
+      }
+    }
+
+    const resolvedBy = chainTip.resolvedBy;
+    if (resolvedBy) {
+      // prefer local arrival times, since miner timestamps can be out of order
+      const resolvedAfter = resolvedBy.extras?.firstSeen && staleSeen && canonicalSeen
+        ? resolvedBy.extras.firstSeen - Math.max(staleSeen, canonicalSeen)
+        : resolvedBy.timestamp - chainTip.canonical.timestamp;
+      details.resolvedAfter = Math.max(resolvedAfter, 0);
+    }
+
+    const overlap = chainTip.txOverlap;
+    const totalTxs = overlap ? overlap.shared + overlap.staleOnly + overlap.canonicalOnly : 0;
+    if (totalTxs > 0) {
+      details.sharedPercent = overlap.shared / totalTxs * 100;
+      details.staleOnlyPercent = overlap.staleOnly / totalTxs * 100;
+      details.canonicalOnlyPercent = overlap.canonicalOnly / totalTxs * 100;
+    }
+    return details;
   }
 
   getBlockGradient(block: BlockExtended): string {
