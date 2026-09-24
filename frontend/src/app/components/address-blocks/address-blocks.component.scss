@@ -14,10 +14,10 @@
 }
 
 .activity-strip {
-  --block-size: 172px;
+  --block-size: 125px;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
   overflow-x: auto;
   padding: 1.25rem 0.5rem 0.5rem 0;
   scrollbar-width: thin;
@@ -37,7 +37,7 @@
 .pending-divider {
   align-self: stretch;
   flex: 0 0 2px;
-  margin: 0 8px 27px;
+  margin: 0 4px 27px;
   background: repeating-linear-gradient(to bottom, var(--fg) 0 14px, transparent 14px 28px);
 }
 
@@ -53,7 +53,7 @@
   margin-left: calc(-0.16 * var(--block-size));
   height: 28px;
   margin-bottom: calc(0.192 * var(--block-size) + 10px);
-  font-size: 1.125rem;
+  font-size: 16px;
   line-height: 28px;
   font-variant-numeric: tabular-nums;
 }
@@ -65,12 +65,13 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   // Reserve every row, including the optional partial-activity label.
-  grid-template-rows: 28px 28px 28px 32px 16px;
+  grid-template-rows: 20px 18px 34px 18px 12px;
+  row-gap: 2px;
   align-items: center;
   align-content: center;
   width: var(--block-size);
   height: var(--block-size);
-  padding: 12px 6px;
+  padding: 6px;
   border: 0;
   border-radius: 0;
   color: white;
@@ -90,16 +91,16 @@
   &::before { background: var(--mempool-block-side); }
 }
 .transaction-count {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: bold;
   line-height: 1.2;
 }
 .activity-direction {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  font-size: 0.75rem;
+  gap: 3px;
+  font-size: 11px;
   line-height: 1.2;
 }
 .direction-icons {
@@ -108,14 +109,17 @@
   gap: 2px;
 }
 .net-amount {
+  min-width: 0;
+  max-width: 100%;
   color: white;
-  font-size: 0.9rem;
+  font-size: 14px;
+  font-weight: bold;
   line-height: 1.2;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-.block-time { font-size: 0.75rem; line-height: 1.2; }
-.partial-label { font-size: 0.7rem; line-height: 1.2; color: #ffe082; }
+.block-time { font-size: 12px; line-height: 1.2; }
+.partial-label { font-size: 10px; line-height: 1.2; color: #ffe082; }
 .selection-marker {
   display: block;
   width: 0;
@@ -126,37 +130,15 @@
   border-bottom: 7px solid transparent;
 }
 .selected .selection-marker { border-bottom-color: var(--info); }
-.block-gap { flex: 0 0 12px; color: var(--transparent-fg); letter-spacing: 2px; }
+.block-gap { flex: 0 0 6px; color: var(--transparent-fg); }
 .load-older { flex: 0 0 130px; font-size: 0.85rem; margin: 50px 0 0; }
 
 @media (max-width: 575px) {
   :host { scroll-margin-top: 120px; }
   .address-blocks { padding: 1rem 0.75rem 0; }
   .activity-strip {
-    --block-size: 104px;
-    gap: 8px;
     padding-top: 0.75rem;
   }
-  .block-height {
-    height: 20px;
-    font-size: 0.8rem;
-    line-height: 20px;
-    margin-bottom: calc(0.192 * var(--block-size) + 6px);
-  }
-  .block-face {
-    padding: 4px 3px;
-    grid-template-rows: 18px 22px 22px 22px 12px;
-  }
-  .transaction-count { font-size: 0.7rem; }
-  .net-amount {
-    font-size: 0.65rem;
-    max-width: 100%;
-    white-space: normal;
-    overflow-wrap: anywhere;
-  }
-  .activity-direction, .block-time, .partial-label { font-size: 0.6rem; }
-  .activity-direction { gap: 2px; }
-  .block-gap { flex-basis: 6px; letter-spacing: 0; }
   .pending-divider { margin-left: 0; margin-right: 0; }
-  .load-older { flex-basis: 104px; font-size: 0.75rem; }
+  .load-older { flex-basis: 130px; }
 }
