@@ -52,7 +52,7 @@
           </span>
           <span class="net-amount">
             @if (group.net !== null) {
-              <app-amount [satoshis]="group.net" [addPlus]="group.net > 0" [noFiat]="true" digitsInfo="1.0-8"></app-amount>
+              {{ group.net < 0 ? '-' : '' }}<app-amount [satoshis]="group.net | absolute" [addPlus]="group.net > 0" [noFiat]="true" digitsInfo="1.2-3"></app-amount>
             } @else {
               <span>—</span>
             }
