@@ -10,6 +10,7 @@ import { StorageService } from '@app/services/storage.service';
 import { WebsocketResponse } from '@interfaces/websocket.interface';
 import { TxAuditStatus } from '@components/transaction/transaction.component';
 import { MinersService } from '@app/services/miners.service';
+import { TxFilters } from '@components/address/address.component';
 
 @Injectable({
   providedIn: 'root'
@@ -128,6 +129,29 @@ export class ApiService {
       params = params.append('txId[]', txId);
     });
     return this.httpClient.get<number[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/transaction-times', { params });
+  }
+
+  getFilteredAddressTransactions$(address: string, filters: TxFilters, txid?: string): Observable<Transaction[]> {
+    let params = new HttpParams();
+    if (txid) {
+      params = params.append('after_txid', txid);
+    }
+    if (filters.direction) {
+      params = params.append('direction', filters.direction);
+    }
+    if (filters.min) {
+      params = params.append('min_amount', filters.min);
+    }
+    if (filters.max) {
+      params = params.append('max_amount', filters.max);
+    }
+    if (filters.from) {
+      params = params.append('from', filters.from);
+    }
+    if (filters.to) {
+      params = params.append('to', filters.to);
+    }
+    return this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/address/' + address + '/txs/filtered', { params });
   }
 
   getAboutPageProfiles$(): Observable<any[]> {

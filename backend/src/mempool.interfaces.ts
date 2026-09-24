@@ -536,6 +536,7 @@ export interface IBackendInfo {
   coreVersion: string;
   osVersion: string;
   backend: 'esplora' | 'electrum' | 'none';
+  addressTxsIndexing: boolean;
 }
 
 export interface INetworkInfo {

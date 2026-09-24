@@ -8,7 +8,7 @@ import { WebsocketService } from '@app/services/websocket.service';
 import { StateService } from '@app/services/state.service';
 import { AudioService } from '@app/services/audio.service';
 import { ApiService } from '@app/services/api.service';
-import { of, merge, Subscription, Observable, forkJoin } from 'rxjs';
+import { of, merge, Subscription, Observable, forkJoin, Subject } from 'rxjs';
 import { SeoService } from '@app/services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { AddressInformation } from '@interfaces/node-api.interface';
@@ -91,6 +91,14 @@ class AddressStats implements ChainStats {
   }
 }
 
+export interface TxFilters {
+  direction?: 'incoming' | 'outgoing';
+  min?: string;
+  max?: string;
+  from?: string;
+  to?: string;
+}
+
 @Component({
   selector: 'app-address',
   templateUrl: './address.component.html',
@@ -138,6 +146,18 @@ export class AddressComponent implements OnInit, OnDestroy {
   now = Date.now() / 1000;
   balancePeriod: 'all' | '1m' = 'all';
 
+  filters$: Subject<TxFilters> = new Subject();
+  filters: TxFilters = {};
+  filtersSubscription: Subscription;
+  loadMoreSubscription: Subscription;
+  backendInfoSubscription: Subscription;
+  addressTxsIndexing = false;
+  draftFilters: TxFilters = {};
+  showFilters = false;
+  rangeMode: 'date' | 'height' = 'date';
+  amountUnit: 'sats' | 'btc' = this.stateService.viewAmountMode$.value === 'sats' ? 'sats' : 'btc';
+  amountInputs: { min: string, max: string } = { min: '', max: '' };
+
   private tempTransactions: Transaction[];
   private timeTxIndexes: number[];
   private lastTransactionTxId: string;
@@ -158,6 +178,9 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.networkChangeSubscription = this.stateService.networkChanged$.subscribe((network) => {
       this.network = network;
       this.updateAccelerationSubscription();
+    });
+    this.backendInfoSubscription = this.stateService.backendInfo$.subscribe((backendInfo) => {
+      this.addressTxsIndexing = !!backendInfo?.addressTxsIndexing;
     });
     this.websocketService.want(['blocks']);
     this.psbtForm = this.formBuilder.group({ psbt: [''], tapleaf: [''], taptree: [''], ikey: [''] });
@@ -196,6 +219,10 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.taprootPsbtExpanded = false;
           this.psbtForm?.reset({ psbt: '', tapleaf: '', taptree: '', ikey: '' });
           this.psbtError = undefined;
+          this.loadMoreSubscription?.unsubscribe();
+          this.filters = {};
+          this.draftFilters = {};
+          this.amountInputs = { min: '', max: '' };
           document.body.scrollTo(0, 0);
           this.addressString = params.get('id') || '';
           if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(this.addressString)) {
@@ -249,9 +276,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.isLoadingTransactions = true;
           const utxoCount = this.chainStats.utxos + this.mempoolStats.utxos;
           return forkJoin([
-            address.is_pubkey
-              ? this.electrsApiService.getScriptHashTransactions$((address.address.length === 66 ? '21' : '41') + address.address + 'ac')
-              : this.electrsApiService.getAddressTransactions$(address.address),
+            this.getTransactions$(),
             (utxoCount > 2 && utxoCount <= 500 ? (address.is_pubkey
               ? this.electrsApiService.getScriptHashUtxos$((address.address.length === 66 ? '21' : '41') + address.address + 'ac')
               : this.electrsApiService.getAddressUtxos$(address.address)) : of(null)).pipe(
@@ -263,57 +288,14 @@ export class AddressComponent implements OnInit, OnDestroy {
         }),
         switchMap(([transactions, utxos]) => {
           this.utxos = utxos;
-
-          this.tempTransactions = transactions;
-          if (transactions.length) {
-            this.lastTransactionTxId = transactions[transactions.length - 1].txid;
-          }
-
-          const fetchTxs: string[] = [];
-          this.timeTxIndexes = [];
-          transactions.forEach((tx, index) => {
-            if (!tx.status.confirmed) {
-              fetchTxs.push(tx.txid);
-              this.timeTxIndexes.push(index);
-            }
-          });
-          if (!fetchTxs.length) {
-            return of([]);
-          }
-          return this.apiService.getTransactionTimes$(fetchTxs).pipe(
-            catchError((err) => {
-              this.isLoadingAddress = false;
-              this.isLoadingTransactions = false;
-              this.error = err;
-              this.seoService.logSoft404();
-              console.log(err);
-              return of([]);
-            })
-          );
+          return this.loadTransactionTimes$(transactions);
         })
       )
       .subscribe((times: number[] | null) => {
         if (!times) {
           return;
         }
-        times.forEach((time, index) => {
-          this.tempTransactions[this.timeTxIndexes[index]].firstSeen = time;
-        });
-        this.tempTransactions.sort((a, b) => {
-          if (b.status.confirmed) {
-            if (b.status.block_height === a.status.block_height) {
-              return b.status.block_time - a.status.block_time;
-            }
-            return b.status.block_height - a.status.block_height;
-          }
-          return b.firstSeen - a.firstSeen;
-        });
-
-        this.transactions = this.tempTransactions;
-        if (this.transactions.length === (this.mempoolStats.tx_count + this.chainStats.tx_count)) {
-          this.fullyLoaded = true;
-        }
-        this.isLoadingTransactions = false;
+        this.onTransactionsLoaded(times);
 
         const addressVin: Vin[] = [];
         const vinIds: string[] = [];
@@ -373,6 +355,90 @@ export class AddressComponent implements OnInit, OnDestroy {
         }
         this.chainStats.addTx(transaction);
       });
+
+    this.filtersSubscription = this.filters$.pipe(
+      tap((filters) => {
+        this.filters = filters;
+        this.loadMoreSubscription?.unsubscribe();
+        this.lastTransactionTxId = undefined;
+        this.isLoadingTransactions = true;
+        this.retryLoadMore = false;
+        this.fullyLoaded = false;
+      }),
+      switchMap(() => this.getTransactions$().pipe(
+        switchMap((transactions) => this.loadTransactionTimes$(transactions)),
+        catchError((err) => {
+          console.log(err);
+          this.transactions = [];
+          this.isLoadingTransactions = false;
+          this.retryLoadMore = true;
+          return of(null);
+        }),
+      )),
+    ).subscribe((times: number[] | null) => {
+      if (times) {
+        this.onTransactionsLoaded(times);
+      }
+    });
+  }
+
+  private getTransactions$(afterTxid?: string): Observable<Transaction[]> {
+    if (this.hasActiveFilters()) {
+      return this.apiService.getFilteredAddressTransactions$(this.address.address, this.filters, afterTxid);
+    }
+    return this.address.is_pubkey
+      ? this.electrsApiService.getScriptHashTransactions$((this.address.address.length === 66 ? '21' : '41') + this.address.address + 'ac', afterTxid)
+      : this.electrsApiService.getAddressTransactions$(this.address.address, afterTxid);
+  }
+
+  private loadTransactionTimes$(transactions: Transaction[]): Observable<number[]> {
+    this.tempTransactions = transactions;
+    if (transactions.length) {
+      this.lastTransactionTxId = transactions[transactions.length - 1].txid;
+    }
+
+    const fetchTxs: string[] = [];
+    this.timeTxIndexes = [];
+    transactions.forEach((tx, index) => {
+      if (!tx.status.confirmed) {
+        fetchTxs.push(tx.txid);
+        this.timeTxIndexes.push(index);
+      }
+    });
+    if (!fetchTxs.length) {
+      return of([]);
+    }
+    return this.apiService.getTransactionTimes$(fetchTxs).pipe(
+      catchError((err) => {
+        this.isLoadingAddress = false;
+        this.isLoadingTransactions = false;
+        this.error = err;
+        this.seoService.logSoft404();
+        console.log(err);
+        return of([]);
+      })
+    );
+  }
+
+  private onTransactionsLoaded(times: number[]): void {
+    times.forEach((time, index) => {
+      this.tempTransactions[this.timeTxIndexes[index]].firstSeen = time;
+    });
+    this.tempTransactions.sort((a, b) => {
+      if (b.status.confirmed) {
+        if (b.status.block_height === a.status.block_height) {
+          return b.status.block_time - a.status.block_time;
+        }
+        return b.status.block_height - a.status.block_height;
+      }
+      return b.firstSeen - a.firstSeen;
+    });
+
+    this.transactions = this.tempTransactions;
+    if (this.transactions.length === (this.mempoolStats.tx_count + this.chainStats.tx_count)) {
+      this.fullyLoaded = true;
+    }
+    this.isLoadingTransactions = false;
   }
 
   addTransaction(transaction: Transaction, playSound: boolean = true): boolean {
@@ -493,9 +559,7 @@ export class AddressComponent implements OnInit, OnDestroy {
     }
     this.isLoadingTransactions = true;
     this.retryLoadMore = false;
-    (this.address.is_pubkey
-    ? this.electrsApiService.getScriptHashTransactions$((this.address.address.length === 66 ? '21' : '41') + this.address.address + 'ac', this.lastTransactionTxId)
-    : this.electrsApiService.getAddressTransactions$(this.address.address, this.lastTransactionTxId))
+    this.loadMoreSubscription = this.getTransactions$(this.lastTransactionTxId)
       .subscribe((transactions: Transaction[]) => {
         if (transactions && transactions.length) {
           this.lastTransactionTxId = transactions[transactions.length - 1].txid;
@@ -652,6 +716,100 @@ export class AddressComponent implements OnInit, OnDestroy {
     }
   }
 
+  setFilters(filters: TxFilters) {
+    this.filters$.next(filters);
+  }
+
+  hasInvalidFilters(): boolean {
+    const isInvalidRange = (lower?: string, upper?: string) => !!lower && !!upper && Number(lower) > Number(upper);
+    const { min, max, from, to } = this.draftFilters;
+    return isInvalidRange(min, max) || isInvalidRange(from, to);
+  }
+
+  applyFilters() {
+    if (this.hasPendingFilters() && !this.hasInvalidFilters()) {
+      this.setFilters({ ...this.draftFilters });
+    }
+  }
+
+  setDraftFilter<K extends keyof TxFilters>(key: K, value: TxFilters[K]) {
+    this.draftFilters = { ...this.draftFilters, [key]: value };
+  }
+
+  hasActiveFilters(): boolean {
+    return Object.values(this.filters || {}).some((value) => !!value);
+  }
+
+  canFilterTransactions(): boolean {
+    const hasTransactions = this.chainStats?.tx_count + this.mempoolStats?.tx_count > 0;
+    return this.addressTxsIndexing && (hasTransactions || this.hasActiveFilters());
+  }
+
+  hasPendingFilters(): boolean {
+    const keys: (keyof TxFilters)[] = ['direction', 'min', 'max', 'from', 'to'];
+    return keys.some((key) => (this.draftFilters[key] || '') !== (this.filters?.[key] || ''));
+  }
+
+  setAmountFilter(key: 'min' | 'max', value: string) {
+    this.amountInputs = { ...this.amountInputs, [key]: value };
+    const amount = Number(value);
+    if (!value || isNaN(amount) || amount < 0) {
+      this.setDraftFilter(key, '');
+    } else {
+      this.setDraftFilter(key, Math.round(this.amountUnit === 'btc' ? amount * 100_000_000 : amount).toString());
+    }
+  }
+
+  toggleAmountUnit() {
+    this.amountUnit = this.amountUnit === 'btc' ? 'sats' : 'btc';
+    const toInput = (sats?: string) => {
+      if (!sats) {
+        return '';
+      }
+      return this.amountUnit === 'btc' ? (Number(sats) / 100_000_000).toFixed(8).replace(/\.?0+$/, '') : sats;
+    };
+    this.amountInputs = { min: toInput(this.draftFilters.min), max: toInput(this.draftFilters.max) };
+  }
+
+  toggleRangeMode() {
+    this.rangeMode = this.rangeMode === 'date' ? 'height' : 'date';
+    this.draftFilters = { ...this.draftFilters, from: '', to: '' };
+  }
+
+  setRangeFilter(key: 'from' | 'to', value: string) {
+    let filterValue = '';
+    if (value && this.rangeMode === 'date') {
+      const date = new Date(`${value}T${key === 'from' ? '00:00:00' : '23:59:59'}`);
+      if (!isNaN(date.getTime())) {
+        filterValue = Math.floor(date.getTime() / 1000).toString();
+      }
+    } else if (value) {
+      const height = parseInt(value, 10);
+      if (height >= 0 && height < 500_000_000) {
+        filterValue = height.toString();
+      }
+    }
+    this.setDraftFilter(key, filterValue);
+  }
+
+  rangeInputValue(key: 'from' | 'to'): string {
+    const value = this.draftFilters[key];
+    if (!value) {
+      return '';
+    }
+    if (this.rangeMode === 'height') {
+      return value;
+    }
+    const date = new Date(parseInt(value, 10) * 1000);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  }
+
+  resetFilters() {
+    this.draftFilters = {};
+    this.amountInputs = { min: '', max: '' };
+    this.setFilters({});
+  }
+
   ngOnDestroy(): void {
     this.mainSubscription.unsubscribe();
     this.mempoolTxSubscription.unsubscribe();
@@ -662,5 +820,8 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.networkChangeSubscription?.unsubscribe();
     this.accelerationsSubscription?.unsubscribe();
     this.websocketService.stopTrackAccelerations();
+    this.filtersSubscription?.unsubscribe();
+    this.loadMoreSubscription?.unsubscribe();
+    this.backendInfoSubscription?.unsubscribe();
   }
 }
