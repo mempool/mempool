@@ -112,6 +112,10 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
     }
   }
 
+  async $getAddressMempoolTransactions(address: string, lastSeenTxId: string): Promise<IEsploraApi.Transaction[]> {
+    throw new Error('method getAddressMempoolTransactions not implemented');
+  }
+
   async $getScriptHash(scripthash: string): Promise<IEsploraApi.ScriptHash> {
     try {
       const balance = await this.electrumClient.blockchainScripthash_getBalance(scripthash);
@@ -191,6 +195,10 @@ class BitcoindElectrsApi extends BitcoinApi implements AbstractBitcoinApi {
       loadingIndicators.setProgress('address-' + scripthash, 100);
       throw new Error(typeof e === 'string' ? e : e && e.message || e);
     }
+  }
+
+  async $getScriptHashMempoolTransactions(address: string, lastSeenTxId: string): Promise<IEsploraApi.Transaction[]> {
+    throw Error('method getScriptHashMempoolTransactions not implemented');
   }
 
   /** @asyncUnsafe */

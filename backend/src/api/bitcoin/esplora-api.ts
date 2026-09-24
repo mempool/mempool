@@ -547,7 +547,11 @@ class ElectrsApi implements AbstractBitcoinApi {
   }
 
   $getAddressTransactions(address: string, txId?: string): Promise<IEsploraApi.Transaction[]> {
-    throw new Error('Method getAddressTransactions not implemented.');
+    return this.failoverRouter.$get<IEsploraApi.Transaction[]>('/address/' + address + '/txs');
+  }
+
+  $getAddressMempoolTransactions(address: string, txId?: string): Promise<IEsploraApi.Transaction[]> {
+    return this.failoverRouter.$get<IEsploraApi.Transaction[]>('/address/' + address + '/txs/mempool');
   }
 
   $getAddressUtxos(address: string): Promise<IEsploraApi.UTXO[]> {
@@ -559,7 +563,11 @@ class ElectrsApi implements AbstractBitcoinApi {
   }
 
   $getScriptHashTransactions(scripthash: string, txId?: string): Promise<IEsploraApi.Transaction[]> {
-    throw new Error('Method getScriptHashTransactions not implemented.');
+    return this.failoverRouter.$get<IEsploraApi.Transaction[]>('/scripthash/' + scripthash + '/txs');
+  }
+
+  $getScriptHashMempoolTransactions(scripthash: string, txId?: string): Promise<IEsploraApi.Transaction[]> {
+    return this.failoverRouter.$get<IEsploraApi.Transaction[]>('/scripthash/' + scripthash + '/txs/mempool');
   }
 
   $getScriptHashUtxos(scripthash: string): Promise<IEsploraApi.UTXO[]> {
