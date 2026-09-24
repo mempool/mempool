@@ -6,6 +6,7 @@ import { Common } from '../api/common';
 import PoolsRepository from './PoolsRepository';
 import HashratesRepository from './HashratesRepository';
 import { RowDataPacket } from 'mysql2';
+import { PoolConnection } from 'mysql2/promise';
 import BlocksSummariesRepository from './BlocksSummariesRepository';
 import DifficultyAdjustmentsRepository from './DifficultyAdjustmentsRepository';
 import bitcoinClient from '../api/bitcoin/bitcoin-client';
@@ -1144,12 +1145,12 @@ class BlocksRepository {
    * @param poolId
    * @asyncSafe
    */
-  public async $savePool(id: string, poolId: number): Promise<void> {
+  public async $savePool(id: string, poolId: number, connection?: PoolConnection): Promise<void> {
     try {
       await DB.query(`
         UPDATE blocks SET pool_id = ?, definition_hash = ?
         WHERE hash = ?`,
-        [poolId, poolsUpdater.currentSha, id]
+        [poolId, poolsUpdater.currentSha, id], 'debug', connection
       );
     } catch (e) {
       logger.err(`Cannot update block pool. Reason: ` + (e instanceof Error ? e.message : e));
