@@ -110,6 +110,7 @@ class PoolsUpdater {
         logger.err(`Could not migrate mining pools, rolling back. Exception: ${JSON.stringify(e)}`, this.tag);
         this.currentSha = previousSha;
         await connection.rollback();
+        await DB.query(`UPDATE blocks SET definition_hash = ? WHERE definition_hash = ? AND height >= ?`, [previousSha, githubSha, recheckFromHeight]);
         throw e;
       } finally {
         connection.release();
