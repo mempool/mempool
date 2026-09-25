@@ -10,6 +10,7 @@ import mining from './mining';
 import PricesRepository from '../../repositories/PricesRepository';
 import AccelerationRepository from '../../repositories/AccelerationRepository';
 import accelerationApi from '../services/acceleration';
+import blocks from '../blocks';
 import { handleError } from '../../utils/api';
 
 class MiningRoutes {
@@ -273,6 +274,12 @@ class MiningRoutes {
     try {
       if (config.MEMPOOL.NETWORK !== 'mainnet') {
         handleError(req, res, 400, 'Minimum daily fee rates are only available on mainnet.');
+        return;
+      }
+      const currentHeight = blocks.getCurrentBlockHeight();
+      if (!config.MEMPOOL_SERVICES.ACCELERATIONS || currentHeight < 1 ||
+        await AccelerationRepository.$getLastSyncedHeight() < currentHeight) {
+        handleError(req, res, 503, 'Minimum daily fee rates are unavailable until acceleration history is synchronized.');
         return;
       }
       const minFeeRates = await mining.$getMinFeeRates(req.params.interval);
