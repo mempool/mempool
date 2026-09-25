@@ -528,6 +528,26 @@ interface RequiredParams {
 
 export interface ILoadingIndicators { [name: string]: number; }
 
+export interface IBDProgress {
+  ibd: boolean;
+  bitcoind: {
+    blocks: number;
+    headers: number;
+    verificationprogress: number;
+    estimatedTimeRemaining: number | null;
+  };
+  electrs?: {
+    reachable: boolean;
+    indexed: boolean;
+  };
+  mempool: {
+    inSync: boolean;
+    indexed: boolean;
+    progress: number | null;
+    estimatedTimeRemaining: number | null;
+  };
+}
+
 export interface IBackendInfo {
   hostname: string;
   gitCommit: string;
