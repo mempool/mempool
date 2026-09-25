@@ -9,6 +9,7 @@ import transactionUtils from './transaction-utils';
 import BlocksRepository from '../repositories/BlocksRepository';
 import redisCache from './redis-cache';
 import blocks from './blocks';
+import { PoolConnection } from 'mysql2/promise';
 
 class PoolsParser {
   miningPools: any[] = [];
@@ -35,7 +36,7 @@ class PoolsParser {
    * @param pools
    * @asyncUnsafe
    */
-  public async migratePoolsJson(): Promise<void> {
+  public async migratePoolsJson(connection: PoolConnection): Promise<boolean> {
     // We also need to wipe the backend cache to make sure we don't serve blocks with
     // the wrong mining pool (usually happen with unknown blocks)
     diskCache.setIgnoreBlocksCache();
@@ -80,7 +81,7 @@ class PoolsParser {
         // New mining pool
         const slug = pool.name.replace(/[^a-z0-9]/gi, '').toLowerCase();
         logger.debug(`Inserting new mining pool ${pool.name}`);
-        await PoolsRepository.$insertNewMiningPool(pool, slug);
+        await PoolsRepository.$insertNewMiningPool(pool, slug, connection);
         reindexUnknown = true;
         clearCache = true;
       } else {
@@ -88,23 +89,23 @@ class PoolsParser {
           // Pool has been renamed
           const newSlug = pool.name.replace(/[^a-z0-9]/gi, '').toLowerCase();
           logger.warn(`Renaming ${poolDB.name} mining pool to ${pool.name}. Slug has been updated. Maybe you want to make a redirection from 'https://mempool.space/mining/pool/${poolDB.slug}' to 'https://mempool.space/mining/pool/${newSlug}`);
-          await PoolsRepository.$renameMiningPool(poolDB.id, newSlug, pool.name);
+          await PoolsRepository.$renameMiningPool(poolDB.id, newSlug, pool.name, connection);
           clearCache = true;
         }
         if (poolDB.link !== pool.link) {
           // Pool link has changed
           logger.debug(`Updating link for ${pool.name} mining pool`);
-          await PoolsRepository.$updateMiningPoolLink(poolDB.id, pool.link);
+          await PoolsRepository.$updateMiningPoolLink(poolDB.id, pool.link, connection);
           clearCache = true;
         }
         if (JSON.stringify(pool.addresses) !== poolDB.addresses ||
           JSON.stringify(pool.regexes) !== poolDB.regexes) {
           // Pool addresses changed or coinbase tags changed
           logger.notice(`Updating addresses and/or coinbase tags for ${pool.name} mining pool.`);
-          await PoolsRepository.$updateMiningPoolTags(poolDB.id, pool.addresses, pool.regexes);
+          await PoolsRepository.$updateMiningPoolTags(poolDB.id, pool.addresses, pool.regexes, connection);
           reindexUnknown = true;
           clearCache = true;
-          await this.$reindexBlocksForPool(poolDB.id);
+          await this.$reindexBlocksForPool(poolDB.id, connection);
         }
       }
     }
@@ -117,20 +118,30 @@ class PoolsParser {
       } else {
         unknownPool = this.unknownPool;
       }
-      await this.$reindexBlocksForPool(unknownPool.id);
+      await this.$reindexBlocksForPool(unknownPool.id, connection);
     }
 
-    // refresh the in-memory block cache with the reindexed data
-    if (clearCache) {
-      for (const block of blocks.getBlocks()) {
-        const reindexedBlock = await blocks.$indexBlock(block.id);
-        block.extras.pool = reindexedBlock.extras.pool;
-      }
-      // update persistent cache with the reindexed data
-      void diskCache.$saveCacheToDisk();
-      void redisCache.$updateBlocks(blocks.getBlocks());
-      void mining.$rebuildPoolsStatsCache();
+    return clearCache;
+  }
+
+  /** @asyncUnsafe */
+  public async $refreshStaleBlocks(sha: string, fromHeight: number): Promise<void> {
+    const [rows]: any[] = await DB.query(`
+      SELECT hash, pool_id, coinbase_raw, coinbase_addresses
+      FROM blocks
+      WHERE definition_hash = ?
+      AND height >= ?
+    `, [sha, fromHeight]);
+    await this.$reassignBlocks(rows);
+
+    for (const block of blocks.getBlocks()) {
+      const reindexedBlock = await blocks.$indexBlock(block.id);
+      block.extras.pool = reindexedBlock.extras.pool;
     }
+    // update persistent cache with the reindexed data
+    void diskCache.$saveCacheToDisk();
+    void redisCache.$updateBlocks(blocks.getBlocks());
+    void mining.$rebuildPoolsStatsCache();
   }
 
   public matchBlockMiner(scriptsig: string, addresses: string[], pools: PoolTag[]): PoolTag | undefined {
@@ -195,7 +206,7 @@ class PoolsParser {
    * @param pool local id of existing pool to reindex
    * @asyncUnsafe
    */
-  private async $reindexBlocksForPool(poolId: number): Promise<void> {
+  private async $reindexBlocksForPool(poolId: number, connection: PoolConnection): Promise<void> {
     let firstKnownBlockPool = 130635; // https://mempool.space/block/0000000000000a067d94ff753eec72830f1205ad3a4c216a08a80c832e551a52
     if (config.MEMPOOL.NETWORK === 'testnet') {
       firstKnownBlockPool = 21106; // https://mempool.space/testnet/block/0000000070b701a5b6a1b965f6a38e0472e70b2bb31b973e4638dec400877581
@@ -204,16 +215,21 @@ class PoolsParser {
     }
 
     const [blocks]: any[] = await DB.query(`
-      SELECT height, hash, coinbase_raw, coinbase_addresses
+      SELECT height, hash, pool_id, coinbase_raw, coinbase_addresses
       FROM blocks
       WHERE pool_id = ?
       AND height >= ?
       ORDER BY height DESC
-    `, [poolId, firstKnownBlockPool]);
+    `, [poolId, firstKnownBlockPool], 'debug', connection);
 
+    await this.$reassignBlocks(blocks, connection);
+  }
+
+  /** @asyncUnsafe */
+  private async $reassignBlocks(blocks: any[], connection?: PoolConnection): Promise<void> {
     let pools: PoolTag[] = [];
     if (config.DATABASE.ENABLED === true) {
-      pools = await PoolsRepository.$getPools();
+      pools = await PoolsRepository.$getPools(connection);
     } else {
       pools = this.miningPools;
     }
@@ -222,16 +238,18 @@ class PoolsParser {
     for (const block of blocks) {
       const addresses = JSON.parse(block.coinbase_addresses) || [];
       const newPool = this.matchBlockMiner(block.coinbase_raw, addresses, pools);
-      if (newPool && newPool.id !== poolId) {
+      if (newPool && newPool.id !== block.pool_id) {
         changed++;
-        await BlocksRepository.$savePool(block.hash, newPool.id);
+        await BlocksRepository.$savePool(block.hash, newPool.id, connection);
       }
     }
 
     logger.info(`${changed} blocks assigned to a new pool`, logger.tags.mining);
 
-    // Re-index hashrates and difficulty adjustments later
-    mining.reindexHashrateRequested = true;
+    if (changed > 0) {
+      // Re-index hashrates and difficulty adjustments later
+      mining.reindexHashrateRequested = true;
+    }
   }
 }
 

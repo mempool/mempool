@@ -285,6 +285,7 @@ class Server {
       const minFeeTip = memPool.limitGBT ? await bitcoinSecondClient.getBlockCount() : -1;
       const latestAccelerations = await accelerationApi.$updateAccelerations();
       const numHandledBlocks = await blocks.$updateBlocks();
+      await poolsUpdater.$recheckBlocks();
       const pollRate = config.MEMPOOL.POLL_RATE_MS * (indexer.indexerIsRunning() ? 10 : 1);
       if (numHandledBlocks === 0) {
         await memPool.$updateMempool(newMempool, latestAccelerations, minFeeMempool, minFeeTip, pollRate);
