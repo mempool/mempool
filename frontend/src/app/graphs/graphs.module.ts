@@ -34,6 +34,7 @@ import { AcceleratorDashboardComponent } from '@components/acceleration/accelera
 import { TreasuriesComponent } from '@components/treasuries/treasuries.component';
 import { HashrateChartComponent } from '@components/hashrate-chart/hashrate-chart.component';
 import { HashrateChartPoolsComponent } from '@components/hashrates-chart-pools/hashrate-chart-pools.component';
+import { ScriptTypeAdoptionGraphComponent } from '@components/script-type-adoption-graph/script-type-adoption-graph.component';
 import { BlockHealthGraphComponent } from '@components/block-health-graph/block-health-graph.component';
 import { AddressComponent } from '@components/address/address.component';
 import { WalletComponent } from '@components/wallet/wallet.component';
@@ -86,6 +87,7 @@ import { CommonModule } from '@angular/common';
     FederationAddressesListComponent,
     HashrateChartComponent,
     HashrateChartPoolsComponent,
+    ScriptTypeAdoptionGraphComponent,
     BlockHealthGraphComponent,
     AddressGraphComponent,
     TreasuriesGraphComponent,

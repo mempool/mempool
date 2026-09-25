@@ -25,6 +25,8 @@
         i18n="mining.block-rewards">Block Rewards</a>
       <a class="dropdown-item" routerLinkActive="active"
         [routerLink]="['/graphs/mining/block-sizes-weights' | relativeUrl]" i18n="mining.block-sizes-weights">Block Sizes and Weights</a>
+      <a class="dropdown-item" routerLinkActive="active"
+        [routerLink]="['/graphs/mining/script-type-adoption' | relativeUrl]" i18n="mining.script-type-adoption">Script Type Adoption</a>
       <a *ngIf="stateService.env.AUDIT" class="dropdown-item" routerLinkActive="active"
         [routerLink]="['/graphs/mining/block-health' | relativeUrl]" i18n="mining.blocks-health">Block Health</a>
     </div>
