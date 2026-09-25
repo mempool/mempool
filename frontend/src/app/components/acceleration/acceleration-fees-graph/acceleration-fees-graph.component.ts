@@ -36,8 +36,11 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
   @Input() period: '24h' | '1w' | '1m' | '1y' | 'all' = '1y';
   @Input() accelerations$: Observable<Acceleration[]>;
 
+  logScale = false;
+
   miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
+  scaleForm: UntypedFormGroup;
 
   chartOptions: EChartsOption = {};
   chartInitOptions = {
@@ -71,6 +74,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
   ) {
     this.radioGroupForm = this.formBuilder.group({ dateSpan: '1w' });
     this.radioGroupForm.controls.dateSpan.setValue('1w');
+    this.scaleForm = this.formBuilder.group({scaleFunction: 'linear'});
   }
 
   ngOnInit(): void {
@@ -84,8 +88,35 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
     this.radioGroupForm.controls.dateSpan.setValue(this.miningWindowPreference);
 
     this.fragmentSubscription = this.route.fragment.subscribe((fragment) => {
-      if (['1w', '1m', '1y', 'all'].indexOf(fragment) > -1) {
-        this.radioGroupForm.controls.dateSpan.setValue(fragment, { emitEvent: false });
+      if (!fragment) {
+        this.setScale('default');
+        return;
+      }
+
+      let timeVal = null;
+      let scaleVal = null;
+
+      if (fragment.includes('=')) {
+        const params = new URLSearchParams(fragment);
+        timeVal = params.get('time');
+        scaleVal = params.get('scale');
+      } else {
+        if (['1w', '1m', '3m', '6m', '1y', '2y', '3y', 'all'].includes(fragment)) {
+          timeVal = fragment;
+        }
+        if (['linear', 'log'].includes(fragment)) {
+          scaleVal = fragment;
+        }
+      }
+
+      if (timeVal && ['1w', '1m', '3m', '6m', '1y', '2y', '3y', 'all'].includes(timeVal)) {
+        this.radioGroupForm.controls.dateSpan.setValue(timeVal, { emitEvent: false });
+      }
+
+      if (scaleVal && ['linear', 'log'].includes(scaleVal)) {
+        this.setScale(scaleVal);
+      } else if (timeVal) {
+        this.setScale('default');
       }
     });
     this.aggregatedHistory$ = combineLatest([
@@ -186,10 +217,10 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
 
           for (const tick of ticks) {
             if (tick.seriesName === this.totalBidBoostLabel) {
-              if (tick.data[1] > 10_000_000) {
-                tooltip += `${tick.marker} ${this.totalBidBoostLabel}: ${formatNumber(tick.data[1] / 100_000_000, this.locale, '1.0-8')} BTC<br>`;
+              if (tick.data[3] > 10_000_000) {
+                tooltip += `${tick.marker} ${this.totalBidBoostLabel}: ${formatNumber(tick.data[3] / 100_000_000, this.locale, '1.0-8')} BTC<br>`;
               } else {
-                tooltip += `${tick.marker} ${this.totalBidBoostLabel}: ${formatNumber(tick.data[1], this.locale, '1.0-0')} sats<br>`;
+                tooltip += `${tick.marker} ${this.totalBidBoostLabel}: ${formatNumber(tick.data[3], this.locale, '1.0-0')} sats<br>`;
               }
             } else if (tick && tick.seriesName === this.acceleratedLabel) {
               tooltip += `${tick.marker} ${this.acceleratedLabel}: ${formatNumber(tick.data[1], this.locale, '1.0-0')}<br>`;
@@ -249,7 +280,8 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
       },
       yAxis: data.length === 0 ? undefined : [
         {
-          type: 'value',
+          type: this.logScale ? 'log' : 'value',
+          min: this.logScale ? 1 : undefined,
           name: this.totalBidBoostLabel,
           position: 'right',
           nameTextStyle: {
@@ -270,7 +302,8 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
           splitLine: null
         },
         {
-          type: 'value',
+          type: this.logScale ? 'log' : 'value',
+          min: this.logScale ? 1 : undefined,
           name: this.acceleratedLabel,
           position: 'left',
           axisLabel: {
@@ -294,7 +327,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
         {
           name: this.totalBidBoostLabel,
           data: data.map(h =>  {
-            return [h.timestamp * 1000, h.sumBidBoost, h.avgHeight];
+            return [h.timestamp * 1000, this.logScale ? Math.max(h.sumBidBoost, 1) : h.sumBidBoost, h.avgHeight, h.sumBidBoost];
           }),
           type: 'line',
           symbol: 'none',
@@ -310,7 +343,8 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
             return [h.timestamp * 1000, h.count, h.avgHeight];
           }),
           type: 'bar',
-          barWidth: '90%',
+          barWidth: this.logScale ? undefined : '90%',
+          barMinHeight: this.logScale ? 4 : undefined,
         },
       ],
       dataZoom: (this.widget || data.length === 0 )? undefined : [{
@@ -371,5 +405,51 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
     this.aggregatedHistorySubscription?.unsubscribe();
     this.fragmentSubscription?.unsubscribe();
     this.statsSubscription?.unsubscribe();
+  }
+
+  getFragment(setParams: Record<string, string> = {}): string {
+    let fragment = this.route.snapshot.fragment ?? '';
+    if (!fragment.includes('=')) {
+      fragment = '';
+    }
+    const params = new URLSearchParams(fragment);
+    params.set('time', setParams.time || this.radioGroupForm.controls.dateSpan.value);
+    params.set('scale', setParams.scale || this.scaleForm.controls.scaleFunction.value);
+    return params.toString();
+  }
+
+  private setScale(scale: 'default' | 'linear' | 'log') {
+    if (scale === 'default') {
+      this.scaleForm.controls.scaleFunction.setValue('linear', { emitEvent: false });
+    } else {
+      this.scaleForm.controls.scaleFunction.setValue(scale, { emitEvent: false });
+    }
+    this.onScaleChange();
+  }
+
+  onScaleChange() {
+    this.logScale = this.scaleForm.get('scaleFunction')?.value === 'log';
+
+    if (!this.chartInstance || !this.chartOptions.yAxis || !this.chartOptions.series) {
+      return;
+    }
+    const yAxes = this.chartOptions.yAxis as any[];
+    const series = this.chartOptions.series as any[];
+
+    yAxes[0].type = this.logScale ? 'log' : 'value';
+    yAxes[0].min = this.logScale ? 1 : undefined;
+
+    yAxes[1].type = this.logScale ? 'log' : 'value';
+    yAxes[1].min = this.logScale ? 1 : undefined;
+
+    series[0].data.forEach(h => {
+      h[1] = this.logScale ? Math.max(h[3], 1) : h[3];
+    });
+    series[1].barWidth = this.logScale ? undefined : '90%';
+    series[1].barMinHeight = this.logScale ? 4 : undefined;
+    this.chartInstance.setOption({
+      yAxis: yAxes,
+      series: series
+    });
   }
 }
