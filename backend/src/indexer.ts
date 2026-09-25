@@ -174,7 +174,11 @@ class Indexer {
       } break;
 
       case 'minFeeRate': {
-        if (config.MEMPOOL.NETWORK !== 'mainnet') {
+        if (config.MEMPOOL.NETWORK !== 'mainnet' || !config.MEMPOOL_SERVICES.ACCELERATIONS) {
+          break;
+        }
+        const currentHeight = blocks.getCurrentBlockHeight();
+        if (currentHeight < 1 || await AccelerationRepository.$getLastSyncedHeight() < currentHeight) {
           break;
         }
         logger.debug(`Backfilling min_fee_rate now`, logger.tags.mining);
