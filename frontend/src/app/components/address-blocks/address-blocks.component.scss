@@ -1,0 +1,144 @@
+@use './block-cube';
+
+:host {
+  display: block;
+  margin-bottom: 1.5rem;
+  scroll-margin-top: 90px;
+}
+
+.address-blocks {
+  padding: 1.25rem 1.25rem 0;
+  background: var(--box-bg);
+  border: 1px solid var(--secondary);
+  border-radius: 6px;
+}
+
+.activity-strip {
+  --block-size: 125px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 1.25rem 0.5rem 0.5rem 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--secondary) transparent;
+  scroll-snap-type: x proximity;
+  cursor: grab;
+  user-select: none;
+
+  &.dragging {
+    scroll-snap-type: none;
+    cursor: grabbing;
+
+    * { cursor: grabbing; }
+  }
+}
+
+.pending-divider {
+  align-self: stretch;
+  flex: 0 0 2px;
+  margin: 0 4px 27px;
+  background: repeating-linear-gradient(to bottom, var(--fg) 0 14px, transparent 14px 28px);
+}
+
+.activity-block {
+  flex: 0 0 calc(1.16 * var(--block-size));
+  padding-left: calc(0.16 * var(--block-size));
+  scroll-snap-align: center;
+  text-align: center;
+}
+
+.block-height {
+  width: calc(1.16 * var(--block-size));
+  margin-left: calc(-0.16 * var(--block-size));
+  height: 28px;
+  margin-bottom: calc(0.192 * var(--block-size) + 10px);
+  font-size: 16px;
+  line-height: 28px;
+  font-variant-numeric: tabular-nums;
+}
+
+.block-face {
+  @include block-cube.faces;
+  position: relative;
+  overflow: visible;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  // Reserve every row, including the optional partial-activity label.
+  grid-template-rows: 20px 18px 34px 18px 12px;
+  row-gap: 2px;
+  align-items: center;
+  align-content: center;
+  width: var(--block-size);
+  height: var(--block-size);
+  padding: 6px;
+  border: 0;
+  border-radius: 0;
+  color: white;
+  background: linear-gradient(var(--mainnet-alt), var(--primary));
+  cursor: pointer;
+
+  &::before {
+    // Keep the side distinct from the surrounding panel in dark themes.
+    filter: brightness(0.7);
+  }
+
+  &:focus-visible { outline: 2px solid var(--info); outline-offset: 4px; }
+}
+
+.pending .block-face {
+  &::after { background: var(--mempool-block-top); }
+  &::before { background: var(--mempool-block-side); }
+}
+.transaction-count {
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1.2;
+}
+.activity-direction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 11px;
+  line-height: 1.2;
+}
+.direction-icons {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 2px;
+}
+.net-amount {
+  min-width: 0;
+  max-width: 100%;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.block-time { font-size: 12px; line-height: 1.2; }
+.partial-label { font-size: 10px; line-height: 1.2; color: #ffe082; }
+.selection-marker {
+  display: block;
+  width: 0;
+  height: 0;
+  margin: 10px auto;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 7px solid transparent;
+}
+.selected .selection-marker { border-bottom-color: var(--info); }
+.block-gap { flex: 0 0 6px; color: var(--transparent-fg); }
+.load-older { flex: 0 0 130px; font-size: 0.85rem; margin: 50px 0 0; }
+
+@media (max-width: 575px) {
+  :host { scroll-margin-top: 120px; }
+  .address-blocks { padding: 1rem 0.75rem 0; }
+  .activity-strip {
+    padding-top: 0.75rem;
+  }
+  .pending-divider { margin-left: 0; margin-right: 0; }
+  .load-older { flex-basis: 130px; }
+}
