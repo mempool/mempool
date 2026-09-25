@@ -12,6 +12,7 @@ import statisticsReplicator from './replication/StatisticsReplication';
 import AccelerationRepository from './repositories/AccelerationRepository';
 import BlocksAuditsRepository from './repositories/BlocksAuditsRepository';
 import BlocksRepository from './repositories/BlocksRepository';
+import addressTxsIndexer from './api/address-txs-indexer';
 
 export interface CoreIndex {
   name: string;
@@ -222,6 +223,7 @@ class Indexer {
       }
 
       void this.runSingleTask('blocksPrices');
+      void addressTxsIndexer.$run();
       await blocks.$indexCoinbaseAddresses();
       await mining.$indexDifficultyAdjustments();
       await mining.$generateNetworkHashrateHistory();

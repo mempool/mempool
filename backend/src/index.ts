@@ -50,6 +50,8 @@ import aboutRoutes from './api/about.routes';
 import mempoolBlocks from './api/mempool-blocks';
 import walletApi from './api/services/wallets';
 import stratumApi from './api/services/stratum';
+import chDatabase from './ch-database';
+import chDbMigration from './api/ch-db-migration';
 
 class Server {
   private wss: WebSocket.Server | undefined;
@@ -135,6 +137,15 @@ class Server {
           await databaseMigration.$blocksReindexingTruncate();
         }
         await databaseMigration.$initializeOrMigrateDatabase();
+      } catch (e) {
+        throw new Error(e instanceof Error ? e.message : 'Error');
+      }
+    }
+
+    if (config.CLICKHOUSE.ENABLED) {
+      await chDatabase.checkConnection();
+      try {
+        await chDbMigration.$initializeOrMigrateDatabase();
       } catch (e) {
         throw new Error(e instanceof Error ? e.message : 'Error');
       }

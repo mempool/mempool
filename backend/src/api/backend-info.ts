@@ -5,6 +5,7 @@ import { IBackendInfo } from '../mempool.interfaces';
 import config from '../config';
 import bitcoinClient from './bitcoin/bitcoin-client';
 import logger from '../logger';
+import addressTxsIndexer from './address-txs-indexer';
 
 class BackendInfo {
   private backendInfo: IBackendInfo;
@@ -31,6 +32,7 @@ class BackendInfo {
       backend: config.MEMPOOL.BACKEND,
       coreVersion: '?',
       osVersion: `${os.type()} ${os.release()}`,
+      addressTxsIndexing: addressTxsIndexer.isEnabled(),
     };
 
     this.timer = setInterval(async () => {

@@ -86,6 +86,13 @@
     "TIMEOUT": 180000,
     "PID_DIR": ""
   },
+  "CLICKHOUSE": {
+    "ENABLED": false,
+    "URL": "http://127.0.0.1:8123",
+    "DATABASE": "mempool",
+    "USERNAME": "mempool",
+    "PASSWORD": "mempool"
+  },
   "SYSLOG": {
     "ENABLED": true,
     "HOST": "127.0.0.1",

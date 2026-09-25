@@ -24,6 +24,9 @@ import { handleError } from '../../utils/api';
 import poolsUpdater from '../../tasks/pools-updater';
 import chainTips from '../chain-tips';
 import FlagValueRepository, { INTERVAL_PRESETS } from '../../repositories/FlagValueRepository';
+import AddressTxsRepository, { AddressTxFilters } from '../../repositories/AddressTxsRepository';
+import addressTxsIndexer from '../address-txs-indexer';
+import { createHash } from 'crypto';
 
 const TXID_REGEX = /^[a-f0-9]{64}$/i;
 const BLOCK_HASH_REGEX = /^[a-f0-9]{64}$/i;
@@ -31,6 +34,49 @@ const ADDRESS_REGEX = /^[a-z0-9]{2,120}$/i;
 const SCRIPT_HASH_REGEX = /^([a-f0-9]{2})+$/i;
 const MAX_TRANSACTION_TIMES = 100;
 const JUST_NUMBERS_REGEX = /^[1-9]\d*$/;
+const PUBKEY_REGEX = /^(0[23][a-f0-9]{64}|04[a-f0-9]{128})$/i;
+const FILTERED_TXS_PAGE_SIZE = 50;
+
+/** @asyncUnsafe */
+async function $getFilteredMempoolTransactions(scripthash: string, scriptPubKey: string, filters: AddressTxFilters): Promise<IEsploraApi.Transaction[]> {
+  // unconfirmed txs are newer than any block height or timestamp the range ends at
+  if (filters.to !== undefined) {
+    return [];
+  }
+  const transactions = await bitcoinApi.$getScriptHashMempoolTransactions(scripthash, '');
+  return transactions.filter((tx) => {
+    let netValue = 0;
+    for (const vin of tx.vin) {
+      if (vin.prevout?.scriptpubkey === scriptPubKey) {
+        netValue -= vin.prevout.value;
+      }
+    }
+    for (const vout of tx.vout) {
+      if (vout.scriptpubkey === scriptPubKey) {
+        netValue += vout.value;
+      }
+    }
+    if ((filters.direction === 'incoming' && netValue <= 0) || (filters.direction === 'outgoing' && netValue >= 0)) {
+      return false;
+    }
+    if (filters.minAmount !== undefined && Math.abs(netValue) < filters.minAmount) {
+      return false;
+    }
+    if (filters.maxAmount !== undefined && Math.abs(netValue) > filters.maxAmount) {
+      return false;
+    }
+    return true;
+  });
+}
+
+/** @asyncUnsafe */
+async function $getScriptPubKey(address: string): Promise<string | null> {
+  if (PUBKEY_REGEX.test(address)) {
+    return (address.length === 66 ? '21' : '41') + address.toLowerCase() + 'ac';
+  }
+  const info = await bitcoinClient.validateAddress(address);
+  return info?.isvalid ? info.scriptPubKey : null;
+}
 
 class BitcoinRoutes {
   public initRoutes(app: Application) {
@@ -66,6 +112,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'stale-tips/:height', this.getStaleTips.bind(this))
       .post(config.MEMPOOL.API_URL_PREFIX + 'prevouts', this.$getPrevouts)
       .post(config.MEMPOOL.API_URL_PREFIX + 'cpfp', this.getCpfpLocalTxs)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'address/:address/txs/filtered', this.$getFilteredAddressTransactions)
       // Temporarily add txs/package endpoint for all backends until esplora supports it
       .post(config.MEMPOOL.API_URL_PREFIX + 'txs/package', this.$submitPackage)
       // Internal routes
@@ -782,6 +829,60 @@ class BitcoinRoutes {
         return;
       }
       handleError(req, res, 500, 'Failed to get address transactions');
+    }
+  }
+
+  private async $getFilteredAddressTransactions(req: Request, res: Response): Promise<void> {
+    if (!addressTxsIndexer.isEnabled()) {
+      handleError(req, res, 405, 'Address transaction filters require ClickHouse to be enabled.');
+      return;
+    }
+    if (!ADDRESS_REGEX.test(req.params.address) && !PUBKEY_REGEX.test(req.params.address)) {
+      handleError(req, res, 400, `Invalid address`);
+      return;
+    }
+    const { direction, min_amount, max_amount, from, to, after_txid } = req.query;
+    if (direction !== undefined && direction !== 'incoming' && direction !== 'outgoing') {
+      handleError(req, res, 400, `Invalid direction`);
+      return;
+    }
+    for (const value of [min_amount, max_amount, from, to]) {
+      if (value !== undefined && (typeof value !== 'string' || !/^\d+$/.test(value))) {
+        handleError(req, res, 400, `Invalid filter value`);
+        return;
+      }
+    }
+    if (after_txid !== undefined && (typeof after_txid !== 'string' || !TXID_REGEX.test(after_txid))) {
+      handleError(req, res, 400, `Invalid after_txid`);
+      return;
+    }
+
+    try {
+      const scriptPubKey = await $getScriptPubKey(req.params.address);
+      if (!scriptPubKey) {
+        handleError(req, res, 400, `Invalid address`);
+        return;
+      }
+      const scripthash = createHash('sha256').update(new Uint8Array(Buffer.from(scriptPubKey, 'hex'))).digest('hex');
+      const toNumber = (value: unknown): number | undefined => value === undefined ? undefined : Number(value);
+      const filters: AddressTxFilters = {
+        direction: direction as AddressTxFilters['direction'],
+        minAmount: toNumber(min_amount),
+        maxAmount: toNumber(max_amount),
+        from: toNumber(from),
+        to: toNumber(to),
+      };
+
+      const txids = await AddressTxsRepository.$getFilteredTxids(scripthash, filters, FILTERED_TXS_PAGE_SIZE, after_txid as string | undefined);
+      const transactions = txids.length ? await bitcoinApi.$getRawTransactions(txids) : [];
+      const transactionsByTxid = new Map(transactions.map((tx) => [tx.txid, tx]));
+      const confirmedTransactions = txids.map((txid) => transactionsByTxid.get(txid)).filter((tx): tx is IEsploraApi.Transaction => !!tx);
+
+      // unconfirmed txs are not indexed in ClickHouse, they are filtered here and only belong on the first page
+      const mempoolTransactions = after_txid ? [] : await $getFilteredMempoolTransactions(scripthash, scriptPubKey, filters);
+      res.json(mempoolTransactions.concat(confirmedTransactions));
+    } catch (e) {
+      handleError(req, res, 500, 'Failed to get filtered address transactions');
     }
   }
 
