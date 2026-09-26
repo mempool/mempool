@@ -1,0 +1,110 @@
+<div
+  class="average-coin"
+  *ngIf="split as s"
+  [class.approaching]="feeImpact && !s.uneconomical && s.takenFrac >= 0.75"
+  [class.uneconomical]="feeImpact && s.uneconomical"
+>
+  <!-- share value templates, reused by the stats column and the hover tooltip -->
+  <ng-template #keptShareTpl>{{ s.keptFrac * 100 | number: '1.0-1' }}%</ng-template>
+  <ng-template #feeShareTpl>
+    <!-- once uneconomical the share is pinned at 100%, so show the fee-to-value multiplier instead -->
+    <ng-container *ngIf="s.uneconomical; else feeEco">avg ×{{ s.mult | number: '1.0-1' }}</ng-container>
+    <ng-template #feeEco>
+      <ng-container *ngIf="s.takenFrac >= tinyShare; else feeTiny">{{ s.takenFrac * 100 | number: '1.0-1' }}%</ng-container>
+      <ng-template #feeTiny>≈0%</ng-template>
+    </ng-template>
+  </ng-template>
+
+  <div class="coin-figure">
+    <svg class="coin-svg" [attr.viewBox]="viewBox" preserveAspectRatio="xMidYMid meet" role="img">
+      <desc>
+        <ng-container i18n="address.average-coin.desc|Average coin figure description"
+          >At this feerate the fee takes {{ s.takenFrac * 100 | number: '1.0-1' }}% of the average coin.</ng-container
+        >
+      </desc>
+      <circle
+        class="coin-kept"
+        [attr.cx]="cx"
+        [attr.cy]="cy"
+        [attr.r]="r"
+        (pointerenter)="showTooltip('kept', $event)"
+        (pointermove)="moveTooltip($event)"
+        (pointerleave)="hideTooltip()"
+      ></circle>
+      <!-- fee wedge: same 12-o'clock clockwise sector as the per-UTXO bubble chart -->
+      <g
+        *ngIf="feeImpact"
+        class="fee-region"
+        (pointerenter)="showTooltip('fee', $event)"
+        (pointermove)="moveTooltip($event)"
+        (pointerleave)="hideTooltip()"
+      >
+        <path *ngIf="wedgePath" class="coin-fee" [attr.d]="wedgePath" [attr.fill-opacity]="wedgeOpacity"></path>
+        <circle
+          *ngIf="s.uneconomical"
+          class="coin-fee"
+          [attr.cx]="cx"
+          [attr.cy]="cy"
+          [attr.r]="r"
+          [attr.fill-opacity]="discOpacity"
+        ></circle>
+      </g>
+    </svg>
+
+    <div class="coin-stats">
+      <div class="stats-header" i18n="address.average-coin.header|Average UTXO header">Average UTXO</div>
+      <div class="stat-row">
+        <span class="label" i18n="address.average-coin.utxos|Spendable UTXO count">UTXOs</span>
+        <span class="value">{{ utxoCount | number }}</span>
+      </div>
+      <div class="stat-row">
+        <span class="label" i18n="address.average-coin.avg-value|Average UTXO value">Average value</span>
+        <span class="value">
+          <app-amount [satoshis]="s.mean" [noFiat]="true"></app-amount>
+          <span class="fiat"><app-fiat [value]="s.mean"></app-fiat></span>
+        </span>
+      </div>
+      <ng-container *ngIf="feeImpact">
+        <div class="stat-row">
+          <span class="label" i18n="address.average-coin.fee-per-input|Fee to spend one input">Fee per input</span>
+          <span class="value">
+            <app-amount [satoshis]="s.feePerInput" [noFiat]="true"></app-amount>
+            <span class="fiat"><app-fiat [value]="s.feePerInput"></app-fiat></span>
+          </span>
+        </div>
+        <div class="stat-row fee-share">
+          <span class="label" i18n="address.average-coin.fee|Fee share label">Goes to fees</span>
+          <span class="value"><ng-container [ngTemplateOutlet]="feeShareTpl"></ng-container></span>
+        </div>
+      </ng-container>
+      <div class="stat-row">
+        <span class="label" i18n="address.average-coin.break-even|Break-even feerate label">Uneconomical above</span>
+        <span class="value"><app-fee-rate [fee]="s.fStar"></app-fee-rate></span>
+      </div>
+    </div>
+  </div>
+
+  <div
+    #tooltip
+    class="coin-tooltip"
+    [class.mobile]="isMobile"
+    *ngIf="hoverTarget"
+    [style.left.px]="isMobile ? null : tooltipPosition.x"
+    [style.top.px]="isMobile ? null : tooltipPosition.y"
+  >
+    <div class="tooltip-share">
+      <ng-container [ngTemplateOutlet]="hoverTarget === 'kept' ? keptShareTpl : feeShareTpl"></ng-container>
+      <span *ngIf="hoverTarget === 'kept'" i18n="address.average-coin.kept|Kept share label">You keep</span>
+      <span *ngIf="hoverTarget === 'fee'" i18n="address.average-coin.fee|Fee share label">Goes to fees</span>
+    </div>
+    <div class="tooltip-amount">
+      <app-amount [satoshis]="hoverTarget === 'kept' ? s.kept : s.feePerInput" [noFiat]="true"></app-amount>
+      <span class="fiat"><app-fiat [value]="hoverTarget === 'kept' ? s.kept : s.feePerInput"></app-fiat></span>
+    </div>
+    <div class="tooltip-breakdown">
+      <ng-container i18n="address.average-coin.fee-breakdown|Fee per input breakdown"
+        >{{ feerate | number }} sat/vB × {{ vsizePerInput | number }} vB = {{ s.feePerInput | number }} sat/input</ng-container
+      >
+    </div>
+  </div>
+</div>
