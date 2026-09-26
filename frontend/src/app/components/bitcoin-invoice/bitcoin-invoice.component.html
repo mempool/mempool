@@ -1,11 +1,11 @@
 <div class="wrapper">
 
   @if (!minimal) {
-    <span *ngIf="paymentStatus === 3" class="valid-feedback d-block mt-5">
+    <span *ngIf="paymentStatus === 3" class="valid-feedback d-block mt-5" i18n="invoice.paid">
       Payment successful. You can close this page.
     </span>
 
-    <span *ngIf="paymentStatus === 4" class="valid-feedback d-block mt-5">
+    <span *ngIf="paymentStatus === 4" class="valid-feedback d-block mt-5" i18n="invoice.payment-detected">
       A transaction <a [href]="'/tx/' + invoice.cryptoInfo[0].payments[0].id.split('-')[0]">has been detected in the mempool</a> fully paying for this invoice. Waiting for on-chain confirmation.
     </span>
   }
@@ -35,7 +35,7 @@
     </ng-template>
 
     @if (!minimal) {
-      <p>Waiting for transaction... </p>
+      <p i18n="invoice.waiting-for-tx">Waiting for transaction...</p>
       <div class="spinner-border text-light"></div>
     }
   </div>

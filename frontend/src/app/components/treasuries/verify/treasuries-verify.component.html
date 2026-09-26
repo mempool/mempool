@@ -90,13 +90,13 @@
 >
   <ng-container [ngSwitch]="hoverSection.type">
     <ng-container *ngSwitchCase="'verified'">
-      <div class="tooltip-title">Verified</div>
+      <div class="tooltip-title" i18n="treasuries.verified">Verified</div>
     </ng-container>
     <ng-container *ngSwitchCase="'public'">
-      <div class="tooltip-title">Public</div>
+      <div class="tooltip-title" i18n="treasuries.public">Public</div>
     </ng-container>
     <ng-container *ngSwitchCase="'treasuries'">
-      <div class="tooltip-title">All Treasuries</div>
+      <div class="tooltip-title" i18n="treasuries.all">All Treasuries</div>
     </ng-container>
   </ng-container>
   <div class="tooltip-value">{{ (hoverSection.share * 100) | number: '1.2-2' }}%</div>

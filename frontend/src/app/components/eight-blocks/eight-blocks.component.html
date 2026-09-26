@@ -17,7 +17,11 @@
         ></app-block-overview-graph>
         <div *ngIf="showInfo && blockInfo[i]" class="info" @infoChange>
           <h1 class="height">{{ blockInfo[i].height }}</h1>
-          <h2 class="mined-by">by {{ blockInfo[i].extras.pool.name || 'Unknown' }}</h2>
+          @if (blockInfo[i].extras.pool.name) {
+            <h2 class="mined-by" i18n="eight-blocks.mined-by">by {{ blockInfo[i].extras.pool.name }}</h2>
+          } @else {
+            <h2 class="mined-by" i18n="eight-blocks.mined-by-unknown">by Unknown</h2>
+          }
         </div>
       </div>
     </div>

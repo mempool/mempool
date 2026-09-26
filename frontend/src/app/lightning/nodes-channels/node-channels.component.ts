@@ -113,8 +113,8 @@ export class NodeChannels implements OnChanges {
 
               return `
                 <b style="color: white; margin-left: 2px">${value.data.shortId}</b><br>
-                <span>Node: ${value.name}</span><br>
-                <span>Capacity: ${capacity}</span>
+                <span>${$localize`Node: ${value.name}`}</span><br>
+                <span>${$localize`:@@ce9dfdc6dccb28dc75a78c704e09dc18fb02dcfa:Capacity`}: ${capacity}</span>
               `;
             }
           },
