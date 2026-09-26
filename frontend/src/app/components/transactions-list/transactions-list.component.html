@@ -59,7 +59,7 @@
                   <td class="sig-td">
                     <div class="sig-stack">
                       @if (!tx['_sigs']?.[vindex]?.length) {
-                        <span class="sig sig-key sig-no-lock" ngbTooltip="unsigned">
+                        <span class="sig sig-key sig-no-lock" ngbTooltip="unsigned" i18n-ngbTooltip="shared.unsigned">
                           <fa-icon [icon]="['fas', 'lock-open']" [fixedWidth]="true"></fa-icon>
                         </span>
                       } @else {
@@ -184,16 +184,16 @@
                                 </span>
                               </ng-container>
                               @if (windex === vin.taprootInfo?.controlBlockIndex) {
-                                <span class="control-block" ngbTooltip="taproot control block" (click)="toggleTaprootControlBlock(vindex)">
+                                <span class="control-block" ngbTooltip="taproot control block" i18n-ngbTooltip="transactions-list.taproot.control-block" (click)="toggleTaprootControlBlock(vindex)">
                                   <fa-icon [icon]="['fas', 'code-fork']" [fixedWidth]="true" [rotate]="180"></fa-icon>
                                 </span>
                                 <ng-container *ngTemplateOutlet="taprootControlBlock; context: { $implicit: vin.taprootInfo?.scriptPath, controlBlock: witness, truncate: !showFullWitness[vindex][windex] }"></ng-container>
                               } @else if (windex === vin.taprootInfo?.scriptIndex || (windex === vin.witness.length - 1 && ['p2sh', 'v0_p2wsh'].includes(vin.prevout?.scriptpubkey_type) && vin.scriptsig.length !== 46)) {
-                                <span class="script" ngbTooltip="script">
+                                <span class="script" ngbTooltip="script" i18n-ngbTooltip="shared.script">
                                   <fa-icon [icon]="['fas', 'code']" [fixedWidth]="true"></fa-icon>
                                 </span>
                               } @else if (windex === vin.taprootInfo?.annexIndex) {
-                                <span class="annex" ngbTooltip="annex">
+                                <span class="annex" ngbTooltip="annex" i18n-ngbTooltip="transactions-list.taproot.annex">
                                   <fa-icon [icon]="['fas', 'paperclip']" [fixedWidth]="true"></fa-icon>
                                 </span>
                               }
@@ -218,7 +218,7 @@
                                     {{ witness }}
                                   </ng-template>
                                 } @else {
-                                  &lt;empty&gt;
+                                  <ng-container i18n="shared.empty">&lt;empty&gt;</ng-container>
                                 }
                               }
                             </p>
@@ -370,9 +370,9 @@
                               <ng-container *ngIf="(showDetails$ | async) === false">
                                 @if ((vout.scriptpubkey_asm | hex2ascii).length > 200) {
                                   @if (!showFullOpReturnPreview[tx.txid + '-vout-' + vindex]) {
-                                    <span class="badge bg-primary" (click)="toggleShowFullOpReturnPreview(tx.txid, vindex)">Show more</span>
+                                    <span class="badge bg-primary" (click)="toggleShowFullOpReturnPreview(tx.txid, vindex)" i18n="show-more">Show more</span>
                                   } @else {
-                                    <span class="badge bg-primary" (click)="toggleShowFullOpReturnPreview(tx.txid, vindex)">Show less</span>
+                                    <span class="badge bg-primary" (click)="toggleShowFullOpReturnPreview(tx.txid, vindex)" i18n="show-less">Show less</span>
                                   }
                                 }
                               </ng-container>
@@ -474,7 +474,7 @@
                         </td>
                       </tr>
                       <tr *ngIf="vout.scriptpubkey_type == 'op_return'">
-                        <td>OP_RETURN <span>data</span></td>
+                        <td>OP_RETURN <span i18n="shared.data">data</span></td>
                         <td style="text-align: left; word-break: break-word; white-space: pre-line;">
                           @if (!showFullOpReturnData[tx.txid + '-vout-' + vindex]) {
                             {{ (vout.scriptpubkey_asm | hex2ascii | slice:0:1000) }}
@@ -571,13 +571,13 @@
 <ng-template #xRemaining let-x i18n="x-remaining">{{ x }} remaining</ng-template>
 
 <ng-template #taprootControlBlock let-scriptPath let-controlBlock="controlBlock" let-truncate="truncate">
-  <span class="leaf-version" ngbTooltip="leaf version and parity"> {{ controlBlock.slice(0, 2) }}</span>
+  <span class="leaf-version" ngbTooltip="leaf version and parity" i18n-ngbTooltip="transactions-list.taproot.leaf-version-parity"> {{ controlBlock.slice(0, 2) }}</span>
   @if (scriptPath.isNUMS) {
-    <span class="internal-key nums" ngbTooltip="internal key (NUMS point)">{{ scriptPath.internalKey }}</span>
+    <span class="internal-key nums" ngbTooltip="internal key (NUMS point)" i18n-ngbTooltip="transactions-list.taproot.internal-key-nums">{{ scriptPath.internalKey }}</span>
   } @else {
-    <span class="internal-key" ngbTooltip="internal key">{{ scriptPath.internalKey }}</span>
+    <span class="internal-key" ngbTooltip="internal key" i18n-ngbTooltip="transactions-list.taproot.internal-key">{{ scriptPath.internalKey }}</span>
   }
-  <span *ngFor="let branch of scriptPath.merkleBranches.slice(0, truncate ? 14 : scriptPath.merkleBranches.length); index as i" class="merkle-branch" ngbTooltip="taptree merkle branch {{ i + 1 }}">{{ branch }}</span>
+  <span *ngFor="let branch of scriptPath.merkleBranches.slice(0, truncate ? 14 : scriptPath.merkleBranches.length); index as i" class="merkle-branch" ngbTooltip="taptree merkle branch {{ i + 1 }}" i18n-ngbTooltip="transactions-list.taproot.merkle-branch">{{ branch }}</span>
 </ng-template>
 
 <ng-template #controlBlockInfo let-scriptPath>
@@ -594,7 +594,7 @@
     @if (scriptPath.isNUMS) {
       <tr>
         <td i18n="transactions-list.taproot.keypath">key path</td>
-        <td>disabled</td>
+        <td i18n="shared.disabled">disabled</td>
       </tr>
     }
     <tr>

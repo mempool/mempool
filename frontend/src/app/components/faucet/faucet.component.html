@@ -9,27 +9,27 @@
     @if (txid) {
       <div class="alert alert-success w-100 text-truncate">
         <fa-icon [icon]="['fas', 'circle-check']"></fa-icon>
-        Sent!
+        <span i18n="faucet.sent">Sent!</span>
         <a class="text-primary" [href]="'/testnet4/tx/' + txid">{{ txid }}</a>
       </div>
     }
     @if (loading) {
-      <p>Loading faucet...</p>
+      <p i18n="faucet.loading">Loading faucet...</p>
       <div class="spinner-border text-light"></div>
     } @else if (!user) {
       <!-- User not logged in -->
       <div class="alert alert-mempool d-block text-center w-100">
         <div class="d-inline align-middle pe-2">
-          <span>To use the faucet, please</span>
+          <span i18n="faucet.to-use-please">To use the faucet, please</span>
         </div>
-        <app-github-login customClass="btn btn-sm" width="150px" redirectTo="/testnet4/faucet" buttonString="Sign up with"></app-github-login>
+        <app-github-login customClass="btn btn-sm" width="150px" redirectTo="/testnet4/faucet" buttonString="Sign up with" i18n-buttonString="faucet.sign-up-with"></app-github-login>
       </div>
     }
     @else if (user && user.status === 'pending' && !user.email && user.snsId) {
       <div class="alert alert-danger w-100 col d-flex justify-content-center text-start">
         <span class="d-flex">
           <fa-icon [icon]="['fas', 'exclamation-triangle']" [fixedWidth]="true" class="me-1"></fa-icon>
-          <span>Please <a class="text-primary" [routerLink]="['/services/account/settings']">verify your account</a> by providing a valid email address. To mitigate spam, we delete unverified accounts at regular intervals.</span>
+          <span i18n="faucet.verify-account">Please <a class="text-primary" [routerLink]="['/services/account/settings']">verify your account</a> by providing a valid email address. To mitigate spam, we delete unverified accounts at regular intervals.</span>
         </span>
       </div>
     }
@@ -37,15 +37,15 @@
       <!-- User logged in but not a paid user or did not link its Github account -->
       <div class="alert alert-mempool d-block text-center w-100">
         <div class="d-inline align-middle">
-          <span class="mb-2 me-2">To use the faucet, please</span>
+          <span class="mb-2 me-2" i18n="faucet.to-use-please">To use the faucet, please</span>
         </div>
-        <app-github-login customClass="btn btn-sm" width="180px" redirectTo="/testnet4/faucet" buttonString="Link your"></app-github-login>
+        <app-github-login customClass="btn btn-sm" width="180px" redirectTo="/testnet4/faucet" buttonString="Link your" i18n-buttonString="faucet.link-your"></app-github-login>
       </div>
     }
     @else if (error === 'account_limited') {
       <div class="alert alert-mempool d-block text-center w-100">
         <div class="d-inline align-middle">
-          <span class="mb-2 me-2">Your account does not allow you to access the faucet</span>
+          <span class="mb-2 me-2" i18n="faucet.account-limited">Your account does not allow you to access the faucet</span>
         </div>
       </div>
     }
@@ -69,9 +69,9 @@
                 </div>
               </div>
               <div class="text-danger text-start" *ngIf="invalidAmount">
-                <div *ngIf="amount?.errors?.['required']">Amount is required</div>
-                <div *ngIf="amount?.errors?.['min']">Minimum is {{ amount?.errors?.['min'].min | number }} tSats</div>
-                <div *ngIf="amount?.errors?.['max']">Maximum is {{ amount?.errors?.['max'].max | number }} tSats</div>
+                <div *ngIf="amount?.errors?.['required']" i18n="faucet.amount-required">Amount is required</div>
+                <div *ngIf="amount?.errors?.['min']" i18n="faucet.amount-min">Minimum is {{ amount?.errors?.['min'].min | number }} tSats</div>
+                <div *ngIf="amount?.errors?.['max']" i18n="faucet.amount-max">Maximum is {{ amount?.errors?.['max'].max | number }} tSats</div>
               </div>
               <div class="input-group input-group-lg mt-2">
                 <span class="input-group-text" i18n="address">Address</span>
@@ -79,9 +79,9 @@
                 <button type="submit" class="btn btn-primary submit-button" [disabled]="!faucetForm.valid || !faucetForm.get('address')?.dirty || isDisabled()" i18n="testnet4.request-coins">Request Testnet4 Coins</button>
               </div>
               <div class="text-danger text-start" *ngIf="invalidAddress">
-                <div *ngIf="address?.errors?.['required']">Address is required</div>
-                <div *ngIf="address?.errors?.['pattern']">Must be a valid testnet4 address</div>
-                <div *ngIf="address?.errors?.['forbiddenAddress']">You cannot use this address</div>
+                <div *ngIf="address?.errors?.['required']" i18n="faucet.address-required">Address is required</div>
+                <div *ngIf="address?.errors?.['pattern']" i18n="faucet.address-invalid">Must be a valid testnet4 address</div>
+                <div *ngIf="address?.errors?.['forbiddenAddress']" i18n="faucet.address-forbidden">You cannot use this address</div>
               </div>
             </div>
           </div>
@@ -91,7 +91,7 @@
 
     <!-- Send back coins -->
     @if (status?.address) {
-      <div class="mt-4 alert alert-info w-100">If you no longer need your testnet4 coins, please consider <a class="text-primary" [routerLink]="['/address/' | relativeUrl, status.address]"><u>sending them back</u></a> to replenish the faucet.</div>
+      <div class="mt-4 alert alert-info w-100" i18n="faucet.send-back">If you no longer need your testnet4 coins, please consider <a class="text-primary" [routerLink]="['/address/' | relativeUrl, status.address]"><u>sending them back</u></a> to replenish the faucet.</div>
     }
 
   </div>

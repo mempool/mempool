@@ -48,9 +48,9 @@
     <form [formGroup]="bucketGroupForm" class="formRadioGroup" *ngIf="availableBucketSizes.length > 1">
       <div class="btn-group" role="group" name="radioBasic">
         <input type="radio" class="btn-check" id="bucket-week" [value]="1008" formControlName="bucketSize">
-        <label class="btn btn-primary btn-sm" for="bucket-week">Week</label>
+        <label class="btn btn-primary btn-sm" for="bucket-week" i18n="mining.bucket-week">Week</label>
         <input type="radio" class="btn-check" id="bucket-month" [value]="4032" formControlName="bucketSize">
-        <label class="btn btn-primary btn-sm" for="bucket-month">Month</label>
+        <label class="btn btn-primary btn-sm" for="bucket-month" i18n="mining.bucket-month">Month</label>
       </div>
     </form>
     <form [formGroup]="modeGroupForm" class="formRadioGroup" *ngIf="isFiltered">

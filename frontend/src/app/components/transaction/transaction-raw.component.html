@@ -65,16 +65,16 @@
     @if (!hasPrevouts) {
       <div class="alert alert-mempool">
         @if (offlineMode) {
-          <span><strong>Missing prevouts are not loaded. Some fields like fee rate cannot be calculated.</strong></span>
+          <span><strong i18n="transaction.raw.no-prevouts">Missing prevouts are not loaded. Some fields like fee rate cannot be calculated.</strong></span>
         } @else {
-          <span><strong>Error loading missing prevouts</strong>. {{ errorPrevouts ? 'Reason: ' + errorPrevouts : '' }}</span>
+          <span><strong i18n="transaction.raw.prevouts-error">Error loading missing prevouts</strong>. @if (errorPrevouts) {<ng-container i18n="transaction.raw.error-reason">Reason: {{ errorPrevouts }}</ng-container>}</span>
         }
       </div>
     }
 
     @if (errorCpfpInfo) {
       <div class="alert alert-mempool">
-        <span><strong>Error loading CPFP data</strong>. Reason: {{ errorCpfpInfo }}</span>
+        <span><strong i18n="transaction.raw.cpfp-error">Error loading CPFP data</strong>. <ng-container i18n="transaction.raw.error-reason">Reason: {{ errorCpfpInfo }}</ng-container></span>
       </div>
     }
 
@@ -243,9 +243,13 @@
   @if (isLoading) {
     <div class="text-center">
       <div class="spinner-border text-light mt-2 mb-2"></div>
-      <h3>
-        Loading {{ isLoadingPrevouts ? 'transaction prevouts' : isLoadingCpfpInfo ? 'CPFP' : '' }}
-      </h3>
+      @if (isLoadingPrevouts) {
+        <h3 i18n="transaction.raw.loading-prevouts">Loading transaction prevouts</h3>
+      } @else if (isLoadingCpfpInfo) {
+        <h3 i18n="transaction.raw.loading-cpfp">Loading CPFP</h3>
+      } @else {
+        <h3 i18n="loading">Loading...</h3>
+      }
     </div>
   }
 </div>

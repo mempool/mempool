@@ -353,7 +353,7 @@
               @if (!calculating) {
                 <ng-container i18n="accelerator.for-an-additional-cost">For an additional</ng-container> <app-fiat [value]="cost"></app-fiat> (<span><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>)
               } @else {
-                <span class="estimating">Calculating cost...</span>
+                <span class="estimating" i18n="accelerator.calculating-cost">Calculating cost...</span>
               }
             </span>
             <span class="checkout-text" *ngIf="(etaInfo$ | async) as etaInfo">
@@ -373,7 +373,7 @@
         <div class="row payment-options" [class.flex-column]="forceMobile">
           @if (canPayWithCashapp || canPayWithApplePay || canPayWithGooglePay || canPayWithCardOnFile) {
             <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
-              <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<app-fiat [value]="cost"></app-fiat> with</p>
+              <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<app-fiat [value]="cost"></app-fiat> <span i18n="accelerator.pay-with">with</span></p>
               @if (canPayWithCashapp) {
                 <img class="paymentMethod mx-2" style="width: 200px" [src]="isLightMode ? '/resources/cash-app-light.svg' : '/resources/cash-app.svg'" height=55 (click)="moveToStep('cashapp')">
               }
@@ -425,7 +425,7 @@
                   </div>
                 </div>
               } @else {
-                <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<span><small style="font-family: monospace;">{{ ((invoice?.btcDue * 100_000_000) || cost) | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span> with</p>
+                <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<span><small style="font-family: monospace;">{{ ((invoice?.btcDue * 100_000_000) || cost) | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span> <span i18n="accelerator.pay-with">with</span></p>
                 <div class="paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" (click)="moveToStep('bitcoin')">
                   <img src="/resources/bitcoin-btc-logo-full.svg" height=30>
                 </div>
@@ -499,7 +499,7 @@
               <fa-icon style="font-size: 20px; color: var(--red)" [icon]="['fas', 'circle-xmark']"></fa-icon>
               <span i18n="accelerator.failed-to-load-invoice">Failed to load invoice</span>
               @if (!loadingBtcpayInvoice) {
-                <button class="btn btn-sm btn-secondary mt-0 mt-md-1" (click)="requestBTCPayInvoice()">Retry ↻</button>
+                <button class="btn btn-sm btn-secondary mt-0 mt-md-1" (click)="requestBTCPayInvoice()"><span i18n="shared.retry">Retry</span> ↻</button>
               }
             </div>
           }

@@ -15,7 +15,7 @@
           <tbody>
             <tr>
               <td i18n>Description</td>
-              <td><div class="description-text">These are the Lightning nodes operated by The Mempool Open Source Project that provide data for the mempool.space website. Connect to us!
+              <td><div class="description-text" i18n="lightning.group.description">These are the Lightning nodes operated by The Mempool Open Source Project that provide data for the mempool.space website. Connect to us!
                 </div>
               </td>
             </tr>
@@ -78,7 +78,7 @@
           <td class="alias text-start">
             <div class="text-truncate">
             <a [routerLink]="['/lightning/node/' | relativeUrl, node.public_key]">{{ node.alias }}</a>
-            <div class="second-line">{{ node.opened_channel_count }} channel(s), <app-amount *ngIf="node.capacity > 100000000; else smallnode" [satoshis]="node.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
+            <div class="second-line"><ng-container i18n="lightning.group.channel-count">{{ node.opened_channel_count }} channel(s),</ng-container> <app-amount *ngIf="node.capacity > 100000000; else smallnode" [satoshis]="node.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
               <ng-template #smallnode>
                 {{ node.capacity | amountShortener: 1 }} <span class="sats" i18n="shared.sats">sats</span>
               </ng-template>

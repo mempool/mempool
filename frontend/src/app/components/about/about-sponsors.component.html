@@ -1,16 +1,16 @@
 <div id="become-sponsor-container" [ngClass]="context">
   <div class="become-sponsor community">
-    <p style="font-weight: 700; font-size: 18px;">If you're an individual...</p>
+    <p style="font-weight: 700; font-size: 18px;" i18n="about.community">If you're an individual...</p>
     <a [href]="host + '/sponsor'" class="btn" style="background-color: rgba(152, 88, 255, 0.75); box-shadow: 0px 0px 50px 5px rgba(152, 88, 255, 0.75)" i18n="about.community-sponsor-button">Become a Community Sponsor</a>
-    <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> Exclusive swag</p>
-    <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> Your avatar on the About page</p>
-    <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> And more coming soon :)</p>
+    <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> <span i18n="about.community.swag">Exclusive swag</span></p>
+    <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> <span i18n="about.community.avatar">Your avatar on the About page</span></p>
+    <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> <span i18n="about.community.more-coming-soon">And more coming soon :)</span></p>
   </div>
   <div class="become-sponsor enterprise">
-    <p style="font-weight: 700; font-size: 18px;">If you're a business...</p>
+    <p style="font-weight: 700; font-size: 18px;" i18n="about.enterprise">If you're a business...</p>
     <a [href]="host + '/enterprise'" class="btn" style="background-color: rgba(152, 88, 255, 0.75); box-shadow: 0px 0px 50px 5px rgba(152, 88, 255, 0.75)" i18n="about.enterprise-sponsor-button">Become an Enterprise Sponsor</a>
-    <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> Increased API limits</p>
-    <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> Co-branded instance</p>
-    <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> 99% service-level agreement</p>
+    <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> <span i18n="about.enterprise.increased-api">Increased API limits</span></p>
+    <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> <span i18n="about.enterprise.co-brand">Co-branded instance</span></p>
+    <p class="sponsor-feature"><fa-icon [icon]="['fas', 'check']"></fa-icon> <span i18n="about.enterprise.uptime">99% service-level agreement</span></p>
   </div>
 </div>

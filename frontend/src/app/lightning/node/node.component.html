@@ -19,7 +19,7 @@
   <div class="clearfix"></div>
 
   <div *ngIf="error" class="d-flex flex-column justify-content-around align-items-center mt-5 w-100" style="min-height: 100px">
-    <span class="text-center">No node found for public key "{{ node.public_key | shortenString : 12}}"</span>
+    <span class="text-center" i18n="lightning.node-not-found">No node found for public key "{{ node.public_key | shortenString : 12}}"</span>
   </div>
 
   <div class="box" *ngIf="!error">
@@ -128,15 +128,15 @@
     <div class="row">
       <div class="col-md">
         <div class="mb-3">
-          <h5>Raw bits</h5>
+          <h5 i18n="lightning.raw-bits">Raw bits</h5>
           <span class="text-wrap w-100"><small>{{ node.featuresBits }}</small></span>
         </div>
         <h5 i18n="lightning.decoded|Decoded">Decoded</h5>
         <table class="table table-borderless table-striped table-fixed">
           <thead>
-            <th style="width: 13%">Bit</th>
+            <th style="width: 13%" i18n="lightning.bit">Bit</th>
             <th i18n="lightning.as-name">Name</th>
-            <th style="width: 25%; text-align: right">Required</th>
+            <th style="width: 25%; text-align: right" i18n="shared.required">Required</th>
           </thead>
           <tbody>
             <tr *ngFor="let feature of node.features">
