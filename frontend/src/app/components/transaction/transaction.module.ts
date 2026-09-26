@@ -13,6 +13,9 @@ import { AccelerateFeeGraphComponent } from '@components/accelerate-checkout/acc
 import { TransactionRawComponent } from '@components/transaction/transaction-raw.component';
 import { CpfpInfoComponent } from '@components/transaction/cpfp-info.component';
 import { ClusterDiagramComponent } from '@components/cluster-diagram/cluster-diagram.component';
+import { PaymentComponent } from '@components/transaction/payment/payment.component';
+import { PaymentGuard } from '@app/route-guards';
+import { TrackerBarModule } from '@components/tracker/tracker-bar.module';
 
 const routes: Routes = [
   {
@@ -30,6 +33,14 @@ const routes: Routes = [
     data: {
       ogImage: true
     }
+  },
+  {
+    path: ':id',
+    component: PaymentComponent,
+    canMatch: [PaymentGuard],
+    data: { 
+      ogImage: true
+    },
   },
   {
     path: ':id',
@@ -58,9 +69,11 @@ export class TransactionRoutingModule { }
     GraphsModule,
     TxBowtieModule,
     TransactionExtrasModule,
+    TrackerBarModule
   ],
   declarations: [
     TransactionComponent,
+    PaymentComponent,
     TransactionAccelerateComponent,
     TransactionDetailsComponent,
     AccelerateCheckout,
