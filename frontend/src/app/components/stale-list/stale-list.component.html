@@ -115,10 +115,10 @@
             <div class="detail" *ngIf="chainTip.txOverlap && chainTip.details.sharedPercent != null">
               <div class="detail-label" i18n="chain-tips.shared-transactions">Shared transactions</div>
               <div class="detail-value">{{ chainTip.details.sharedPercent | number: '1.1-1' }}%</div>
-              <div class="overlap-bar" tabindex="0" [ngbTooltip]="overlapTooltip" [tooltipContext]="{ overlap: chainTip.txOverlap }" placement="bottom" container="body">
-                <div class="segment stale-only" *ngIf="chainTip.txOverlap.staleOnly" [style.width.%]="chainTip.details.staleOnlyPercent"></div>
-                <div class="segment shared" *ngIf="chainTip.txOverlap.shared" [style.width.%]="chainTip.details.sharedPercent"></div>
-                <div class="segment canonical-only" *ngIf="chainTip.txOverlap.canonicalOnly" [style.width.%]="chainTip.details.canonicalOnlyPercent"></div>
+              <div class="overlap-bar" *ngIf="overlapColors$ | async as colors" tabindex="0" [ngbTooltip]="overlapTooltip" [tooltipContext]="{ overlap: chainTip.txOverlap, colors }" placement="bottom" container="body">
+                <div class="segment" *ngIf="chainTip.txOverlap.staleOnly" [style.width.%]="chainTip.details.staleOnlyPercent" [style.background]="colors.staleOnly"></div>
+                <div class="segment" *ngIf="chainTip.txOverlap.shared" [style.width.%]="chainTip.details.sharedPercent" [style.background]="colors.shared"></div>
+                <div class="segment" *ngIf="chainTip.txOverlap.canonicalOnly" [style.width.%]="chainTip.details.canonicalOnlyPercent" [style.background]="colors.canonicalOnly"></div>
               </div>
             </div>
 
@@ -171,10 +171,10 @@
   </a>
 </ng-template>
 
-<ng-template #overlapTooltip let-overlap="overlap">
+<ng-template #overlapTooltip let-overlap="overlap" let-colors="colors">
   <div class="overlap-legend">
-    <div><span class="dot stale-only"></span><span i18n="chain-tips.only-in-stale">Only in stale</span><b>{{ overlap.staleOnly | number }}</b></div>
-    <div><span class="dot shared"></span><span i18n="chain-tips.in-both-blocks">In both blocks</span><b>{{ overlap.shared | number }}</b></div>
-    <div><span class="dot canonical-only"></span><span i18n="chain-tips.only-in-winning">Only in winning</span><b>{{ overlap.canonicalOnly | number }}</b></div>
+    <div><span class="dot" [style.background]="colors.staleOnly"></span><span i18n="chain-tips.only-in-stale">Only in stale</span><b>{{ overlap.staleOnly | number }}</b></div>
+    <div><span class="dot" [style.background]="colors.shared"></span><span i18n="chain-tips.in-both-blocks">In both blocks</span><b>{{ overlap.shared | number }}</b></div>
+    <div><span class="dot" [style.background]="colors.canonicalOnly"></span><span i18n="chain-tips.only-in-winning">Only in winning</span><b>{{ overlap.canonicalOnly | number }}</b></div>
   </div>
 </ng-template>
