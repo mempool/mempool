@@ -5,6 +5,9 @@ import { StaleTip, BlockExtended } from '@interfaces/node-api.interface';
 import { ApiService } from '@app/services/api.service';
 import { StateService } from '@app/services/state.service';
 import { SeoService } from '@app/services/seo.service';
+import { ThemeService } from '@app/services/theme.service';
+import { contrastAuditColors, defaultAuditColors } from '@components/block-overview-graph/utils';
+import { Color } from '@components/block-overview-graph/sprite-types';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 
 interface StaleTipDetails {
@@ -18,6 +21,12 @@ interface StaleTipDetails {
 
 type StaleTipWithDetails = StaleTip & { details: StaleTipDetails };
 
+interface OverlapColors {
+  staleOnly: string;
+  shared: string;
+  canonicalOnly: string;
+}
+
 @Component({
   selector: 'app-stale-list',
   templateUrl: './stale-list.component.html',
@@ -27,6 +36,7 @@ type StaleTipWithDetails = StaleTip & { details: StaleTipDetails };
 })
 export class StaleList implements OnInit {
   chainTips$: Observable<StaleTipWithDetails[]>;
+  overlapColors$: Observable<OverlapColors>;
   loadMoreSubject = new BehaviorSubject<number | undefined>(undefined);
   chainTips: StaleTipWithDetails[] = [];
   isLoading = true;
@@ -48,9 +58,22 @@ export class StaleList implements OnInit {
     private apiService: ApiService,
     public stateService: StateService,
     private seoService: SeoService,
+    private themeService: ThemeService,
   ) { }
 
   ngOnInit(): void {
+    // match the block overview graphs on the stale block page, where shared txs keep their fee color
+    this.overlapColors$ = this.themeService.themeState$.pipe(
+      map(({ theme }) => {
+        const auditColors = theme === 'contrast' || theme === 'bukele' ? contrastAuditColors : defaultAuditColors;
+        return {
+          staleOnly: this.toCssColor(auditColors.censored),
+          shared: '#' + this.themeService.mempoolFeeColors[1],
+          canonicalOnly: this.toCssColor(auditColors.added),
+        };
+      }),
+    );
+
     this.chainTips$ = this.loadMoreSubject.pipe(
       switchMap((height) => this.apiService.getStaleTips$(height).pipe(
         map((chainTips) => chainTips.filter((chainTip) => chainTip.status !== 'active') as StaleTip[]),
@@ -148,6 +171,10 @@ export class StaleList implements OnInit {
       details.canonicalOnlyPercent = overlap.canonicalOnly / totalTxs * 100;
     }
     return details;
+  }
+
+  toCssColor({ r, g, b }: Color): string {
+    return `rgb(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)})`;
   }
 
   getBlockGradient(block: BlockExtended): string {
