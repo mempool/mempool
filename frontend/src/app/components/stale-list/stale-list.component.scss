@@ -283,18 +283,6 @@
   }
 }
 
-.stale-only {
-  background: var(--red);
-}
-
-.shared {
-  background: var(--primary);
-}
-
-.canonical-only {
-  background: var(--green);
-}
-
 .overlap-legend {
   display: flex;
   flex-direction: column;
