@@ -12,7 +12,7 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { EChartsOption } from '@app/graphs/echarts';
-import { combineLatest, forkJoin, Observable, of, Subscription } from 'rxjs';
+import { combineLatest, Observable, of, Subscription } from 'rxjs';
 import {
   catchError,
   distinctUntilChanged,
@@ -27,40 +27,30 @@ import { StateService } from '@app/services/state.service';
 import { StorageService } from '@app/services/storage.service';
 import { MiningService } from '@app/services/mining.service';
 import { download } from '@app/shared/graphs.utils';
-import { TransactionFlags } from '@app/shared/filters.utils';
+import { ScriptType, ScriptTypeTxCounts } from '@interfaces/node-api.interface';
 
 type AdoptionMetric = 'txs' | 'vsize';
 
-interface GogglesRollup {
-  startHeight: number;
-  avgTimestamp: number;
-  txCount: number;
-  vSizeTotal: number;
-}
-
-type RawGogglesRollup = Record<keyof GogglesRollup, number | string>;
-
 interface AdoptionRollups {
   blockCount: number;
-  totals: GogglesRollup[];
-  matched: GogglesRollup[][];
+  rows: ScriptTypeTxCounts[];
   error?: HttpErrorResponse;
 }
 
-interface ScriptType {
+interface ScriptTypeSeries {
+  key: ScriptType;
   name: string;
   color: string;
-  flag: bigint;
 }
 
-const SCRIPT_TYPES: ScriptType[] = [
-  { name: 'Taproot', color: '#D81B60', flag: TransactionFlags.p2tr },
-  { name: 'P2WPKH', color: '#8E24AA', flag: TransactionFlags.p2wpkh },
-  { name: 'P2PKH', color: '#FB8C00', flag: TransactionFlags.p2pkh },
-  { name: 'P2SH', color: '#1E88E5', flag: TransactionFlags.p2sh },
-  { name: 'P2WSH', color: '#00ACC1', flag: TransactionFlags.p2wsh },
-  { name: 'Bare multisig', color: '#00897B', flag: TransactionFlags.p2ms },
-  { name: 'P2PK', color: '#FDD835', flag: TransactionFlags.p2pk },
+const SCRIPT_TYPES: ScriptTypeSeries[] = [
+  { key: 'p2tr', name: 'Taproot', color: '#D81B60' },
+  { key: 'p2wpkh', name: 'P2WPKH', color: '#8E24AA' },
+  { key: 'p2pkh', name: 'P2PKH', color: '#FB8C00' },
+  { key: 'p2sh', name: 'P2SH', color: '#1E88E5' },
+  { key: 'p2wsh', name: 'P2WSH', color: '#00ACC1' },
+  { key: 'p2ms', name: 'Bare multisig', color: '#00897B' },
+  { key: 'p2pk', name: 'P2PK', color: '#FDD835' },
 ];
 
 const TIMESPANS = ['24h', '6m', '1y', '2y', '3y', 'all'];
@@ -152,8 +142,12 @@ export class ScriptTypeAdoptionGraphComponent implements OnInit, OnDestroy {
           ),
       ]).subscribe(([rollups, metric]) => {
         // keep the timespan selector usable so a failed request can be retried
+        // from another range; with no known count yet, offer every preset like
+        // the goggles graph does
         if (!rollups.error) {
           this.blockCount = rollups.blockCount;
+        } else if (!this.blockCount) {
+          this.blockCount = Number.MAX_SAFE_INTEGER;
         }
         this.metric = metric;
         this.prepareChartOptions(rollups, metric);
@@ -170,66 +164,41 @@ export class ScriptTypeAdoptionGraphComponent implements OnInit, OnDestroy {
   private getAdoptionRollups$(timespan: string): Observable<AdoptionRollups> {
     // 24h is only indexed per block, longer spans per week
     const bucketSize = timespan === '24h' ? '1' : '1008';
-    // counts come back as strings from the API
-    const toRollups = (rows: RawGogglesRollup[] | null): GogglesRollup[] =>
-      (rows || []).map((row) => ({
-        startHeight: Number(row.startHeight),
-        avgTimestamp: Number(row.avgTimestamp),
-        txCount: Number(row.txCount),
-        vSizeTotal: Number(row.vSizeTotal),
-      }));
-
-    return forkJoin([
-      this.apiService.getHistoricalTxCountByFlags$(timespan, bucketSize),
-      ...SCRIPT_TYPES.map((type) =>
-        this.apiService.getHistoricalTxCountByFlags$(
-          timespan,
-          bucketSize,
-          'or',
-          type.flag.toString()
+    return this.apiService
+      .getHistoricalScriptTypeTxCounts$(timespan, bucketSize)
+      .pipe(
+        map((response) => ({
+          blockCount: parseInt(response.headers.get('x-total-count'), 10) || 0,
+          rows: response.body || [],
+        })),
+        catchError((error: HttpErrorResponse) =>
+          of({ blockCount: 0, rows: [], error })
         )
-      ),
-    ]).pipe(
-      map(([totals, ...matched]) => ({
-        blockCount: parseInt(totals.headers.get('x-total-count'), 10) || 0,
-        totals: toRollups(totals.body),
-        matched: matched.map((response) => toRollups(response.body)),
-      })),
-      catchError((error: HttpErrorResponse) =>
-        of({ blockCount: 0, totals: [], matched: [], error })
-      )
-    );
+      );
   }
 
   prepareChartOptions(rollups: AdoptionRollups, metric: AdoptionMetric): void {
     const field = metric === 'txs' ? 'txCount' : 'vSizeTotal';
-    const totals = rollups.totals
+    const rows = rollups.rows
       .filter((row) => row[field] > 0)
       .sort((a, b) => a.startHeight - b.startHeight);
 
-    const series = SCRIPT_TYPES.map((type, i) => {
-      const matchedByHeight: { [height: number]: GogglesRollup } = {};
-      for (const row of rollups.matched[i] || []) {
-        matchedByHeight[row.startHeight] = row;
-      }
-      return {
-        name: type.name,
-        type: 'line',
-        symbol: 'none',
-        smooth: true,
-        color: type.color,
-        lineStyle: { width: 2 },
-        emphasis: {
-          disabled: true,
-          scale: false,
-        },
-        data: totals.map((total) => [
-          total.avgTimestamp * 1000,
-          ((matchedByHeight[total.startHeight]?.[field] || 0) / total[field]) *
-            100,
-        ]),
-      };
-    });
+    const series = SCRIPT_TYPES.map((type) => ({
+      name: type.name,
+      type: 'line',
+      symbol: 'none',
+      smooth: true,
+      color: type.color,
+      lineStyle: { width: 2 },
+      emphasis: {
+        disabled: true,
+        scale: false,
+      },
+      data: rows.map((row) => [
+        row.avgTimestamp * 1000,
+        ((row.scriptTypes[type.key]?.[field] || 0) / row[field]) * 100,
+      ]),
+    }));
 
     const legends = SCRIPT_TYPES.map((type) => ({
       name: type.name,
@@ -243,7 +212,7 @@ export class ScriptTypeAdoptionGraphComponent implements OnInit, OnDestroy {
       },
     }));
 
-    const hasData = totals.length > 0;
+    const hasData = rows.length > 0;
 
     this.chartOptions = {
       title: hasData
