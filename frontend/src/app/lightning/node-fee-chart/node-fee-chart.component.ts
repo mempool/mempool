@@ -151,13 +151,13 @@ export class NodeFeeChartComponent implements OnInit {
           return `
             <b style="color: white; margin-left: 2px">${ticks[0].data.label}</b><br>
             <br>
-            <b style="color: white; margin-left: 2px">${ticks[0].marker} Outgoing</b><br>
-            <span>Capacity: ${this.amountShortenerPipe.transform(ticks[0].data.capacity, 2, undefined, true)} sats</span><br>
-            <span>Channels: ${ticks[0].data.count}</span><br>
+            <b style="color: white; margin-left: 2px">${ticks[0].marker} ${$localize`Outgoing`}</b><br>
+            <span>${$localize`:@@ce9dfdc6dccb28dc75a78c704e09dc18fb02dcfa:Capacity`}: ${this.amountShortenerPipe.transform(ticks[0].data.capacity, 2, undefined, true)} ${$localize`:@@e4b2d9e6a2ab9e6ca34027ec03beaac42b7badd4:sats`}</span><br>
+            <span>${$localize`:@@807cf11e6ac1cde912496f764c176bdfdd6b7e19:Channels`}: ${ticks[0].data.count}</span><br>
             <br>
-            <b style="color: white; margin-left: 2px">${ticks[1].marker} Incoming</b><br>
-            <span>Capacity: ${this.amountShortenerPipe.transform(ticks[1].data.capacity, 2, undefined, true)} sats</span><br>
-            <span>Channels: ${ticks[1].data.count}</span><br>
+            <b style="color: white; margin-left: 2px">${ticks[1].marker} ${$localize`Incoming`}</b><br>
+            <span>${$localize`:@@ce9dfdc6dccb28dc75a78c704e09dc18fb02dcfa:Capacity`}: ${this.amountShortenerPipe.transform(ticks[1].data.capacity, 2, undefined, true)} ${$localize`:@@e4b2d9e6a2ab9e6ca34027ec03beaac42b7badd4:sats`}</span><br>
+            <span>${$localize`:@@807cf11e6ac1cde912496f764c176bdfdd6b7e19:Channels`}: ${ticks[1].data.count}</span><br>
           `;
         }
       },
@@ -200,7 +200,7 @@ export class NodeFeeChartComponent implements OnInit {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: (val) => {
-              return `${this.amountShortenerPipe.transform(Math.abs(val), 2, undefined, true)} sats`;
+              return `${this.amountShortenerPipe.transform(Math.abs(val), 2, undefined, true)} ${$localize`:@@e4b2d9e6a2ab9e6ca34027ec03beaac42b7badd4:sats`}`;
             }
           },
           splitLine: {
