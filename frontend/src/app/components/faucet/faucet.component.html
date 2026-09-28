@@ -7,7 +7,7 @@
   <div class="faucet-container text-center">
 
     @if (txid) {
-      <div class="alert alert-success w-100 text-truncate d-flex justify-content-center gap-1">
+      <div class="alert alert-success w-100 text-truncate">
         <fa-icon [icon]="['fas', 'circle-check']"></fa-icon>
         <span i18n="shared.sent">Sent!</span>
         <a class="text-primary" [href]="'/testnet4/tx/' + txid">{{ txid }}</a>
