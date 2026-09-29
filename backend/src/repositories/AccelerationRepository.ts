@@ -397,6 +397,46 @@ class AccelerationRepository {
       logger.err('Cannot delete indexed accelerations. Reason: ' + (e instanceof Error ? e.message : e));
     }
   }
+
+  /**
+   * Retrieves transactions IDs between two heights
+   * @asyncSafe */
+  public async $getAccelerationsBetween(from: number, to: number): Promise<string[]> {
+    try {
+      const [rows]: any[] = await DB.query('SELECT txid FROM accelerations WHERE height > ? AND height <= ?', [from, to]);
+
+      if (rows.length > 0) {
+        return rows.map((row) => row.txid);
+      }
+    } catch (e) {
+      logger.err(`Failed to get accelerations between #${from} and #${to}. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+    return [];
+  }
+
+  /** @asyncSafe */
+  public async $getAccelerationCountsPerBucket(bucketSize: number, from: number, to: number): Promise<Record<string, number>> {
+    try {
+      const [rows]: any[]= await DB.query(`
+        SELECT FLOOR(height / ?) * ? AS startHeight, 
+        COUNT(*) AS count
+        FROM accelerations
+        WHERE height > ? AND height <= ?
+        GROUP BY startHeight
+        `, [bucketSize, bucketSize, from, to]);
+
+      const counts = {};
+      if (rows.length > 0) {
+        for (const row of rows) {
+          counts[row.startHeight] = row.count;
+        }
+        return counts;
+      }
+    } catch (e) {
+      logger.err(`Failed to get acceleration counts per ${bucketSize} blocks. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+    return {};
+  }
 }
 
 export default new AccelerationRepository();
