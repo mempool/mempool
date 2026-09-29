@@ -10,9 +10,15 @@
       @if (group.skippedBlocks > 0) {
         <span class="block-gap" [ngbTooltip]="skippedBlocks" tabindex="0">
           <span aria-hidden="true">···</span>
-          <span class="visually-hidden" i18n="address.blocks.skipped">{{ group.skippedBlocks | number }} blocks without activity</span>
+          <span class="visually-hidden"><ng-container *ngTemplateOutlet="skippedBlocks"></ng-container></span>
         </span>
-        <ng-template #skippedBlocks><span i18n="address.blocks.skipped">{{ group.skippedBlocks | number }} blocks without activity</span></ng-template>
+        <ng-template #skippedBlocks>
+          @if (group.skippedBlocks === 1) {
+            <span i18n="address.blocks.skipped.singular">{{ group.skippedBlocks | number }} block without activity</span>
+          } @else {
+            <span i18n="address.blocks.skipped">{{ group.skippedBlocks | number }} blocks without activity</span>
+          }
+        </ng-template>
       }
       <div class="activity-block" [class.selected]="selectedGroup === group.id" [class.pending]="!group.status.confirmed">
         <div class="block-height">
@@ -36,23 +42,26 @@
           <span class="activity-direction">
             <span class="direction-icons" aria-hidden="true">
               @if (group.sent) {
-                <fa-icon class="red-color" [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
+                <fa-icon class="red-color" [icon]="['fas', 'arrow-alt-circle-right']"></fa-icon>
               }
               @if (group.received) {
-                <fa-icon class="green-color" [icon]="['fas', 'arrow-alt-circle-right']" [fixedWidth]="true"></fa-icon>
+                <fa-icon class="green-color" [icon]="['fas', 'arrow-alt-circle-right']"></fa-icon>
               }
             </span>
             @if (group.sent && group.received) {
-              <span i18n="address.blocks.sent-received">Sent &amp; received</span>
+              <span class="direction-label" i18n="address.blocks.sent-received">Sent &amp; received</span>
             } @else if (group.sent) {
-              <span i18n="address.blocks.sent">Sent</span>
+              <span class="direction-label" i18n="address.blocks.sent">Sent</span>
             } @else if (group.received) {
-              <span i18n="address.blocks.received">Received</span>
+              <span class="direction-label" i18n="address.blocks.received">Received</span>
             }
           </span>
           <span class="net-amount">
             @if (group.net !== null) {
-              {{ group.net < 0 ? '-' : '' }}<app-amount [satoshis]="group.net | absolute" [addPlus]="group.net > 0" [noFiat]="true" digitsInfo="1.2-3"></app-amount>
+              @if (group.net < 0) {
+                <span>-</span>
+              }
+              <app-amount [satoshis]="group.net | absolute" [addPlus]="group.net > 0" [noFiat]="true" digitsInfo="1.2-3"></app-amount>
             } @else {
               <span>—</span>
             }
