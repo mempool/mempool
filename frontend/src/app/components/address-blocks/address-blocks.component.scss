@@ -108,7 +108,16 @@
   flex-shrink: 0;
   gap: 2px;
 }
+.direction-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .net-amount {
+  display: flex;
+  justify-content: center;
+  direction: ltr;
   min-width: 0;
   max-width: 100%;
   color: white;
