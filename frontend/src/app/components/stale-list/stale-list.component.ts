@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BehaviorSubject, Observable, of, timer } from 'rxjs';
 import { catchError, map, retry, share, switchMap, tap } from 'rxjs/operators';
-import { StaleTip, BlockExtended } from '@interfaces/node-api.interface';
+import { StaleTip, StaleTipBlock } from '@interfaces/node-api.interface';
 import { ApiService } from '@app/services/api.service';
 import { StateService } from '@app/services/state.service';
 import { SeoService } from '@app/services/seo.service';
@@ -203,7 +203,7 @@ export class StaleList implements OnInit {
     return `rgb(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)})`;
   }
 
-  getBlockGradient(block: BlockExtended): string {
+  getBlockGradient(block: StaleTipBlock): string {
     if (!block || !block.weight) {
       return 'var(--secondary)';
     }
@@ -219,7 +219,7 @@ export class StaleList implements OnInit {
     )`;
   }
 
-  getMinBlockFee(block: BlockExtended): number {
+  getMinBlockFee(block: StaleTipBlock): number {
     if (block?.extras?.feeRange) {
       if (block.extras.medianFee === block.extras.feeRange[3]) {
         return block.extras.feeRange[1];
@@ -230,7 +230,7 @@ export class StaleList implements OnInit {
     return 0;
   }
 
-  getMaxBlockFee(block: BlockExtended): number {
+  getMaxBlockFee(block: StaleTipBlock): number {
     if (block?.extras?.feeRange) {
       return block.extras.feeRange[block.extras.feeRange.length - 1];
     }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
-import { BlockExtended, StaleTip } from '@interfaces/node-api.interface';
+import { BlockExtended, BlockExtension, StaleTip } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 
 interface Miner {
@@ -59,7 +59,7 @@ export class MinersService {
     );
   }
 
-  private applyBlockMinerDetails(block: BlockExtended, miners: Miner[]): BlockExtended {
+  private applyBlockMinerDetails<T extends { extras?: Pick<BlockExtension, 'pool'> }>(block: T, miners: Miner[]): T {
     const minerNames = block?.extras?.pool?.minerNames;
     if (!minerNames?.length) {
       return block;

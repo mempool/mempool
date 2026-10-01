@@ -351,6 +351,10 @@ export interface BlockExtended extends IEsploraApi.Block {
   indexVersion?: number;
 }
 
+export interface StaleTipBlock extends Pick<BlockExtended, 'id' | 'height' | 'timestamp' | 'size' | 'weight' | 'tx_count'> {
+  extras: Pick<BlockExtension, 'medianFee' | 'feeRange' | 'pool' | 'firstSeen'>;
+}
+
 export interface BlockSummary {
   id: string;
   transactions: TransactionClassified[];
