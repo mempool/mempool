@@ -102,8 +102,8 @@
             <div class="detail" *ngIf="chainTip.details.seenDelta != null">
               <div class="detail-label" i18n="chain-tips.time-difference">Time difference</div>
               <div class="detail-value" [ngSwitch]="chainTip.details.seenFirst">
-                <ng-container *ngSwitchCase="'both'">&lt; 1 s</ng-container>
-                <ng-container *ngSwitchDefault>{{ chainTip.details.seenDelta | number: '1.0-1' }} s</ng-container>
+                <ng-container *ngSwitchCase="'both'">&lt; 1 <span class="symbol">s</span></ng-container>
+                <ng-container *ngSwitchDefault>{{ chainTip.details.seenDelta | number: '1.0-1' }} <span class="symbol">s</span></ng-container>
               </div>
               <div class="detail-sub" [ngSwitch]="chainTip.details.seenFirst">
                 <ng-container *ngSwitchCase="'stale'" i18n="chain-tips.stale-block-seen-first">Stale block seen first</ng-container>
@@ -114,22 +114,22 @@
 
             <div class="detail" *ngIf="chainTip.txOverlap && chainTip.details.sharedPercent != null">
               <div class="detail-label" i18n="chain-tips.shared-transactions">Shared transactions</div>
-              <div class="detail-value">{{ chainTip.details.sharedPercent | number: '1.1-1' }}%</div>
-              <div class="overlap-bar" *ngIf="overlapColors$ | async as colors" tabindex="0" [ngbTooltip]="overlapTooltip" [tooltipContext]="{ overlap: chainTip.txOverlap, colors }" placement="bottom" container="body">
-                <div class="segment" *ngIf="chainTip.txOverlap.staleOnly" [style.width.%]="chainTip.details.staleOnlyPercent" [style.background]="colors.staleOnly"></div>
-                <div class="segment" *ngIf="chainTip.txOverlap.shared" [style.width.%]="chainTip.details.sharedPercent" [style.background]="colors.shared"></div>
-                <div class="segment" *ngIf="chainTip.txOverlap.canonicalOnly" [style.width.%]="chainTip.details.canonicalOnlyPercent" [style.background]="colors.canonicalOnly"></div>
+              <div class="progress" *ngIf="overlapColors$ | async as colors" tabindex="0" [ngbTooltip]="overlapTooltip" [tooltipContext]="{ overlap: chainTip.txOverlap, colors }" placement="bottom" tooltipClass="overlap-ngb-tooltip" container="body">
+                <div class="progress-bar" role="progressbar" [style.background]="getOverlapGradient(chainTip.details.overlapSegments, colors)">&nbsp;</div>
+                <div class="progress-text">{{ chainTip.details.sharedPercent | number: '1.1-1' }}%</div>
               </div>
             </div>
 
             <div class="detail" *ngIf="chainTip.resolvedBy">
               <div class="detail-label" i18n="chain-tips.resolved-by">Resolved by</div>
-              <div class="detail-value"><a [routerLink]="[('/block/' + chainTip.resolvedBy.id) | relativeUrl]">{{ chainTip.resolvedBy.height }}</a></div>
-              <div class="detail-sub resolved-by">
+              <div class="detail-value resolved-by">
+                <a [routerLink]="[('/block/' + chainTip.resolvedBy.id) | relativeUrl]">{{ chainTip.resolvedBy.height }}</a>
                 <span class="animated" *ngIf="chainTip.resolvedBy.extras?.pool != undefined">
                   <ng-container *ngTemplateOutlet="poolBadge; context: { $implicit: chainTip.resolvedBy }"></ng-container>
                 </span>
-                <app-time kind="span" [time]="chainTip.details.resolvedAfter" [fastRender]="true" [lowercaseStart]="true"></app-time>
+              </div>
+              <div class="detail-sub">
+                <app-time kind="span" [time]="chainTip.details.resolvedAfter" [fastRender]="true"></app-time>
               </div>
             </div>
           </div>
@@ -172,9 +172,20 @@
 </ng-template>
 
 <ng-template #overlapTooltip let-overlap="overlap" let-colors="colors">
-  <div class="overlap-legend">
-    <div><span class="dot" [style.background]="colors.staleOnly"></span><span i18n="chain-tips.only-in-stale">Only in stale</span><b>{{ overlap.staleOnly | number }}</b></div>
-    <div><span class="dot" [style.background]="colors.shared"></span><span i18n="chain-tips.in-both-blocks">In both blocks</span><b>{{ overlap.shared | number }}</b></div>
-    <div><span class="dot" [style.background]="colors.canonicalOnly"></span><span i18n="chain-tips.only-in-winning">Only in winning</span><b>{{ overlap.canonicalOnly | number }}</b></div>
-  </div>
+  <table class="overlap-legend">
+    <tbody>
+      <tr>
+        <td class="label"><span class="dot" [style.background]="colors.staleOnly"></span><ng-container i18n="chain-tips.only-in-stale">Only in stale</ng-container></td>
+        <td class="value">{{ overlap.staleOnly | number }}</td>
+      </tr>
+      <tr>
+        <td class="label"><span class="dot" [style.background]="colors.shared"></span><ng-container i18n="chain-tips.in-both-blocks">In both blocks</ng-container></td>
+        <td class="value">{{ overlap.shared | number }}</td>
+      </tr>
+      <tr>
+        <td class="label"><span class="dot" [style.background]="colors.canonicalOnly"></span><ng-container i18n="chain-tips.only-in-winning">Only in winning</ng-container></td>
+        <td class="value">{{ overlap.canonicalOnly | number }}</td>
+      </tr>
+    </tbody>
+  </table>
 </ng-template>
