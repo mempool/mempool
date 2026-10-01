@@ -41,6 +41,7 @@ import { parseDATUMTemplateCreator, parseDMNDTemplateCreator } from '../utils/bi
 import database from '../database';
 import { getBlockFirstSeenFromLogs, getOldestLogTimestampFromLogs, scanLogsForBlocksFirstSeen } from '../utils/file-read';
 import FlagValueRepository, { INDEXING_PRESETS } from '../repositories/FlagValueRepository';
+import addressTxsIndexer from './address-txs-indexer';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -1520,6 +1521,10 @@ class Blocks {
       handledBlocks++;
     }
 
+    if (handledBlocks > 0) {
+      void addressTxsIndexer.$run();
+    }
+
     diskCache.unlock();
 
     this.clearTimer(timer);
@@ -1631,6 +1636,7 @@ class Blocks {
       await DifficultyAdjustmentsRepository.$deleteAdjustementsFromHeight(forkTail.height);
       await cpfpRepository.$deleteClustersFrom(forkTail.height);
       await AccelerationRepository.$deleteAccelerationsFrom(forkTail.height);
+      await addressTxsIndexer.$handleReorg(forkTail.height);
       this.flagValuesDeleteQueue.push(forkTail.height);
       chainTips.clearOrphanCacheAboveHeight(forkTail.height);
       void mining.$rebuildPoolsStatsCache();

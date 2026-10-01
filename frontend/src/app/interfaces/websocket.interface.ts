@@ -124,6 +124,7 @@ export interface IBackendInfo {
   hostname?: string;
   gitCommit: string;
   version: string;
+  addressTxsIndexing?: boolean;
 }
 
 export interface Recommendedfees {

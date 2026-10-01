@@ -161,6 +161,10 @@ class BitcoinApi implements AbstractBitcoinApi {
     throw new Error('Method getAddressTransactions not supported by the Bitcoin RPC API.');
   }
 
+  $getAddressMempoolTransactions(address: string, lastSeenTxId: string): Promise<IEsploraApi.Transaction[]> {
+    throw new Error('Method getAddressMempoolTransactions not supported by the Bitcoin RPC API.');
+  }
+
   $getAddressUtxos(address: string): Promise<IEsploraApi.UTXO[]> {
     throw new Error('Method getAddressUtxos not supported by the Bitcoin RPC API.');
   }
@@ -171,6 +175,10 @@ class BitcoinApi implements AbstractBitcoinApi {
 
   $getScriptHashTransactions(scripthash: string, lastSeenTxId: string): Promise<IEsploraApi.Transaction[]> {
     throw new Error('Method getScriptHashTransactions not supported by the Bitcoin RPC API.');
+  }
+
+  $getScriptHashMempoolTransactions(scripthash: string, lastSeenTxId: string): Promise<IEsploraApi.Transaction[]> {
+    throw new Error('Method getScriptHashMempoolTransactions not supported by the Bitcoin RPC API.');
   }
 
   $getScriptHashUtxos(scripthash: string): Promise<IEsploraApi.UTXO[]> {

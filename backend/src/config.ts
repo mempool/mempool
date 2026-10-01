@@ -111,6 +111,13 @@ interface IConfig {
     PID_DIR: string;
     POOL_SIZE: number;
   };
+  CLICKHOUSE: {
+    ENABLED: boolean;
+    URL: string;
+    DATABASE: string;
+    USERNAME: string;
+    PASSWORD: string;
+  };
   SYSLOG: {
     ENABLED: boolean;
     HOST: string;
@@ -265,6 +272,13 @@ const defaults: IConfig = {
     'PID_DIR': '',
     'POOL_SIZE': 100,
   },
+  'CLICKHOUSE': {
+    'ENABLED': false,
+    'URL': 'http://127.0.0.1:8123',
+    'DATABASE': 'mempool',
+    'USERNAME': 'mempool',
+    'PASSWORD': 'mempool'
+  },
   'SYSLOG': {
     'ENABLED': true,
     'HOST': '127.0.0.1',
@@ -355,6 +369,7 @@ class Config implements IConfig {
   CORE_RPC: IConfig['CORE_RPC'];
   SECOND_CORE_RPC: IConfig['SECOND_CORE_RPC'];
   DATABASE: IConfig['DATABASE'];
+  CLICKHOUSE: IConfig['CLICKHOUSE'];
   SYSLOG: IConfig['SYSLOG'];
   STATISTICS: IConfig['STATISTICS'];
   LIGHTNING: IConfig['LIGHTNING'];
@@ -378,6 +393,7 @@ class Config implements IConfig {
     this.CORE_RPC = configs.CORE_RPC;
     this.SECOND_CORE_RPC = configs.SECOND_CORE_RPC;
     this.DATABASE = configs.DATABASE;
+    this.CLICKHOUSE = configs.CLICKHOUSE;
     this.SYSLOG = configs.SYSLOG;
     this.STATISTICS = configs.STATISTICS;
     this.LIGHTNING = configs.LIGHTNING;
