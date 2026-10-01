@@ -10,22 +10,30 @@ import { contrastAuditColors, defaultAuditColors } from '@components/block-overv
 import { Color } from '@components/block-overview-graph/sprite-types';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 
-interface StaleTipDetails {
-  seenDelta?: number;
-  seenFirst?: 'stale' | 'canonical' | 'both';
-  resolvedAfter?: number;
-  sharedPercent?: number;
-  staleOnlyPercent?: number;
-  canonicalOnlyPercent?: number;
-}
-
-type StaleTipWithDetails = StaleTip & { details: StaleTipDetails };
+// half-width, in % of the bar, of the soft transition between overlap segments
+const OVERLAP_BLEND = 1.5;
 
 interface OverlapColors {
   staleOnly: string;
   shared: string;
   canonicalOnly: string;
 }
+
+interface OverlapSegment {
+  kind: keyof OverlapColors;
+  start: number;
+  end: number;
+}
+
+interface StaleTipDetails {
+  seenDelta?: number;
+  seenFirst?: 'stale' | 'canonical' | 'both';
+  resolvedAfter?: number;
+  sharedPercent?: number;
+  overlapSegments?: OverlapSegment[];
+}
+
+type StaleTipWithDetails = StaleTip & { details: StaleTipDetails };
 
 @Component({
   selector: 'app-stale-list',
@@ -68,7 +76,7 @@ export class StaleList implements OnInit {
         const auditColors = theme === 'contrast' || theme === 'bukele' ? contrastAuditColors : defaultAuditColors;
         return {
           staleOnly: this.toCssColor(auditColors.censored),
-          shared: '#' + this.themeService.mempoolFeeColors[1],
+          shared: '#' + this.themeService.mempoolFeeColors[0],
           canonicalOnly: this.toCssColor(auditColors.added),
         };
       }),
@@ -167,10 +175,28 @@ export class StaleList implements OnInit {
     const totalTxs = overlap ? overlap.shared + overlap.staleOnly + overlap.canonicalOnly : 0;
     if (totalTxs > 0) {
       details.sharedPercent = overlap.shared / totalTxs * 100;
-      details.staleOnlyPercent = overlap.staleOnly / totalTxs * 100;
-      details.canonicalOnlyPercent = overlap.canonicalOnly / totalTxs * 100;
+      let start = 0;
+      details.overlapSegments = (['staleOnly', 'shared', 'canonicalOnly'] as const)
+        .filter((kind) => overlap[kind] > 0)
+        .map((kind) => {
+          const end = start + overlap[kind] / totalTxs * 100;
+          const segment = { kind, start, end };
+          start = end;
+          return segment;
+        });
     }
     return details;
+  }
+
+  getOverlapGradient(segments: OverlapSegment[], colors: OverlapColors): string {
+    // hold each color away from its edges so neighbouring segments blend instead of cutting
+    const stops = segments.flatMap(({ kind, start, end }, index) => {
+      const middle = (start + end) / 2;
+      const from = index === 0 ? start : Math.min(start + OVERLAP_BLEND, middle);
+      const to = index === segments.length - 1 ? end : Math.max(end - OVERLAP_BLEND, middle);
+      return [`${colors[kind]} ${from}%`, `${colors[kind]} ${to}%`];
+    });
+    return `linear-gradient(to right, ${stops.join(', ')})`;
   }
 
   toCssColor({ r, g, b }: Color): string {
