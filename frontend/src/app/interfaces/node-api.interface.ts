@@ -533,9 +533,13 @@ export interface TxOverlap {
   canonicalOnly: number;
 }
 
+export interface StaleTipBlock extends Pick<BlockExtended, 'id' | 'height' | 'timestamp' | 'size' | 'weight' | 'tx_count'> {
+  extras?: Pick<BlockExtension, 'medianFee' | 'feeRange' | 'minFee' | 'maxFee' | 'pool' | 'firstSeen'>;
+}
+
 export interface StaleTip extends ChainTip {
-  stale: BlockExtended;
-  canonical: BlockExtended;
-  resolvedBy?: BlockExtended;
+  stale: StaleTipBlock;
+  canonical: StaleTipBlock;
+  resolvedBy?: StaleTipBlock;
   txOverlap?: TxOverlap;
 }
