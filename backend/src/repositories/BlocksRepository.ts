@@ -1,5 +1,5 @@
 import bitcoinApi, { bitcoinCoreApi } from '../api/bitcoin/bitcoin-api-factory';
-import { BlockExtended, BlockExtension, BlockPrice, EffectiveFeeStats } from '../mempool.interfaces';
+import { BlockExtended, BlockExtension, BlockPrice, EffectiveFeeStats, StaleTipBlock } from '../mempool.interfaces';
 import DB from '../database';
 import logger from '../logger';
 import { Common } from '../api/common';
@@ -601,6 +601,70 @@ class BlocksRepository {
       return await this.formatDbBlockIntoExtendedBlock(rows[0] as DatabaseBlock);
     } catch (e) {
       logger.err(`Cannot get indexed block ${hash}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Get the fields shown for stale chain tips, for the canonical blocks at the given
+   * heights and the blocks with the given hashes, in a single query
+   * @asyncSafe
+   */
+  public async $getStaleTipBlocks(heights: number[], hashes: string[]): Promise<StaleTipBlock[]> {
+    const conditions: string[] = [];
+    if (heights.length) {
+      conditions.push(`(blocks.height IN (${heights.map(() => '?').join(',')}) AND blocks.stale = 0)`);
+    }
+    if (hashes.length) {
+      conditions.push(`blocks.hash IN (${hashes.map(() => '?').join(',')})`);
+    }
+    if (!conditions.length) {
+      return [];
+    }
+
+    try {
+      const [rows]: any[] = await DB.query(`
+        SELECT
+          blocks.hash AS id,
+          blocks.height,
+          UNIX_TIMESTAMP(blocks.blockTimestamp) AS timestamp,
+          blocks.size,
+          blocks.weight,
+          blocks.tx_count,
+          blocks.median_fee AS medianFee,
+          blocks.fee_span AS feeRange,
+          blocks.coinbase_raw AS coinbaseRaw,
+          UNIX_TIMESTAMP(blocks.first_seen) AS firstSeen,
+          pools.unique_id AS poolId,
+          pools.name AS poolName,
+          pools.slug AS poolSlug
+        FROM blocks
+        JOIN pools ON blocks.pool_id = pools.id
+        WHERE ${conditions.join(' OR ')}`,
+        [...heights, ...hashes]
+      );
+
+      return rows.map(row => ({
+        id: row.id,
+        height: row.height,
+        timestamp: row.timestamp,
+        size: row.size,
+        weight: row.weight,
+        tx_count: row.tx_count,
+        extras: {
+          medianFee: row.medianFee,
+          feeRange: JSON.parse(row.feeRange),
+          pool: {
+            id: row.poolId,
+            name: row.poolName,
+            slug: row.poolSlug,
+            minerNames: this.getPoolMinerNames(row.poolName, row.coinbaseRaw),
+          },
+          firstSeen: this.parseFirstSeen(row.firstSeen),
+        },
+      }));
+    } catch (e) {
+      logger.err(`Cannot get stale tip blocks. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -1304,13 +1368,7 @@ class BlocksRepository {
     extras.virtualSize = dbBlk.weight / 4.0;
     extras.coinbaseBip54 = dbBlk.coinbaseBip54;
 
-    extras.firstSeen = null;
-    if (config.CORE_RPC.DEBUG_LOG_PATH) {
-      const dbFirstSeen = parseFloat(dbBlk.firstSeen);
-      if (dbFirstSeen > 1) { // Sentinel value 1 indicates that we could not find first seen time
-        extras.firstSeen = dbFirstSeen;
-      }
-    }
+    extras.firstSeen = this.parseFirstSeen(dbBlk.firstSeen);
 
     // Re-org can happen after indexing so we need to always get the
     // latest state from core
@@ -1357,14 +1415,27 @@ class BlocksRepository {
       }
     }
 
-    if (extras.pool.name === 'OCEAN') {
-      extras.pool.minerNames = parseDATUMTemplateCreator(extras.coinbaseRaw);
-    } else if (extras.pool.name === 'DMND') {
-      extras.pool.minerNames = parseDMNDTemplateCreator(extras.coinbaseRaw);
-    }
+    extras.pool.minerNames = this.getPoolMinerNames(extras.pool.name, extras.coinbaseRaw);
 
     blk.extras = <BlockExtension>extras;
     return <BlockExtended>blk;
+  }
+
+  private parseFirstSeen(dbFirstSeen: string): number | null {
+    if (!config.CORE_RPC.DEBUG_LOG_PATH) {
+      return null;
+    }
+    const firstSeen = parseFloat(dbFirstSeen);
+    return firstSeen > 1 ? firstSeen : null; // Sentinel value 1 indicates that we could not find first seen time
+  }
+
+  private getPoolMinerNames(poolName: string, coinbaseRaw: string): string[] | null {
+    if (poolName === 'OCEAN') {
+      return parseDATUMTemplateCreator(coinbaseRaw);
+    } else if (poolName === 'DMND') {
+      return parseDMNDTemplateCreator(coinbaseRaw);
+    }
+    return null;
   }
 
   // Execute reindexing tasks & lazy schema migrations

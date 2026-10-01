@@ -1,6 +1,6 @@
 import config from '../config';
 import logger from '../logger';
-import { BlockExtended } from '../mempool.interfaces';
+import { BlockExtended, StaleTipBlock } from '../mempool.interfaces';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import BlocksRepository from '../repositories/BlocksRepository';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
@@ -23,9 +23,9 @@ export interface TxOverlap {
 }
 
 export interface StaleTip extends ChainTip {
-  stale: BlockExtended;
-  canonical: BlockExtended;
-  resolvedBy?: BlockExtended;
+  stale: StaleTipBlock;
+  canonical: StaleTipBlock;
+  resolvedBy?: StaleTipBlock;
   txOverlap?: TxOverlap;
 }
 
@@ -42,6 +42,7 @@ class ChainTips {
   private validChainTips: ChainTip[] = []; // 'valid-fork' and 'valid-headers' only, in descending height order
   private staleBlocks: Record<string, BlockExtended> = {};
   private txOverlaps = new Map<string, TxOverlap>();
+  private txOverlapRequests = new Map<string, Promise<TxOverlap | undefined>>();
   private orphanedBlocks: { [hash: string]: OrphanedBlock } = {};
   private blockCache: { [hash: string]: OrphanedBlock } = {};
   private orphansByHeight: { [height: number]: OrphanedBlock[] } = {};
@@ -251,47 +252,77 @@ class ChainTips {
    * @asyncSafe
    */
   public async $getStaleTipsPage(fromHeight: number | undefined, count: number): Promise<StaleTip[]> {
-    const start = fromHeight === undefined ? 0 : this.validChainTips.findIndex(tip => tip.height < fromHeight);
+    let index = fromHeight === undefined ? 0 : this.validChainTips.findIndex(tip => tip.height < fromHeight);
     // no tips beyond the requested height, we can return early
-    if (start === -1) {
+    if (index === -1) {
       return [];
     }
 
-    // fill the response array with hydrated tip data
+    // tips with missing block data are skipped, so keep fetching until the page is full
     const tips: StaleTip[] = [];
-    let lastHeight;
-    for (let index = start; index < this.validChainTips.length; index++) {
-      const staleTip = this.validChainTips[index];
-      // stretch the page to include any remaining blocks at the last included height to avoid pagination gaps with a height-based cursor
-      if (tips.length >= count) {
-        if (staleTip.height !== lastHeight) {
-          break;
+    while (tips.length < count && index < this.validChainTips.length) {
+      let end = Math.min(index + count - tips.length, this.validChainTips.length);
+      // stretch the batch to include any remaining blocks at the last included height to avoid pagination gaps with a height-based cursor
+      while (end < this.validChainTips.length && this.validChainTips[end].height === this.validChainTips[end - 1].height) {
+        end++;
+      }
+      tips.push(...await this.$hydrateStaleTips(this.validChainTips.slice(index, end)));
+      index = end;
+    }
+
+    return tips;
+  }
+
+  /** @asyncSafe */
+  private async $hydrateStaleTips(staleTips: ChainTip[]): Promise<StaleTip[]> {
+    // use the in-memory caches when possible, and fetch everything else in a single query
+    const recentBlocks = new Map(blocks.getBlocks().map(block => [block.height, block]));
+    const canonicalByHeight = new Map<number, StaleTipBlock>();
+    const staleByHash = new Map<string, StaleTipBlock>();
+    const missingHeights = new Set<number>();
+    const missingHashes = new Set<string>();
+    for (const staleTip of staleTips) {
+      for (const height of [staleTip.height, staleTip.height + 1]) {
+        const recentBlock = recentBlocks.get(height);
+        if (recentBlock) {
+          canonicalByHeight.set(height, toStaleTipBlock(recentBlock));
+        } else {
+          missingHeights.add(height);
         }
       }
-      // fetch blocks from caches if available, or DB otherwise
-      const canonical = blocks.getBlocks().find(block => block.height === staleTip.height) || await BlocksRepository.$getBlockByHeight(staleTip.height);
-      let stale: BlockExtended | null | undefined = this.staleBlocks[staleTip.hash];
-      if (!stale) {
-        stale = await BlocksRepository.$getBlockByHash(staleTip.hash);
+      const cachedStale = this.staleBlocks[staleTip.hash];
+      if (cachedStale) {
+        staleByHash.set(staleTip.hash, toStaleTipBlock(cachedStale));
+      } else {
+        missingHashes.add(staleTip.hash);
       }
+    }
+
+    const indexedBlocks = await BlocksRepository.$getStaleTipBlocks([...missingHeights], [...missingHashes]);
+    for (const block of indexedBlocks) {
+      if (missingHashes.has(block.id)) {
+        staleByHash.set(block.id, block);
+      } else {
+        canonicalByHeight.set(block.height, block);
+      }
+    }
+
+    const tips: StaleTip[] = [];
+    for (const staleTip of staleTips) {
+      const stale = staleByHash.get(staleTip.hash);
+      const canonical = canonicalByHeight.get(staleTip.height);
       // skip tips with missing block data
-      if (!canonical || !stale) {
+      if (!stale || !canonical) {
         continue;
       }
-
-      const resolvedBy = blocks.getBlocks().find(block => block.height === staleTip.height + 1) || await BlocksRepository.$getBlockByHeight(staleTip.height + 1);
-      const txOverlap = await this.$getTxOverlap(stale.id, canonical.id);
-
       tips.push({
         ...staleTip,
         stale,
         canonical,
-        resolvedBy: resolvedBy ?? undefined,
-        txOverlap,
+        resolvedBy: canonicalByHeight.get(staleTip.height + 1),
+        txOverlap: await this.$getTxOverlap(stale.id, canonical.id),
       });
-      lastHeight = staleTip.height;
     }
-
     return tips;
   }
 
@@ -303,11 +334,23 @@ class ChainTips {
       return cached;
     }
 
+    // share the computation between concurrent requests for the same tips
+    let request = this.txOverlapRequests.get(key);
+    if (!request) {
+      request = this.$computeTxOverlap(staleHash, canonicalHash).finally(() => this.txOverlapRequests.delete(key));
+      this.txOverlapRequests.set(key, request);
+    }
+    return request;
+  }
+
+  /** @asyncSafe */
+  private async $computeTxOverlap(staleHash: string, canonicalHash: string): Promise<TxOverlap | undefined> {
     let staleTxids: string[];
     let canonicalTxids: string[];
     try {
-      staleTxids = await bitcoinApi.$getTxIdsForBlock(staleHash, true);
-      canonicalTxids = await bitcoinApi.$getTxIdsForBlock(canonicalHash, true);
+      // the esplora backend doesn't index stale blocks, so go straight to Core
+      staleTxids = await bitcoinCoreApi.$getTxIdsForBlock(staleHash);
+      canonicalTxids = await bitcoinApi.$getTxIdsForBlock(canonicalHash);
     } catch (e) {
       logger.warn(`Cannot compare transactions of stale block ${staleHash} and canonical block ${canonicalHash}. Reason: ${e instanceof Error ? e.message : e}`);
       return undefined;
@@ -322,6 +365,7 @@ class ChainTips {
       canonicalOnly: canonicalTxids.length - 1 - shared,
     };
 
+    const key = `${staleHash}:${canonicalHash}`;
     this.txOverlaps.set(key, txOverlap);
     if (this.txOverlaps.size > this.txOverlapsCacheSize) {
       const oldestKey = this.txOverlaps.keys().next().value;
@@ -352,6 +396,23 @@ class ChainTips {
   public getOrphanedBlock(hash: string): OrphanedBlock | undefined {
     return this.orphanedBlocks[hash] || this.blockCache[hash];
   }
+}
+
+function toStaleTipBlock({ id, height, timestamp, size, weight, tx_count, extras }: BlockExtended): StaleTipBlock {
+  return {
+    id,
+    height,
+    timestamp,
+    size,
+    weight,
+    tx_count,
+    extras: {
+      medianFee: extras.medianFee,
+      feeRange: extras.feeRange,
+      pool: extras.pool,
+      firstSeen: extras.firstSeen,
+    },
+  };
 }
 
 export default new ChainTips();
