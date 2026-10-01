@@ -2,7 +2,7 @@ import config from '../config';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
-import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended, TransactionClassified, BlockAudit, TransactionAudit, TemplateAlgorithm } from '../mempool.interfaces';
+import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended, TransactionClassified, BlockAudit, TransactionAudit, TemplateAlgorithm, TransactionFlags } from '../mempool.interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
@@ -40,7 +40,7 @@ import CpfpRepository from '../repositories/CpfpRepository';
 import { parseDATUMTemplateCreator, parseDMNDTemplateCreator } from '../utils/bitcoin-script';
 import database from '../database';
 import { getBlockFirstSeenFromLogs, getOldestLogTimestampFromLogs, scanLogsForBlocksFirstSeen } from '../utils/file-read';
-import FlagValueRepository, { INDEXING_PRESETS } from '../repositories/FlagValueRepository';
+import FlagValueRepository, { DataPerFlag, INDEXING_PRESETS } from '../repositories/FlagValueRepository';
 
 class Blocks {
   private blocks: BlockExtended[] = [];
@@ -702,6 +702,7 @@ class Blocks {
    */
   public async $generateFlagValuesDatabase(): Promise<void> {
     const MAX_BLOCKS_PERQUERY = 144;
+    const INDEX_ACCELERATIONS = config.MEMPOOL.NETWORK === 'mainnet' && config.MEMPOOL_SERVICES.ACCELERATIONS;
     if (this.indexingFlagValues) {
       return;
     }
@@ -719,6 +720,7 @@ class Blocks {
     }
 
     let newlyIndexedBuckets = 0;
+    let accFlagsUpdatedBuckets = 0;
 
     while (this.flagValuesDeleteQueue.length > 0) { // Deletion of in-queue heights due to reorg
       const deletionHeight = this.flagValuesDeleteQueue.shift();
@@ -748,6 +750,12 @@ class Blocks {
       }
 
       const indexedBuckets = await FlagValueRepository.$getIndexedStartHeights(preset.bucketSize, firstBucket, lastBucket);
+      let totalAccFlagsPerBucket: Record<string, number> | undefined = undefined;
+      let nAccelerationsPerBucket: Record<string, number> = {};
+      if (INDEX_ACCELERATIONS) {
+        totalAccFlagsPerBucket = await FlagValueRepository.$getIndexedAccCountsPerStartHeight(preset.bucketSize);
+        nAccelerationsPerBucket = await AccelerationRepository.$getAccelerationCountsPerBucket(preset.bucketSize, lastBucket - 1, firstBucket + preset.bucketSize - 1);
+      }
       const isBucketIndexed = {};
       // We map the buckets that are already indexed to skip them
       for (const startHeight of indexedBuckets) {
@@ -759,22 +767,41 @@ class Blocks {
       let timer = Date.now() / 1000;
       const startedAt = Date.now() / 1000;
       let blocksComputedInTotal = 0;
+      let blocksUpdatedInTotal = 0;
       let blocksComputedThisRun = 0;
       const blocksToCompute = firstBucket + preset.bucketSize - lastBucket - (indexedBuckets.length * preset.bucketSize);
       for (let bucketStart = firstBucket; bucketStart >= lastBucket; bucketStart -= preset.bucketSize) {
+        const bucketFirstHeight = bucketStart + preset.bucketSize - 1;
+        const bucketLastHeight = bucketStart - 1;
+
+        const accFlagCountInBucket = totalAccFlagsPerBucket?.[bucketStart] ?? 0; // tx_count from flag_values database in bucket
+        const nAccelerations = nAccelerationsPerBucket[bucketStart] ?? 0;
+        const shortOnAccFlags = totalAccFlagsPerBucket !== undefined && accFlagCountInBucket < nAccelerations;
+        let isBucketIndexedAndShortInAcc = false;
+
         if (isBucketIndexed[bucketStart]) {
-          continue; // already indexed
+          if (shortOnAccFlags) {
+            isBucketIndexedAndShortInAcc = true;
+            logger.debug(`Adding acceleration flags to already indexed ${preset.name} bucket #${bucketStart}: ${accFlagCountInBucket}/${nAccelerations} accelerations flagged`, logger.tags.goggles);
+          } else {
+            continue; // already indexed and doesn't need update of acc flags
+          }
         }
         try {
-          const bucketFirstHeight = bucketStart + preset.bucketSize - 1;
-          const bucketLastHeight = bucketStart - 1;
-
           let step = bucketFirstHeight;
 
-          const dataPerFlag: Record<string, Record<string, number>> = {};
+          const dataPerFlag: Record<string, DataPerFlag> = {};
           let sumTimestamps = 0;
           let nBlocks = 0;
           let incomplete = false;
+
+          const isAccelerated = {};
+          if (INDEX_ACCELERATIONS) {
+            const txids = await AccelerationRepository.$getAccelerationsBetween(bucketLastHeight, bucketFirstHeight);
+            for (const txid of txids) {
+              isAccelerated[txid] = true;
+            }
+          }
 
           // Incrementalized logic capped by max blocks per query, not bucket size
           while (step > bucketLastHeight) {
@@ -791,19 +818,20 @@ class Blocks {
 
             // Flag values processing
             for (const block of blocks) {
-              const txData = JSON.parse(block.transactions).map((tx) => ({flags: tx.flags, vsize: tx.vsize}));
-              for (const data of txData) {
-                if (dataPerFlag[data.flags] === undefined || Object.keys(dataPerFlag[data.flags]).length === 0) {
-                  dataPerFlag[data.flags] = {
-                    txCount: 0,
-                    vSizeTotal: 0
-                  };
+              for (const tx of JSON.parse(block.transactions)) {
+                const flags = (isAccelerated[tx.txid] ? BigInt(tx.flags ?? 0) | TransactionFlags.acceleration : BigInt(tx.flags ?? 0)).toString();
+                if (dataPerFlag[flags] === undefined) {
+                  dataPerFlag[flags] = { txCount: 0, vSizeTotal: 0 };
                 }
-                dataPerFlag[data.flags].txCount = dataPerFlag[data.flags].txCount + 1;
-                dataPerFlag[data.flags].vSizeTotal = dataPerFlag[data.flags].vSizeTotal + data.vsize;
+                dataPerFlag[flags].txCount++;
+                dataPerFlag[flags].vSizeTotal += tx.vsize;
               }
               sumTimestamps += block.timestamp;
-              blocksComputedInTotal++;
+              if (isBucketIndexedAndShortInAcc) {
+                blocksUpdatedInTotal++;
+              } else {
+                blocksComputedInTotal++;
+              }
               blocksComputedThisRun++;
               nBlocks++;
             }
@@ -813,8 +841,12 @@ class Blocks {
             if (elapsedSeconds > 5) {
               const runningFor = (Date.now() / 1000) - startedAt;
               const blocksPerSecond = blocksComputedThisRun / elapsedSeconds;
-              const completion = (blocksComputedInTotal / blocksToCompute) * 100;
-              logger.debug(`Indexing flag values ${preset.name} | ${blocksComputedInTotal}/${blocksToCompute} (${completion.toFixed(2)}%) | ~${blocksPerSecond.toFixed(2)} blocks/sec | elapsed: ${runningFor.toFixed(2)} seconds`,logger.tags.goggles);
+              if (isBucketIndexedAndShortInAcc) {
+                logger.debug(`Adding acceleration flags to ${preset.name} bucket #${bucketStart} | ${blocksUpdatedInTotal} blocks re-read | ~${blocksPerSecond.toFixed(2)} blocks/sec | elapsed: ${runningFor.toFixed(2)} seconds`, logger.tags.goggles);
+              } else {
+                const completion = blocksToCompute > 0 ? `${((blocksComputedInTotal / blocksToCompute) * 100).toFixed(2)}%` : 'n/a';
+                logger.debug(`Indexing flag values ${preset.name} | ${blocksComputedInTotal}/${blocksToCompute} (${completion}) | ~${blocksPerSecond.toFixed(2)} blocks/sec | elapsed: ${runningFor.toFixed(2)} seconds`, logger.tags.goggles);
+              }
               timer = Date.now() / 1000;
               blocksComputedThisRun = 0;
             }
@@ -827,19 +859,25 @@ class Blocks {
           }
 
           const avgTimestamp = sumTimestamps / nBlocks;
-          await FlagValueRepository.$saveBatchFlagValues(preset.bucketSize, bucketStart, dataPerFlag, avgTimestamp);
+          if (isBucketIndexedAndShortInAcc) {
+            await FlagValueRepository.$updateFlagValues(preset.bucketSize, bucketStart, dataPerFlag, avgTimestamp);
+            accFlagsUpdatedBuckets++;
+          } else {
+            await FlagValueRepository.$saveBatchFlagValues(preset.bucketSize, bucketStart, dataPerFlag, avgTimestamp);
+            newlyIndexedBuckets++;
+          }
           nBlocks = 0;
-          newlyIndexedBuckets++;
         } catch (e) {
           logger.err(`Failed to index flag values between #${bucketStart} and #${bucketStart + preset.bucketSize - 1}. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.goggles);
         }
       }
-      logger.debug(`Successfully indexed #${blocksComputedInTotal} blocks ${preset.name} in ${((Date.now() / 1000) - startedAt).toFixed(2)} seconds`, logger.tags.goggles);
+      logger.debug(`Successfully indexed #${blocksComputedInTotal} blocks and re-read #${blocksUpdatedInTotal} blocks for acceleration flags ${preset.name} in ${((Date.now() / 1000) - startedAt).toFixed(2)} seconds`, logger.tags.goggles);
     }
-    if (newlyIndexedBuckets > 0) {
-      logger.notice(`Flag values indexing completed: indexed ${newlyIndexedBuckets} buckets`, logger.tags.goggles);
+    const summary = `Flag values indexing completed: indexed ${newlyIndexedBuckets} buckets, added acceleration flags to ${accFlagsUpdatedBuckets} buckets`;
+    if (newlyIndexedBuckets > 0 || accFlagsUpdatedBuckets > 0) {
+      logger.notice(summary, logger.tags.goggles);
     } else {
-      logger.debug(`Flag values indexing completed: indexed ${newlyIndexedBuckets} buckets`, logger.tags.goggles);
+      logger.debug(summary, logger.tags.goggles);
     }
     this.indexingFlagValues = false;
   }
