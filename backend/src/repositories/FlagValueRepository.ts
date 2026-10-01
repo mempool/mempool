@@ -1,5 +1,6 @@
 import DB from '../database';
 import logger from '../logger';
+import { TransactionFlags } from '../mempool.interfaces';
 
 export const INDEXING_PRESETS = [
   {name: 'per block', bucketSize: 1,  retentionSpan: 144}, // block span of ~1 day
@@ -15,6 +16,26 @@ export const INTERVAL_PRESETS = {
   '3y': {retentionSpan: 145152, bucketSizes: [1008, 4032]},
   'all': {retentionSpan: -1, bucketSizes: [1008, 4032]},
 };
+
+export const SCRIPT_TYPE_FLAGS = {
+  p2tr: TransactionFlags.p2tr,
+  p2wpkh: TransactionFlags.p2wpkh,
+  p2pkh: TransactionFlags.p2pkh,
+  p2sh: TransactionFlags.p2sh,
+  p2wsh: TransactionFlags.p2wsh,
+  p2ms: TransactionFlags.p2ms,
+  p2pk: TransactionFlags.p2pk,
+};
+
+type ScriptType = keyof typeof SCRIPT_TYPE_FLAGS;
+
+export interface ScriptTypeTxCounts {
+  startHeight: number;
+  avgTimestamp: number;
+  txCount: number;
+  vSizeTotal: number;
+  scriptTypes: Record<ScriptType, { txCount: number, vSizeTotal: number }>;
+}
 
 class FlagValuesRepository {
   /**
@@ -106,6 +127,43 @@ class FlagValuesRepository {
       logger.debug(`Cannot get tx counts. Reason: ${e instanceof Error ? e.message : e}`);
     }
     return [];
+  }
+
+  /**
+   * Get the total tx count and vsize per bucket, plus the share matching each script type flag, in a single pass
+   *
+   * @asyncUnsafe */
+  public async $queryScriptTypeTxCounts(bucketSize: number, startHeight: number): Promise<ScriptTypeTxCounts[]> {
+    const scriptTypes = Object.keys(SCRIPT_TYPE_FLAGS) as ScriptType[];
+    // column aliases come from the constant keys above, masks are bound as parameters
+    const columns = scriptTypes.map((type) => `
+      SUM(IF((flag_value & ?) > 0, tx_count, 0)) as ${type}TxCount,
+      SUM(IF((flag_value & ?) > 0, vsize_total, 0)) as ${type}VSizeTotal`
+    ).join(',');
+    const masks = scriptTypes.flatMap((type) => [SCRIPT_TYPE_FLAGS[type], SCRIPT_TYPE_FLAGS[type]]);
+    try {
+      const [rows]: any[] = await DB.query(`
+        SELECT start_height as startHeight, UNIX_TIMESTAMP(avg_timestamp) as avgTimestamp,
+          SUM(tx_count) as txCount, SUM(vsize_total) as vSizeTotal, ${columns}
+        FROM flag_values
+        WHERE bucket_size = ? AND start_height >= ?
+        GROUP BY start_height ORDER BY start_height DESC
+        `, [...masks, bucketSize.toString(), startHeight]);
+      // SUM() comes back as a decimal string
+      return rows.map((row) => ({
+        startHeight: row.startHeight,
+        avgTimestamp: Number(row.avgTimestamp),
+        txCount: Number(row.txCount),
+        vSizeTotal: Number(row.vSizeTotal),
+        scriptTypes: Object.fromEntries(scriptTypes.map((type) => [type, {
+          txCount: Number(row[`${type}TxCount`]),
+          vSizeTotal: Number(row[`${type}VSizeTotal`]),
+        }])) as ScriptTypeTxCounts['scriptTypes'],
+      }));
+    } catch (e) {
+      logger.err(`Cannot get script type tx counts. Reason: ${e instanceof Error ? e.message : e}`);
+      throw e;
+    }
   }
 
   /** @asyncSafe */

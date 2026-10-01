@@ -10,6 +10,7 @@ import { BlockSizesWeightsGraphComponent } from '@components/block-sizes-weights
 import { GraphsComponent } from '@components/graphs/graphs.component';
 import { HashrateChartComponent } from '@components/hashrate-chart/hashrate-chart.component';
 import { HashrateChartPoolsComponent } from '@components/hashrates-chart-pools/hashrate-chart-pools.component';
+import { ScriptTypeAdoptionGraphComponent } from '@components/script-type-adoption-graph/script-type-adoption-graph.component';
 import { MempoolBlockComponent } from '@components/mempool-block/mempool-block.component';
 import { MiningDashboardComponent } from '@components/mining-dashboard/mining-dashboard.component';
 import { AcceleratorDashboardComponent } from '@components/acceleration/accelerator-dashboard/accelerator-dashboard.component';
@@ -159,6 +160,11 @@ const routes: Routes = [
             path: 'mining/block-sizes-weights',
             data: { networks: ['bitcoin'] },
             component: BlockSizesWeightsGraphComponent,
+          },
+          {
+            path: 'mining/script-type-adoption',
+            data: { networks: ['bitcoin'] },
+            component: ScriptTypeAdoptionGraphComponent,
           },
           {
             path: 'acceleration/fees',
