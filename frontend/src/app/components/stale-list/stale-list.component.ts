@@ -10,8 +10,8 @@ import { contrastAuditColors, defaultAuditColors } from '@components/block-overv
 import { Color } from '@components/block-overview-graph/sprite-types';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 
-// half-width, in % of the bar, of the soft transition between overlap segments
-const OVERLAP_BLEND = 1.5;
+const OVERLAP_CELLS = 150;
+const OVERLAP_KINDS = ['staleOnly', 'shared', 'canonicalOnly'] as const;
 
 interface OverlapColors {
   staleOnly: string;
@@ -19,18 +19,12 @@ interface OverlapColors {
   canonicalOnly: string;
 }
 
-interface OverlapSegment {
-  kind: keyof OverlapColors;
-  start: number;
-  end: number;
-}
-
 interface StaleTipDetails {
   seenDelta?: number;
   seenFirst?: 'stale' | 'canonical' | 'both';
   resolvedAfter?: number;
   sharedPercent?: number;
-  overlapSegments?: OverlapSegment[];
+  overlapCells?: (keyof OverlapColors)[];
 }
 
 type StaleTipWithDetails = StaleTip & { details: StaleTipDetails };
@@ -175,28 +169,10 @@ export class StaleList implements OnInit {
     const totalTxs = overlap ? overlap.shared + overlap.staleOnly + overlap.canonicalOnly : 0;
     if (totalTxs > 0) {
       details.sharedPercent = overlap.shared / totalTxs * 100;
-      let start = 0;
-      details.overlapSegments = (['staleOnly', 'shared', 'canonicalOnly'] as const)
-        .filter((kind) => overlap[kind] > 0)
-        .map((kind) => {
-          const end = start + overlap[kind] / totalTxs * 100;
-          const segment = { kind, start, end };
-          start = end;
-          return segment;
-        });
+      const cellCounts = allocateOverlapCells(OVERLAP_KINDS.map((kind) => overlap[kind]), OVERLAP_CELLS);
+      details.overlapCells = OVERLAP_KINDS.flatMap((kind, index) => Array<keyof OverlapColors>(cellCounts[index]).fill(kind));
     }
     return details;
-  }
-
-  getOverlapGradient(segments: OverlapSegment[], colors: OverlapColors): string {
-    // hold each color away from its edges so neighbouring segments blend instead of cutting
-    const stops = segments.flatMap(({ kind, start, end }, index) => {
-      const middle = (start + end) / 2;
-      const from = index === 0 ? start : Math.min(start + OVERLAP_BLEND, middle);
-      const to = index === segments.length - 1 ? end : Math.max(end - OVERLAP_BLEND, middle);
-      return [`${colors[kind]} ${from}%`, `${colors[kind]} ${to}%`];
-    });
-    return `linear-gradient(to right, ${stops.join(', ')})`;
   }
 
   toCssColor({ r, g, b }: Color): string {
@@ -236,4 +212,26 @@ export class StaleList implements OnInit {
     }
     return 0;
   }
+}
+
+// split the cells between the overlap groups by largest remainder, keeping at least one cell for any non-empty group
+function allocateOverlapCells(counts: number[], cells: number): number[] {
+  const total = counts.reduce((sum, count) => sum + count, 0);
+  const shares = counts.map((count) => count / total * cells);
+  const allocated = shares.map((share, index) => counts[index] > 0 ? Math.max(1, Math.floor(share)) : 0);
+  let remaining = cells - allocated.reduce((sum, count) => sum + count, 0);
+
+  const byRemainder = shares
+    .map((_, index) => index)
+    .filter((index) => counts[index] > 0)
+    .sort((a, b) => (shares[b] % 1) - (shares[a] % 1));
+  for (let index = 0; remaining > 0; index++, remaining--) {
+    allocated[byRemainder[index % byRemainder.length]]++;
+  }
+  // the one-cell minimums can overshoot, so give the excess back from the largest group
+  while (remaining < 0) {
+    allocated[allocated.indexOf(Math.max(...allocated))]--;
+    remaining++;
+  }
+  return allocated;
 }

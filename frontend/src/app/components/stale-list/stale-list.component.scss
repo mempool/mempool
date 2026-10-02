@@ -213,6 +213,7 @@
 .detail {
   min-width: 0;
   text-align: center;
+  container-type: inline-size;
 }
 
 .detail-label {
@@ -245,16 +246,46 @@
   margin-top: 0.25em;
 }
 
-.progress {
-  max-width: 300px;
-  height: 1.1rem;
+.overlap {
+  position: relative;
+  width: fit-content;
   margin: 0.75rem auto 0;
-  background-color: var(--secondary);
   outline: none;
 }
 
-.progress-bar {
-  width: 100%;
+.overlap-cells {
+  --cell-size: 5px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(3, var(--cell-size));
+  grid-auto-columns: var(--cell-size);
+  gap: 1px;
+}
+
+@container (max-width: 298px) {
+  .overlap-cells {
+    --cell-size: 4px;
+  }
+}
+@container (max-width: 248px) {
+  .overlap-cells {
+    --cell-size: 3px;
+  }
+}
+@container (max-width: 198px) {
+  .overlap-cells {
+    --cell-size: 2px;
+  }
+}
+
+.overlap-percent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  line-height: 1;
+  pointer-events: none;
 }
 
 // match the block overview (goggles) tooltip
