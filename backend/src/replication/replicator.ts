@@ -5,10 +5,11 @@ import { SocksProxyAgent } from 'socks-proxy-agent';
 import * as https from 'https';
 
 /** @asyncSafe */
-export async function $sync(path): Promise<{ data?: any, exists: boolean, server?: string }> {
+export async function $sync(path, sanityCheckCb?: (results: any, path: string) => any): Promise<{ data?: any, exists: boolean, server?: string }> {
   // start with a random server so load is uniformly spread
   let allMissing = true;
   const offset = Math.floor(Math.random() * config.REPLICATION.SERVERS.length);
+  const results: any[] = [];
   for (let i = 0; i < config.REPLICATION.SERVERS.length; i++) {
     const server = config.REPLICATION.SERVERS[(i + offset) % config.REPLICATION.SERVERS.length];
     // don't query ourself
@@ -19,7 +20,13 @@ export async function $sync(path): Promise<{ data?: any, exists: boolean, server
     try {
       const result = await query(`https://${server}${path}`);
       if (result) {
-        return { data: result, exists: true, server };
+        if (sanityCheckCb !== undefined && results.length >= 3) {
+          results.push(result);
+          const sanitizedResult = sanityCheckCb(results, path);
+          return { data: sanitizedResult, exists: true, server };
+        } else {
+          return { data: result, exists: true, server };
+        }
       }
     } catch (e: any) {
       if (e?.response?.status === 404) {
@@ -69,4 +76,40 @@ export async function query(path): Promise<object> {
     throw new Error(`${data.status}`);
   }
   return data.data;
+}
+
+function performSanityCheck(results: any[], type: 'audits' | 'statistics', interval?: any): any[] {
+  if (results.length === 0) {
+    return [];
+  }
+  const finalResult: any[] = [];
+  let tempResult: any[] = [];
+  if (type === 'statistics') {
+    for (const res of results) {
+      if (tempResult.length === 0) {
+        tempResult = [...res];
+        continue;
+      }
+
+      for (const [key, value] of Object.entries(res)) {
+        if (typeof value !== 'number') {
+          continue;
+        }
+
+        const tmpValue = tempResult[key];
+        const absDelta = Math.abs(tmpValue - value);
+
+        let healthyResult = true;
+        if (key === '' && absDelta > value * 0.1) {
+          healthyResult = false;
+        }
+      }
+    }
+  }
+
+  if (type === 'audits') {
+
+  }
+
+  return results[0];
 }
