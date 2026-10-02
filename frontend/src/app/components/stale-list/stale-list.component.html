@@ -114,9 +114,11 @@
 
             <div class="detail" *ngIf="chainTip.txOverlap && chainTip.details.sharedPercent != null">
               <div class="detail-label" i18n="chain-tips.shared-transactions">Shared transactions</div>
-              <div class="progress" *ngIf="overlapColors$ | async as colors" tabindex="0" [ngbTooltip]="overlapTooltip" [tooltipContext]="{ overlap: chainTip.txOverlap, colors }" placement="bottom" tooltipClass="overlap-ngb-tooltip" container="body">
-                <div class="progress-bar" role="progressbar" [style.background]="getOverlapGradient(chainTip.details.overlapSegments, colors)">&nbsp;</div>
-                <div class="progress-text">{{ chainTip.details.sharedPercent | number: '1.1-1' }}%</div>
+              <div class="overlap" *ngIf="overlapColors$ | async as colors" tabindex="0" [ngbTooltip]="overlapTooltip" [tooltipContext]="{ overlap: chainTip.txOverlap, colors }" placement="bottom" tooltipClass="overlap-ngb-tooltip" container="body">
+                <div class="overlap-cells">
+                  <span *ngFor="let kind of chainTip.details.overlapCells" [style.background]="colors[kind]"></span>
+                </div>
+                <span class="overlap-percent">{{ chainTip.details.sharedPercent | number: '1.1-1' }}%</span>
               </div>
             </div>
 
@@ -175,7 +177,7 @@
   <table class="overlap-legend">
     <tbody>
       <tr>
-        <td class="label"><span class="dot" [style.background]="colors.staleOnly"></span><ng-container i18n="chain-tips.only-in-stale">Only in stale</ng-container></td>
+        <td class="label"><span class="dot" [style.background]="colors.staleOnly"></span><ng-container i18n="chain-tips.only-in-stale">Lost in stale</ng-container></td>
         <td class="value">{{ overlap.staleOnly | number }}</td>
       </tr>
       <tr>
