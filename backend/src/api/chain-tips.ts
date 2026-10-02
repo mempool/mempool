@@ -3,6 +3,7 @@ import logger from '../logger';
 import { BlockExtended, StaleTipBlock } from '../mempool.interfaces';
 import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
 import BlocksRepository from '../repositories/BlocksRepository';
+import pLimit from '../utils/p-limit';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import bitcoinClient from './bitcoin/bitcoin-client';
 import { IEsploraApi } from './bitcoin/esplora-api.interface';
@@ -320,9 +321,17 @@ class ChainTips {
         stale,
         canonical,
         resolvedBy: canonicalByHeight.get(staleTip.height + 1),
-        txOverlap: await this.$getTxOverlap(stale.id, canonical.id),
       });
     }
+
+    // uncached overlaps hit Core and the esplora backend, so compare a few tips at a time rather than one after another
+    const limiter = pLimit(4);
+    const overlaps = await Promise.allSettled(tips.map(tip => limiter(() => this.$getTxOverlap(tip.stale.id, tip.canonical.id))));
+    overlaps.forEach((overlap, index) => {
+      if (overlap.status === 'fulfilled') {
+        tips[index].txOverlap = overlap.value;
+      }
+    });
     return tips;
   }
 
@@ -349,8 +358,10 @@ class ChainTips {
     let canonicalTxids: string[];
     try {
       // the esplora backend doesn't index stale blocks, so go straight to Core
-      staleTxids = await bitcoinCoreApi.$getTxIdsForBlock(staleHash);
-      canonicalTxids = await bitcoinApi.$getTxIdsForBlock(canonicalHash);
+      [staleTxids, canonicalTxids] = await Promise.all([
+        bitcoinCoreApi.$getTxIdsForBlock(staleHash),
+        bitcoinApi.$getTxIdsForBlock(canonicalHash),
+      ]);
     } catch (e) {
       logger.warn(`Cannot compare transactions of stale block ${staleHash} and canonical block ${canonicalHash}. Reason: ${e instanceof Error ? e.message : e}`);
       return undefined;
