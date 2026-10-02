@@ -4,6 +4,7 @@ import { $sync } from './replicator';
 import config from '../config';
 import { Common } from '../api/common';
 import statistics from '../api/statistics/statistics-api';
+import { OptimizedStatistic } from '../mempool.interfaces';
 
 interface MissingStatistics {
   '24h': Set<number>;
@@ -81,7 +82,7 @@ class StatisticsReplication {
     let success = false;
     let synced = 0;
     const missed = new Set(missingTimes);
-    const syncResult = await $sync(`/api/v1/statistics/${interval}`);
+    const syncResult = await $sync(`/api/v1/statistics/${interval}`, this.performSanityCheck);
     if (syncResult && syncResult.data?.length) {
       success = true;
       logger.info(`Fetched /api/v1/statistics/${interval} from ${syncResult.server}`);
@@ -105,6 +106,92 @@ class StatisticsReplication {
     }
 
     return { success, synced, missed: missed.size };
+  }
+
+  private performSanityCheck(results: OptimizedStatistic[][], path: string) {
+    if (results.length === 0) {
+      return [];
+    }
+
+    const routes = path.split('/');
+    const interval = routes[routes.length - 1];
+
+    const alreadyScanned: Record<string, boolean> = {};
+    const sanityResults: Record<string, boolean> = {};
+    const emptyResult: Record<number, boolean> = {};
+    for (let i = 0; i < results.length; i++) {
+      if (emptyResult[i] || !Array.isArray(results[i]) || results[i].length === 0) {
+        emptyResult[i] = true;
+        continue;
+      }
+      for (let j = 0; j < results.length; j++) {
+        if (i === j) {
+          continue;
+        }
+        const checksKey = i < j ? `${i}-${j}` : `${j}-${i}`;
+        if (alreadyScanned[checksKey]) {
+          continue;
+        }
+        if (emptyResult[j] || !Array.isArray(results[j]) || results[j].length === 0) {
+          emptyResult[j] = true;
+          continue;
+        }
+
+        const stats1 = results[i] ?? [];
+        const stats2 = results[j] ?? [];
+        const maxLength = Math.min(stats1.length, stats2.length);
+        const pollutionThreshold = Math.floor(maxLength * 0.1);
+        let pollutionCounter = 0;
+        const healthy = (): boolean => pollutionCounter <= pollutionThreshold;
+
+        for (let index = 0; index < maxLength; index++) {
+          if (!healthy()) {
+            break;
+          }
+          const stat1 = stats1[index];
+          const stat2 = stats2[index];
+
+          for (const key of Object.keys(stat1)) {
+            const value1 = stat1[key];
+            const value2 = stat2[key];
+
+            if (key === 'added') { // both timestamps are in the same slot
+              const step = steps[interval];
+              const slot1 = Math.floor(value1 / step) * step;
+              const slot2 = Math.floor(value2 / step) * step;
+              if (slot1 !== slot2) {
+                pollutionCounter++;
+              }
+            }
+
+            if (key === 'count') { // tx count diff can't be greater than 10%
+              const absDelta = Math.abs(value1 - value2);
+              if (absDelta > value1 * 0.1) {
+                pollutionCounter++;
+              }
+            }
+
+            if (key === 'vsizes') { // none of the vsizes diff can't be greater than 10%
+              for (const [vsize1, vsize2] of [value1, value2]) {
+                const absDelta = Math.abs(vsize1 - vsize2);
+                if (absDelta > vsize1 * 0.1) {
+                  pollutionCounter++;
+                }
+              }
+            }
+
+            if (key === 'min_fee') {
+              if (value1 !== value2) { // this is a config so it should be equal across servers
+                pollutionCounter++;
+              }
+            }
+          }
+        }
+
+        sanityResults[checksKey] = healthy();
+        alreadyScanned[checksKey] = true;
+      }
+    }
   }
 
   
