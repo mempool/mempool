@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
-import { BlockExtended, StaleTip } from '@interfaces/node-api.interface';
+import { BlockExtended, BlockExtension, StaleTip } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 
 interface Miner {
@@ -46,19 +46,20 @@ export class MinersService {
   }
 
   public applyStaleTipsMinerDetails$(staleTips: StaleTip[]): Observable<StaleTip[]> {
-    if (!staleTips?.some((staleTip) => staleTip.stale?.extras?.pool?.minerNames?.length || staleTip.canonical?.extras?.pool?.minerNames?.length)) {
+    if (!staleTips?.some((staleTip) => [staleTip.stale, staleTip.canonical, staleTip.resolvedBy].some((block) => block?.extras?.pool?.minerNames?.length))) {
       return of(staleTips);
     }
     return this.miners$.pipe(
       map((miners) => staleTips.map((staleTip) => {
         this.applyBlockMinerDetails(staleTip.stale, miners);
         this.applyBlockMinerDetails(staleTip.canonical, miners);
+        this.applyBlockMinerDetails(staleTip.resolvedBy, miners);
         return staleTip;
       }))
     );
   }
 
-  private applyBlockMinerDetails(block: BlockExtended, miners: Miner[]): BlockExtended {
+  private applyBlockMinerDetails<T extends { extras?: Pick<BlockExtension, 'pool'> }>(block: T, miners: Miner[]): T {
     const minerNames = block?.extras?.pool?.minerNames;
     if (!minerNames?.length) {
       return block;
