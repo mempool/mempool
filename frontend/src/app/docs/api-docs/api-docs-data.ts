@@ -6815,6 +6815,51 @@ export const restApiDocsData = [
     type: 'endpoint',
     category: 'mining',
     httpRequestMethod: 'GET',
+    fragment: 'get-block-min-fee-rate',
+    title: 'GET Minimum Daily Fee Rate',
+    description: {
+      default: 'Returns the lowest CPFP-effective fee rate that earned block inclusion on fee merit for each complete UTC day in the specified <code>:timePeriod</code>, ordered oldest to newest. <code>:timePeriod</code> can be any of the following: ' + miningTimeIntervals + '.</p><p>Transactions boosted out-of-band (prioritized or accelerated) are excluded. The series starts on 2025-10-10, the Bitcoin Core 30.0 release that lowered the default <code>minrelaytxfee</code> to 0.1 sat/vB, and is undefined before that. The current UTC day is omitted because its minimum is still partial. Mainnet only.'
+    },
+    urlString: '/v1/mining/blocks/min-fee-rate/:timePeriod',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/blocks/min-fee-rate/%{1}`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`1m`],
+          response: `[
+  {
+    "minRate": 0.1044776119402985,
+    "minHeight": 921456,
+    "timestamp": 1760140800
+  },
+  {
+    "minRate": 0.15384615384615385,
+    "minHeight": 921602,
+    "timestamp": 1760227200
+  },
+  {
+    "minRate": 0.11696428571428572,
+    "minHeight": 921744,
+    "timestamp": 1760313600
+  },
+  ...
+]`
+        },
+      }
+    }
+  },
+  {
+    type: 'endpoint',
+    category: 'mining',
+    httpRequestMethod: 'GET',
     fragment: 'get-block-feerates',
     title: 'GET Block Feerates',
     description: {
