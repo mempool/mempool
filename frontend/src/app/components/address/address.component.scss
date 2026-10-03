@@ -101,6 +101,112 @@ h1 {
   }
 }
 
+.title-tx-filters {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 10px;
+
+  h2 {
+    margin-bottom: 0;
+  }
+}
+
+.filters-toggle {
+  padding: 0 4px;
+  font-size: 1rem;
+  color: var(--transparent-fg);
+  border: none;
+
+  &:hover, &.open {
+    color: var(--fg);
+  }
+
+  &.filters-active {
+    color: var(--info);
+  }
+
+  &:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.tx-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px 24px;
+  margin-bottom: 15px;
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    @media (max-width: 575.98px) {
+      width: 100%;
+      .btn-group {
+        display: flex;
+        .btn {
+          flex: 1;
+        }
+      }
+    }
+  }
+
+  .filter-label {
+    font-size: 0.8rem;
+    color: var(--transparent-fg);
+  }
+
+  .unit-toggle {
+    min-width: 48px;
+    justify-content: center;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--info);
+    }
+  }
+
+  .range-input {
+    input[type="date"] {
+      color-scheme: dark;
+    }
+    flex-wrap: nowrap;
+    @media (min-width: 576px) {
+      width: 260px;
+    }
+    .form-control {
+      min-width: 0;
+    }
+
+    &.amount-range {
+      @media (min-width: 576px) {
+        width: 340px;
+      }
+    }
+
+    &.block-range {
+      @media (min-width: 576px) {
+        width: 380px;
+      }
+    }
+  }
+
+  .filter-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+    @media (max-width: 575.98px) {
+      width: 100%;
+      .btn {
+        flex: 1;
+      }
+    }
+  }
+}
+
 .liquid-address {
   .address-table {
     table-layout: fixed;
