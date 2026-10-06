@@ -62,6 +62,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
+    this.toggleMenu(false);
     const logout$ = this.servicesApiServices.logout$();
     this.authService.logout();
     this.servicesApiServices.userSubject$.next(null);
