@@ -67,6 +67,7 @@ class Server {
 
   constructor() {
     this.app = express();
+    this.app.set('case sensitive routing', true);
 
     if (cluster.isPrimary && config.MEMPOOL.UNIX_SOCKET_PATH) {
       this.clearStaleUnixSocket(config.MEMPOOL.UNIX_SOCKET_PATH);
