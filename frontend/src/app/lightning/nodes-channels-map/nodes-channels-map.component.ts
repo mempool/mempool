@@ -303,7 +303,7 @@ export class NodesChannelsMap implements OnInit {
             borderColor: '#000',
             formatter: (value) => {
               const data = value.data;
-              const alias = data[4].length > 0 ? data[4] : data[3].slice(0, 20);
+              const alias = echarts.format.encodeHTML(data[4].length > 0 ? data[4] : data[3].slice(0, 20));
               const liquidity = data[5] >= 100000000 ?
               `${this.amountShortenerPipe.transform(data[5] / 100000000)} BTC` :
               `${this.amountShortenerPipe.transform(data[5], 2)} sats`;
@@ -312,7 +312,7 @@ export class NodesChannelsMap implements OnInit {
               <b style="color: white">${alias}</b><br>
               ${liquidity}<br>` +
               $localize`:@@205c1b86ac1cc419c4d0cca51fdde418c4ffdc20:${data[6]}:INTERPOLATION: channels` + `<br>
-              ${getFlagEmoji(data[8])} ${data[7]}
+              ${getFlagEmoji(data[8])} ${echarts.format.encodeHTML(data[7])}
             `;
             },
           },
