@@ -4,6 +4,12 @@
   @if (searchText) {
   <ngb-highlight class="mining-pool-name" [ngClass]="textClass" [result]="name" [term]="searchText" [style]="textStyle"></ngb-highlight>
   } @else {
-  <span class="mining-pool-name" [ngClass]="textClass" [style]="textStyle">{{ name }}</span>
+    <span class="mining-pool-name" [ngClass]="textClass" [style]="textStyle">
+      @if (name === 'Unknown') {
+        <ng-container i18n="unknown">Unknown</ng-container>
+      } @else {
+        {{ name }}
+      }
+    </span>
   }
 }

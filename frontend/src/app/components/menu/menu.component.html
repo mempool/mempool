@@ -17,7 +17,7 @@
             {{ user.subscription_tag.toUpperCase() }}
           </span>
         } @else if (user.type === 'mining_pool') {
-          <span class="badge me-1 badge-default" [class]="'badge-mining-pool'">
+          <span class="badge me-1 badge-default" [class]="'badge-mining-pool'" i18n="menu.mining-pool">
             MINING POOL
           </span>
         }
