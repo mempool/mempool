@@ -13,6 +13,7 @@ jest.mock('./src/logger.ts', () => ({
     mining: 'mining',
     ln: 'ln',
     goggles: 'goggles',
+    replication: 'replication',
   },
 }), { virtual: true });
 jest.mock('./src/api/rbf-cache.ts', () => ({}), { virtual: true });
