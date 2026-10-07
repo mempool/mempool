@@ -30,6 +30,7 @@ const steps = {
  */
 class StatisticsReplication {
   inProgress: boolean = false;
+  failedAttempts: Record<string, number> = {};
 
   /** @asyncUnsafe */
   public async $sync(): Promise<void> {
@@ -38,25 +39,25 @@ class StatisticsReplication {
       return;
     }
     if (this.inProgress) {
-      logger.info(`StatisticsReplication sync already in progress`, 'Replication');
+      logger.info(`StatisticsReplication sync already in progress`, logger.tags.replication);
       return;
     }
     this.inProgress = true;
 
+    try {
     const missingStatistics = await this.$getMissingStatistics();
-    const missingIntervals = Object.keys(missingStatistics).filter(key => missingStatistics[key].size > 0);
+      const missingIntervals = Object.keys(missingStatistics).filter(key => missingStatistics[key].size > 0 && !this.isInCooldown(key));
     const totalMissing =  missingIntervals.reduce((total, key) => total + missingStatistics[key].size, 0);
 
     if (totalMissing === 0) {
-      this.inProgress = false;
-      logger.info(`Statistics table is complete, no replication needed`, 'Replication');
+        logger.info(`No missing statistics rows to replicate`, logger.tags.replication);
       return;
     }
 
     for (const interval of missingIntervals) {
-      logger.debug(`Missing ${missingStatistics[interval].size} statistics rows in '${interval}' timespan`, 'Replication');
+        logger.debug(`Missing ${missingStatistics[interval].size} statistics rows in '${interval}' timespan`, logger.tags.replication);
     }
-    logger.debug(`Fetching ${missingIntervals.join(', ')} statistics endpoints from trusted servers to fill ${totalMissing} rows missing in statistics`, 'Replication');
+      logger.debug(`Fetching ${missingIntervals.join(', ')} statistics endpoints from trusted servers to fill ${totalMissing} rows missing in statistics`, logger.tags.replication);
 
     let totalSynced = 0;
     let totalMissed = 0;
@@ -66,13 +67,23 @@ class StatisticsReplication {
       totalSynced += results.synced;
       totalMissed += results.missed;
 
-      logger.info(`Found ${totalSynced} / ${totalSynced + totalMissed} of ${totalMissing} missing statistics rows`, 'Replication');
+        if (results.synced === 0) {
+          this.failedAttempts[interval] = Date.now();
+        }
+
+        logger.info(`Found ${totalSynced} / ${totalSynced + totalMissed} of ${totalMissing} missing statistics rows`, logger.tags.replication);
       await Common.sleep$(3000);
     }
 
-    logger.debug(`Synced ${totalSynced} statistics rows, ${totalMissed} still missing`, 'Replication');
-
+      logger.debug(`Synced ${totalSynced} statistics rows, ${totalMissed} still missing`, logger.tags.replication);
+    } finally {
     this.inProgress = false;
+    }
+  }
+
+  private isInCooldown(interval: string): boolean {
+    const failedAt = this.failedAttempts[interval];
+    return failedAt !== undefined && Date.now() - failedAt <= RETRY_COOLDOWN;
   }
 
   /** @asyncUnsafe */
@@ -84,7 +95,7 @@ class StatisticsReplication {
     const syncResult = await $sync(`/api/v1/statistics/${interval}`);
     if (syncResult && syncResult.data?.length) {
       success = true;
-      logger.info(`Fetched /api/v1/statistics/${interval} from ${syncResult.server}`);
+      logger.info(`Fetched /api/v1/statistics/${interval} from ${syncResult.server}`, logger.tags.replication);
 
       for (const stat of syncResult.data) {
         const time = this.roundToNearestStep(stat.added, steps[interval]);
@@ -101,7 +112,7 @@ class StatisticsReplication {
       }
 
     } else {
-      logger.warn(`An error occured when trying to fetch /api/v1/statistics/${interval}`);
+      logger.warn(`An error occurred when trying to fetch /api/v1/statistics/${interval}`, logger.tags.replication);
     }
 
     return { success, synced, missed: missed.size };
@@ -145,7 +156,7 @@ class StatisticsReplication {
 
       return missingStatistics;
     } catch (e: any) {
-      logger.err(`Cannot fetch missing statistics times from db. Reason: ` + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot fetch missing statistics times from db. Reason: ` + (e instanceof Error ? e.message : e), logger.tags.replication);
       throw e;
     }
   }
@@ -175,9 +186,9 @@ class StatisticsReplication {
         return new Set<number>();
       }
 
-      const roundedTimesAlreadyHere: number[] = Array.from(new Set(rows.map(row => this.roundToNearestStep(row.added, step))));
+      const roundedTimesAlreadyHere = new Set<number>(rows.map(row => this.roundToNearestStep(row.added, step)));
 
-      const missingTimes = timeSteps.filter(time => !roundedTimesAlreadyHere.includes(time)).filter((time, i, arr) => {
+      const missingTimes = timeSteps.filter(time => !roundedTimesAlreadyHere.has(time)).filter((time, i, arr) => {
         // Remove outsiders
         if (i === 0) {
           return arr[i + 1] === time + step;
@@ -194,7 +205,7 @@ class StatisticsReplication {
 
       return new Set(missingTimes);
     } catch (e: any) {
-      logger.err(`Cannot fetch missing statistics times from db. Reason: ` + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot fetch missing statistics times from db. Reason: ` + (e instanceof Error ? e.message : e), logger.tags.replication);
       throw e;
     }
   }
