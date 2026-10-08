@@ -39,6 +39,7 @@ import { PartnerCodeService } from '@app/services/partner-code.service';
 import { ZONE_SERVICE } from '@app/injection-tokens';
 import { MiningService, MiningStats } from '@app/services/mining.service';
 import { ETA, EtaService } from '@app/services/eta.service';
+import { getRegex } from '@app/shared/regex.utils';
 
 export interface Pool {
   id: number;
@@ -180,6 +181,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
   isMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
   partnerCode: string | undefined;
+  destinationAlert: string | undefined;
 
   graphContainer: ElementRef;
   private txList: TransactionsListComponent;
@@ -381,6 +383,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         });
         this.txChanged$.next(true);
+        this.showDestinationAlert();
       }
     });
 
@@ -744,6 +747,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               this.fetchCpfp$.next(this.tx.txid);
             }
           }
+          
           this.fetchRbfHistory$.next(this.tx.txid);
           this.currencyChangeSubscription?.unsubscribe();
           this.currencyChangeSubscription = this.stateService.fiatCurrency$.pipe(
@@ -753,6 +757,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
               ) : of(undefined);
             })
           ).subscribe();
+
+          this.showDestinationAlert();
 
           this.cd.detectChanges();
         },
@@ -1114,6 +1120,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isAccelerated$.next(this.isAcceleration);
     this.eligibleForAcceleration = false;
     this.leaveTransaction();
+    this.showDestinationAlert();
   }
 
   leaveTransaction() {
@@ -1236,6 +1243,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.firstFragmentScroll = false;
       }
     }
+    this.showDestinationAlert(this.fragmentParams);
   }
 
   setHasAccelerationDetails(hasDetails: boolean): void {
@@ -1279,6 +1287,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.accelerationFlowCompleted = false;
     this.hideAccelerationSummary = false;
     this.storageService.setValue('hide-accelerator-pref', 'false');
+  }
+
+  closeDestinationAlert(): void {
+    this.fragmentParams.delete('destinationAlert');
+    this.router.navigate([], { fragment: this.formatFragment(this.fragmentParams), queryParamsHandling: 'merge'});
+    this.destinationAlert = undefined;
   }
 
   get showAccelerationSummary(): boolean {
@@ -1325,4 +1339,35 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.partnerCode = partnerCode;
     });
   }
-}
+
+  showDestinationAlert(fragment: URLSearchParams = new URLSearchParams(this.route.snapshot.fragment)): void {
+    if (!this.tx) {
+      this.destinationAlert = undefined;
+      return;
+    }
+    let destinationAlert = new URLSearchParams(fragment).get('destinationAlert') || '';
+    // the fragment is user supplied, so only alert on an address this
+    // transaction genuinely does not pay, and never echo anything else
+    if (getRegex('address', (this.network || 'mainnet') as any).test(destinationAlert) &&
+        !this.tx.vout?.some((vout) => {
+
+          let address: string = vout.scriptpubkey_address ?? vout.scriptpubkey;
+
+          if (vout.scriptpubkey_type === 'p2pk') { // strip out push and checksig opcodes
+            address = address.slice(2);
+            address = address.slice(0, -2);
+          }
+          if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(destinationAlert)) {
+            destinationAlert = destinationAlert.toLowerCase();
+          }
+
+          return address === destinationAlert;
+        })) {
+      this.fragmentParams.set('destinationAlert', destinationAlert);
+      this.destinationAlert = destinationAlert;
+    } else {
+      this.fragmentParams.delete('destinationAlert');
+      this.destinationAlert = undefined;
+    }
+  }
+ }
