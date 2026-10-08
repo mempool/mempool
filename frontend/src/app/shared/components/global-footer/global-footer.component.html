@@ -43,10 +43,7 @@
               <app-theme-selector></app-theme-selector>
             </div>
           }
-          <a *ngIf="stateService.isMempoolSpaceBuild" class="btn btn-purple sponsor d-none justify-content-center" [ngClass]="isServicesPage ? 'd-lg-flex' : 'd-md-flex'" [routerLink]="[user ? '/services/landing' : '/login']">
-            <span *ngIf="user" i18n="shared.my-account" class="nowrap">My Account</span>
-            <span *ngIf="!user" i18n="shared.sign-in" class="nowrap">Sign In</span>
-          </a>
+          <ng-container *ngTemplateOutlet="servicesCta; context: { classes: isServicesPage ? 'd-none d-lg-flex' : 'd-none d-md-flex' }"></ng-container>
         </div>
         @if (!env.customize?.theme) {
           <div class="selector d-flex justify-content-center ms-auto me-auto mt-0" [ngClass]="isServicesPage ? 'd-lg-none' : 'd-md-none'">
@@ -55,10 +52,7 @@
           </div>
         }
         @if (!enterpriseInfo?.footer_img) {
-          <a *ngIf="stateService.isMempoolSpaceBuild" class="btn btn-purple sponsor d-flex justify-content-center ms-auto me-auto mt-0 mb-2" [ngClass]="isServicesPage ? 'd-lg-none' : 'd-md-none'" [routerLink]="[user ? '/services/landing' : '/login']">
-            <span *ngIf="user" i18n="shared.my-account" class="nowrap">My Account</span>
-            <span *ngIf="!user" i18n="shared.sign-in" class="nowrap">Sign In</span>
-          </a>
+          <ng-container *ngTemplateOutlet="servicesCta; context: { classes: isServicesPage ? 'd-flex d-lg-none ms-auto me-auto mt-0 mb-2' : 'd-flex d-md-none ms-auto me-auto mt-0 mb-2' }"></ng-container>
           <p class="explore-tagline-desktop">
             @if (officialMempoolSpace) {
               <ng-container i18n="@@7deec1c1520f06170e1f8e8ddfbe4532312f638f">Explore the full Bitcoin ecosystem</ng-container>
@@ -145,3 +139,15 @@
   </div>
 
 </footer>
+
+<ng-template #servicesCta let-classes="classes">
+  @if (stateService.isMempoolSpaceBuild && user) {
+    <a class="btn btn-purple sponsor justify-content-center" [ngClass]="classes" [routerLink]="['/services/landing']">
+      <span i18n="shared.my-account" class="nowrap">My Account</span>
+    </a>
+  } @else if (stateService.isMempoolSpaceBuild) {
+    <button type="button" class="btn btn-purple sponsor justify-content-center" [ngClass]="classes" (click)="openServicesPopup()">
+      <span i18n="shared.sign-in" class="nowrap">Sign In</span>
+    </button>
+  }
+</ng-template>
