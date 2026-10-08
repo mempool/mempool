@@ -1,7 +1,7 @@
 import { formatNumber } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, NgZone, OnChanges } from '@angular/core';
 import { Router } from '@angular/router';
-import { EChartsOption, TreemapSeriesOption } from '@app/graphs/echarts';
+import { EChartsOption, TreemapSeriesOption, echarts } from '@app/graphs/echarts';
 import { Observable, share, switchMap, tap } from 'rxjs';
 import { lerpColor } from '@app/shared/graphs.utils';
 import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
@@ -112,8 +112,8 @@ export class NodeChannels implements OnChanges {
               }
 
               return `
-                <b style="color: white; margin-left: 2px">${value.data.shortId}</b><br>
-                <span>Node: ${value.name}</span><br>
+                <b style="color: white; margin-left: 2px">${echarts.format.encodeHTML(value.data.shortId)}</b><br>
+                <span>Node: ${echarts.format.encodeHTML(value.name)}</span><br>
                 <span>Capacity: ${capacity}</span>
               `;
             }
