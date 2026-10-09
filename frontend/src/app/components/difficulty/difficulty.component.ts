@@ -2,27 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, El
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { StateService } from '@app/services/state.service';
-
-interface EpochProgress {
-  base: string;
-  change: number;
-  progress: number;
-  minedBlocks: number;
-  remainingBlocks: number;
-  expectedBlocks: number;
-  newDifficultyHeight: number;
-  colorAdjustments: string;
-  colorPreviousAdjustments: string;
-  estimatedRetargetDate: number;
-  retargetDateString: string;
-  previousRetarget: number;
-  blocksUntilHalving: number;
-  timeUntilHalving: number;
-  timeAvg: number;
-  adjustedTimeAvg: number;
-}
-
-type BlockStatus = 'mined' | 'behind' | 'ahead' | 'next' | 'remaining';
+import { BlockStatus, EpochProgress, getEpochProgress, getEpochState, getNextBlockSubsidy } from '@app/shared/difficulty.utils';
 
 interface DiffShape {
   x: number;
@@ -32,8 +12,6 @@ interface DiffShape {
   status: BlockStatus;
   expected: boolean;
 }
-
-const EPOCH_BLOCK_LENGTH = 2016; // Bitcoin mainnet
 
 @Component({
   selector: 'app-difficulty',
@@ -83,30 +61,10 @@ export class DifficultyComponent implements OnInit {
     .pipe(
       map(([blocks, da]) => {
         const maxHeight = blocks.reduce((max, block) => Math.max(max, block.height), 0);
-        let colorAdjustments = 'var(--transparent-fg)';
-        if (da.difficultyChange > 0) {
-          colorAdjustments = 'var(--green)';
-        }
-        if (da.difficultyChange < 0) {
-          colorAdjustments = 'var(--red)';
-        }
-
-        let colorPreviousAdjustments = 'var(--red)';
-        if (da.previousRetarget) {
-          if (da.previousRetarget >= 0) {
-            colorPreviousAdjustments = 'var(--green)';
-          }
-          if (da.previousRetarget === 0) {
-            colorPreviousAdjustments = 'var(--transparent-fg)';
-          }
-        } else {
-          colorPreviousAdjustments = 'var(--transparent-fg)';
-        }
 
         const blocksUntilHalving = 210000 - (maxHeight % 210000);
         const timeUntilHalving = new Date().getTime() + (blocksUntilHalving * 600000);
-        const newEpochStart = Math.floor(this.stateService.latestBlockHeight / EPOCH_BLOCK_LENGTH) * EPOCH_BLOCK_LENGTH;
-        const newExpectedHeight = Math.floor(newEpochStart + da.expectedBlocks);
+        const epoch = getEpochState(this.stateService.latestBlockHeight, da);
         this.now = new Date().getTime();
         this.nextSubsidy = getNextBlockSubsidy(maxHeight);
 
@@ -114,13 +72,13 @@ export class DifficultyComponent implements OnInit {
           this.mode = 'halving';
         }
 
-        if (newEpochStart !== this.epochStart || newExpectedHeight !== this.expectedHeight || this.currentHeight !== this.stateService.latestBlockHeight) {
-          this.epochStart = newEpochStart;
-          this.expectedHeight = newExpectedHeight;
-          this.currentHeight = this.stateService.latestBlockHeight;
-          this.currentIndex = this.currentHeight - this.epochStart;
-          this.expectedIndex = Math.min(this.expectedHeight - this.epochStart, 2016) - 1;
-          this.difference = this.currentIndex - this.expectedIndex;
+        if (epoch.epochStart !== this.epochStart || epoch.expectedHeight !== this.expectedHeight || epoch.currentHeight !== this.currentHeight) {
+          this.epochStart = epoch.epochStart;
+          this.expectedHeight = epoch.expectedHeight;
+          this.currentHeight = epoch.currentHeight;
+          this.currentIndex = epoch.currentIndex;
+          this.expectedIndex = epoch.expectedIndex;
+          this.difference = epoch.difference;
 
           this.shapes = [];
           this.shapes = this.shapes.concat(this.blocksToShapes(
@@ -143,30 +101,11 @@ export class DifficultyComponent implements OnInit {
         }
 
 
-        let retargetDateString;
-        if (da.remainingBlocks > 1870) {
-          retargetDateString = (new Date(da.estimatedRetargetDate)).toLocaleDateString(this.locale, { month: 'long', day: 'numeric' });
-        } else {
-          retargetDateString = (new Date(da.estimatedRetargetDate)).toLocaleTimeString(this.locale, { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' });
-        }
-
-        const data = {
-          base: `${da.progressPercent.toFixed(2)}%`,
-          change: da.difficultyChange,
-          progress: da.progressPercent,
+        const data: EpochProgress = {
+          ...getEpochProgress(da, this.locale),
           minedBlocks: this.currentIndex,
-          remainingBlocks: da.remainingBlocks,
-          expectedBlocks: Math.floor(da.expectedBlocks),
-          colorAdjustments,
-          colorPreviousAdjustments,
-          newDifficultyHeight: da.nextRetargetHeight,
-          estimatedRetargetDate: da.estimatedRetargetDate,
-          retargetDateString,
-          previousRetarget: da.previousRetarget,
           blocksUntilHalving,
           timeUntilHalving,
-          timeAvg: da.timeAvg,
-          adjustedTimeAvg: da.adjustedTimeAvg,
         };
         return data;
       })
@@ -235,17 +174,4 @@ export class DifficultyComponent implements OnInit {
   onBlur(): void {
     this.hoverSection = null;
   }
-}
-
-function getNextBlockSubsidy(height: number): number {
-  const halvings = Math.floor(height / 210_000) + 1;
-  // Force block reward to zero when right shift is undefined.
-  if (halvings >= 64) {
-    return 0;
-  }
-
-  let subsidy = BigInt(50 * 100_000_000);
-  // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
-  subsidy >>= BigInt(halvings);
-  return Number(subsidy);
 }
