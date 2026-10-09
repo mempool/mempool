@@ -5,6 +5,7 @@ import { Transaction, Address, Outspend, Recent, Asset, ScriptHash, AddressTxSum
 import { StateService } from '@app/services/state.service';
 import { BlockExtended } from '@interfaces/node-api.interface';
 import { calcScriptHash$ } from '@app/bitcoin.utils';
+import { TxFilters } from '@app/components/address/address.component';
 
 @Injectable({
   providedIn: 'root'
@@ -146,6 +147,11 @@ export class ElectrsApiService {
     return this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/address/' + address + '/txs', { params });
   }
 
+  getFilteredAddressTransactions$(address: string,  txid?: string, filters?: TxFilters): Observable<HttpResponse<Transaction[]>> {
+    const params = this.getTxFilterParams(txid, filters);
+    return this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/address/' + address + '/txs', { params, observe: 'response' });
+  }
+
   getAddressesTransactions$(addresses: string[], txid?: string): Observable<Transaction[]> {
     let params = new HttpParams();
     if (txid) {
@@ -182,6 +188,36 @@ export class ElectrsApiService {
     return from(calcScriptHash$(script)).pipe(
       switchMap(scriptHash => this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/scripthash/' + scriptHash + '/txs', { params })),
     );
+  }
+
+  getFilteredScriptHashTransactions$(script: string,  txid?: string, filters?: TxFilters): Observable<HttpResponse<Transaction[]>> {
+    const params = this.getTxFilterParams(txid, filters);
+    return from(calcScriptHash$(script)).pipe(
+      switchMap(scriptHash => this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/scripthash/' + scriptHash + '/txs', { params, observe: 'response' })),
+    );
+  }
+
+  private getTxFilterParams(txid?: string, filters?: TxFilters): HttpParams {
+    let params = new HttpParams();
+    if (txid) {
+      params = params.append('after_txid', txid);
+    }
+    if (filters?.direction) {
+      params = params.append('direction', filters.direction);
+    }
+    if (filters?.min) {
+      params = params.append('min_amount', filters.min);
+    }
+    if (filters?.max) {
+      params = params.append('max_amount', filters.max);
+    }
+    if (filters?.from) {
+      params = params.append('from', filters.from);
+    }
+    if (filters?.to) {
+      params = params.append('to', filters.to);
+    }
+    return params;
   }
 
   getScriptHashesTransactions$(scripts: string[],  txid?: string): Observable<Transaction[]> {
