@@ -1,0 +1,44 @@
+name: OSS Scanner image
+
+# Builds .oss-scanner/Dockerfile the way Anthropic's OSS Scanner does (plain build, checkout root as
+# context, 45-minute limit), so a change that breaks it fails here instead of at the next scan.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.oss-scanner/**'
+      - '.nvmrc'
+      - 'backend/package.json'
+      - 'backend/package-lock.json'
+      - 'frontend/package.json'
+      - 'frontend/package-lock.json'
+      - 'rust/**'
+      - 'docker/**'
+      - '.github/workflows/oss-scanner.yml'
+  # Weekly, to catch outside changes (base image, NodeSource packages) that no PR touches
+  schedule:
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: mempool-ci
+    timeout-minutes: 45
+    name: Build OSS Scanner image
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
+
+      - name: Build image
+        run: |
+          docker buildx build \
+            --file .oss-scanner/Dockerfile \
+            --platform linux/amd64 \
+            --progress plain \
+            .
