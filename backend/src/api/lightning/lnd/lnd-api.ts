@@ -3,6 +3,7 @@ import { Agent } from 'https';
 import * as fs from 'fs';
 import { AbstractLightningApi } from '../lightning-api-abstract-factory';
 import { ILightningApi } from '../lightning-api.interface';
+import { FeaturesMap } from '../features';
 import config from '../../../config';
 import logger from '../../../logger';
 
@@ -48,11 +49,17 @@ class LndApi implements AbstractLightningApi {
     for (const node of graph.nodes) {
       const nodeFeatures: ILightningApi.Feature[] = [];
       for (const bit in node.features) {
+        const f = node.features[bit];
+        const bitNum = parseInt(bit, 10);
+        const lndName = f.name;
+        const sharedName = FeaturesMap.get(bitNum);
+        const finalName = f.is_known ? lndName : (sharedName ?? lndName);
+        const isKnown = f.is_known || !!sharedName;
         nodeFeatures.push({
-          bit: parseInt(bit, 10),
-          name: node.features[bit].name,
-          is_required: node.features[bit].is_required,
-          is_known: node.features[bit].is_known,
+          bit: bitNum,
+          name: finalName,
+          is_required: f.is_required,
+          is_known: isKnown,
         });
       }
       node.features = nodeFeatures;
