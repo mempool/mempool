@@ -186,6 +186,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   private fragmentAnchor: string | null = null;
   private scrolledFragmentAnchor: string | null = null;
   private firstFragmentScroll = true;
+  private skipNextAcceleratorScroll = false;
 
   @ViewChild('txList')
   set txListSetter(component: TransactionsListComponent | undefined) {
@@ -902,6 +903,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    // Don't scroll to the accelerator widget on desktop
+    this.skipNextAcceleratorScroll = !this.isMobile;
     this.openAccelerator();
     return false;
   }
@@ -1227,6 +1230,13 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       this.scrolledFragmentAnchor = null;
       if (!this.fragmentAnchor) {
         this.firstFragmentScroll = false;
+      }
+    }
+    if (this.skipNextAcceleratorScroll) {
+      this.skipNextAcceleratorScroll = false;
+      if (anchor === 'accelerate') {
+        this.firstFragmentScroll = false;
+        this.scrolledFragmentAnchor = anchor;
       }
     }
     if (this.scrolledFragmentAnchor !== this.fragmentAnchor) {
