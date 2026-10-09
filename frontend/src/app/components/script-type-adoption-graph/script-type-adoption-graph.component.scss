@@ -1,0 +1,104 @@
+.card-header {
+  border-bottom: 0;
+  font-size: 18px;
+  @media (min-width: 465px) {
+    font-size: 20px;
+  }
+  @media (min-width: 1340px) {
+    height: 40px;
+  }
+}
+
+.graph-toolbar {
+  @media (min-width: 1340px) {
+    display: contents;
+  }
+  @media (max-width: 1339px) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+  }
+}
+
+.full-container .card-header .graph-toolbar .formRadioGroup {
+  @media (max-width: 1339px) {
+    position: static;
+    float: none;
+    flex-direction: row;
+    margin: 0;
+  }
+}
+
+.full-container .card-header .graph-toolbar .interval-group {
+  @media (max-width: 829px) {
+    width: 100%;
+    .btn-group {
+      display: flex;
+      width: 100%;
+      .btn {
+        flex: 1;
+      }
+    }
+  }
+}
+
+.full-container {
+  display: flex;
+  flex-direction: column;
+  padding: 0px 15px;
+  width: 100%;
+  height: calc(100vh - 225px);
+  min-height: 400px;
+  @media (min-width: 992px) {
+    height: calc(100vh - 150px);
+  }
+}
+
+.chart {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  padding-bottom: 20px;
+  padding-right: 10px;
+  @media (max-width: 992px) {
+    padding-bottom: 25px;
+  }
+  @media (max-width: 829px) {
+    padding-bottom: 50px;
+  }
+}
+
+.loadingGraphs {
+  position: absolute;
+  top: 50%;
+  left: calc(50% - 15px);
+  z-index: 99;
+}
+
+.formRadioGroup {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  @media (min-width: 991px) {
+    position: relative;
+    top: -100px;
+  }
+  @media (min-width: 830px) and (max-width: 991px) {
+    position: relative;
+    top: 0px;
+  }
+  @media (min-width: 830px) {
+    flex-direction: row;
+    float: right;
+    margin-top: 0px;
+    margin-left: 2px;
+    margin-right: 2px;
+  }
+  .btn-sm {
+    font-size: 9px;
+    @media (min-width: 830px) {
+      font-size: 14px;
+    }
+  }
+}
