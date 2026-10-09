@@ -372,19 +372,24 @@ export class Common {
 
   // Individual versioned standardness rules
 
+  static getActivationHeight(activationHeights: Record<string, number>): number | undefined {
+    return activationHeights[config.MEMPOOL.NETWORK || 'mainnet'];
+  }
+
   static V3_STANDARDNESS_ACTIVATION_HEIGHT = {
     'testnet4': 42_000,
     'testnet': 2_900_000,
     'signet': 211_000,
     'regtest': 0,
-    '': 863_500,
+    'mainnet': 863_500,
   };
   static isNonStandardVersion(tx: TransactionExtended, height?: number): boolean {
     let TX_MAX_STANDARD_VERSION = 3;
+    const activationHeight = this.getActivationHeight(this.V3_STANDARDNESS_ACTIVATION_HEIGHT);
     if (
       height != null
-      && this.V3_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
-      && height <= this.V3_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      && activationHeight
+      && height <= activationHeight
     ) {
       // V3 transactions were non-standard to spend before v28.x (scheduled for 2024/09/30 https://github.com/bitcoin/bitcoin/issues/29891)
       TX_MAX_STANDARD_VERSION = 2;
@@ -401,13 +406,14 @@ export class Common {
     'testnet': 2_900_000,
     'signet': 211_000,
     'regtest': 0,
-    '': 863_500,
+    'mainnet': 863_500,
   };
   static isNonStandardAnchor(vin: IEsploraApi.Vin, height?: number): boolean {
+    const activationHeight = this.getActivationHeight(this.ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT);
     if (
       height != null
-      && this.ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
-      && height <= this.ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      && activationHeight
+      && height <= activationHeight
       && vin.prevout?.scriptpubkey === '51024e73'
     ) {
       // anchor outputs were non-standard to spend before v28.x (scheduled for 2024/09/30 https://github.com/bitcoin/bitcoin/issues/29891)
@@ -422,14 +428,15 @@ export class Common {
     'testnet': 4_550_000,
     'signet': 260_000,
     'regtest': 0,
-    '': 905_000,
+    'mainnet': 905_000,
   };
   static isStandardEphemeralDust(tx: TransactionExtended, height?: number): boolean {
+    const activationHeight = this.getActivationHeight(this.EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT);
     if (
       tx.fee === 0
       && (height == null || (
-        this.EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
-        && height >= this.EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+        activationHeight
+        && height >= activationHeight
       ))
     ) {
       return true;
@@ -443,14 +450,15 @@ export class Common {
     'testnet': 4_750_000,
     'signet': 276_500,
     'regtest': 0,
-    '': 921_000,
+    'mainnet': 921_000,
   };
   static MAX_DATACARRIER_BYTES = 83;
   static isStandardOpReturn(bytes: number, outputs: number,height?: number): boolean {
+    const activationHeight = this.getActivationHeight(this.OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT);
     if (
       (height == null || (
-        this.OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
-        && height >= this.OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+        activationHeight
+        && height >= activationHeight
       )) // limits lifted
       || // OR
       (bytes <= this.MAX_DATACARRIER_BYTES && outputs <= 1) // below old limits
@@ -466,13 +474,14 @@ export class Common {
     'testnet': 4_750_000,
     'signet': 276_500,
     'regtest': 0,
-    '': 921_000,
+    'mainnet': 921_000,
   };
   static isNonStandardLegacySigops(tx: TransactionExtended, height?: number): boolean {
+    const activationHeight = this.getActivationHeight(this.LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT);
     if (
       height == null || (
-        this.LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
-        && height >= this.LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+        activationHeight
+        && height >= activationHeight
       )
     ) {
       if (!transactionUtils.checkSigopsBIP54(tx, MAX_TX_LEGACY_SIGOPS)) {
@@ -626,6 +635,13 @@ export class Common {
 
     // Already processed static flags, no need to do it again
     if (tx.flags) {
+      // except standardness, which depends on the policy in force at the mined height
+      if (height != null) {
+        flags &= ~TransactionFlags.nonstandard;
+        if (this.isNonStandard(tx, height)) {
+          flags |= TransactionFlags.nonstandard;
+        }
+      }
       return Number(flags);
     }
 

@@ -891,7 +891,7 @@ class Blocks {
         await this.$getStrippedBlockTransactions(hash, true, true, cpfpSummary, height); // This will index the block summary
       }
     } else {
-      await this.$getStrippedBlockTransactions(hash, true, true); // This will index the block summary
+      await this.$getStrippedBlockTransactions(hash, true, true, undefined, height); // This will index the block summary
     }
   }
 
@@ -1763,6 +1763,17 @@ class Blocks {
     }
 
     let height = blockHeight;
+    if (height == null) {
+      // If the block is orphaned, use the height from the chaintips cache
+      const orphanedBlock = chainTips.getOrphanedBlock(hash);
+      if (orphanedBlock) {
+        height = orphanedBlock.height;
+      } else {
+        const block = await bitcoinApi.$getBlock(hash);
+        height = block.height;
+      }
+    }
+
     let summary: BlockSummary;
     let summaryVersion = 0;
     if (cpfpSummary && !Common.isLiquid()) {
@@ -1789,18 +1800,8 @@ class Blocks {
       summaryVersion = cpfpSummary.version;
     } else {
       const txs = (await bitcoinApi.$getTxsForBlock(hash, true)).map(tx => transactionUtils.extendTransaction(tx));
-      summary = this.summarizeBlockTransactions(hash, height || 0, txs);
+      summary = this.summarizeBlockTransactions(hash, height, txs);
       summaryVersion = 1;
-    }
-    if (height == null) {
-      // If the block is orphaned, use the height from the chaintips cache
-      const orphanedBlock = chainTips.getOrphanedBlock(hash);
-      if (orphanedBlock) {
-        height = orphanedBlock.height;
-      } else {
-        const block = await bitcoinApi.$getBlock(hash);
-        height = block.height;
-      }
     }
 
     // Index the response if needed
