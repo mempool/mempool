@@ -196,3 +196,138 @@
   top: -1em;
   margin-left: 10px;
 }
+
+.tip-details {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 1em;
+  margin-top: 1.5em;
+
+  @media screen and (max-width: 767px) {
+    grid-auto-flow: row;
+    gap: 1.5em;
+  }
+}
+
+.detail {
+  min-width: 0;
+  text-align: center;
+  container-type: inline-size;
+}
+
+.detail-label {
+  font-size: 1rem;
+  color: var(--title-fg);
+  margin-bottom: 0.25em;
+}
+
+.detail-value {
+  font-size: 18px;
+  line-height: 1.3;
+
+  &.resolved-by {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5em;
+
+    .badge {
+      font-size: 13px;
+      padding-left: 0;
+    }
+  }
+}
+
+.detail-sub {
+  font-size: 12px;
+  color: var(--transparent-fg);
+  margin-top: 0.25em;
+}
+
+.overlap {
+  position: relative;
+  width: fit-content;
+  margin: 0.75rem auto 0;
+  outline: none;
+}
+
+.overlap-cells {
+  --cell-size: 5px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(3, var(--cell-size));
+  grid-auto-columns: var(--cell-size);
+  gap: 1px;
+}
+
+@container (max-width: 298px) {
+  .overlap-cells {
+    --cell-size: 4px;
+  }
+}
+@container (max-width: 248px) {
+  .overlap-cells {
+    --cell-size: 3px;
+  }
+}
+@container (max-width: 198px) {
+  .overlap-cells {
+    --cell-size: 2px;
+  }
+}
+
+.overlap-percent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+// match the block overview (goggles) tooltip
+::ng-deep .overlap-ngb-tooltip {
+  --bs-tooltip-opacity: 1;
+
+  .tooltip-arrow {
+    display: none;
+  }
+
+  .tooltip-inner {
+    max-width: none;
+    padding: 10px 15px;
+    background: color-mix(in srgb, #11131f 95%, transparent);
+    border-radius: 4px;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
+    color: var(--tooltip-grey);
+    text-align: left;
+  }
+}
+
+.overlap-legend {
+  td {
+    padding: 0.15em 0;
+    white-space: nowrap;
+  }
+
+  .label {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+
+  .value {
+    padding-left: 2em;
+    text-align: end;
+    color: var(--fg);
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+}

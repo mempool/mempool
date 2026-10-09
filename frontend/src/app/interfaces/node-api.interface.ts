@@ -221,6 +221,7 @@ export interface BlockExtension {
   expectedWeight?: number;
   feeDelta?: number;
   similarity?: number;
+  firstSeen?: number | null;
   pool?: {
     id: number;
     name: string;
@@ -526,7 +527,19 @@ export interface ChainTip {
   status: 'invalid' | 'active' | 'valid-fork' | 'valid-headers' | 'headers-only';
 }
 
+export interface TxOverlap {
+  shared: number;
+  staleOnly: number;
+  canonicalOnly: number;
+}
+
+export interface StaleTipBlock extends Pick<BlockExtended, 'id' | 'height' | 'timestamp' | 'size' | 'weight' | 'tx_count'> {
+  extras?: Pick<BlockExtension, 'medianFee' | 'feeRange' | 'minFee' | 'maxFee' | 'pool' | 'firstSeen'>;
+}
+
 export interface StaleTip extends ChainTip {
-  stale: BlockExtended;
-  canonical: BlockExtended;
+  stale: StaleTipBlock;
+  canonical: StaleTipBlock;
+  resolvedBy?: StaleTipBlock;
+  txOverlap?: TxOverlap;
 }
