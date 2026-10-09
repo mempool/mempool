@@ -1,0 +1,26 @@
+// The mined-block silhouette shared by the chain and address activity views.
+@mixin faces {
+  &::after {
+    content: '';
+    width: var(--block-size);
+    height: calc(0.192 * var(--block-size));
+    position: absolute;
+    top: calc(-0.192 * var(--block-size));
+    left: calc(-0.16 * var(--block-size));
+    background-color: var(--block-top);
+    transform: skew(40deg);
+    transform-origin: top;
+  }
+
+  &::before {
+    content: '';
+    width: calc(0.16 * var(--block-size));
+    height: var(--block-size);
+    position: absolute;
+    top: calc(-0.096 * var(--block-size));
+    left: calc(-0.16 * var(--block-size));
+    background-color: var(--block-side);
+    transform: skewY(50deg);
+    transform-origin: top;
+  }
+}
