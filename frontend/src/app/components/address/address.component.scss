@@ -133,3 +133,80 @@ h1 {
   padding-bottom: 0;
   font-size: 0.8rem;
 }
+
+.fee-impact-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  app-fee-rate {
+    display: inline-block;
+    min-width: 84px; // hold width across digit counts so the value doesn't nudge the slider
+    text-align: left;
+  }
+
+  @media (max-width: 767.98px) {
+    float: none !important;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+// coloured scale anchored to the full width, revealed under a grey overlay up to --fill,
+// so the hue at the thumb tracks the feerate (celeste → orange → the fee-wedge red)
+@mixin fee-rate-track {
+  height: 6px;
+  border-radius: 3px;
+  background:
+    linear-gradient(var(--secondary), var(--secondary)) no-repeat,
+    linear-gradient(to right, var(--info) 0%, var(--orange) 50%, var(--red) 100%) no-repeat;
+  background-size: calc(100% - var(--fill, 0%)) 100%, 100% 100%;
+  background-position: right center, left center;
+}
+
+.fee-rate-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 220px;
+  max-width: 100%;
+  cursor: pointer;
+  outline: none;
+  @include fee-rate-track;
+
+  @media (max-width: 767.98px) {
+    width: 120px;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
+  &::-moz-range-track {
+    @include fee-rate-track;
+  }
+
+  &::-moz-range-progress {
+    background: transparent; // hide Firefox's native fill so only the gradient shows
+  }
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+  }
+
+  &::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border: none;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+  }
+}

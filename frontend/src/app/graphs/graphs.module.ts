@@ -36,6 +36,8 @@ import { HashrateChartComponent } from '@components/hashrate-chart/hashrate-char
 import { HashrateChartPoolsComponent } from '@components/hashrates-chart-pools/hashrate-chart-pools.component';
 import { BlockHealthGraphComponent } from '@components/block-health-graph/block-health-graph.component';
 import { AddressComponent } from '@components/address/address.component';
+import { CostToSpendComponent } from '@components/address/cost-to-spend/cost-to-spend.component';
+import { AverageCoinComponent } from '@components/average-coin/average-coin.component';
 import { WalletComponent } from '@components/wallet/wallet.component';
 import { WalletPreviewComponent } from '@components/wallet/wallet-preview.component';
 import { AddressGraphComponent } from '@components/address-graph/address-graph.component';
@@ -55,6 +57,8 @@ import { CommonModule } from '@angular/common';
     CustomDashboardComponent,
     MempoolBlockComponent,
     AddressComponent,
+    CostToSpendComponent,
+    AverageCoinComponent,
     WalletComponent,
     WalletPreviewComponent,
 

@@ -1,0 +1,134 @@
+.average-coin {
+  // hug the stats strip below rather than floating in empty space
+  margin-bottom: -0.25rem;
+}
+
+// fiat amounts hidden for now; markup kept in the template for easy re-enable
+.fiat {
+  display: none;
+}
+
+.coin-figure {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+
+  // stack the coin above the stats on narrow screens
+  @media (max-width: 767.98px) {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+.coin-svg {
+  display: block;
+  width: 100%;
+  max-width: 180px;
+  height: auto;
+  flex-shrink: 0;
+
+  .coin-kept {
+    fill: var(--success);
+    cursor: pointer;
+  }
+  // the wedge red matches the bubble chart fee wedges (which resolve the same --red variable)
+  .coin-fee {
+    fill: var(--red);
+  }
+  .fee-region {
+    cursor: pointer;
+  }
+}
+
+// uneconomical: dim the coin under the full red disc, mirroring how the bubble
+// chart desaturates+darkens uneconomical bubbles
+.uneconomical .coin-svg .coin-kept {
+  fill: color-mix(in srgb, var(--success) 40%, black);
+}
+
+.coin-stats {
+  min-width: 220px;
+  text-align: left;
+
+  @media (max-width: 767.98px) {
+    min-width: 0;
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+.stats-header {
+  color: var(--transparent-fg);
+  text-transform: uppercase;
+  font-size: 11px;
+  margin-bottom: 0.5rem;
+}
+
+.stat-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1.5rem;
+  font-size: 15px;
+
+  & + .stat-row {
+    margin-top: 0.15rem;
+  }
+
+  .label {
+    color: var(--transparent-fg);
+    white-space: nowrap;
+  }
+  .value {
+    white-space: nowrap;
+  }
+  // the sats / sat/vB units rendered inside app-amount and app-fee-rate
+  .value ::ng-deep .symbol {
+    color: var(--transparent-fg);
+    font-size: 13px;
+  }
+}
+
+// approaching break-even: warn that the fee is eating a large share of the average coin
+.approaching .stat-row.fee-share .value {
+  color: var(--yellow);
+}
+
+// uneconomical: the fee outweighs the average coin
+.uneconomical .stat-row.fee-share .value {
+  color: var(--red);
+}
+
+.coin-tooltip {
+  // mirrors difficulty-tooltip; var(--bg) is the app-wide tooltip background (theme-aware)
+  position: fixed;
+  z-index: 2;
+  background: color-mix(in srgb, var(--bg) 95%, transparent);
+  border-radius: 4px;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
+  color: var(--tooltip-grey);
+  padding: 8px 12px;
+  pointer-events: none;
+  white-space: nowrap;
+
+  .tooltip-share {
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+  .tooltip-breakdown {
+    font-size: 12px;
+    color: var(--transparent-fg);
+    margin-top: 2px;
+  }
+
+  // mobile has no cursor: pin the tooltip to the bottom of the viewport instead of following a pointer
+  &.mobile {
+    left: 50%;
+    top: auto;
+    bottom: 20px;
+    transform: translateX(-50%);
+  }
+}
