@@ -71,7 +71,7 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.seoService.setTitle($localize`:@@mining.bip54-coinbase-title:BIP-54 Coinbase Adoption`);
-    this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.bip54-coinbase:See what share of Bitcoin blocks is mined with a coinbase transaction that is forward-compatible with BIP-54, broken down by mining pool.`);
+    this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.bip54-coinbase:See what share of Bitcoin blocks was mined by pools that have adopted BIP-54 forward-compatible coinbase transactions, over your desired timeframe.`);
 
     this.miningWindowPreference = this.miningService.getDefaultTimespan('24h');
 
