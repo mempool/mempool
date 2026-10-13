@@ -14,6 +14,7 @@ import { LightningWrapperComponent } from '@app/lightning/lightning-wrapper/ligh
 import { ChannelBoxComponent } from '@app/lightning/channel/channel-box/channel-box.component';
 import { ChannelCloseBoxComponent } from '@app/lightning/channel/channel-close-box/channel-close-box.component';
 import { ClosingTypeComponent } from '@app/lightning/channel/closing-type/closing-type.component';
+import { LightningFeesChartComponent } from '@app/lightning/fees-chart/lightning-fees-chart.component';
 import { LightningStatisticsChartComponent } from '@app/lightning/statistics-chart/lightning-statistics-chart.component';
 import { NodeStatisticsChartComponent } from '@app/lightning/node-statistics-chart/node-statistics-chart.component';
 import { NodeFeeChartComponent } from '@app/lightning/node-fee-chart/node-fee-chart.component';
@@ -50,6 +51,7 @@ import { GroupComponent } from '@app/lightning/group/group.component';
     ChannelCloseBoxComponent,
     ClosingTypeComponent,
     LightningStatisticsChartComponent,
+    LightningFeesChartComponent,
     NodesNetworksChartComponent,
     ChannelsStatisticsComponent,
     NodesPerISPChartComponent,
@@ -88,6 +90,7 @@ import { GroupComponent } from '@app/lightning/group/group.component';
     ChannelCloseBoxComponent,
     ClosingTypeComponent,
     LightningStatisticsChartComponent,
+    LightningFeesChartComponent,
     NodesNetworksChartComponent,
     ChannelsStatisticsComponent,
     NodesPerISPChartComponent,

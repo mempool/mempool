@@ -1,0 +1,55 @@
+<div class="full-container">
+
+  <div class="card-header mb-0 mb-md-4">
+    <div class="d-flex d-md-block align-items-baseline">
+      <span i18n="lightning.fees-and-channel-size">Lightning Fees & Channel Size</span>
+      <button class="btn p-0 ps-2" style="margin: 0 0 4px 0px" (click)="onSaveChart()">
+        <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+      </button>
+    </div>
+
+    <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(feesObservable$ | async) as stats">
+      <div class="btn-group me-md-3 mb-1 mb-md-0" role="group" name="radioMode">
+        <input type="radio" class="btn-check" id="feeschart-med" [value]="'med'" formControlName="mode">
+        <label class="btn btn-primary btn-sm text-uppercase" for="feeschart-med" i18n="statistics.median-small">med</label>
+        <input type="radio" class="btn-check" id="feeschart-avg" [value]="'avg'" formControlName="mode">
+        <label class="btn btn-primary btn-sm text-uppercase" for="feeschart-avg" i18n="statistics.average-small">avg</label>
+      </div>
+      <div class="btn-group" role="group" name="radioBasic">
+        <ng-container *ngIf="stats.days >= 30">
+          <input type="radio" class="btn-check" id="feeschart-1m" [value]="'1m'" fragment="1m" [routerLink]="['/graphs/lightning/fees' | relativeUrl]" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="feeschart-1m">1M</label>
+        </ng-container>
+        <ng-container *ngIf="stats.days >= 90">
+          <input type="radio" class="btn-check" id="feeschart-3m" [value]="'3m'" fragment="3m" [routerLink]="['/graphs/lightning/fees' | relativeUrl]" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="feeschart-3m">3M</label>
+        </ng-container>
+        <ng-container *ngIf="stats.days >= 180">
+          <input type="radio" class="btn-check" id="feeschart-6m" [value]="'6m'" fragment="6m" [routerLink]="['/graphs/lightning/fees' | relativeUrl]" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="feeschart-6m">6M</label>
+        </ng-container>
+        <ng-container *ngIf="stats.days >= 365">
+          <input type="radio" class="btn-check" id="feeschart-1y" [value]="'1y'" fragment="1y" [routerLink]="['/graphs/lightning/fees' | relativeUrl]" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="feeschart-1y">1Y</label>
+        </ng-container>
+        <ng-container *ngIf="stats.days >= 730">
+          <input type="radio" class="btn-check" id="feeschart-2y" [value]="'2y'" fragment="2y" [routerLink]="['/graphs/lightning/fees' | relativeUrl]" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="feeschart-2y">2Y</label>
+        </ng-container>
+        <ng-container *ngIf="stats.days >= 1095">
+          <input type="radio" class="btn-check" id="feeschart-3y" [value]="'3y'" fragment="3y" [routerLink]="['/graphs/lightning/fees' | relativeUrl]" formControlName="dateSpan">
+          <label class="btn btn-primary btn-sm" for="feeschart-3y">3Y</label>
+        </ng-container>
+        <input type="radio" class="btn-check" id="feeschart-all" [value]="'all'" fragment="all" [routerLink]="['/graphs/lightning/fees' | relativeUrl]" formControlName="dateSpan">
+        <label class="btn btn-primary btn-sm" for="feeschart-all">ALL</label>
+      </div>
+    </form>
+  </div>
+
+  <div class="chart" *browserOnly echarts [initOpts]="chartInitOptions" [options]="chartOptions"
+    (chartInit)="onChartInit($event)"></div>
+  <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">
+    <div class="spinner-border text-light"></div>
+  </div>
+
+</div>
