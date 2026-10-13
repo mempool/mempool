@@ -173,7 +173,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
         this.auth = auth;
       }
     });
-    this.authService.refreshAuth$().subscribe();
 
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('cash_request_id')) { // Redirected from cashapp
