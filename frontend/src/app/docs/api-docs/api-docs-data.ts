@@ -6941,6 +6941,131 @@ export const restApiDocsData = [
     type: 'endpoint',
     category: 'mining',
     httpRequestMethod: 'GET',
+    fragment: 'get-block-feerates-precise',
+    title: 'GET Block Feerates (Precise)',
+    description: {
+      default: '<p>Returns average feerate percentiles with up to 3 decimal places, including sub-sat feerates, for blocks in the specified <code>:timePeriod</code>, ordered oldest to newest. <code>:timePeriod</code> can be any of the following: ' + miningTimeIntervals + '.</p><p>For <code>24h</code> and <code>3d</code> time periods, every block is included and percentiles are exact (not averages). For the <code>1w</code> time period, percentiles may be averages depending on how fast blocks were found around a particular timestamp. For other time periods, percentiles are averages.</p>'
+    },
+    urlString: '/v1/mining/blocks/fee-rates/:timePeriod/precise',
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/blocks/fee-rates/%{1}/precise`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`1m`],
+          response: `[
+  {
+    "avgHeight": 967377,
+    "timestamp": 1789629242,
+    "avgFee_0": 0.756,
+    "avgFee_10": 1.991,
+    "avgFee_25": 2.5,
+    "avgFee_50": 2.645,
+    "avgFee_75": 3.709,
+    "avgFee_90": 4.982,
+    "avgFee_100": 122.5
+  },
+  {
+    "avgHeight": 967380,
+    "timestamp": 1789631055,
+    "avgFee_0": 0.805,
+    "avgFee_10": 0.838,
+    "avgFee_25": 0.892,
+    "avgFee_50": 1.17,
+    "avgFee_75": 1.838,
+    "avgFee_90": 3.277,
+    "avgFee_100": 287.08
+  },
+  {
+    "avgHeight": 967384,
+    "timestamp": 1789632303,
+    "avgFee_0": 0.34,
+    "avgFee_10": 0.347,
+    "avgFee_25": 0.348,
+    "avgFee_50": 0.354,
+    "avgFee_75": 0.38,
+    "avgFee_90": 2.01,
+    "avgFee_100": 419.184
+  },
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`1m`],
+          response: `[
+  {
+    "avgHeight": 2196306,
+    "timestamp": 1650360168,
+    "avgFee_0": 1,
+    "avgFee_10": 1.012,
+    "avgFee_25": 1.126,
+    "avgFee_50": 1.5,
+    "avgFee_75": 2.25,
+    "avgFee_90": 28.143,
+    "avgFee_100": 2644.012
+  },
+  {
+    "avgHeight": 2196308,
+    "timestamp": 1650361209,
+    "avgFee_0": 0.5,
+    "avgFee_10": 1,
+    "avgFee_25": 1.333,
+    "avgFee_50": 4.25,
+    "avgFee_75": 12.667,
+    "avgFee_90": 65.5,
+    "avgFee_100": 102.041
+  },
+  ...
+]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`1m`],
+          response: `[
+  {
+    "avgHeight": 86620,
+    "timestamp": 1650360010,
+    "avgFee_0": 0.1,
+    "avgFee_10": 0.1,
+    "avgFee_25": 0.5,
+    "avgFee_50": 1,
+    "avgFee_75": 1,
+    "avgFee_90": 1.25,
+    "avgFee_100": 1.5
+  },
+  {
+    "avgHeight": 86623,
+    "timestamp": 1650361330,
+    "avgFee_0": 0.1,
+    "avgFee_10": 0.25,
+    "avgFee_25": 0.5,
+    "avgFee_50": 1,
+    "avgFee_75": 1,
+    "avgFee_90": 1,
+    "avgFee_100": 2
+  },
+  ...
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: 'endpoint',
+    category: 'mining',
+    httpRequestMethod: 'GET',
     fragment: 'get-sizes-weights',
     title: 'GET Block Sizes and Weights',
     description: {
