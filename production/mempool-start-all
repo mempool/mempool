@@ -1,7 +1,28 @@
 #!/usr/bin/env zsh
 export NVM_DIR="$HOME/.nvm"
 source "$NVM_DIR/nvm.sh"
-nvm use v24.13.0
+
+# pin node/npm to the versions tracked in the repo
+NODE_VERSION=$(cat "${HOME}/mempool/.nvmrc")
+NPM_VERSION=$(cat "${HOME}/mempool/.npm-version")
+
+if [ -z "${NPM_VERSION}" ] || [ -z "${NODE_VERSION}" ]; then
+    echo "[!] Missing node/npm version in ${HOME}/mempool/[.nvmrc | .npm-version]" >&2
+    exit 1
+fi
+
+if ! nvm use "${NODE_VERSION}";then
+    echo "[!] node ${NODE_VERSION} not installed; run: nvm install ${NODE_VERSION} --shared-zlib" >&2
+    exit 1
+fi
+
+if [ "$(npm -v)" != "${NPM_VERSION}" ];then
+    npm install -g "npm@${NPM_VERSION}" || echo "[!] Could not install npm@${NPM_VERSION}, continuing with $(npm -v)"
+fi
+
+echo "Using versions of node/npm: "
+echo "node: $(node -v)"
+echo "npm: $(npm -v)"
 
 # start all mempool backends that exist
 for site in mainnet mainnet-lightning testnet testnet-lightning testnet4 signet signet-lightning liquid liquidtestnet;do

@@ -1,4 +1,4 @@
-FROM node:24.13-bookworm-slim AS builder
+FROM node:24.21.0-bookworm-slim AS builder
 
 ARG commitHash
 ENV DOCKER_COMMIT_HASH=${commitHash}
@@ -9,6 +9,7 @@ COPY . .
 RUN apt-get update
 RUN apt-get install -y build-essential rsync
 RUN cp mempool-frontend-config.sample.json mempool-frontend-config.json
+RUN npm install -g npm@12.0.0
 RUN bash meta/scripts/check-install-scripts.sh && npm ci --omit=dev --omit=optional
 
 RUN npm run build

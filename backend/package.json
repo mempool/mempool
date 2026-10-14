@@ -40,6 +40,10 @@
     "lint:fix": "./node_modules/.bin/eslint . --ext .ts --fix",
     "prettier": "./node_modules/.bin/prettier --write \"src/**/*.{js,ts}\""
   },
+  "allowScripts": {
+    "unrs-resolver": true,
+    "fsevents": false
+  },
   "dependencies": {
     "@mempool/electrum-client": "1.1.9",
     "@types/node": "^18.15.3",
