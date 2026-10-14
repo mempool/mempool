@@ -81,35 +81,43 @@ class RbfCache {
    * Low level cache operations
    */
 
+  // The queue is only ever drained by updateCache(), which only runs with Redis
+  // enabled; without Redis every event would be retained for the process lifetime.
+  private queueCacheEvent(event: CacheEvent): void {
+    if (config.REDIS.ENABLED) {
+      this.cacheQueue.push(event);
+    }
+  }
+
   private addTx(txid: string, tx: MempoolTransactionExtended): void {
     this.txs.set(txid, tx);
-    this.cacheQueue.push({ op: CacheOp.Add, type: 'tx', txid });
+    this.queueCacheEvent({ op: CacheOp.Add, type: 'tx', txid });
   }
 
   private addTree(txid: string, tree: RbfTree): void {
     this.rbfTrees.set(txid, tree);
     this.dirtyTrees.add(txid);
-    this.cacheQueue.push({ op: CacheOp.Add, type: 'tree', txid });
+    this.queueCacheEvent({ op: CacheOp.Add, type: 'tree', txid });
   }
 
   private addExpiration(txid: string, expiry: number): void {
     this.expiring.set(txid, expiry);
-    this.cacheQueue.push({ op: CacheOp.Add, type: 'exp', txid, value: expiry });
+    this.queueCacheEvent({ op: CacheOp.Add, type: 'exp', txid, value: expiry });
   }
 
   private removeTx(txid: string): void {
     this.txs.delete(txid);
-    this.cacheQueue.push({ op: CacheOp.Remove, type: 'tx', txid });
+    this.queueCacheEvent({ op: CacheOp.Remove, type: 'tx', txid });
   }
 
   private removeTree(txid: string): void {
     this.rbfTrees.delete(txid);
-    this.cacheQueue.push({ op: CacheOp.Remove, type: 'tree', txid });
+    this.queueCacheEvent({ op: CacheOp.Remove, type: 'tree', txid });
   }
 
   private removeExpiration(txid: string): void {
     this.expiring.delete(txid);
-    this.cacheQueue.push({ op: CacheOp.Remove, type: 'exp', txid });
+    this.queueCacheEvent({ op: CacheOp.Remove, type: 'exp', txid });
   }
 
   /**
@@ -196,7 +204,7 @@ class RbfCache {
         this.setTreeMined(tree, txid);
         tree.mined = true;
         this.dirtyTrees.add(treeId);
-        this.cacheQueue.push({ op: CacheOp.Change, type: 'tree', txid: treeId });
+        this.queueCacheEvent({ op: CacheOp.Change, type: 'tree', txid: treeId });
       }
     }
     this.evict(txid);
