@@ -156,6 +156,8 @@ export interface SinglePoolStats {
   name: string;
   link: string;
   blockCount: number;
+  bip54BlockCount?: number;
+  bip54Recent?: boolean | null;
   emptyBlocks: number;
   rank: number;
   share: number;
