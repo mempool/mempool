@@ -1,8 +1,9 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ElementRef, QueryList, ViewChildren } from '@angular/core';
 import { StateService, SignaturesMode } from '@app/services/state.service';
 import { CacheService } from '@app/services/cache.service';
 import { Observable, ReplaySubject, BehaviorSubject, merge, Subscription, of, forkJoin } from 'rxjs';
 import { Outspend, Transaction, Vin, Vout } from '@interfaces/electrs.interface';
+import { AddressBlockGroup } from '@components/address-blocks/address-blocks.component';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { environment } from '@environments/environment';
 import { AssetsService } from '@app/services/assets.service';
@@ -33,6 +34,9 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   showMoreIncrement = 1000;
 
   @Input() transactions: Transaction[];
+  @Input() groupByBlock = false;
+  @Input() fullyLoaded = false;
+  @Input() loading = false;
   @Input() cached: boolean = false;
   @Input() showConfirmations = false;
   @Input() transactionPage = false;
@@ -61,6 +65,10 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   showDetails$ = new BehaviorSubject<boolean>(false);
   assetsMinimal: any = {};
   transactionsLength: number = 0;
+  blockGroups: AddressBlockGroup[] = [];
+  groupStarts: Record<number, AddressBlockGroup> = {};
+  selectedGroup: string | null = null;
+  @ViewChildren('groupHeader') groupHeaders: QueryList<ElementRef<HTMLElement>>;
   inputRowLimit: number = 12;
   outputRowLimit: number = 12;
   showFullScript: { [vinIndex: number]: boolean } = {};
@@ -128,20 +136,24 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
               for (let i = 0; i < txIds.length; i += 50) {
                 batches.push(txIds.slice(i, i + 50));
               }
-              return forkJoin(batches.map(batch => { return this.electrsApiService.cachedRequest(this.electrsApiService.getOutspendsBatched$, 250, batch); }));
+              return forkJoin(batches.map(batch => { return this.electrsApiService.cachedRequest(this.electrsApiService.getOutspendsBatched$, 250, batch); })).pipe(
+                map(batchedOutspends => ({ txIds, outspends: batchedOutspends.flat(1) })),
+              );
             } else {
-              return of([]);
+              return of({ txIds, outspends: [] });
             }
           }),
-          tap((batchedOutspends: Outspend[][][]) => {
-            // flatten batched results back into a single array
-            const outspends = batchedOutspends.flat(1);
+          tap(({ txIds, outspends }: { txIds: string[]; outspends: Outspend[][] }) => {
             if (!this.transactions) {
               return;
             }
-            const transactions = this.transactions.filter((tx) => !tx._outspends);
+            // The list may have been reordered or a transaction removed while loading.
+            const txByTxid = new Map(this.transactions.map(tx => [tx.txid, tx]));
             outspends.forEach((outspend, i) => {
-              transactions[i]._outspends = outspend;
+              const tx = txByTxid.get(txIds[i]);
+              if (tx) {
+                tx._outspends = outspend;
+              }
             });
             this.ref.markForCheck();
           }),
@@ -161,7 +173,9 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
         this.refreshChannels$
           .pipe(
             filter(() => this.stateService.networkSupportsLightning() && !this.txPreview),
-            switchMap((txIds) => this.apiService.getChannelByTxIds$(txIds)),
+            switchMap((txIds) => this.apiService.getChannelByTxIds$(txIds).pipe(
+              map(channels => channels.map((channel, i) => ({ txid: txIds[i], channel }))),
+            )),
             catchError((error) => {
               // handle 404
               return of([]);
@@ -170,9 +184,12 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
               if (!this.transactions) {
                 return;
               }
-              const transactions = this.transactions.filter((tx) => !tx._channels);
-              channels.forEach((channel, i) => {
-                transactions[i]._channels = channel;
+              const txByTxid = new Map(this.transactions.map(tx => [tx.txid, tx]));
+              channels.forEach(({ txid, channel }) => {
+                const tx = txByTxid.get(txid);
+                if (tx) {
+                  tx._channels = channel;
+                }
               });
             }),
           )
@@ -228,6 +245,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
       this.similarityMatches.clear();
       this.updateAddressSimilarities();
       if (!this.transactions || !this.transactions.length) {
+        this.updateBlockGroups();
         return;
       }
 
@@ -363,6 +381,9 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
     }
+    if (changes.transactions || changes.addresses || changes.groupByBlock || changes.fullyLoaded) {
+      this.updateBlockGroups();
+    }
   }
 
   private loadLiquidAssetData(): void {
@@ -480,6 +501,61 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   fakeScriptHashRegex = new RegExp(/(.+?)\1{11,}/);
   isFakeScripthash(vout: Vout): boolean {
     return this.fakeScriptHashRegex.test(vout.scriptpubkey_address);
+  }
+
+  private updateBlockGroups(): void {
+    this.blockGroups = [];
+    this.groupStarts = {};
+    if (this.groupByBlock) {
+      let group: AddressBlockGroup;
+      this.transactions?.forEach((tx, index) => {
+        const id = tx.status.confirmed ? tx.status.block_hash || tx.txid : 'unconfirmed';
+        if (group?.id !== id) {
+          const previousHeight = group?.status.block_height;
+          group = {
+            id, status: tx.status, count: 0, net: 0, received: false, sent: false, partial: false, feeRates: [],
+            skippedBlocks: Number.isFinite(previousHeight) && Number.isFinite(tx.status.block_height)
+              ? Math.max(0, previousHeight - tx.status.block_height - 1) : 0,
+          };
+          this.blockGroups.push(group);
+          this.groupStarts[index] = group;
+        }
+        group.count++;
+        group.received ||= tx.vout.some(output => this.isAddressOutput(output));
+        group.sent ||= tx.vin.some(input => this.isAddressOutput(input.prevout));
+        if (!tx.status.confirmed) {
+          group.feeRates.push(tx.fee / (tx.weight / 4));
+        }
+        // Reuse the address delta calculated for each transaction, including P2PK scripts.
+        // Liquid can contain multiple assets and confidential values, so omit its aggregate.
+        group.net = !this.isLiquid && group.net !== null && Number.isFinite(tx['addressValue'])
+          ? group.net + tx['addressValue'] : null;
+      });
+      const lastGroup = this.blockGroups[this.blockGroups.length - 1];
+      if (lastGroup && !this.fullyLoaded) {
+        lastGroup.partial = true;
+      }
+    }
+    const ids = new Set(this.blockGroups.map(group => group.id));
+    if (!ids.has(this.selectedGroup)) {
+      this.selectedGroup = this.blockGroups[0]?.id ?? null;
+    }
+  }
+
+  private isAddressOutput(output: Vout): boolean {
+    return !!output && this.addresses.some(address => {
+      if (address.length === 66 || address.length === 130) {
+        return output.scriptpubkey === (address.length === 66 ? '21' : '41') + address + 'ac';
+      }
+      return output.scriptpubkey_address === address;
+    });
+  }
+
+  selectBlockGroup(id: string): void {
+    this.selectedGroup = id;
+    const header = this.groupHeaders.find(element => element.nativeElement.dataset.blockGroup === id)?.nativeElement;
+    header?.scrollIntoView({ block: 'start' });
+    header?.focus({ preventScroll: true });
   }
 
   onScroll(): void {
