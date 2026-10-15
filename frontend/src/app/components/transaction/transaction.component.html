@@ -6,6 +6,14 @@
       <app-truncate [text]="rbfTransaction.txid" [lastChars]="12" [link]="['/tx/' | relativeUrl, rbfTransaction.txid]"></app-truncate>
     </div>
 
+    <div *ngIf="this.destinationAlert !== undefined && !(rbfTransaction && !tx?.status?.confirmed)" class="alert alert-mempool destination-alert" role="alert">
+      <span class="message-container">
+        <span i18n="transaction.destination.alert|Destination alert">This transaction does not pay:</span>
+        <app-truncate [text]="this.destinationAlert" [lastChars]="8" [link]="['/address/' | relativeUrl, this.destinationAlert]"></app-truncate>
+      </span>
+      <button type="button" class="btn-close" aria-label="Close" i18n-aria-label (click)="closeDestinationAlert()"></button>
+    </div>
+
     <ng-container *ngIf="!rbfTransaction || rbfTransaction?.size || tx">
       <h1 i18n="shared.transaction">Transaction</h1>
 
