@@ -176,14 +176,14 @@ class LightningStatsImporter {
           // @ts-ignore
           avgFeeRate += parseInt(channel.node1_policy.fee_rate_milli_msat, 10);
           // @ts-ignore
-          feeRates.push(parseInt(channel.node1_policy.fee_rate_milli_msat), 10);
+          feeRates.push(parseInt(channel.node1_policy.fee_rate_milli_msat, 10));
         }
         // @ts-ignore
         if (channel.node1_policy.fee_base_msat < 5000) {
           // @ts-ignore
           avgBaseFee += parseInt(channel.node1_policy.fee_base_msat, 10);
           // @ts-ignore
-          baseFees.push(parseInt(channel.node1_policy.fee_base_msat), 10);
+          baseFees.push(parseInt(channel.node1_policy.fee_base_msat, 10));
         }
       }
     }
@@ -193,8 +193,8 @@ class LightningStatsImporter {
     let medBaseFee = 0;
     let avgCapacity = 0;
 
-    avgFeeRate /= Math.max(networkGraph.edges.length, 1);
-    avgBaseFee /= Math.max(networkGraph.edges.length, 1);
+    avgFeeRate /= Math.max(feeRates.length, 1);
+    avgBaseFee /= Math.max(baseFees.length, 1);
 
     if (capacities.length > 0) {
       medCapacity = capacities.sort((a, b) => b - a)[Math.round(capacities.length / 2 - 1)];
