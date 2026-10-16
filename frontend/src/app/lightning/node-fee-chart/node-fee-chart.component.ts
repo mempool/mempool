@@ -148,16 +148,12 @@ export class NodeFeeChartComponent implements OnInit {
         },
         borderColor: '#000',
         formatter: (ticks): string => {
+          if (!ticks.length) {
+            return '';
+          }
           return `
             <b style="color: white; margin-left: 2px">${ticks[0].data.label}</b><br>
-            <br>
-            <b style="color: white; margin-left: 2px">${ticks[0].marker} ${$localize`Outgoing`}</b><br>
-            <span>${$localize`:@@ce9dfdc6dccb28dc75a78c704e09dc18fb02dcfa:Capacity`}: ${this.amountShortenerPipe.transform(ticks[0].data.capacity, 2, undefined, true)} ${$localize`:@@e4b2d9e6a2ab9e6ca34027ec03beaac42b7badd4:sats`}</span><br>
-            <span>${$localize`:@@807cf11e6ac1cde912496f764c176bdfdd6b7e19:Channels`}: ${ticks[0].data.count}</span><br>
-            <br>
-            <b style="color: white; margin-left: 2px">${ticks[1].marker} ${$localize`Incoming`}</b><br>
-            <span>${$localize`:@@ce9dfdc6dccb28dc75a78c704e09dc18fb02dcfa:Capacity`}: ${this.amountShortenerPipe.transform(ticks[1].data.capacity, 2, undefined, true)} ${$localize`:@@e4b2d9e6a2ab9e6ca34027ec03beaac42b7badd4:sats`}</span><br>
-            <span>${$localize`:@@807cf11e6ac1cde912496f764c176bdfdd6b7e19:Channels`}: ${ticks[1].data.count}</span><br>
+            ${ticks.map(tick => this.formatToolTip(tick)).join('')}
           `;
         }
       },
@@ -243,6 +239,16 @@ export class NodeFeeChartComponent implements OnInit {
         },
       ],
     };
+  }
+
+  private formatToolTip(tick): string {
+    const name = tick.seriesIndex === 0 ? $localize`Outgoing` : $localize`Incoming`;
+    return `
+      <br>
+      <b style="color: white; margin-left: 2px">${tick.marker} ${name}</b><br>
+      <span>${$localize`:@@ce9dfdc6dccb28dc75a78c704e09dc18fb02dcfa:Capacity`}: ${this.amountShortenerPipe.transform(tick.data.capacity, 2, undefined, true)} ${$localize`:@@e4b2d9e6a2ab9e6ca34027ec03beaac42b7badd4:sats`}</span><br>
+      <span>${$localize`:@@807cf11e6ac1cde912496f764c176bdfdd6b7e19:Channels`}: ${tick.data.count}</span><br>
+    `;
   }
 
   onChartInit(ec) {
