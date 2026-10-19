@@ -3,22 +3,25 @@ import {
   HostBinding,
   Inject,
   LOCALE_ID,
+  OnDestroy,
   OnInit,
 } from '@angular/core';
 import { formatNumber } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { Observable, combineLatest } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { Observable, Subscription, combineLatest } from 'rxjs';
 import { map, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { EChartsOption } from '@app/graphs/echarts';
 import { LightningApiService } from '@app/lightning/lightning-api.service';
-import { MiningService } from '@app/services/mining.service';
 import { SeoService } from '@app/services/seo.service';
 import { StateService } from '@app/services/state.service';
 import { StorageService } from '@app/services/storage.service';
 import { isMobile } from '@app/shared/common.utils';
 import { download } from '@app/shared/graphs.utils';
 import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
+
+const WINDOWS = ['1m', '3m', '6m', '1y', '2y', '3y', 'all'];
 
 type FeesChartMode = 'avg' | 'med';
 type FeesChartPoint = [number, number];
@@ -45,7 +48,7 @@ interface FeesChartData {
   ],
   standalone: false,
 })
-export class LightningFeesChartComponent implements OnInit {
+export class LightningFeesChartComponent implements OnInit, OnDestroy {
   miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
 
@@ -60,6 +63,7 @@ export class LightningFeesChartComponent implements OnInit {
   isLoading = true;
   timespan = '';
   chartInstance: any = undefined;
+  fragmentSubscription: Subscription;
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -67,7 +71,7 @@ export class LightningFeesChartComponent implements OnInit {
     private lightningApiService: LightningApiService,
     private formBuilder: UntypedFormBuilder,
     private storageService: StorageService,
-    private miningService: MiningService,
+    private route: ActivatedRoute,
     public stateService: StateService,
     private amountShortenerPipe: AmountShortenerPipe
   ) {}
@@ -81,10 +85,23 @@ export class LightningFeesChartComponent implements OnInit {
     this.seoService.setDescription(
       $localize`:@@meta.description.lightning.fees-chart:See the fee rate and base fee charged by Lightning network routing nodes, and the channel size, visualized over time.`
     );
-    this.miningWindowPreference = this.miningService.getDefaultTimespan('all');
+    this.miningWindowPreference =
+      [
+        this.route.snapshot.fragment,
+        this.storageService.getValue('lightningWindowPreference'),
+      ].find((timespan) => WINDOWS.includes(timespan)) ?? 'all';
     this.radioGroupForm = this.formBuilder.group({
       dateSpan: this.miningWindowPreference,
       mode: 'med',
+    });
+
+    this.fragmentSubscription = this.route.fragment.subscribe((fragment) => {
+      if (
+        WINDOWS.includes(fragment) &&
+        fragment !== this.radioGroupForm.controls.dateSpan.value
+      ) {
+        this.radioGroupForm.controls.dateSpan.setValue(fragment);
+      }
     });
 
     const mode$: Observable<FeesChartMode> = this.radioGroupForm
@@ -135,6 +152,10 @@ export class LightningFeesChartComponent implements OnInit {
       })),
       share()
     );
+  }
+
+  ngOnDestroy(): void {
+    this.fragmentSubscription?.unsubscribe();
   }
 
   prepareChartOptions(data: FeesChartData): void {
@@ -228,8 +249,9 @@ export class LightningFeesChartComponent implements OnInit {
               legendItem(capacityLabel),
             ],
             selected:
-              JSON.parse(this.storageService.getValue('fees_ln_legend')) ??
-              undefined,
+              JSON.parse(
+                this.storageService.getValue('fees_ln_legend') || 'null'
+              ) ?? undefined,
           },
       yAxis: isEmpty
         ? undefined
@@ -351,6 +373,9 @@ export class LightningFeesChartComponent implements OnInit {
   }
 
   onSaveChart(): void {
+    if (this.isLoading || !this.chartInstance) {
+      return;
+    }
     // @ts-ignore
     const prevBottom = this.chartOptions.grid.bottom;
     const now = new Date();
