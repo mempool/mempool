@@ -2008,6 +2008,17 @@ export function addressToScriptPubKey(address: string, network: string): { scrip
   return { scriptPubKey: null, type };
 }
 
+export function isValidAddress(address: string, network: string): boolean {
+  if (!['', 'mainnet', 'testnet', 'testnet4', 'signet'].includes(network || '') || address.startsWith('0')) {
+    return true;
+  }
+  const hrp = ['testnet', 'testnet4', 'signet'].includes(network) ? 'tb1' : 'bc1';
+  if (address.toLowerCase().startsWith(hrp)) {
+    return [address.toLowerCase(), address.toUpperCase()].includes(address) && bech32ToSpk(address, network) !== null;
+  }
+  return base58ToSpk(address, network) !== null;
+}
+
 function p2pkh(pubKeyHash: string, network: string): string {
   const pubkeyHashArray = hexStringToUint8Array(pubKeyHash);
   const version = ['testnet', 'testnet4', 'signet'].includes(network) ? 0x6f : 0x00;
