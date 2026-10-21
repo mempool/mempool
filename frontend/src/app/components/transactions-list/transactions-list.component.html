@@ -28,9 +28,11 @@
             <ng-template ngFor let-vin let-vindex="index" [ngForOf]="tx.vin.slice(0, getVinLimit(tx))" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="{
                 'assetBox': (assetsMinimal && vin.prevout && assetsMinimal[vin.prevout.asset] && !vin.is_coinbase && vin.prevout.scriptpubkey_address && tx._unblinded) || inputIndex === vindex,
+                'debugging': debugIndex === vindex,
+                'debug-pick': debugIndex !== vindex && debuggableSet.has(vindex),
                 'highlight': this.addresses.length && ((vin.prevout?.scriptpubkey_type !== 'p2pk' && addresses.includes(vin.prevout?.scriptpubkey_address)) || this.addresses.includes(vin.prevout?.scriptpubkey.slice(2, -2))),
                 'sigged': selectedSig && selectedSig.txIndex === i && sigHighlights.vin[vindex],
-              }">
+              }" (click)="selectDebugInput($event, vindex)">
                 <td class="arrow-td">
                   <ng-template [ngIf]="vin.prevout === null && !vin.is_pegin" [ngIfElse]="hasPrevout">
                     <span class="grey">
@@ -522,6 +524,9 @@
             i18n="shared.sats">sats</span> <span class="fiat"><app-fiat [blockConversion]="tx.price" [value]="tx.fee"></app-fiat></span></span>
       </div>
       <div class="float-start mt-2-5 grey-info-text" *ngIf="tx.fee === -1" i18n="transactions-list.load-to-reveal-fee-info">Show more inputs to reveal fee data</div>
+      <div class="float-start" *ngIf="summaryStart">
+        <ng-container *ngTemplateOutlet="summaryStart"></ng-container>
+      </div>
 
       <div class="float-end" [class.has-accelerate]="!tx.status?.confirmed && acceleratedTxids">
         @if (!tx.status?.confirmed && acceleratedTxids) {

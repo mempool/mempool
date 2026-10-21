@@ -282,6 +282,30 @@ h2 {
 	background-color: var(--stat-box-bg);
 }
 
+// input open in the script debugger
+.debugging {
+	box-shadow: inset 3px 0 0 var(--info);
+	background-color: color-mix(in srgb, var(--info) 6%, transparent);
+}
+
+// while the debugger is on, the row itself is the target: its address / previous output links don't navigate
+.debug-pick, .debugging {
+	// the child components' own links inherit this
+	a, app-truncate, app-address-text, app-address-labels {
+		pointer-events: none;
+	}
+}
+
+// inputs the script debugger can open (while it's on): click the row
+.debug-pick {
+	cursor: pointer;
+
+	&:hover {
+		box-shadow: inset 3px 0 0 color-mix(in srgb, var(--info) 40%, transparent);
+		background-color: color-mix(in srgb, var(--info) 3%, transparent);
+	}
+}
+
 .sigged {
 	background-color: color-mix(in srgb, var(--fg) 12%, transparent);
 }

@@ -210,7 +210,16 @@
     </div>
 
 
-    <app-transactions-list #txList [transactions]="[tx]" [cached]="isCached" [errorUnblinded]="errorUnblinded" [inputIndex]="inputIndex" [outputIndex]="outputIndex" [transactionPage]="true"></app-transactions-list>
+    <app-transactions-list #txList [transactions]="[tx]" [cached]="isCached" [errorUnblinded]="errorUnblinded" [inputIndex]="inputIndex" [outputIndex]="outputIndex" [transactionPage]="true" [debugIndex]="debugVin" [debuggableInputs]="pickableInputs" (debugInput)="selectDebugInput($event)" [summaryStart]="debuggableInputs.length ? scriptDebuggerButton : null"></app-transactions-list>
+    <ng-template #scriptDebuggerButton>
+      <button type="button" class="btn btn-outline-info btn-sm mt-2" [class.active]="debugMode" (click)="toggleScriptDebugger()"><span i18n="transaction.debug-script" *ngIf="debuggableInputs.length === 1">Debug script</span><span *ngIf="debuggableInputs.length > 1" i18n="transaction.debug-scripts">Debug scripts</span></button>
+    </ng-template>
+
+    <ng-container *ngIf="debugVin !== null">
+      <span id="debug" class="anchor"></span>
+      <app-script-debugger [tx]="tx" [vinIndex]="debugVin" [isMobile]="isMobile" (hide)="closeScriptDebugger()"></app-script-debugger>
+      <br>
+    </ng-container>
 
     <div class="title text-start">
       <h2 i18n="transaction.details|Transaction Details">Details</h2>

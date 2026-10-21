@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter, ChangeDetectorRef, OnDestroy, TemplateRef } from '@angular/core';
 import { StateService, SignaturesMode } from '@app/services/state.service';
 import { CacheService } from '@app/services/cache.service';
 import { Observable, ReplaySubject, BehaviorSubject, merge, Subscription, of, forkJoin } from 'rxjs';
@@ -47,7 +47,14 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   @Input() txPreview = false;
   @Input() forceSignaturesMode: SignaturesMode = null;
 
+  @Input() debugIndex: number | null = null; // input open in the script debugger
+  @Input() debuggableInputs: number[] = []; // clicking one of these rows opens it in the script debugger (only set while the debugger is on)
+  @Input() summaryStart: TemplateRef<unknown> | null = null; // extra controls at the bottom left, next to the total
+
   @Output() loadMore = new EventEmitter();
+  @Output() debugInput = new EventEmitter<number>();
+
+  debuggableSet = new Set<number>();
 
   latestBlock$: Observable<BlockExtended>;
   outspendsSubscription: Subscription;
@@ -212,6 +219,9 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes): void {
+    if (changes.debuggableInputs) {
+      this.debuggableSet = new Set(this.debuggableInputs);
+    }
     if (changes.inputIndex || changes.outputIndex || changes.rowLimit) {
       this.inputRowLimit = Math.max(this.rowLimit, (this.inputIndex || 0) + 3);
       this.outputRowLimit = Math.max(this.rowLimit, (this.outputIndex || 0) + 3);
@@ -596,6 +606,14 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
       limit = tx.vout.length;
     }
     return limit;
+  }
+
+  selectDebugInput(event: MouseEvent, vinIndex: number): void {
+    // links and buttons in the row keep their own behaviour, and so does selecting text (e.g. to copy an address)
+    if (!this.debuggableSet.has(vinIndex) || vinIndex === this.debugIndex || (event.target as HTMLElement).closest('a, button') || window.getSelection()?.toString()) {
+      return;
+    }
+    this.debugInput.emit(vinIndex);
   }
 
   toggleShowFullScript(vinIndex: number): void {
