@@ -1319,7 +1319,12 @@ class BitcoinRoutes {
       }
 
       if (transactions.length > 1) {
-        handleError(req, res, 400, 'More than one transaction is not supported yet');
+        handleError(req, res, 400, 'More than one transaction is not supported');
+        return;
+      }
+
+      if (transactions[0].vin.length + transactions[0].vout.length > 2500) {
+        handleError(req, res, 400, 'Too many inputs and outputs');
         return;
       }
 
