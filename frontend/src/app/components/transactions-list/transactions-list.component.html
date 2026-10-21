@@ -28,6 +28,7 @@
             <ng-template ngFor let-vin let-vindex="index" [ngForOf]="tx.vin.slice(0, getVinLimit(tx))" [ngForTrackBy]="trackByIndexFn">
               <tr [ngClass]="{
                 'assetBox': (assetsMinimal && vin.prevout && assetsMinimal[vin.prevout.asset] && !vin.is_coinbase && vin.prevout.scriptpubkey_address && tx._unblinded) || inputIndex === vindex,
+                'debugging': debugIndex === vindex,
                 'highlight': this.addresses.length && ((vin.prevout?.scriptpubkey_type !== 'p2pk' && addresses.includes(vin.prevout?.scriptpubkey_address)) || this.addresses.includes(vin.prevout?.scriptpubkey.slice(2, -2))),
                 'sigged': selectedSig && selectedSig.txIndex === i && sigHighlights.vin[vindex],
               }">
@@ -296,9 +297,22 @@
                         </tr>
                         <tr>
                           <td i18n="transactions-list.previous-output-type">Previous output type</td>
-                          <td style="text-align: left;">{{ vin.prevout.scriptpubkey_type?.toUpperCase() }}</td>
+                          @if (debuggableSet.has(vindex)) {
+                            <td style="text-align: left;">
+                              <a class="debug-link" (click)="selectDebugInput(vindex)" ngbTooltip="debug script" i18n-ngbTooltip="shared.debug-script">
+                                <span class="script">
+                                  <fa-icon [icon]="['fas', 'code']" [fixedWidth]="true"></fa-icon>
+                                </span>
+                                <span>
+                                  {{ vin.prevout.scriptpubkey_type?.toUpperCase() }}
+                                </span>
+                              </a>
+                            </td>
+                          } @else {
+                            <td style="text-align: left;">{{ vin.prevout.scriptpubkey_type?.toUpperCase() }}</td>
+                          }
                         </tr>
-                    </ng-template>
+                      </ng-template>
                     </tbody>
                   </table>
                 </td>
