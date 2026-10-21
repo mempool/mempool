@@ -1079,7 +1079,7 @@ echo "[*] Installing Mempool crontab"
 osSudo "${ROOT_USER}" crontab -u "${MEMPOOL_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/mempool.crontab"
 
 echo "[*] Installing nvm.sh from GitHub"
-osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash'
+osSudo "${MEMPOOL_USER}" sh -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash'
 
 echo "[*] Building NodeJS via nvm.sh"
 osSudo "${MEMPOOL_USER}" zsh -c 'source ~/.zshrc ; nvm install v26.12.1 --shared-zlib'
