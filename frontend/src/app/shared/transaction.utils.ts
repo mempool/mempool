@@ -2014,7 +2014,16 @@ export function isValidAddress(address: string, network: string): boolean {
   }
   const hrp = ['testnet', 'testnet4', 'signet'].includes(network) ? 'tb1' : 'bc1';
   if (address.toLowerCase().startsWith(hrp)) {
-    return [address.toLowerCase(), address.toUpperCase()].includes(address) && bech32ToSpk(address, network) !== null;
+    const spk = [address.toLowerCase(), address.toUpperCase()].includes(address) && bech32ToSpk(address, network);
+    if (!spk) {
+      return false;
+    }
+    const version = parseInt(spk.slice(0, 2), 16);
+    const length = parseInt(spk.slice(2, 4), 16);
+    const { encoding } = bech32Decode(address);
+    return version === 0
+      ? encoding === 'bech32' && (length === 20 || length === 32)
+      : version <= 0x60 && encoding === 'bech32m' && length >= 2 && length <= 40;
   }
   return base58ToSpk(address, network) !== null;
 }

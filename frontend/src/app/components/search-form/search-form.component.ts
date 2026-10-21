@@ -193,9 +193,11 @@ export class SearchFormComponent implements OnInit {
           const matchesUnixTimestamp = this.regexUnixTimestamp.test(searchText) && parseInt(searchText) <= Math.floor(Date.now() / 1000) && isNetworkBitcoin;
           const matchesTxId = this.regexTransaction.test(searchText) && !this.regexBlockhash.test(searchText);
           const matchesBlockHash = this.regexBlockhash.test(searchText);
-          const matchesAddress = !matchesTxId && this.regexAddress.test(searchText) && isValidAddress(searchText, this.network);
+          const matchesAddressRegex = !matchesTxId && this.regexAddress.test(searchText);
+          const matchesAddress = matchesAddressRegex && isValidAddress(searchText, this.network);
           const publicKey = matchesAddress && searchText.startsWith('0');
-          const otherNetworks = findOtherNetworks(searchText, this.network as any || 'mainnet', this.env);
+          const candidateNetworks = findOtherNetworks(searchText, this.network as any || 'mainnet', this.env);
+          const otherNetworks = (!matchesAddressRegex || matchesAddress) && candidateNetworks.every(({ network }) => isValidAddress(searchText, network)) ? candidateNetworks : [];
           const pools = this.pools.filter(pool => pool['name'].toLowerCase().includes(searchText.toLowerCase())).slice(0, 10);
           const hashQuickMatch = +(matchesBlockHeight || matchesBlockHash || (matchesTxId && !liquidAssets.length) || matchesAddress || matchesUnixTimestamp || matchesDateTime);
 
