@@ -3,7 +3,7 @@ import poolsParser from '../api/pools-parser';
 import config from '../config';
 import DB from '../database';
 import logger from '../logger';
-import { PoolInfo, PoolTag } from '../mempool.interfaces';
+import { PoolInfo, PoolIntervalInfo, PoolTag } from '../mempool.interfaces';
 import { PoolConnection } from 'mysql2/promise';
 
 // Intervals the pools stats cache is built for. 'all' has no time filter; the rest resolve via Common.getSqlInterval
@@ -73,7 +73,7 @@ class PoolsRepository {
   }
 
   /** @asyncUnsafe */
-  public async $getPoolsInfoPerInterval(): Promise<Record<string, PoolInfo[]>> {
+  public async $getPoolsInfoPerInterval(): Promise<Record<string, PoolIntervalInfo[]>> {
     const feeDelta = `(CAST(blocks.fees as SIGNED) - CAST(blocks_audits.expected_fees as SIGNED)) / NULLIF(CAST(blocks_audits.expected_fees as SIGNED), 0)`;
     const columns = POOLS_STATS_INTERVALS.map((label) => {
       const sql = Common.getSqlInterval(label);
@@ -81,6 +81,7 @@ class PoolsRepository {
       return `
         COUNT(CASE WHEN ${inWindow} THEN blocks.height END) AS \`blockCount_${label}\`,
         COUNT(CASE WHEN ${inWindow} AND blocks.tx_count = 1 THEN 1 END) AS \`emptyBlocks_${label}\`,
+        COUNT(CASE WHEN ${inWindow} AND blocks.coinbase_bip_54 = 1 THEN 1 END) AS \`bip54BlockCount_${label}\`,
         AVG(CASE WHEN ${inWindow} THEN blocks_audits.match_rate END) AS \`avgMatchRate_${label}\`,
         AVG(CASE WHEN ${inWindow} THEN ${feeDelta} END) AS \`avgFeeDelta_${label}\``;
     }).join(',');
@@ -102,7 +103,7 @@ class PoolsRepository {
       const [rows]: any[] = await DB.query(query);
 
       // every interval needs an array even with no rows, or callers iterate undefined
-      const result: Record<string, PoolInfo[]> = {};
+      const result: Record<string, PoolIntervalInfo[]> = {};
       for (const label of POOLS_STATS_INTERVALS) {
         result[label] = [];
       }
@@ -119,6 +120,7 @@ class PoolsRepository {
               poolUniqueId: row.poolUniqueId,
               blockCount: blockCount,
               emptyBlocks: row[`emptyBlocks_${label}`],
+              bip54BlockCount: row[`bip54BlockCount_${label}`],
               avgMatchRate: row[`avgMatchRate_${label}`],
               avgFeeDelta: row[`avgFeeDelta_${label}`],
             });
