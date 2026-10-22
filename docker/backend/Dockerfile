@@ -1,5 +1,9 @@
+ARG NODE_VERSION=26.12.1
+ARG NPM_VERSION=11.20.0
+
 FROM rust:1.84-bookworm AS builder
 
+ARG NODE_VERSION NPM_VERSION
 ARG commitHash
 ENV MEMPOOL_COMMIT_HASH=${commitHash}
 
@@ -7,10 +11,11 @@ WORKDIR /build
 
 RUN apt-get update && \
     apt-get install -y curl ca-certificates && \
-    curl -fsSL https://deb.nodesource.com/setup_26.x | bash - && \
-    apt-get install -y nodejs=26.12.1-1nodesource1 build-essential python3 pkg-config && \
+    curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION%%.*}.x | bash - && \
+    apt-get install -y nodejs=${NODE_VERSION}-1nodesource1 build-essential python3 pkg-config && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+RUN npm install -g npm@${NPM_VERSION}
 
 COPY . .
 
@@ -26,12 +31,15 @@ RUN npm run package
 
 FROM rust:1.84-bookworm AS runtime
 
+ARG NODE_VERSION NPM_VERSION
+
 RUN apt-get update && \
     apt-get install -y curl ca-certificates && \
-    curl -fsSL https://deb.nodesource.com/setup_26.x | bash - && \
-    apt-get install -y nodejs=26.12.1-1nodesource1 && \
+    curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION%%.*}.x | bash - && \
+    apt-get install -y nodejs=${NODE_VERSION}-1nodesource1 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+RUN npm install -g npm@${NPM_VERSION}
 
 WORKDIR /backend
 
