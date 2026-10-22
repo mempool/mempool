@@ -12,7 +12,7 @@ jobs:
     if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
     strategy:
       matrix:
-        node: ["24.13.0"]
+        node: ["26.12.1"]
         flavor: ["dev", "prod"]
       fail-fast: false
     runs-on: mempool-ci
@@ -99,7 +99,7 @@ jobs:
     name: "Cache assets for builds"
     strategy:
       matrix:
-        node: ["24.13.0"]
+        node: ["26.12.1"]
     runs-on: mempool-ci
     steps:
       - name: Checkout
@@ -208,7 +208,7 @@ jobs:
     if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
     strategy:
       matrix:
-        node: ["24.13.0"]
+        node: ["26.12.1"]
         flavor: ["dev", "prod"]
       fail-fast: false
     runs-on: mempool-ci
@@ -313,7 +313,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: ["24.13.0"]
+        node: ["26.12.1"]
         module: ["mempool", "liquid", "testnet4"]
 
     name: E2E tests for ${{ matrix.module }}

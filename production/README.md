@@ -82,11 +82,11 @@ pkg install -y zsh sudo git screen curl wget neovim rsync nginx openssl openssh-
 
 ### Node.js + npm
 
-Build Node.js v24.13.0 and npm v9 from source using `nvm`:
+Build Node.js v26.12.1 and npm from source using `nvm`:
 ```
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | zsh
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | zsh
 source $HOME/.zshrc
-nvm install v24.13.0 --shared-zlib
+nvm install v26.12.1 --shared-zlib
 nvm alias default node
 ```
 
