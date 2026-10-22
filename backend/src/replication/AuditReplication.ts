@@ -25,40 +25,42 @@ class AuditReplication {
       return;
     }
     if (this.inProgress) {
-      logger.info(`AuditReplication sync already in progress`, 'Replication');
+      logger.info(`AuditReplication sync already in progress`, logger.tags.replication);
       return;
     }
     this.inProgress = true;
 
-    const missingAudits = await this.$getMissingAuditBlocks();
+    try {
+      const missingAudits = await this.$getMissingAuditBlocks();
 
-    logger.debug(`Fetching missing audit data for ${missingAudits.length} blocks from trusted servers`, 'Replication');
+      logger.debug(`Fetching missing audit data for ${missingAudits.length} blocks from trusted servers`, logger.tags.replication);
 
-    let totalSynced = 0;
-    let totalMissed = 0;
-    let loggerTimer = Date.now();
-    // process missing audits in batches of BATCH_SIZE
-    for (let i = 0; i < missingAudits.length; i += BATCH_SIZE) {
-      const slice = missingAudits.slice(i, i + BATCH_SIZE);
-      const results = await Promise.all(slice.map(hash => this.$syncAudit(hash)));
-      const synced = results.reduce((total, status) => status ? total + 1 : total, 0);
-      totalSynced += synced;
-      totalMissed += (slice.length - synced);
-      if (Date.now() - loggerTimer > 10000) {
-        loggerTimer = Date.now();
-        logger.info(`Found ${totalSynced} / ${totalSynced + totalMissed} of ${missingAudits.length} missing audits`, 'Replication');
+      let totalSynced = 0;
+      let totalMissed = 0;
+      let loggerTimer = Date.now();
+      // process missing audits in batches of BATCH_SIZE
+      for (let i = 0; i < missingAudits.length; i += BATCH_SIZE) {
+        const slice = missingAudits.slice(i, i + BATCH_SIZE);
+        const results = await Promise.all(slice.map(hash => this.$syncAudit(hash)));
+        const synced = results.reduce((total, status) => status ? total + 1 : total, 0);
+        totalSynced += synced;
+        totalMissed += (slice.length - synced);
+        if (Date.now() - loggerTimer > 10000) {
+          loggerTimer = Date.now();
+          logger.info(`Found ${totalSynced} / ${totalSynced + totalMissed} of ${missingAudits.length} missing audits`, logger.tags.replication);
+        }
+        await Common.sleep$(1000);
       }
-      await Common.sleep$(1000);
+
+      logger.debug(`Fetched ${totalSynced} audits, ${totalMissed} still missing`, logger.tags.replication);
+
+      if (totalSynced > 0) {
+        // imported audits carry match_rate and expected_fees, which the pools stats averages read
+        void mining.$rebuildPoolsStatsCache();
+      }
+    } finally {
+      this.inProgress = false;
     }
-
-    logger.debug(`Fetched ${totalSynced} audits, ${totalMissed} still missing`, 'Replication');
-
-    if (totalSynced > 0) {
-      // imported audits carry match_rate and expected_fees, which the pools stats averages read
-      void mining.$rebuildPoolsStatsCache();
-    }
-
-    this.inProgress = false;
   }
 
   /** @asyncUnsafe */
@@ -74,7 +76,7 @@ class AuditReplication {
     if (syncResult) {
       if (syncResult.data?.template?.length) {
         await this.$saveAuditData(hash, syncResult.data);
-        logger.info(`Imported audit data from ${syncResult.server} for block ${syncResult.data.height} (${hash})`);
+        logger.info(`Imported audit data from ${syncResult.server} for block ${syncResult.data.height} (${hash})`, logger.tags.replication);
         success = true;
       }
       if (!syncResult.data && !syncResult.exists) {
@@ -103,7 +105,7 @@ class AuditReplication {
       `, [startHeight]);
       return rows.map(row => row.hash);
     } catch (e: any) {
-      logger.err(`Cannot fetch missing audit blocks from db. Reason: ` + (e instanceof Error ? e.message : e));
+      logger.err(`Cannot fetch missing audit blocks from db. Reason: ` + (e instanceof Error ? e.message : e), logger.tags.replication);
       throw e;
     }
   }

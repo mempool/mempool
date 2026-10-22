@@ -3,23 +3,38 @@ import backendInfo from '../api/backend-info';
 import axios, { AxiosResponse } from 'axios';
 import { SocksProxyAgent } from 'socks-proxy-agent';
 import * as https from 'https';
+import { Common } from '../api/common';
+import logger from '../logger';
 
 /** @asyncSafe */
-export async function $sync(path): Promise<{ data?: any, exists: boolean, server?: string }> {
+export async function $sync(path, sanityCheckCb?: (resultsPerServer: Record<string, any>, path: string) => {serverPicked: string, sanitizedResult: any}): Promise<{ data?: any, exists: boolean, server?: string }> {
   // start with a random server so load is uniformly spread
   let allMissing = true;
-  const offset = Math.floor(Math.random() * config.REPLICATION.SERVERS.length);
-  for (let i = 0; i < config.REPLICATION.SERVERS.length; i++) {
-    const server = config.REPLICATION.SERVERS[(i + offset) % config.REPLICATION.SERVERS.length];
-    // don't query ourself
-    if (server === backendInfo.getBackendInfo().hostname) {
-      continue;
-    }
-
+  const servers = config.REPLICATION.SERVERS.filter(server => server !== backendInfo.getBackendInfo().hostname);
+  let resultsPerServer: Record<string, any> = {};
+  const minResults = Math.max(Math.ceil(servers.length / 4), 3);
+  if (sanityCheckCb !== undefined && servers.length < minResults) {
+    logger.warn(`Not enough servers to perform sanity check for ${path} (${servers.length}/${minResults}), skipping.`, logger.tags.replication);
+    return { exists: false };
+  }
+  Common.shuffleArray(servers);
+  for (const server of servers) {
     try {
       const result = await query(`https://${server}${path}`);
       if (result) {
-        return { data: result, exists: true, server };
+        if (sanityCheckCb === undefined) {
+          return { data: result, exists: true, server };
+        }
+        allMissing = false;
+        resultsPerServer[server] = result;
+        if (Object.keys(resultsPerServer).length >= minResults) {
+          const {serverPicked, sanitizedResult} = sanityCheckCb(resultsPerServer, path);
+          if (sanitizedResult.length > 0) {
+            return { data: sanitizedResult, exists: true, server: serverPicked };
+          } else {
+            resultsPerServer = {};
+          }
+        }
       }
     } catch (e: any) {
       if (e?.response?.status === 404) {
@@ -29,6 +44,10 @@ export async function $sync(path): Promise<{ data?: any, exists: boolean, server
         allMissing = false;
       }
     }
+  }
+
+  if (sanityCheckCb !== undefined && Object.values(resultsPerServer).length > 0) {
+    logger.warn(`Only ${Object.values(resultsPerServer).length} trusted servers responded to ${path} without agreement, skipping`, logger.tags.replication);
   }
 
   return { exists: !allMissing };
