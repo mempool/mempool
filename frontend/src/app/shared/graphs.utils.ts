@@ -1,3 +1,6 @@
+import { OptimizedMempoolStats } from '@interfaces/node-api.interface';
+import { chartColors, feeLevels, subOneChartColors, subOneFeeLevels } from '@app/app.constants';
+
 export const formatterXAxis = (
   locale: string,
   windowPreference: string,
@@ -145,4 +148,44 @@ export function lerpColor(a: string, b: string, amount: number): string {
     rb = ab + amount * (bb - ab);
 
   return '#' + ((1 << 24) + (rr << 16) + (rg << 8) + rb | 0).toString(16).slice(1);
+}
+
+export interface StatsFeeBands {
+  levels: number[]; // lower bound of each band, ascending
+  lower: string[];
+  upper: (string | null)[];
+  colors: string[];
+  hasSubOne: boolean;
+}
+
+/**
+ * Fee bands for the mempool statistics charts.
+ * When the stats carry the 0.1 sat/vB breakdown of the 0-1 band, that band is replaced by:
+ * - a "0 - 1" band holding whatever has no breakdown (rows recorded before it existed)
+ * - ten 0.1 sat/vB bands
+ */
+export function getStatsFeeBands(stats: OptimizedMempoolStats[], isLiquid: boolean): StatsFeeBands {
+  const hasSubOne = !isLiquid && stats.some(s => s.vsizes_sub1?.some(v => v > 0));
+  const format = (fee: number): string => isLiquid ? (fee / 10).toFixed(1) : `${fee}`;
+  const levels = hasSubOne ? [0, ...subOneFeeLevels, ...feeLevels.slice(1)] : feeLevels;
+  const lower = levels.map(format);
+  const upper = levels.map((_, i) => i + 1 < levels.length ? format(levels[i + 1]) : null);
+  if (hasSubOne) {
+    upper[0] = format(1);
+  }
+  const colors = hasSubOne ? [chartColors[0], ...subOneChartColors, ...chartColors.slice(1)] : chartColors;
+  return { levels, lower, upper, colors, hasSubOne };
+}
+
+export function getStatsBandVsizes(stats: OptimizedMempoolStats, bands: StatsFeeBands): number[] {
+  if (!bands.hasSubOne) {
+    return stats.vsizes;
+  }
+  const subOne = subOneFeeLevels.map((_, i) => stats.vsizes_sub1?.[i] || 0);
+  const unsplit = Math.max(0, (stats.vsizes[0] || 0) - subOne.reduce((acc, v) => acc + v, 0));
+  return [unsplit, ...subOne, ...stats.vsizes.slice(1)];
+}
+
+export function getStatsBandLabel(bands: StatsFeeBands, index: number, isTop = false): string {
+  return (isTop || bands.upper[index] == null) ? `${bands.lower[index]}+` : `${bands.lower[index]} - ${bands.upper[index]}`;
 }

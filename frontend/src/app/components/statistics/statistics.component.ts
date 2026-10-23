@@ -12,6 +12,7 @@ import { StateService } from '@app/services/state.service';
 import { SeoService } from '@app/services/seo.service';
 import { StorageService } from '@app/services/storage.service';
 import { feeLevels, chartColors } from '@app/app.constants';
+import { getStatsFeeBands, getStatsBandVsizes, getStatsBandLabel, StatsFeeBands } from '@app/shared/graphs.utils';
 import { MempoolGraphComponent } from '@components/mempool-graph/mempool-graph.component';
 import { IncomingTransactionsGraphComponent } from '@components/incoming-transactions-graph/incoming-transactions-graph.component';
 
@@ -63,7 +64,7 @@ export class StatisticsComponent implements OnInit {
 
   ngOnInit() {
     this.inverted = this.storageService.getValue('inverted-graph') === 'true';
-    this.setFeeLevelDropdownData();
+    this.setFeeLevelDropdownData(getStatsFeeBands([], this.stateService.isLiquid()));
     this.seoService.setTitle($localize`:@@5d4f792f048fcaa6df5948575d7cb325c9393383:Graphs`);
     this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.mempool:See mempool size (in MvB) and transactions per second (in vB/s) visualized over time.`);
     this.stateService.networkChanged$.subscribe((network) => this.network = network);
@@ -164,15 +165,19 @@ export class StatisticsComponent implements OnInit {
     mempoolStats.reverse();
     const labels = mempoolStats.map(stats => stats.added);
 
+    const feeBands = getStatsFeeBands(mempoolStats, this.stateService.isLiquid());
+    const bandVsizes = mempoolStats.map(stats => getStatsBandVsizes(stats, feeBands));
+
     let maxTier = 0;
-    for (let index = 38; index > -1; index--) {
-      mempoolStats.forEach((stats) => {
-        if (stats.vsizes[index] >= this.filterSize) {
+    for (let index = feeBands.levels.length - 1; index > -1; index--) {
+      bandVsizes.forEach((vsizes) => {
+        if (vsizes[index] >= this.filterSize) {
           maxTier = Math.max(maxTier, index);
         }
       });
     }
     this.maxFeeIndex = maxTier;
+    this.setFeeLevelDropdownData(feeBands);
 
     this.mempoolTransactionsWeightPerSecondData = {
       labels: labels,
@@ -199,43 +204,14 @@ export class StatisticsComponent implements OnInit {
     );
   }
 
-  setFeeLevelDropdownData() {
-    let _feeLevels = feeLevels;
-    let _chartColors = chartColors;
-    if (!this.inverted) {
-      _feeLevels = [...feeLevels].reverse();
-      _chartColors = [...chartColors].reverse();
-    }
-    _feeLevels.forEach((fee, i) => {
-      let range;
-      const nextIndex = this.inverted ? i + 1 : i - 1;
-      if (this.stateService.isLiquid()) {
-        if (_feeLevels[nextIndex] == null) {
-          range = `${(_feeLevels[i] / 10).toFixed(1)}+`;
-        } else {
-          range = `${(_feeLevels[i] / 10).toFixed(1)} - ${(_feeLevels[nextIndex] / 10).toFixed(1)}`;
-        }
-      } else {
-        if (_feeLevels[nextIndex] == null) {
-          range = `${_feeLevels[i]}+`;
-        } else {
-          range = `${_feeLevels[i]} - ${_feeLevels[nextIndex]}`;
-        }
-      }
-      if (this.inverted) {
-        this.feeLevelDropdownData.push({
-          fee: fee,
-          range,
-          color: _chartColors[i],
-        });
-      } else {
-        this.feeLevelDropdownData.push({
-          fee: fee,
-          range,
-          color: _chartColors[i],
-        });
-      }
-    });
+  setFeeLevelDropdownData(feeBands: StatsFeeBands) {
+    const dropdownData = feeBands.levels.map((fee, index) => ({
+      fee,
+      index,
+      range: getStatsBandLabel(feeBands, index),
+      color: feeBands.colors[index],
+    }));
+    this.feeLevelDropdownData = this.inverted ? dropdownData : dropdownData.reverse();
   }
 
   onOutlierToggleChange(e): void {
