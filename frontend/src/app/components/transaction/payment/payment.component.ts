@@ -73,6 +73,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
   sent = 0;
   paymentKind: PaymentKind = 'received';
   confirmations = 0;
+  transactionTime = -1;
   settled = false;
   replaced = false;
   trackerStage: TrackerStage = 'waiting';
@@ -426,10 +427,16 @@ export class PaymentComponent implements OnInit, OnDestroy {
 
         if (!tx.status.confirmed) {
           this.trackerStage = 'pending';
+          if (tx.firstSeen) {
+            this.transactionTime = tx.firstSeen;
+          } else {
+            this.getTransactionTime();
+          }
         } else {
           this.trackerStage = 'confirmed';
           this.fetchAcceleration$.next(tx.status.block_height);
           this.fetchMiningInfo$.next({ hash: tx.status.block_hash, height: tx.status.block_height, txid: tx.txid });
+          this.transactionTime = 0;
         }
 
         this.websocketService.startTrackTransaction(tx.txid);
@@ -710,6 +717,16 @@ export class PaymentComponent implements OnInit, OnDestroy {
     this.router.navigate(baseRoute, opts);
   }
 
+  getTransactionTime(): void {
+    this.apiService
+      .getTransactionTimes$([this.tx.txid])
+      .subscribe((transactionTimes) => {
+        if (transactionTimes?.length) {
+          this.transactionTime = transactionTimes[0];
+        }
+      });
+  }
+
   handleLoadElectrsTransactionError(error: any): Observable<any> {
     if (error.status === 404 && /^[a-fA-F0-9]{64}$/.test(this.txId)) {
       this.websocketService.startMultiTrackTransaction(this.txId);
@@ -749,6 +766,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
     this.sent = 0;
     this.paymentKind = 'received';
     this.confirmations = 0;
+    this.transactionTime = -1;
     this.settled = false;
     this.mempoolPosition = null;
     this.accelerationPositions = null;
