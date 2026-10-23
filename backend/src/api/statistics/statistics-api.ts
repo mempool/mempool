@@ -465,7 +465,7 @@ class StatisticsApi {
 
   public mapOptimizedStatisticToStatistic(statistic: OptimizedStatistic[]): Statistic[] {
     return statistic.map((s) => {
-      const completeVsizes = s.vsizes.length === 37 ? [0, ...s.vsizes] : s.vsizes;
+      const completeVsizes = s.vsizes.length === 38 ? [0, ...s.vsizes] : s.vsizes;
       return {
         added: s.added,
         unconfirmed_transactions: s.count,
