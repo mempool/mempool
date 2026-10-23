@@ -258,7 +258,8 @@
     color: var(--fg);
   }
 
-  app-amount {
+  app-amount,
+  .asset-amount {
     font-size: 1.75rem;
     font-weight: 600;
     line-height: 1.2;
