@@ -24,7 +24,7 @@ class GuardService {
     const preferredRoute = this.router.getCurrentNavigation()?.extractedUrl.queryParams?.mode;
     const path = this.router.getCurrentNavigation()?.extractedUrl.root.children.primary.segments;
     const fragmentParams = new URLSearchParams(this.router.getCurrentNavigation()?.extractedUrl.fragment || '');
-    return (!this.stateService.isLiquid() && fragmentParams.has('destination') && !['status', 'details'].includes(preferredRoute) && !(path.length === 2 && ['push', 'test', 'preview'].includes(path[1].path)));
+    return (fragmentParams.has('destination') && !['status', 'details'].includes(preferredRoute) && !(path.length === 2 && ['push', 'test', 'preview'].includes(path[1].path)));
   }
 }
 
