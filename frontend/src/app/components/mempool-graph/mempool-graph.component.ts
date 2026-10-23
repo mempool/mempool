@@ -7,8 +7,8 @@ import { OptimizedMempoolStats } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { StorageService } from '@app/services/storage.service';
 import { EChartsOption } from '@app/graphs/echarts';
-import { feeLevels, chartColors } from '@app/app.constants';
-import { download, formatterXAxis, formatterXAxisLabel } from '@app/shared/graphs.utils';
+import { chartColors } from '@app/app.constants';
+import { download, formatterXAxis, formatterXAxisLabel, getStatsFeeBands, getStatsBandVsizes, getStatsBandLabel, StatsFeeBands } from '@app/shared/graphs.utils';
 
 @Component({
   selector: 'app-mempool-graph',
@@ -50,6 +50,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   feeLimitIndex: number;
   maxFeeIndex: number;
   feeLevelsOrdered = [];
+  feeBands: StatsFeeBands;
   chartColorsOrdered = chartColors;
   inverted: boolean;
   chartInstance: any = undefined;
@@ -122,14 +123,18 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     const finalArray: number[][][] = [];
     let feesArray: number[][] = [];
 
+    this.feeBands = getStatsFeeBands(mempoolStats, this.stateService.isLiquid());
+    const bandVsizes = mempoolStats.map(stats => getStatsBandVsizes(stats, this.feeBands));
+
     let maxTier = 0;
-    for (let index = 38; index > -1; index--) {
+    for (let index = this.feeBands.levels.length - 1; index > -1; index--) {
       feesArray = [];
-      mempoolStats.forEach((stats) => {
-        if (stats.vsizes[index] >= this.filterSize) {
+      mempoolStats.forEach((stats, i) => {
+        const vsize = bandVsizes[i][index];
+        if (vsize >= this.filterSize) {
           maxTier = Math.max(maxTier, index);
         }
-        feesArray.push([stats.added * 1000, stats.vsizes[index] ? stats.vsizes[index] : 0]);
+        feesArray.push([stats.added * 1000, vsize ? vsize : 0]);
       });
       finalArray.push(feesArray);
     }
@@ -267,6 +272,10 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
             if (usedSeries[p.seriesName] || p.seriesName === 'count') {
               return false;
             }
+            // the unsplit 0 - 1 band only holds data recorded before the sub-1 breakdown existed
+            if (this.feeBands.hasSubOne && this.feeLimitIndex <= 0 && p.seriesName === this.feeLevelsOrdered[0] && !p.value[1]) {
+              return false;
+            }
             usedSeries[p.seriesName] = true;
             return true;
           });
@@ -325,7 +334,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
                 <span class="total-percentage-bar-background">
                   <span style="
                     width: ${progressPercentageSum.toFixed(2)}%;
-                    background-color: ${this.chartColorsOrdered[3]}
+                    background-color: ${chartColors[3]}
                   "></span>
                 </span>
               </td>
@@ -495,28 +504,13 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
   orderLevels() {
     this.feeLevelsOrdered = [];
-    const maxIndex = Math.min(feeLevels.length, this.maxFeeIndex);
-    for (let i = 0; i < feeLevels.length; i++) {
-      if (feeLevels[i] === this.limitFilterFee) {
-        this.feeLimitIndex = i;
-      }
-      if (feeLevels[i] <= feeLevels[this.maxFeeIndex]) {
-        if (this.stateService.network === 'liquid' || this.stateService.network === 'liquidtestnet') {
-          if (i === maxIndex || feeLevels[i] == null) {
-            this.feeLevelsOrdered.push(`${(feeLevels[i] / 10).toFixed(1)}+`);
-          } else {
-            this.feeLevelsOrdered.push(`${(feeLevels[i] / 10).toFixed(1)} - ${(feeLevels[i + 1]  / 10).toFixed(1)}`);
-          }
-        } else {
-          if (i === maxIndex || feeLevels[i] == null) {
-            this.feeLevelsOrdered.push(`${feeLevels[i]}+`);
-          } else {
-            this.feeLevelsOrdered.push(`${feeLevels[i]} - ${feeLevels[i + 1]}`);
-          }
-        }
-      }
+    const levels = this.feeBands.levels;
+    const maxIndex = Math.min(levels.length, this.maxFeeIndex);
+    this.feeLimitIndex = levels.findIndex(level => level >= this.limitFilterFee);
+    for (let i = 0; i <= maxIndex && i < levels.length; i++) {
+      this.feeLevelsOrdered.push(getStatsBandLabel(this.feeBands, i, i === maxIndex));
     }
-    this.chartColorsOrdered =  chartColors.slice(0, this.feeLevelsOrdered.length);
+    this.chartColorsOrdered = this.feeBands.colors.slice(0, this.feeLevelsOrdered.length);
   }
 
   isMobile() {
