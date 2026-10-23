@@ -12,6 +12,7 @@ export class TruncateComponent {
   @Input() link: any = null;
   @Input() external: boolean = false;
   @Input() queryParams: any = undefined;
+  @Input() fragment: any = undefined;
   @Input() lastChars: number = 4;
   @Input() maxWidth: number = null;
   @Input() inline: boolean = false;

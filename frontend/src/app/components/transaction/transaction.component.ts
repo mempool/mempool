@@ -39,6 +39,7 @@ import { PartnerCodeService } from '@app/services/partner-code.service';
 import { ZONE_SERVICE } from '@app/injection-tokens';
 import { MiningService, MiningStats } from '@app/services/mining.service';
 import { ETA, EtaService } from '@app/services/eta.service';
+import { getRegex } from '@app/shared/regex.utils';
 
 export interface Pool {
   id: number;
@@ -180,6 +181,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
   isMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
   partnerCode: string | undefined;
+  destinationAlert: string | undefined;
 
   graphContainer: ElementRef;
   private txList: TransactionsListComponent;
@@ -381,6 +383,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         });
         this.txChanged$.next(true);
+        this.showDestinationAlert();
       }
     });
 
@@ -754,6 +757,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
             })
           ).subscribe();
 
+          this.showDestinationAlert();
+
           this.cd.detectChanges();
         },
         (error) => {
@@ -1114,6 +1119,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isAccelerated$.next(this.isAcceleration);
     this.eligibleForAcceleration = false;
     this.leaveTransaction();
+    this.showDestinationAlert();
   }
 
   leaveTransaction() {
@@ -1236,6 +1242,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.firstFragmentScroll = false;
       }
     }
+    this.showDestinationAlert(this.fragmentParams);
   }
 
   setHasAccelerationDetails(hasDetails: boolean): void {
@@ -1281,6 +1288,12 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.storageService.setValue('hide-accelerator-pref', 'false');
   }
 
+  closeDestinationAlert(): void {
+    this.fragmentParams.delete('destinationAlert');
+    this.router.navigate([], { fragment: this.formatFragment(this.fragmentParams), queryParamsHandling: 'merge'});
+    this.destinationAlert = undefined;
+  }
+
   get showAccelerationSummary(): boolean {
     return (
       this.tx
@@ -1324,5 +1337,30 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.partnerCodeSubscription = this.partnerCodeService.partnerCode$.subscribe((partnerCode) => {
       this.partnerCode = partnerCode;
     });
+  }
+
+  showDestinationAlert(fragment: URLSearchParams = new URLSearchParams(this.route.snapshot.fragment)): void {
+    if (!this.tx) {
+      this.destinationAlert = undefined;
+      return;
+    }
+    let destinationAlert = new URLSearchParams(fragment).get('destinationAlert') || '';
+    const isAddress = getRegex('address', (this.network || 'mainnet') as any).test(destinationAlert);
+    if (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(destinationAlert)) {
+      destinationAlert = destinationAlert.toLowerCase();
+    }
+    if (isAddress && !this.tx.vout?.some((vout) => {
+      let address: string = vout.scriptpubkey_address ?? vout.scriptpubkey;
+      if (vout.scriptpubkey_type === 'p2pk') { // strip out push and checksig opcodes
+        address = address.slice(2, -2);
+      }
+      return address === destinationAlert;
+    })) {
+      this.fragmentParams.set('destinationAlert', destinationAlert);
+      this.destinationAlert = destinationAlert;
+    } else {
+      this.fragmentParams.delete('destinationAlert');
+      this.destinationAlert = undefined;
+    }
   }
 }
