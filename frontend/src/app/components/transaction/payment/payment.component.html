@@ -21,11 +21,9 @@
         <ng-container *ngTemplateOutlet="amountSection"></ng-container>
         <ng-container *ngTemplateOutlet="trackerPanel"></ng-container>
       </div>
-      <table class="table table-borderless table-striped">
-        <tbody>
-          <ng-container *ngTemplateOutlet="rows"></ng-container>
-        </tbody>
-      </table>
+      <div class="stats">
+        <ng-container *ngTemplateOutlet="stats"></ng-container>
+      </div>
     </div>
 
     @if (!tx?.status?.confirmed && showAccelerationSummary) {
@@ -101,61 +99,90 @@
         <a class="amount-link" href="" (click)="changeMode(mode === 'sats' ? 'btc' : 'sats')">
           <app-amount [satoshis]="amount" [noFiat]="true" [addPlus]="true"></app-amount>
         </a>
-        <app-fiat class="fiat" [value]="amount" [blockConversion]="tx.price"></app-fiat>
+        <app-fiat class="fiat" [value]="amount" [blockConversion]="tx.price" [colorClass]="amount < 0 ? 'red-color' : 'green-color'"></app-fiat>
       } @else {
         <span class="label" i18n="transaction.amount|Amount">Amount</span>
         <div class="amount-loader">
-          <div class="spinner-border text-light"></div>
+          <div class="spinner-border spinner-border-sm text-light"></div>
         </div>
       }
     </div>
   }
 </ng-template>
 
-<ng-template #rows>
-  <tr>
-    <td class="td-width" i18n="shared.address">Address</td>
-    <td>
-      <app-truncate [text]="destination" [textAlign]="'end'" [lastChars]="4"
-        [link]="['/address/' | relativeUrl, destination]"></app-truncate>
-    </td>
-  </tr>
-  @if (tx && !replaced && !removed) {
-    <tr>
-      @if (!tx.status?.confirmed) {
-        <td class="td-width" i18n="transaction.eta|Transaction ETA">ETA</td>
-        <td>
-          @if (ETA$ | async; as eta) {
-            <span [class]="showAccelerateButton ? 'etaDeepMempool d-flex justify-content-end' : ''">
-              @if (eta.blocks >= 7) {
-                <span i18n="transaction.eta.not-any-time-soon|Transaction ETA mot any time soon">Not any time soon</span>
-              } @else {
-                <app-time kind="until" [time]="eta.time" [fastRender]="false"></app-time>
-              }
-              @if (showAccelerateButton) {
-                <div class="d-flex accelerate">
-                  <a class="btn btn-sm btn-small-height btn-purple" [class.disabled]="!eligibleForAcceleration" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
-                  @if (!eligibleForAcceleration) {
-                    <a href="https://mempool.space/accelerator#why-cant-accelerate" target="_blank" class="info-badges ms-1" i18n-ngbTooltip="Mempool Accelerator&reg; tooltip" ngbTooltip="This transaction cannot be accelerated">
-                      <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
-                    </a>
-                  }
-                </div>
-              }
-            </span>
-          } @else {
-            <span class="skeleton-loader"></span>
-          }
-        </td>
-      } @else {
-        <td class="td-width" i18n="transaction.status|Transaction Status">Status</td>
-        <td>
-          <ng-container *ngTemplateOutlet="status"></ng-container>
-        </td>
-      }
-    </tr>
+<ng-template #stats>
+  <div class="item">
+    <span class="label" i18n="shared.address">Address</span>
+    <app-truncate [text]="destination" [textAlign]="'end'" [lastChars]="6"
+      [link]="['/address/' | relativeUrl, destination]"></app-truncate>
+  </div>
+  @if (!tx) {
+    <div class="item"><span class="skeleton-loader"></span></div>
+    <div class="item"><span class="skeleton-loader"></span></div>
   } @else if (!replaced && !removed) {
-    <ng-container *ngTemplateOutlet="skeletonRow"></ng-container>
+    @if (!tx.status?.confirmed) {
+      <div class="item">
+        <span class="label" i18n="transaction.eta|Transaction ETA">ETA</span>
+        @if (ETA$ | async; as eta) {
+          <span [class]="showAccelerateButton ? 'etaDeepMempool d-flex' : ''">
+            @if (eta.blocks >= 7) {
+              <span i18n="transaction.eta.not-any-time-soon|Transaction ETA mot any time soon">Not any time soon</span>
+            } @else {
+              <app-time kind="until" [time]="eta.time" [fastRender]="false"></app-time>
+            }
+            @if (showAccelerateButton) {
+              <div class="d-flex accelerate">
+                <a class="btn btn-sm btn-small-height btn-purple" [class.disabled]="!eligibleForAcceleration" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
+                @if (!eligibleForAcceleration) {
+                  <a href="https://mempool.space/accelerator#why-cant-accelerate" target="_blank" class="info-badges ms-1" i18n-ngbTooltip="Mempool Accelerator&reg; tooltip" ngbTooltip="This transaction cannot be accelerated">
+                    <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+                  </a>
+                }
+              </div>
+            }
+          </span>
+        } @else {
+          <span class="skeleton-loader"></span>
+        }
+      </div>
+      <div class="item">
+        <span class="label" i18n="transaction.first-seen|Transaction first seen">First seen</span>
+        @if (transactionTime > 0) {
+          <i><app-time kind="since" [time]="transactionTime" [fastRender]="true" [showTooltip]="true"></app-time></i>
+        } @else {
+          <span class="skeleton-loader"></span>
+        }
+      </div>
+    } @else {
+      <div class="item">
+        <span class="label" i18n="transaction.status|Transaction Status">Status</span>
+        <ng-container *ngTemplateOutlet="status"></ng-container>
+      </div>
+      <div class="item">
+        <span class="label" i18n="block.miner">Miner</span>
+        <span class="block-info">
+          @if (pool) {
+            <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, pool.slug]" class="badge" style="color: var(--fg);padding:0;">
+              <ng-container *ngIf="pool.minerSlug && pool.minerName; else minerName">
+                <app-mining-pool [slug]="pool.minerSlug" [name]="pool.minerName" [showName]="false"></app-mining-pool>
+                <span class="miner-name">{{ pool.minerName }}</span>
+                <app-mining-pool [slug]="pool.slug" [name]="pool.name"></app-mining-pool>
+              </ng-container>
+              <ng-template #minerName>
+                <span class="miner-name" *ngIf="pool.minerNames?.length > 1 && pool.minerNames[1] != ''">
+                  @if (pool.minerNames[1].length > 16) {
+                    {{ pool.minerNames[1].slice(0, 15) }}…
+                  } @else {
+                    {{ pool.minerNames[1] }}
+                  }
+                </span>
+                <app-mining-pool [slug]="pool.slug" [name]="pool.name"></app-mining-pool>
+              </ng-template>
+            </a>
+          }
+        </span>
+      </div>
+    }
   }
 </ng-template>
 
@@ -191,10 +218,4 @@
       />
     </svg>
   </div>
-</ng-template>
-
-<ng-template #skeletonRow>
-  <tr>
-    <td colspan="2"><span class="skeleton-loader"></span></td>
-  </tr>
 </ng-template>
