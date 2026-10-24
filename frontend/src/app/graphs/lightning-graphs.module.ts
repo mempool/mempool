@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { NodesNetworksChartComponent } from '@app/lightning/nodes-networks-chart/nodes-networks-chart.component';
 import { LightningStatisticsChartComponent } from '@app/lightning/statistics-chart/lightning-statistics-chart.component';
+import { LightningFeesChartComponent } from '@app/lightning/fees-chart/lightning-fees-chart.component';
 import { NodesPerISPChartComponent } from '@app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component';
 import { NodesPerCountryChartComponent } from '@app/lightning/nodes-per-country-chart/nodes-per-country-chart.component';
 import { NodesMap } from '@app/lightning/nodes-map/nodes-map.component';
@@ -19,6 +20,11 @@ const routes: Routes = [
     path: 'capacity',
     data: { networks: ['bitcoin'] },
     component: LightningStatisticsChartComponent,
+  },
+  {
+    path: 'fees',
+    data: { networks: ['bitcoin'] },
+    component: LightningFeesChartComponent,
   },
   {
     path: 'nodes-per-isp',
