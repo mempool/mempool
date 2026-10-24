@@ -1,4 +1,6 @@
-FROM node:24.13-bookworm-slim AS builder
+FROM node:26.12.1-bookworm-slim AS builder
+
+RUN npm install -g npm@11.20.0
 
 ARG commitHash
 ENV DOCKER_COMMIT_HASH=${commitHash}
