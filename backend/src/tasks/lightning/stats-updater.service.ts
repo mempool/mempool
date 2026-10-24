@@ -3,6 +3,9 @@ import lightningApi from '../../api/lightning/lightning-api-factory';
 import LightningStatsImporter from './sync-tasks/stats-importer';
 import config from '../../config';
 import { Common } from '../../api/common';
+import lightningReplication from '../../replication/LightningReplication';
+
+const REPLICATION_INTERVAL = 1000 * 60 * 60;
 
 class LightningStatsUpdater {
   public async $startService(): Promise<void> {
@@ -10,6 +13,14 @@ class LightningStatsUpdater {
 
     await this.$runTasks();
     void LightningStatsImporter.$run();
+    void this.$runReplication();
+  }
+
+  /** @asyncSafe */
+  private async $runReplication(): Promise<void> {
+    await lightningReplication.$sync();
+
+    setTimeout(() => { void this.$runReplication(); }, REPLICATION_INTERVAL);
   }
 
   /** @asyncSafe */
