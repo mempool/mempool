@@ -250,7 +250,7 @@ ssh "$SSH_TARGET" "$REMOTE_EDIT" || die "failed to edit compose file"
 # --- Step 7: trigger the update ---------------------------------------------
 info ""
 info "Triggering app update..."
-ssh "$SSH_TARGET" "umbreld client apps.update.mutate --appId mempool" \
+ssh "$SSH_TARGET" "sudo umbreld client apps.update.mutate --appId mempool" \
   || die "umbreld update command failed (compose backup at ${COMPOSE_PATH}.bak)"
 
 info ""
