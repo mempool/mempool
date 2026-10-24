@@ -7,7 +7,8 @@ class StatisticsApi {
     interval = Common.getSqlInterval(interval);
 
     let query = `SELECT UNIX_TIMESTAMP(added) AS added, channel_count, total_capacity,
-      tor_nodes, clearnet_nodes, unannounced_nodes, clearnet_tor_nodes
+      tor_nodes, clearnet_nodes, unannounced_nodes, clearnet_tor_nodes, avg_capacity,
+      avg_fee_rate, avg_base_fee_mtokens, med_capacity, med_fee_rate, med_base_fee_mtokens
       FROM lightning_stats`;
 
     if (interval) {
