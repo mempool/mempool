@@ -159,18 +159,10 @@
 
   &.sender {
     border-color: #2196f3;
-
-    h3 {
-      color: #2196f3;
-    }
   }
 
   &.recipient {
     border-color: #9c27b0;
-
-    h3 {
-      color: #9c27b0;
-    }
   }
 
   h4 {
@@ -265,7 +257,6 @@
 }
 
 .payjoin-actual-label {
-  color: #9c27b0;
   font-size: 0.75rem;
 }
 

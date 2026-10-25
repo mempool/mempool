@@ -545,10 +545,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
       } else if (index != null) {
         this.router.navigate([this.relativeUrlPipe.transform('/tx'), this.tx.txid], {
           queryParamsHandling: 'merge',
-          fragment: (new URLSearchParams({
-            flow: '',
-            vin: index.toString(),
-          })).toString(),
+          fragment: this.sameTxFragment({ vin: index.toString() }),
         });
       }
     } else {
@@ -566,12 +563,16 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
       } else if (index != null) {
         this.router.navigate([this.relativeUrlPipe.transform('/tx'), this.tx.txid], {
           queryParamsHandling: 'merge',
-          fragment: (new URLSearchParams({
-            flow: '',
-            vout: index.toString(),
-          })).toString(),
+          fragment: this.sameTxFragment({ vout: index.toString() }),
         });
       }
     }
+  }
+
+  // selecting a strand of the same transaction keeps its Payjoin ownership labels
+  private sameTxFragment(params: Record<string, string>): string {
+    const fragment = (new URLSearchParams({ flow: '', ...params })).toString();
+    const pj = new URLSearchParams(this.router.parseUrl(this.router.url).fragment || '').get('pj');
+    return pj ? `${fragment}&pj=${pj}` : fragment;
   }
 }

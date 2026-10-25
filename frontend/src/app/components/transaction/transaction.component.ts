@@ -1247,7 +1247,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private updatePayjoinOwnership(): void {
-    this.payjoinOwnership = this.tx
+    this.payjoinOwnership = this.tx && !this.isLiquid
       ? parsePayjoinOwnership(this.fragmentParams?.get('pj'), this.tx.vin.length, this.tx.vout.length)
       : null;
     this.payjoinCalculation = this.tx && this.payjoinOwnership

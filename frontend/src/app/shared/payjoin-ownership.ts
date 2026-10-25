@@ -76,7 +76,6 @@ export function calculatePayjoinDetails(
     || fee < 0
     || senderNetDebit <= 0
     || recipientNetGain <= 0
-    || senderNetDebit - recipientNetGain !== fee
   ) {
     return null;
   }
