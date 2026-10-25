@@ -261,7 +261,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
         },
         formatter: (params: any) => {
           const axisValueLabel: string = formatterXAxis(this.locale, this.windowPreference, params[0].axisValue);
-          const { totalValue, totalValueArray } = this.getTotalValues(params);
           const itemFormatted = [];
           let sum = 0;
           let progressPercentageText = '';
@@ -279,6 +278,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
             usedSeries[p.seriesName] = true;
             return true;
           });
+          const { totalValue, totalValueArray } = this.getTotalValues(items);
 
           items.map((item: any, index: number) => {
             sum += item.value[1];
