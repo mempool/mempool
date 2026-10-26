@@ -109,6 +109,21 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  // BTC amounts must fit on one line of the block: use fewer decimals as the value grows,
+  // and sats where BTC would round to zero or be too long even without decimals.
+  forceSats(net: number): boolean {
+    const btc = Math.abs(net) / 100_000_000;
+    return net !== 0 && (btc < 0.0005 || btc >= 99_999.5);
+  }
+
+  btcDigits(net: number): string {
+    const btc = Math.abs(net) / 100_000_000;
+    if (btc < 99.9995) {
+      return '1.2-3';
+    }
+    return btc < 999.995 ? '1.2-2' : '1.0-0';
+  }
+
   private updatePendingBackground(): void {
     const fees = this.groups.find(group => !group.status.confirmed)?.feeRates ?? [];
     const colors = fees.slice().sort((a, b) => a - b).map(fee => {

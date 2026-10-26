@@ -73,7 +73,8 @@
   padding: 8px;
   border: 0;
   border-radius: 0;
-  color: white;
+  // Theme text color, like the regular blocks, so light themes keep enough contrast.
+  color: var(--fg);
   background: linear-gradient(var(--mainnet-alt), var(--primary));
   cursor: pointer;
 
@@ -110,7 +111,6 @@
   direction: ltr;
   min-width: 0;
   max-width: 100%;
-  color: white;
   font-size: 18px;
   font-weight: bold;
   line-height: 1.2;
@@ -118,7 +118,7 @@
   white-space: nowrap;
 }
 .block-time { font-size: 12px; line-height: 1.2; }
-.partial-label { font-size: 10px; line-height: 1.2; color: #ffe082; }
+.partial-label { font-size: 10px; line-height: 1.2; color: var(--yellow); }
 .selection-marker {
   display: block;
   width: 0;
