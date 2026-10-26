@@ -126,7 +126,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
     this.feeBands = getStatsFeeBands(mempoolStats, this.stateService.isLiquid());
     const bandVsizes = mempoolStats.map(stats => getStatsBandVsizes(stats, this.feeBands));
 
-    let maxTier = 0;
+    let maxTier = this.feeBands.levels.indexOf(1) - 1;
     for (let index = this.feeBands.levels.length - 1; index > -1; index--) {
       feesArray = [];
       mempoolStats.forEach((stats, i) => {

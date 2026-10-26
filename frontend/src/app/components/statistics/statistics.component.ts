@@ -168,7 +168,7 @@ export class StatisticsComponent implements OnInit {
     const feeBands = getStatsFeeBands(mempoolStats, this.stateService.isLiquid());
     const bandVsizes = mempoolStats.map(stats => getStatsBandVsizes(stats, feeBands));
 
-    let maxTier = 0;
+    let maxTier = feeBands.levels.indexOf(1) - 1;
     for (let index = feeBands.levels.length - 1; index > -1; index--) {
       bandVsizes.forEach((vsizes) => {
         if (vsizes[index] >= this.filterSize) {
