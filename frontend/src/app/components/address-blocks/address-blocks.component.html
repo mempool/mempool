@@ -30,24 +30,9 @@
             <span i18n="dashboard.unconfirmed|Unconfirmed count">Unconfirmed</span>
           }
         </div>
-        <button type="button" class="block-face" [style.background]="!group.status.confirmed ? pendingBackground : null"
+        <button type="button" class="block-face" [class.partial]="group.partial" [style.background]="!group.status.confirmed ? pendingBackground : null"
           [attr.aria-pressed]="selectedGroup === group.id" (click)="selectGroup.emit(group.id)">
-          <span class="transaction-count">
-            @if (group.count === 1) {
-              <span i18n="shared.transaction-count.singular">{{ group.count | number }} transaction</span>
-            } @else {
-              <span i18n="shared.transaction-count.plural">{{ group.count | number }} transactions</span>
-            }
-          </span>
           <span class="activity-direction">
-            <span class="direction-icons" aria-hidden="true">
-              @if (group.sent) {
-                <fa-icon class="red-color" [icon]="['fas', 'arrow-alt-circle-right']"></fa-icon>
-              }
-              @if (group.received) {
-                <fa-icon class="green-color" [icon]="['fas', 'arrow-alt-circle-right']"></fa-icon>
-              }
-            </span>
             @if (group.sent && group.received) {
               <span class="direction-label" i18n="address.blocks.sent-received">Sent &amp; received</span>
             } @else if (group.sent) {
@@ -64,6 +49,13 @@
               <app-amount [satoshis]="group.net | absolute" [addPlus]="group.net > 0" [noFiat]="true" digitsInfo="1.2-3"></app-amount>
             } @else {
               <span>—</span>
+            }
+          </span>
+          <span class="transaction-count">
+            @if (group.count === 1) {
+              <span i18n="shared.transaction-count.singular">{{ group.count | number }} transaction</span>
+            } @else {
+              <span i18n="shared.transaction-count.plural">{{ group.count | number }} transactions</span>
             }
           </span>
           <span class="block-time">
