@@ -182,7 +182,7 @@ export function getStatsBandVsizes(stats: OptimizedMempoolStats, bands: StatsFee
     return stats.vsizes;
   }
   const subOne = subOneFeeLevels.map((_, i) => stats.vsizes_sub1?.[i] || 0);
-  const unsplit = Math.max(0, (stats.vsizes[0] || 0) - subOne.reduce((acc, v) => acc + v, 0));
+  const unsplit = Math.max(0, Math.round((stats.vsizes[0] || 0) - subOne.reduce((acc, v) => acc + v, 0)));
   return [unsplit, ...subOne, ...stats.vsizes.slice(1)];
 }
 

@@ -51,6 +51,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
   maxFeeIndex: number;
   feeLevelsOrdered = [];
   feeBands: StatsFeeBands;
+  subOnePoints: boolean[] = [];
   chartColorsOrdered = chartColors;
   inverted: boolean;
   chartInstance: any = undefined;
@@ -125,6 +126,8 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
 
     this.feeBands = getStatsFeeBands(mempoolStats, this.stateService.isLiquid());
     const bandVsizes = mempoolStats.map(stats => getStatsBandVsizes(stats, this.feeBands));
+    const firstSubOne = mempoolStats.findIndex(stats => stats.vsizes_sub1);
+    this.subOnePoints = mempoolStats.map((_, i) => firstSubOne > -1 && i >= firstSubOne);
 
     let maxTier = this.feeBands.levels.indexOf(1) - 1;
     for (let index = this.feeBands.levels.length - 1; index > -1; index--) {
@@ -271,8 +274,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
             if (usedSeries[p.seriesName] || p.seriesName === 'count') {
               return false;
             }
-            // the unsplit 0 - 1 band only holds data recorded before the sub-1 breakdown existed
-            if (this.feeBands.hasSubOne && this.feeLimitIndex <= 0 && p.seriesName === this.feeLevelsOrdered[0] && !p.value[1]) {
+            if (this.isHiddenSubOneItem(p)) {
               return false;
             }
             usedSeries[p.seriesName] = true;
@@ -501,6 +503,15 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       totalValueArray: totalValueArray.reverse(),
     };
   };
+
+  isHiddenSubOneItem(item: any): boolean {
+    const bandIndex = this.feeLevelsOrdered.indexOf(item.seriesName);
+    const pointHasSubOne = this.subOnePoints[item.dataIndex];
+    if (bandIndex === 0) {
+      return pointHasSubOne && !item.value[1];
+    }
+    return bandIndex > 0 && bandIndex < this.feeBands.levels.indexOf(1) && !pointHasSubOne;
+  }
 
   orderLevels() {
     this.feeLevelsOrdered = [];
