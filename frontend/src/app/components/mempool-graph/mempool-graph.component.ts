@@ -278,7 +278,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
             usedSeries[p.seriesName] = true;
             return true;
           });
-          const { totalValue, totalValueArray } = this.getTotalValues(items);
+          const { totalValue, totalValueArray } = this.getTotalValues(this.inverted ? [...items].reverse() : items);
 
           items.map((item: any, index: number) => {
             sum += item.value[1];
