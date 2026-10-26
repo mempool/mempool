@@ -46,7 +46,7 @@
               @if (group.net < 0) {
                 <span>-</span>
               }
-              <app-amount [satoshis]="group.net | absolute" [addPlus]="group.net > 0" [noFiat]="true" digitsInfo="1.2-3"></app-amount>
+              <app-amount [satoshis]="group.net | absolute" [addPlus]="group.net > 0" [noFiat]="true" [forceSats]="forceSats(group.net)" [digitsInfo]="btcDigits(group.net)"></app-amount>
             } @else {
               <span>—</span>
             }
