@@ -64,14 +64,13 @@
   overflow: visible;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  // Reserve every row, including the optional partial-activity label.
-  grid-template-rows: 20px 18px 34px 18px 12px;
-  row-gap: 2px;
+  grid-auto-rows: auto;
+  row-gap: 7px;
   align-items: center;
   align-content: center;
   width: var(--block-size);
   height: var(--block-size);
-  padding: 6px;
+  padding: 8px;
   border: 0;
   border-radius: 0;
   color: white;
@@ -83,6 +82,8 @@
     filter: brightness(0.7);
   }
 
+  &.partial { row-gap: 4px; }
+
   &:focus-visible { outline: 2px solid var(--info); outline-offset: 4px; }
 }
 
@@ -91,28 +92,17 @@
   &::before { background: var(--mempool-block-side); }
 }
 .transaction-count {
-  font-size: 14px;
-  font-weight: bold;
+  font-size: 12px;
+  font-weight: normal;
   line-height: 1.2;
 }
 .activity-direction {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.2;
 }
-.direction-icons {
-  display: inline-flex;
-  flex-shrink: 0;
-  gap: 2px;
-}
 .direction-label {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .net-amount {
   display: flex;
@@ -121,7 +111,7 @@
   min-width: 0;
   max-width: 100%;
   color: white;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: bold;
   line-height: 1.2;
   font-variant-numeric: tabular-nums;
