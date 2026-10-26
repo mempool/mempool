@@ -463,7 +463,7 @@ class StatisticsApi {
 
   private mapStatisticToOptimizedStatistic(statistic: Statistic[]): OptimizedStatistic[] {
     return statistic.map((s) => {
-      return {
+      const result = {
         added: s.added,
         count: s.unconfirmed_transactions,
         vbytes_per_second: s.vbytes_per_second,
@@ -510,8 +510,12 @@ class StatisticsApi {
           s.vsize_1600,
           s.vsize_1800,
           s.vsize_2000,
-        ],
-        vsizes_sub1: [
+        ]
+      };
+
+      if (s.vsize_0_0 > 0 || s.vsize_0_1 > 0 || s.vsize_0_2 > 0 || s.vsize_0_3 > 0 || s.vsize_0_4 > 0 ||
+          s.vsize_0_5 > 0 || s.vsize_0_6 > 0 || s.vsize_0_7 > 0 || s.vsize_0_8 > 0 || s.vsize_0_9 > 0) {
+        result['vsizes_sub1'] = [
           s.vsize_0_0,
           s.vsize_0_1,
           s.vsize_0_2,
@@ -522,8 +526,9 @@ class StatisticsApi {
           s.vsize_0_7,
           s.vsize_0_8,
           s.vsize_0_9,
-        ],
-      };
+        ];
+      }
+      return result;
     });
   }
 
