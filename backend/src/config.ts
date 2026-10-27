@@ -45,6 +45,11 @@ interface IConfig {
     ALLOW_UNREACHABLE: boolean;
     PRICE_UPDATES_PER_HOUR: number;
     MAX_TRACKED_ADDRESSES: number;
+    MAX_BUFFERED_AMOUNT: number;
+    MAX_MESSAGE_SIZE: number;
+    MAX_TRACKED_TXS: number;
+    MSG_RATE_LIMIT: number;
+    MSG_RATE_WINDOW: number;
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -218,6 +223,11 @@ const defaults: IConfig = {
     'ALLOW_UNREACHABLE': true,
     'PRICE_UPDATES_PER_HOUR': 1,
     'MAX_TRACKED_ADDRESSES': 1,
+    'MAX_BUFFERED_AMOUNT': 10_000_000,
+    'MAX_MESSAGE_SIZE': 50_000,
+    'MAX_TRACKED_TXS': 100,
+    'MSG_RATE_LIMIT': 100,
+    'MSG_RATE_WINDOW': 10_000,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',
