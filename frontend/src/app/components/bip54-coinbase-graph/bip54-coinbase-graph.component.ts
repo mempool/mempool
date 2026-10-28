@@ -40,6 +40,9 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
 
   isLoading = true;
   bip54DataAvailable = true;
+  bip54Pending = false;
+  // the chart's pool slices only take a mouse, so the same pools are listed as links too
+  tablePools: Slice[] = [];
   chartOptions: EChartsOption = {};
   chartInitOptions = {
     renderer: 'svg',
@@ -51,8 +54,8 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
 
   // the split is by whether a pool has adopted, so these must not claim anything about the
   // block counts: a pool under the threshold still mines some compatible coinbases
-  private readonly adoptedLabel = $localize`:@@mining.bip54-adopted:BIP-54 adopted`;
-  private readonly notAdoptedLabel = $localize`:@@mining.bip54-not-adopted:BIP-54 not adopted`;
+  readonly adoptedLabel = $localize`:@@mining.bip54-adopted:BIP-54 adopted`;
+  readonly notAdoptedLabel = $localize`:@@mining.bip54-not-adopted:BIP-54 not adopted`;
 
   miningStatsObservable$: Observable<MiningStats>;
   private fragmentSubscription: Subscription;
@@ -121,7 +124,14 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
    * currently mines BIP-54 coinbases. Adopters come first so their combined share reads as a
    * single contiguous arc.
    */
-  generateChartSeriesData(miningStats: MiningStats): PieSeriesOption[] {
+  generateChartSeriesData(adopted: Slice[], notAdopted: Slice[]): PieSeriesOption[] {
+    return [
+      ...this.groupToSeriesData(adopted),
+      ...this.groupToSeriesData(notAdopted),
+    ];
+  }
+
+  private classifyPools(miningStats: MiningStats): { adopted: Slice[], notAdopted: Slice[] } {
     const adopted: Slice[] = [];
     const notAdopted: Slice[] = [];
 
@@ -140,10 +150,7 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
     adopted.sort((a, b) => b.blockCount - a.blockCount);
     notAdopted.sort((a, b) => b.blockCount - a.blockCount);
 
-    return [
-      ...this.groupToSeriesData(adopted),
-      ...this.groupToSeriesData(notAdopted),
-    ];
+    return { adopted, notAdopted };
   }
 
   /**
@@ -232,10 +239,17 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
     // a backend that predates these fields sends neither, which means "unknown", not "no pool
     // has adopted" — reporting 0% here would be a claim about mining pools that we can't make
     this.bip54DataAvailable = miningStats.pools.some(pool => typeof pool.bip54BlockCount === 'number');
-    if (!this.bip54DataAvailable) {
+    // right after an upgrade the backend is still tagging older blocks, and until it reaches
+    // them their pools would read as not adopted
+    this.bip54Pending = this.bip54DataAvailable && miningStats.bip54Pending === true;
+    if (!this.bip54DataAvailable || this.bip54Pending) {
       this.chartOptions = {};
+      this.tablePools = [];
       return;
     }
+
+    const { adopted, notAdopted } = this.classifyPools(miningStats);
+    this.tablePools = [...adopted, ...notAdopted];
 
     let pieSize = ['40%', '75%']; // Desktop
     if (isMobile()) {
@@ -243,9 +257,7 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
     }
     // the headline is the combined share of the pools that have adopted, which is what the
     // green arc adds up to
-    const adoptedBlockCount = miningStats.pools
-      .filter(pool => this.hasAdoptedBip54(pool))
-      .reduce((total, pool) => total + pool.blockCount, 0);
+    const adoptedBlockCount = adopted.reduce((total, pool) => total + pool.blockCount, 0);
     const share = miningStats.blockCount ? (adoptedBlockCount / miningStats.blockCount * 100) : 0;
     const fontSize = isMobile() ? 22 : 30;
 
@@ -329,7 +341,7 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
           name: 'Mining pool',
           type: 'pie',
           radius: pieSize,
-          data: this.generateChartSeriesData(miningStats),
+          data: this.generateChartSeriesData(adopted, notAdopted),
           labelLine: {
             lineStyle: {
               width: 2,

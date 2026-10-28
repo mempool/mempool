@@ -5,7 +5,7 @@
   <div class="card-header">
     <div class="d-flex d-md-table-cell align-items-baseline">
       <span i18n="mining.bip54-coinbase">BIP-54 Coinbase Adoption</span>
-      <button class="btn p-0 ps-2" style="margin: 0 0 4px 0px" *ngIf="bip54DataAvailable" (click)="onSaveChart()" aria-label="Download chart" i18n-aria-label="graphs.download-chart">
+      <button class="btn p-0 ps-2" style="margin: 0 0 4px 0px" *ngIf="bip54DataAvailable && !bip54Pending" (click)="onSaveChart()" aria-label="Download chart" i18n-aria-label="graphs.download-chart">
         <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
       </button>
     </div>
@@ -54,7 +54,7 @@
   </div>
 
   <div class="container pb-lg-0">
-    <ng-container *ngIf="bip54DataAvailable">
+    <ng-container *ngIf="bip54DataAvailable && !bip54Pending">
       <div class="chart" *browserOnly [style]="{ opacity: isLoading ? 0.5 : 1 }" echarts [initOpts]="chartInitOptions" [options]="chartOptions"
         (chartInit)="onChartInit($event)">
       </div>
@@ -63,6 +63,35 @@
     <div class="text-center unavailable" *ngIf="!bip54DataAvailable" i18n="mining.bip54-unavailable">
       BIP-54 adoption data is not available from this backend.
     </div>
+
+    <div class="text-center unavailable" *ngIf="bip54Pending" data-cy="bip54-pending" i18n="mining.bip54-pending">
+      BIP-54 adoption data is still being indexed.
+    </div>
+
+    <table *ngIf="tablePools.length" class="table table-borderless text-center pools-table" data-cy="bip54-pools-table" [style]="{ opacity: isLoading ? 0.5 : 1 }">
+      <thead>
+        <tr>
+          <th></th>
+          <th i18n="mining.pool-name">Pool</th>
+          <th i18n="master-page.blocks">Blocks</th>
+          <th i18n="mining.bip54-blocks">BIP-54 blocks</th>
+          <th i18n="mining.bip54-adoption">Adoption</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let pool of tablePools">
+          <td class="text-end">
+            <app-mining-pool [slug]="pool.slug" [name]="pool.name" [showName]="false" [logoStyle]="'width:25px;height:25px;'"></app-mining-pool>
+          </td>
+          <td class="pool-name text-start"><a [routerLink]="[('/mining/pool/' + pool.slug) | relativeUrl]">{{ pool.name }}</a></td>
+          <td>{{ pool.blockCount }}<span class="d-none d-md-inline">&nbsp;({{ pool.share }}%)</span></td>
+          <td>{{ pool.bip54BlockCount }}</td>
+          <td>
+            <span class="badge" [class.bg-success]="pool.adopted" [class.bg-secondary]="!pool.adopted">{{ pool.adopted ? adoptedLabel : notAdoptedLabel }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
     <div class="text-center loadingGraphs" *ngIf="!stateService.isBrowser || isLoading">
       <div class="spinner-border text-light"></div>

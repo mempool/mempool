@@ -75,6 +75,9 @@ class PoolsRepository {
   /** @asyncUnsafe */
   public async $getPoolsInfoPerInterval(): Promise<Record<string, PoolIntervalInfo[]>> {
     const feeDelta = `(CAST(blocks.fees as SIGNED) - CAST(blocks_audits.expected_fees as SIGNED)) / NULLIF(CAST(blocks_audits.expected_fees as SIGNED), 0)`;
+    // blocks the BIP-54 tag backfill has yet to reach (same selection as $getBlocksMissingBip54Tag):
+    // counting them as not compatible would report a pool as not having adopted
+    const bip54Pending = `blocks.coinbase_bip_54 IS NULL AND blocks.height > 0 AND blocks.blockTimestamp >= FROM_UNIXTIME(${Common.timeFirstMainnetBip54Coinbase})`;
     const columns = POOLS_STATS_INTERVALS.map((label) => {
       const sql = Common.getSqlInterval(label);
       const inWindow = sql ? `blocks.blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${sql}) AND NOW()` : '1';
@@ -82,6 +85,7 @@ class PoolsRepository {
         COUNT(CASE WHEN ${inWindow} THEN blocks.height END) AS \`blockCount_${label}\`,
         COUNT(CASE WHEN ${inWindow} AND blocks.tx_count = 1 THEN 1 END) AS \`emptyBlocks_${label}\`,
         COUNT(CASE WHEN ${inWindow} AND blocks.coinbase_bip_54 = 1 THEN 1 END) AS \`bip54BlockCount_${label}\`,
+        COUNT(CASE WHEN ${inWindow} AND ${bip54Pending} THEN 1 END) AS \`bip54PendingCount_${label}\`,
         AVG(CASE WHEN ${inWindow} THEN blocks_audits.match_rate END) AS \`avgMatchRate_${label}\`,
         AVG(CASE WHEN ${inWindow} THEN ${feeDelta} END) AS \`avgFeeDelta_${label}\``;
     }).join(',');
@@ -121,6 +125,7 @@ class PoolsRepository {
               blockCount: blockCount,
               emptyBlocks: row[`emptyBlocks_${label}`],
               bip54BlockCount: row[`bip54BlockCount_${label}`],
+              bip54PendingCount: row[`bip54PendingCount_${label}`],
               avgMatchRate: row[`avgMatchRate_${label}`],
               avgFeeDelta: row[`avgFeeDelta_${label}`],
             });

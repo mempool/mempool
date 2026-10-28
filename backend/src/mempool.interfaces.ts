@@ -28,9 +28,10 @@ export interface PoolInfo {
 // must not claim to return it
 export interface PoolIntervalInfo extends PoolInfo {
   bip54BlockCount: number;
+  bip54PendingCount: number; // not yet tagged by the backfill, internal only
 }
 
-export interface PoolStats extends PoolIntervalInfo {
+export interface PoolStats extends Omit<PoolIntervalInfo, 'bip54PendingCount'> {
   rank: number;
   bip54Recent: boolean | null;
 }

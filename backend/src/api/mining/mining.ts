@@ -26,6 +26,7 @@ interface DifficultyBlock {
 interface PoolsStats {
   pools: PoolStats[],
   blockCount: number,
+  bip54Pending: boolean,
   lastEstimatedHashrate: number,
   lastEstimatedHashrate3d: number,
   lastEstimatedHashrate1w: number,
@@ -126,6 +127,9 @@ class Mining {
     const estimatedHashrates = await this.$getEstimatedHashrates();
 
     const bip54Recent = this.bip54AdoptionByPool(poolsInfoPerInterval);
+    // adoption is read from the last week, so untagged blocks there leave every window unknown
+    const hasPendingBip54 = (pools: PoolIntervalInfo[] = []): boolean => pools.some(poolInfo => poolInfo.bip54PendingCount > 0);
+    const bip54RecentPending = hasPendingBip54(poolsInfoPerInterval['1w']);
 
     const statsByInterval: Record<string, PoolsStats> = {};
     for (const interval of POOLS_STATS_INTERVALS) {
@@ -151,7 +155,12 @@ class Mining {
         blockCount += poolInfo.blockCount;
       });
 
-      statsByInterval[interval] = { pools: poolStats, blockCount: blockCount, ...estimatedHashrates };
+      statsByInterval[interval] = {
+        pools: poolStats,
+        blockCount: blockCount,
+        bip54Pending: bip54RecentPending || hasPendingBip54(poolsInfoPerInterval[interval]),
+        ...estimatedHashrates,
+      };
     }
 
     return statsByInterval;
