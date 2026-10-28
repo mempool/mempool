@@ -1456,6 +1456,7 @@ class Blocks {
       }
 
       const { rbfTransactions } = await this.$applyBlockTransactionsToMempool(txIds, cpfpSummary.transactions);
+      memPool.setRecentlyMined(block.id, block.previousblockhash, txIds);
       this.updateTimerProgress(timer, `applied mempool changes for ${this.currentBlockHeight}`);
 
       if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
