@@ -3,7 +3,7 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EChartsOption, PieSeriesOption } from '@app/graphs/echarts';
 import { merge, Observable, Subscription } from 'rxjs';
-import { startWith, switchMap, shareReplay, tap } from 'rxjs/operators';
+import { map, startWith, switchMap, shareReplay, tap } from 'rxjs/operators';
 import { SeoService } from '@app/services/seo.service';
 import { StorageService } from '@app/services/storage.service';
 import { MiningService, MiningStats } from '@app/services/mining.service';
@@ -86,6 +86,8 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
         }
       });
 
+    // both triggers feed a single switchMap, so picking another window also cancels a refresh
+    // a new block started for the previous one
     this.miningStatsObservable$ = merge(
       this.radioGroupForm.get('dateSpan').valueChanges
         .pipe(
@@ -96,23 +98,21 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
             this.storageService.setValue('miningWindowPreference', value);
             this.miningWindowPreference = value;
           }),
-          switchMap(() => {
-            return this.miningService.getMiningStats(this.miningWindowPreference);
-          })
         ),
-        this.stateService.chainTip$
-          .pipe(
-            switchMap(() => {
-              return this.miningService.getMiningStats(this.miningWindowPreference);
-            })
-          )
-      )
+      this.stateService.chainTip$
+        .pipe(
+          map(() => this.miningWindowPreference)
+        )
+    )
       .pipe(
+        switchMap((timespan) => {
+          return this.miningService.getMiningStats(timespan);
+        }),
         tap(data => {
           this.isLoading = false;
           this.prepareChartOptions(data);
         }),
-        shareReplay(1)
+        shareReplay({ bufferSize: 1, refCount: true })
       );
   }
 
@@ -376,7 +376,8 @@ export class Bip54CoinbaseGraphComponent implements OnInit, OnDestroy {
   }
 
   onChartInit(ec): void {
-    if (this.chartInstance !== undefined) {
+    // the chart is recreated when data comes back after an unavailable window
+    if (this.chartInstance === ec) {
       return;
     }
 
