@@ -470,8 +470,9 @@ class ElectrsApi implements AbstractBitcoinApi {
   $getRawMempoolWithTip(): Promise<{ txids: IEsploraApi.Transaction['txid'][], tipHeight: number | null }> {
     return this.failoverRouter.$getResponse<IEsploraApi.Transaction['txid'][]>('/mempool/txids').then((response) => {
       // electrs versions that support it report the chain height their mempool snapshot was taken at
-      const tipHeight = parseInt(response.headers?.['x-mempool-tip-height'], 10);
-      return { txids: response.data, tipHeight: Number.isNaN(tipHeight) ? null : tipHeight };
+      const header = response.headers?.['x-mempool-tip-height'];
+      const tipHeight = typeof header === 'string' && /^\d+$/.test(header) ? Number(header) : NaN;
+      return { txids: response.data, tipHeight: Number.isSafeInteger(tipHeight) ? tipHeight : null };
     });
   }
 

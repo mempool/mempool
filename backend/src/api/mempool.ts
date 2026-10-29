@@ -23,6 +23,7 @@ class Mempool {
   private spendMap = new Map<string, MempoolTransactionExtended>();
   private recentlyDeleted: MempoolTransactionExtended[][] = []; // buffer of transactions deleted in recent mempool updates
   private staleSnapshotSince: number | null = null; // when we started skipping stale esplora mempool snapshots
+  private staleSnapshotWarned = false;
   private static readonly MAX_STALE_SNAPSHOT_WAIT_MS = 60_000;
   private mempoolInfo: IBitcoinApi.MempoolInfo;
   public clusterMempool: ClusterMempool | null = null;
@@ -132,6 +133,7 @@ class Mempool {
     const currentHeight = blocks.getCurrentBlockHeight();
     if (snapshotTipHeight === null || snapshotTipHeight >= currentHeight) {
       this.staleSnapshotSince = null;
+      this.staleSnapshotWarned = false;
       return false;
     }
     const now = Date.now();
@@ -139,6 +141,10 @@ class Mempool {
       this.staleSnapshotSince = now;
     }
     if (now - this.staleSnapshotSince > Mempool.MAX_STALE_SNAPSHOT_WAIT_MS) {
+      if (this.staleSnapshotWarned) {
+        return false;
+      }
+      this.staleSnapshotWarned = true;
       logger.warn(`Using a mempool snapshot from height ${snapshotTipHeight} although the latest block is ${currentHeight}: esplora has not caught up in ${Mempool.MAX_STALE_SNAPSHOT_WAIT_MS / 1000} seconds`);
       return false;
     }
@@ -197,7 +203,11 @@ class Mempool {
     this.addToSpendMap(Object.values(this.mempoolCache));
   }
 
-  public async $reloadMempool(expectedCount: number): Promise<MempoolTransactionExtended[]> {
+  /**
+   * Load the mempool in bulk. Only txids in `snapshot` are added: pages can come from a different esplora
+   * host than the txid list did (failover), and that host may still list transactions that were just mined.
+   */
+  public async $reloadMempool(expectedCount: number, snapshot?: Set<string>): Promise<MempoolTransactionExtended[]> {
     let count = 0;
     let done = false;
     let last_txid;
@@ -209,7 +219,7 @@ class Mempool {
         if (result) {
           for (const tx of result) {
             const extendedTransaction = transactionUtils.extendMempoolTransaction(tx);
-            if (!this.mempoolCache[extendedTransaction.txid]) {
+            if (!this.mempoolCache[extendedTransaction.txid] && (!snapshot || snapshot.has(extendedTransaction.txid))) {
               newTransactions.push(extendedTransaction);
               this.mempoolCache[extendedTransaction.txid] = extendedTransaction;
             }
@@ -306,7 +316,7 @@ class Mempool {
       this.inSync = false;
       logger.info(`Missing ${transactions.length - currentMempoolSize} mempool transactions, attempting to reload in bulk from esplora`);
       try {
-        newTransactions = await this.$reloadMempool(transactions.length);
+        newTransactions = await this.$reloadMempool(transactions.length, new Set(transactions));
         if (config.REDIS.ENABLED) {
           for (const tx of newTransactions) {
             await redisCache.$addTransaction(tx);
