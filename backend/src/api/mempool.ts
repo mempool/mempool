@@ -22,6 +22,8 @@ class Mempool {
   private mempoolCandidates: { [txid: string ]: boolean } = {};
   private spendMap = new Map<string, MempoolTransactionExtended>();
   private recentlyDeleted: MempoolTransactionExtended[][] = []; // buffer of transactions deleted in recent mempool updates
+  private staleSnapshotSince: number | null = null; // when we started skipping stale esplora mempool snapshots
+  private static readonly MAX_STALE_SNAPSHOT_WAIT_MS = 60_000;
   private mempoolInfo: IBitcoinApi.MempoolInfo;
   public clusterMempool: ClusterMempool | null = null;
   private mempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, newTransactions: MempoolTransactionExtended[],
@@ -117,6 +119,31 @@ class Mempool {
 
   public getMempool(): { [txid: string]: MempoolTransactionExtended } {
     return this.mempoolCache;
+  }
+
+  /**
+   * With the esplora backend, blocks are applied from Bitcoin Core but the mempool txid list comes from
+   * electrs, which can still list the transactions of a block we already applied. electrs versions that
+   * support it report the chain height their snapshot was taken at: skip a snapshot from before our latest
+   * block until electrs catches up, but for at most MAX_STALE_SNAPSHOT_WAIT_MS so that an electrs that is
+   * stuck, or behind after a reorg to a lower height, can't freeze the mempool.
+   */
+  public isStaleSnapshot(snapshotTipHeight: number | null): boolean {
+    const currentHeight = blocks.getCurrentBlockHeight();
+    if (snapshotTipHeight === null || snapshotTipHeight >= currentHeight) {
+      this.staleSnapshotSince = null;
+      return false;
+    }
+    const now = Date.now();
+    if (this.staleSnapshotSince === null) {
+      this.staleSnapshotSince = now;
+    }
+    if (now - this.staleSnapshotSince > Mempool.MAX_STALE_SNAPSHOT_WAIT_MS) {
+      logger.warn(`Using a mempool snapshot from height ${snapshotTipHeight} although the latest block is ${currentHeight}: esplora has not caught up in ${Mempool.MAX_STALE_SNAPSHOT_WAIT_MS / 1000} seconds`);
+      return false;
+    }
+    logger.debug(`Skipping mempool update: snapshot from height ${snapshotTipHeight}, latest block ${currentHeight}`);
+    return true;
   }
 
   public getSpendMap(): Map<string, MempoolTransactionExtended> {

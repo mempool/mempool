@@ -3,6 +3,8 @@ import { IEsploraApi } from './esplora-api.interface';
 
 export interface AbstractBitcoinApi {
   $getRawMempool(): Promise<IEsploraApi.Transaction['txid'][]>;
+  // the mempool txids, and the chain height the snapshot was taken at if the backend reports it
+  $getRawMempoolWithTip?(): Promise<{ txids: IEsploraApi.Transaction['txid'][], tipHeight: number | null }>;
   $getRawTransaction(txId: string, skipConversion?: boolean, addPrevout?: boolean, lazyPrevouts?: boolean): Promise<IEsploraApi.Transaction>;
   $getRawTransactions(txids: string[]): Promise<IEsploraApi.Transaction[]>;
   $getMempoolTransactions(txids: string[]): Promise<IEsploraApi.Transaction[]>;

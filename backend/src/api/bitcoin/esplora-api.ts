@@ -1,5 +1,5 @@
 import config from '../../config';
-import axios, { isAxiosError } from 'axios';
+import axios, { AxiosResponse, isAxiosError } from 'axios';
 import http from 'http';
 import https from 'https';
 import { AbstractBitcoinApi, HealthCheckHost } from './bitcoin-api-abstract-factory';
@@ -411,6 +411,10 @@ class FailoverRouter {
   }
 
   private async $query<T>(method: 'get'| 'post', path, data: any, responseType = 'json', host = this.activeHost, retry: boolean = true): Promise<T> {
+    return this.$request<T>(method, path, data, responseType, host, retry).then((response) => response.data);
+  }
+
+  private async $request<T>(method: 'get'| 'post', path, data: any, responseType = 'json', host = this.activeHost, retry: boolean = true): Promise<AxiosResponse<T>> {
     let axiosConfig;
     let url;
     if (host.socket) {
@@ -426,7 +430,7 @@ class FailoverRouter {
     return (method === 'post'
         ? this.requestConnection.post<T>(url, data, axiosConfig)
         : this.requestConnection.get<T>(url, axiosConfig)
-    ).then((response) => { host.failures = Math.max(0, host.failures - 1); return response.data; })
+    ).then((response) => { host.failures = Math.max(0, host.failures - 1); return response; })
       .catch((e) => {
         let fallbackHost = this.fallbackHost;
         if (e?.response?.status !== 404) {
@@ -436,7 +440,7 @@ class FailoverRouter {
         }
         if (retry && e?.code === 'ECONNREFUSED' && this.multihost) {
           // Retry immediately
-          return this.$query(method, path, data, responseType, fallbackHost, false);
+          return this.$request<T>(method, path, data, responseType, fallbackHost, false);
         } else {
           throw e;
         }
@@ -445,6 +449,10 @@ class FailoverRouter {
 
   public async $get<T>(path, responseType = 'json', params: any = null): Promise<T> {
     return this.$query<T>('get', path, params ? { params } : null, responseType);
+  }
+
+  public async $getResponse<T>(path): Promise<AxiosResponse<T>> {
+    return this.$request<T>('get', path, null);
   }
 
   public async $post<T>(path, data: any, responseType = 'json'): Promise<T> {
@@ -457,6 +465,14 @@ class ElectrsApi implements AbstractBitcoinApi {
 
   $getRawMempool(): Promise<IEsploraApi.Transaction['txid'][]> {
     return this.failoverRouter.$get<IEsploraApi.Transaction['txid'][]>('/mempool/txids');
+  }
+
+  $getRawMempoolWithTip(): Promise<{ txids: IEsploraApi.Transaction['txid'][], tipHeight: number | null }> {
+    return this.failoverRouter.$getResponse<IEsploraApi.Transaction['txid'][]>('/mempool/txids').then((response) => {
+      // electrs versions that support it report the chain height their mempool snapshot was taken at
+      const tipHeight = parseInt(response.headers?.['x-mempool-tip-height'], 10);
+      return { txids: response.data, tipHeight: Number.isNaN(tipHeight) ? null : tipHeight };
+    });
   }
 
   $getRawTransaction(txId: string): Promise<IEsploraApi.Transaction> {
