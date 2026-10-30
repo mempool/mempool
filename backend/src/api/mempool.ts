@@ -22,6 +22,12 @@ class Mempool {
   private mempoolCandidates: { [txid: string ]: boolean } = {};
   private spendMap = new Map<string, MempoolTransactionExtended>();
   private recentlyDeleted: MempoolTransactionExtended[][] = []; // buffer of transactions deleted in recent mempool updates
+  // txids confirmed in the most recent blocks applied from Bitcoin Core, newest first.
+  // With the esplora backend, blocks come from Core but the mempool txid list comes from electrs, which
+  // can still be indexing a block the backend has already applied; its stale list would re-add that block's transactions.
+  private recentlyMined: { hash: string, txids: Set<string> }[] = [];
+  // one block covers the normal case; two also covers a second block found before electrs catches up
+  private static readonly RECENTLY_MINED_BLOCKS = 2;
   private mempoolInfo: IBitcoinApi.MempoolInfo;
   public clusterMempool: ClusterMempool | null = null;
   private mempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, newTransactions: MempoolTransactionExtended[],
@@ -119,6 +125,54 @@ class Mempool {
     return this.mempoolCache;
   }
 
+  /**
+   * Record the transactions confirmed in a block just applied from Bitcoin Core, so a stale mempool
+   * snapshot cannot add them back. A block that does not build on the last one recorded (a reorg)
+   * clears the record, so transactions returned to the mempool by the reorg can be added again.
+   * Only the esplora backend needs this: the others take blocks and the mempool from Core alike.
+   */
+  public setRecentlyMined(blockHash: string, previousBlockHash: string, txids: string[]): void {
+    if (config.MEMPOOL.BACKEND !== 'esplora') {
+      return;
+    }
+    if (this.recentlyMined.length && this.recentlyMined[0].hash !== previousBlockHash) {
+      this.recentlyMined = [];
+    }
+    this.recentlyMined.unshift({ hash: blockHash, txids: new Set(txids) });
+    this.recentlyMined.length = Math.min(this.recentlyMined.length, Mempool.RECENTLY_MINED_BLOCKS);
+  }
+
+  private isRecentlyMined(txid: string): boolean {
+    return this.recentlyMined.some(block => block.txids.has(txid));
+  }
+
+  /**
+   * Clear the record if its newest block is no longer in Core's active chain. This catches reorgs
+   * the block loop does not apply, such as one that leaves the height unchanged. Older recorded
+   * blocks are ancestors of the newest, so one check covers them all. An error also clears the
+   * record: at worst a stale snapshot re-adds mined transactions, never hides genuine ones.
+   *
+   * @asyncSafe
+   */
+  private async $clearRecentlyMinedIfOrphaned(): Promise<void> {
+    if (!this.recentlyMined.length) {
+      return;
+    }
+    const hash = this.recentlyMined[0].hash;
+    try {
+      const header: IBitcoinApi.Block = await bitcoinClient.getBlockHeader(hash, true);
+      if (header?.confirmations > 0) {
+        return;
+      }
+      logger.debug(`Block ${hash} is no longer in the active chain, clearing recently mined transactions`);
+    } catch (e) {
+      logger.debug(`Could not check whether block ${hash} is in the active chain, clearing recently mined transactions: ${e instanceof Error ? e.message : e}`);
+    }
+    if (this.recentlyMined[0]?.hash === hash) {
+      this.recentlyMined = [];
+    }
+  }
+
   public getSpendMap(): Map<string, MempoolTransactionExtended> {
     return this.spendMap;
   }
@@ -175,6 +229,7 @@ class Mempool {
     let done = false;
     let last_txid;
     const newTransactions: MempoolTransactionExtended[] = [];
+    await this.$clearRecentlyMinedIfOrphaned();
     loadingIndicators.setProgress('mempool', count / expectedCount * 100);
     while (!done) {
       try {
@@ -182,7 +237,7 @@ class Mempool {
         if (result) {
           for (const tx of result) {
             const extendedTransaction = transactionUtils.extendMempoolTransaction(tx);
-            if (!this.mempoolCache[extendedTransaction.txid]) {
+            if (!this.mempoolCache[extendedTransaction.txid] && !this.isRecentlyMined(extendedTransaction.txid)) {
               newTransactions.push(extendedTransaction);
               this.mempoolCache[extendedTransaction.txid] = extendedTransaction;
             }
@@ -292,7 +347,16 @@ class Mempool {
     }
 
     if (!loaded) {
-      const remainingTxids = transactions.filter(txid => !this.mempoolCache[txid]);
+      const uncachedTxids = transactions.filter(txid => !this.mempoolCache[txid]);
+      let remainingTxids = uncachedTxids.filter(txid => !this.isRecentlyMined(txid));
+      if (remainingTxids.length < uncachedTxids.length) {
+        // only consult Core when the record would hide something
+        await this.$clearRecentlyMinedIfOrphaned();
+        remainingTxids = uncachedTxids.filter(txid => !this.isRecentlyMined(txid));
+      }
+      if (remainingTxids.length < uncachedTxids.length) {
+        logger.debug(`Ignored ${uncachedTxids.length - remainingTxids.length} recently mined transactions in a stale mempool snapshot`);
+      }
       const sliceLength = config.ESPLORA.BATCH_QUERY_BASE_SIZE;
       for (let i = 0; i < Math.ceil(remainingTxids.length / sliceLength); i++) {
         const slice = remainingTxids.slice(i * sliceLength, (i + 1) * sliceLength);
