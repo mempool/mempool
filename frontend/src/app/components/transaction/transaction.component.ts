@@ -39,6 +39,7 @@ import { PartnerCodeService } from '@app/services/partner-code.service';
 import { ZONE_SERVICE } from '@app/injection-tokens';
 import { MiningService, MiningStats } from '@app/services/mining.service';
 import { ETA, EtaService } from '@app/services/eta.service';
+import { calculatePayjoinDetails, parsePayjoinOwnership, PayjoinCalculation, PayjoinOwnership } from '@app/shared/payjoin-ownership';
 
 export interface Pool {
   id: number;
@@ -107,6 +108,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   currencyChangeSubscription: Subscription;
   partnerCodeSubscription: Subscription;
   fragmentParams: URLSearchParams;
+  payjoinOwnership: PayjoinOwnership | null = null;
+  payjoinCalculation: PayjoinCalculation | null = null;
   rbfTransaction: undefined | Transaction;
   replaced: boolean = false;
   rbfReplaces: string[];
@@ -361,6 +364,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
       if (!this.tx) {
         this.tx = tx;
+        this.updatePayjoinOwnership();
         this.setFeatures();
         this.isCached = true;
         if (tx.fee === undefined) {
@@ -689,6 +693,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.seoService.clearSoft404();
 
           this.tx = tx;
+          this.updatePayjoinOwnership();
           this.setFeatures();
           this.isCached = false;
           if (tx.fee === undefined) {
@@ -1084,6 +1089,8 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.gotInitialPosition = false;
     this.error = undefined;
     this.tx = null;
+    this.payjoinOwnership = null;
+    this.payjoinCalculation = null;
     this.txChanged$.next(true);
     this.setFeatures();
     this.waitingForTransaction = false;
@@ -1213,6 +1220,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     const anchor = Array.from(this.fragmentParams.entries()).find(([, value]) => value === '')?.[0] || null;
     this.inputIndex = inputIndex;
     this.outputIndex = outputIndex;
+    this.updatePayjoinOwnership();
     if (this.fragmentParams.has('accelerate')) {
       this.forceAccelerationSummary = true;
     }
@@ -1236,6 +1244,19 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.firstFragmentScroll = false;
       }
     }
+  }
+
+  private updatePayjoinOwnership(): void {
+    this.payjoinOwnership = this.tx && !this.isLiquid
+      ? parsePayjoinOwnership(this.fragmentParams?.get('pj'), this.tx.vin.length, this.tx.vout.length)
+      : null;
+    this.payjoinCalculation = this.tx && this.payjoinOwnership
+      ? calculatePayjoinDetails(
+          this.tx.vin.map((vin) => vin.prevout?.value),
+          this.tx.vout.map((vout) => vout.value),
+          this.payjoinOwnership,
+        )
+      : null;
   }
 
   setHasAccelerationDetails(hasDetails: boolean): void {

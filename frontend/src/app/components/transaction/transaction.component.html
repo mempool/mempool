@@ -55,6 +55,7 @@
       [transactionTime]="transactionTime"
       [isLoadingFirstSeen]="isLoadingFirstSeen"
       [featuresEnabled]="featuresEnabled"
+      [isPayjoin]="!!payjoinCalculation"
       [auditStatus]="auditStatus"
       [filters]="filters"
       [miningStats]="miningStats"
@@ -210,7 +211,121 @@
     </div>
 
 
-    <app-transactions-list #txList [transactions]="[tx]" [cached]="isCached" [errorUnblinded]="errorUnblinded" [inputIndex]="inputIndex" [outputIndex]="outputIndex" [transactionPage]="true"></app-transactions-list>
+    <app-transactions-list #txList [transactions]="[tx]" [cached]="isCached" [errorUnblinded]="errorUnblinded" [inputIndex]="inputIndex" [outputIndex]="outputIndex" [payjoinOwnership]="payjoinOwnership" [transactionPage]="true"></app-transactions-list>
+
+    <ng-container *ngIf="payjoinCalculation as calculation">
+      <div class="title text-start">
+        <h2 i18n="transaction.payjoin|Payjoin transaction summary">Payjoin</h2>
+      </div>
+      <div class="box payjoin-summary">
+        <p i18n="transaction.payjoin-actual-amount|Payjoin identification and actual amount received">
+          This transaction is claimed as a Payjoin. Actual amount received: <strong class="payjoin-amount"><app-amount [satoshis]="calculation.actualAmount" [noFiat]="true"></app-amount></strong>
+        </p>
+
+        <details class="payjoin-calculations">
+          <summary class="btn btn-outline-info btn-sm payjoin-calculation-toggle">
+            <span class="show-when-closed" i18n="transaction.payjoin-see-calculations|Show Payjoin calculations">See calculations</span>
+            <span class="show-when-open" i18n="transaction.payjoin-hide-calculations|Hide Payjoin calculations">Hide calculations</span>
+          </summary>
+
+          <div class="payjoin-calculation-content">
+            <div class="payjoin-parties">
+              <section class="payjoin-party sender">
+                <h3 i18n="transaction.payjoin-sender|Payjoin sender heading">Sender</h3>
+
+                <h4 i18n="transaction.payjoin-contributed|Payjoin contributed heading">Contributed</h4>
+                <dl class="payjoin-values">
+                  <div class="payjoin-value-row total">
+                    <dt i18n="transaction.payjoin-total-contributed|Payjoin total contributed">Total contributed</dt>
+                    <dd><app-amount [satoshis]="calculation.senderInputs" [noFiat]="true"></app-amount></dd>
+                  </div>
+                  <ng-container *ngIf="calculation.senderInputValues.length > 1">
+                    <div class="payjoin-value-row breakdown" *ngFor="let input of calculation.senderInputValues">
+                      <dt i18n="transaction.payjoin-input-number|Payjoin input number">Input {{ input.index + 1 }}</dt>
+                      <dd><app-amount [satoshis]="input.value" [noFiat]="true"></app-amount></dd>
+                    </div>
+                  </ng-container>
+                </dl>
+
+                <h4 i18n="transaction.payjoin-returned-to-sender|Payjoin outputs returned to sender heading">Returned to sender</h4>
+                <dl class="payjoin-values">
+                  <div class="payjoin-value-row total">
+                    <dt i18n="transaction.payjoin-total-returned|Payjoin total returned to sender">Total returned</dt>
+                    <dd><app-amount [satoshis]="calculation.senderOutputs" [noFiat]="true"></app-amount></dd>
+                  </div>
+                  <ng-container *ngIf="calculation.senderOutputValues.length > 1">
+                    <div class="payjoin-value-row breakdown" *ngFor="let output of calculation.senderOutputValues">
+                      <dt i18n="transaction.payjoin-output-number|Payjoin output number">Output {{ output.index + 1 }}</dt>
+                      <dd><app-amount [satoshis]="output.value" [noFiat]="true"></app-amount></dd>
+                    </div>
+                  </ng-container>
+                </dl>
+
+                <div class="payjoin-net">
+                  <div class="payjoin-net-title" i18n="transaction.payjoin-sender-net-debit|Payjoin sender net debit">Net debit</div>
+                  <div class="payjoin-equation-description" i18n="transaction.payjoin-sender-net-debit-formula|Payjoin sender net debit formula">Contributed − returned</div>
+                  <div class="payjoin-equation-values">
+                    <app-amount [satoshis]="calculation.senderInputs" [noFiat]="true"></app-amount>
+                    <span aria-hidden="true">−</span>
+                    <app-amount [satoshis]="calculation.senderOutputs" [noFiat]="true"></app-amount>
+                    <span aria-hidden="true">=</span>
+                    <strong><app-amount [satoshis]="calculation.senderNetDebit" [noFiat]="true"></app-amount></strong>
+                  </div>
+                </div>
+              </section>
+
+              <section class="payjoin-party recipient">
+                <h3 i18n="transaction.payjoin-recipient|Payjoin recipient heading">Recipient</h3>
+
+                <h4 i18n="transaction.payjoin-contributed|Payjoin contributed heading">Contributed</h4>
+                <dl class="payjoin-values">
+                  <div class="payjoin-value-row total">
+                    <dt i18n="transaction.payjoin-total-contributed|Payjoin total contributed">Total contributed</dt>
+                    <dd><app-amount [satoshis]="calculation.recipientInputs" [noFiat]="true"></app-amount></dd>
+                  </div>
+                  <ng-container *ngIf="calculation.recipientInputValues.length > 1">
+                    <div class="payjoin-value-row breakdown" *ngFor="let input of calculation.recipientInputValues">
+                      <dt i18n="transaction.payjoin-input-number|Payjoin input number">Input {{ input.index + 1 }}</dt>
+                      <dd><app-amount [satoshis]="input.value" [noFiat]="true"></app-amount></dd>
+                    </div>
+                  </ng-container>
+                </dl>
+
+                <h4 i18n="transaction.payjoin-outputs-to-recipient|Payjoin outputs to recipient heading">Outputs to recipient</h4>
+                <dl class="payjoin-values">
+                  <div class="payjoin-value-row total">
+                    <dt i18n="transaction.payjoin-total-to-recipient|Payjoin total outputs to recipient">Total to recipient</dt>
+                    <dd><app-amount [satoshis]="calculation.recipientOutputs" [noFiat]="true"></app-amount></dd>
+                  </div>
+                  <ng-container *ngIf="calculation.recipientOutputValues.length > 1">
+                    <div class="payjoin-value-row breakdown" *ngFor="let output of calculation.recipientOutputValues">
+                      <dt i18n="transaction.payjoin-output-number|Payjoin output number">Output {{ output.index + 1 }}</dt>
+                      <dd><app-amount [satoshis]="output.value" [noFiat]="true"></app-amount></dd>
+                    </div>
+                  </ng-container>
+                </dl>
+
+                <div class="payjoin-net">
+                  <div class="payjoin-net-title">
+                    <span i18n="transaction.payjoin-recipient-net-gain|Payjoin recipient net gain">Net gain</span>
+                    <span class="payjoin-actual-label" i18n="transaction.payjoin-actual-amount-label|Payjoin actual amount received label">Actual amount received</span>
+                  </div>
+                  <div class="payjoin-equation-description" i18n="transaction.payjoin-recipient-net-gain-formula|Payjoin recipient net gain formula">Outputs to recipient − contributed</div>
+                  <div class="payjoin-equation-values">
+                    <app-amount [satoshis]="calculation.recipientOutputs" [noFiat]="true"></app-amount>
+                    <span aria-hidden="true">−</span>
+                    <app-amount [satoshis]="calculation.recipientInputs" [noFiat]="true"></app-amount>
+                    <span aria-hidden="true">=</span>
+                    <strong><app-amount [satoshis]="calculation.recipientNetGain" [noFiat]="true"></app-amount></strong>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+          </div>
+        </details>
+      </div>
+    </ng-container>
 
     <div class="title text-start">
       <h2 i18n="transaction.details|Transaction Details">Details</h2>

@@ -118,6 +118,17 @@
                       </ng-template>
                     </ng-container>
                   </div>
+                  @if (payjoinOwnership?.inputs[vindex]; as owner) {
+                    <div>
+                      <span class="badge payjoin-owner" [class.sender]="owner === 'sender'" [class.recipient]="owner === 'recipient'">
+                        @if (owner === 'sender') {
+                          <ng-container i18n="transactions-list.payjoin-sender">Sender</ng-container>
+                        } @else {
+                          <ng-container i18n="transactions-list.payjoin-recipient">Recipient</ng-container>
+                        }
+                      </span>
+                    </div>
+                  }
                 </td>
                 <td class="text-end nowrap amount" [class]="{large: tx.largeInput}">
                   <button *ngIf="vin.isInscription" (click)="toggleOrdData(tx.txid, 'vin', vindex)" type="button" class="btn btn-sm badge badge-ord primary" style="margin-right: 10px;" i18n="transaction.inscription-tag">Inscription</button>
@@ -344,6 +355,17 @@
                   <div>
                     <app-address-labels [vout]="vout" [channel]="tx._channels && tx._channels.outputs[vindex] ? tx._channels.outputs[vindex] : null"></app-address-labels>
                   </div>
+                  @if (payjoinOwnership?.outputs[vindex]; as owner) {
+                    <div>
+                      <span class="badge payjoin-owner" [class.sender]="owner === 'sender'" [class.recipient]="owner === 'recipient'">
+                        @if (owner === 'sender') {
+                          <ng-container i18n="transactions-list.payjoin-sender">Sender</ng-container>
+                        } @else {
+                          <ng-container i18n="transactions-list.payjoin-recipient">Recipient</ng-container>
+                        }
+                      </span>
+                    </div>
+                  }
                   <ng-template #scriptpubkey_type>
                     <ng-template [ngIf]="vout.pegout" [ngIfElse]="defaultscriptpubkey_type">
                       <ng-container i18n="transactions-list.peg-out-to">Peg-out to <ng-container *ngTemplateOutlet="pegOutLink"></ng-container></ng-container>

@@ -94,6 +94,186 @@
   margin-bottom: 0px;
 }
 
+.payjoin-summary {
+  border-left: 4px solid var(--primary);
+  margin-bottom: 1.5rem;
+
+  p {
+    margin: 0;
+  }
+
+  app-amount {
+    display: inline-block;
+  }
+}
+
+.payjoin-calculations {
+  margin-top: 1rem;
+
+  summary {
+    list-style: none;
+    width: max-content;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+
+  .show-when-open {
+    display: none;
+  }
+
+  &[open] {
+    .show-when-closed {
+      display: none;
+    }
+
+    .show-when-open {
+      display: inline;
+    }
+  }
+}
+
+.payjoin-calculation-content {
+  border-top: 1px solid rgba(127, 127, 127, 0.25);
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+.payjoin-parties {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+
+  @media (max-width: 767.98px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.payjoin-party {
+  background: var(--stat-box-bg);
+  border-top: 3px solid;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+
+  &.sender {
+    border-color: #2196f3;
+  }
+
+  &.recipient {
+    border-color: #9c27b0;
+  }
+
+  h4 {
+    color: var(--transparent-fg);
+    font-size: 0.8rem;
+    margin: 0.75rem 0 0.25rem;
+    text-transform: uppercase;
+  }
+
+  .payjoin-values:last-of-type {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  @supports (grid-template-rows: subgrid) {
+    .payjoin-parties {
+      row-gap: 0;
+    }
+
+    .payjoin-party {
+      display: grid;
+      grid-row: span 6;
+      grid-template-rows: subgrid;
+
+      .payjoin-net {
+        margin-top: 0;
+      }
+    }
+  }
+}
+
+.payjoin-calculation-content h3 {
+  font-size: 1rem;
+  margin: 0 0 0.5rem;
+}
+
+.payjoin-values {
+  margin: 0;
+}
+
+.payjoin-value-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  padding: 0.35rem 0;
+
+  dt {
+    font-weight: normal;
+  }
+
+  dd {
+    font-weight: 600;
+    margin: 0;
+    text-align: right;
+  }
+
+  &.total {
+    border-bottom: 1px solid rgba(127, 127, 127, 0.25);
+    margin-bottom: 0.25rem;
+    padding-bottom: 0.6rem;
+  }
+
+  &.breakdown {
+    color: var(--transparent-fg);
+    font-size: 0.85rem;
+    padding: 0.15rem 0;
+
+    dt {
+      padding-left: 1rem;
+    }
+
+    dd {
+      font-weight: normal;
+    }
+  }
+}
+
+.payjoin-net {
+  background: var(--box-bg);
+  margin-top: auto;
+  padding: 0.75rem;
+}
+
+.payjoin-net-title {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  font-weight: 600;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+.payjoin-actual-label {
+  font-size: 0.75rem;
+}
+
+.payjoin-equation-description {
+  color: var(--transparent-fg);
+  font-size: 0.85rem;
+  margin-top: 0.15rem;
+}
+
+.payjoin-equation-values {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+
 .graph-container {
   position: relative;
   width: 100%;
