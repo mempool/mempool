@@ -299,7 +299,7 @@
                           <td i18n="transactions-list.previous-output-type">Previous output type</td>
                           @if (debuggableSet.has(vindex)) {
                             <td style="text-align: left;">
-                              <a class="debug-link" (click)="selectDebugInput(vindex)" ngbTooltip="debug script" i18n-ngbTooltip="shared.debug-script">
+                              <a href="" (click)="selectDebugInput(vindex)" class="debug-link" ngbTooltip="debug script" i18n-ngbTooltip="shared.debug-script">
                                 <span class="script">
                                   <fa-icon [icon]="['fas', 'code']" [fixedWidth]="true"></fa-icon>
                                 </span>

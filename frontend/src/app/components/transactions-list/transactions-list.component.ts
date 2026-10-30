@@ -607,11 +607,11 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
     return limit;
   }
 
-  selectDebugInput(vinIndex: number): void {
-    if (!this.debuggableSet.has(vinIndex) || this.debugIndex === vinIndex || window.getSelection()?.toString()) {
-      return;
+  selectDebugInput(vinIndex: number): boolean {
+    if (this.debuggableSet.has(vinIndex) && this.debugIndex !== vinIndex && !window.getSelection()?.toString()) {
+      this.debugInput.emit(vinIndex);
     }
-    this.debugInput.emit(vinIndex);
+    return false;
   }
 
   toggleShowFullScript(vinIndex: number): void {
