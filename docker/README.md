@@ -360,7 +360,6 @@ Corresponding `docker-compose.yml` overrides:
   "LIGHTNING": {
     "ENABLED": false
     "BACKEND": "lnd"
-    "TOPOLOGY_FOLDER": ""
     "STATS_REFRESH_INTERVAL": 600
     "GRAPH_REFRESH_INTERVAL": 600
     "LOGGER_UPDATE_INTERVAL": 30
@@ -373,7 +372,6 @@ Corresponding `docker-compose.yml` overrides:
     environment:
       LIGHTNING_ENABLED: false
       LIGHTNING_BACKEND: "lnd"
-      LIGHTNING_TOPOLOGY_FOLDER: ""
       LIGHTNING_STATS_REFRESH_INTERVAL: 600
       LIGHTNING_GRAPH_REFRESH_INTERVAL: 600
       LIGHTNING_LOGGER_UPDATE_INTERVAL: 30
