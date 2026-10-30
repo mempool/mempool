@@ -2,17 +2,20 @@ name: CI Pipeline for the Backend and Frontend
 
 on:
   pull_request:
-    types: [opened, review_requested, synchronize]
+    types: [opened, synchronize]
   push:
     branches:
       - master
+
+permissions:
+  contents: read
 
 jobs:
   backend:
     if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
     strategy:
       matrix:
-        node: ["24.13.0"]
+        node: ["26.12.1"]
         flavor: ["dev", "prod"]
       fail-fast: false
     runs-on: mempool-ci
@@ -20,20 +23,23 @@ jobs:
     name: Backend (${{ matrix.flavor }}) - node ${{ matrix.node }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ${{ matrix.node }}/${{ matrix.flavor }}
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ matrix.node }}
           registry-url: "https://registry.npmjs.org"
           cache: 'npm'
           cache-dependency-path: '${{ matrix.node }}/${{ matrix.flavor }}/backend/package-lock.json'
 
+      - name: Install npm 11.12.0
+        run: npm install -g npm@11.12.0
+
       - name: Cache node modules
-        uses: actions/cache@v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ matrix.node }}/${{ matrix.flavor }}/backend/node_modules
           key: ${{ runner.os }}-backend-${{ matrix.flavor }}-node-${{ matrix.node }}-${{ hashFiles('${{ matrix.node }}/${{ matrix.flavor }}/backend/package-lock.json') }}
@@ -47,7 +53,7 @@ jobs:
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}
 
       - name: Cache Rust dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ~/.cargo/bin/
@@ -61,20 +67,18 @@ jobs:
             ${{ runner.os }}-cargo-
 
       - name: Install ${{ steps.gettoolchain.outputs.toolchain }} Rust toolchain
-        # Latest version available on this commit is 1.71.1
-        # Commit date is Aug 3, 2023
-        uses: dtolnay/rust-toolchain@f7ccc83f9ed1e5b9c81d8a67d7ad1a747e22a561
+        uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772 # v1
         with:
           toolchain: ${{ steps.gettoolchain.outputs.toolchain }}
 
       - name: Install
         if: ${{ matrix.flavor == 'dev'}}
-        run: npm ci
+        run: bash meta/scripts/check-install-scripts.sh && npm ci
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
 
       - name: Install (Prod dependencies only)
         if: ${{ matrix.flavor == 'prod'}}
-        run: npm ci --omit=dev --omit=optional
+        run: bash meta/scripts/check-install-scripts.sh && npm ci --omit=dev --omit=optional
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/backend
 
       - name: Lint
@@ -96,24 +100,27 @@ jobs:
     name: "Cache assets for builds"
     strategy:
       matrix:
-        node: ["24.13.0"]
+        node: ["26.12.1"]
     runs-on: mempool-ci
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: assets
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ matrix.node }}
           registry-url: "https://registry.npmjs.org"
           cache: 'npm'
           cache-dependency-path: 'assets/frontend/package-lock.json'
 
+      - name: Install npm 11.12.0
+        run: npm install -g npm@11.12.0
+
       - name: Cache node modules for frontend
-        uses: actions/cache@v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: assets/frontend/node_modules
           key: ${{ runner.os }}-cache-frontend-node-${{ matrix.node }}-${{ hashFiles('assets/frontend/package-lock.json') }}
@@ -122,13 +129,13 @@ jobs:
             ${{ runner.os }}-cache-frontend-
 
       - name: Install (Prod dependencies only)
-        run: npm ci --omit=dev --omit=optional
+        run: bash meta/scripts/check-install-scripts.sh && npm ci --omit=dev --omit=optional
         working-directory: assets/frontend
 
       - name: Restore cached mining pool assets
         continue-on-error: true
         id: cache-mining-pool-restore
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             mining-pool-assets.zip
@@ -137,7 +144,7 @@ jobs:
       - name: Restore promo video assets
         continue-on-error: true
         id: cache-promo-video-restore
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             promo-video-assets.zip
@@ -170,20 +177,20 @@ jobs:
         run: zip -jrq promo-video-assets.zip assets/frontend/src/resources/promo-video/*
 
       - name: Upload mining pool assets as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: mining-pool-assets
           path: mining-pool-assets.zip
 
       - name: Upload promo video assets as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: promo-video-assets
           path: promo-video-assets.zip
 
       - name: Save mining pool assets cache
         id: cache-mining-pool-save
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             mining-pool-assets.zip
@@ -191,7 +198,7 @@ jobs:
 
       - name: Save promo video assets cache
         id: cache-promo-video-save
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             promo-video-assets.zip
@@ -202,7 +209,7 @@ jobs:
     if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
     strategy:
       matrix:
-        node: ["24.13.0"]
+        node: ["26.12.1"]
         flavor: ["dev", "prod"]
       fail-fast: false
     runs-on: mempool-ci
@@ -210,20 +217,23 @@ jobs:
     name: Frontend (${{ matrix.flavor }}) - node ${{ matrix.node }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ${{ matrix.node }}/${{ matrix.flavor }}
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ matrix.node }}
           registry-url: "https://registry.npmjs.org"
           cache: 'npm'
           cache-dependency-path: '${{ matrix.node }}/${{ matrix.flavor }}/frontend/package-lock.json'
 
+      - name: Install npm 11.12.0
+        run: npm install -g npm@11.12.0
+
       - name: Cache node modules
-        uses: actions/cache@v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ matrix.node }}/${{ matrix.flavor }}/frontend/node_modules
           key: ${{ runner.os }}-frontend-${{ matrix.flavor }}-node-${{ matrix.node }}-${{ hashFiles('${{ matrix.node }}/${{ matrix.flavor }}/frontend/package-lock.json') }}
@@ -232,13 +242,13 @@ jobs:
             ${{ runner.os }}-frontend-${{ matrix.flavor }}-
 
       - name: Install (Prod dependencies only)
-        run: npm ci --omit=dev --omit=optional
+        run: bash meta/scripts/check-install-scripts.sh && npm ci --omit=dev --omit=optional
         if: ${{ matrix.flavor == 'prod'}}
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
 
       - name: Install
         if: ${{ matrix.flavor == 'dev'}}
-        run: npm ci
+        run: bash meta/scripts/check-install-scripts.sh && npm ci
         working-directory: ${{ matrix.node }}/${{ matrix.flavor }}/frontend
 
       - name: Lint
@@ -252,7 +262,7 @@ jobs:
       - name: Restore cached mining pool assets
         continue-on-error: true
         id: cache-mining-pool-restore
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             mining-pool-assets.zip
@@ -261,14 +271,14 @@ jobs:
       - name: Restore promo video assets
         continue-on-error: true
         id: cache-promo-video-restore
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             promo-video-assets.zip
           key: promo-video-assets-cache
 
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: mining-pool-assets
 
@@ -276,7 +286,7 @@ jobs:
         run: unzip -o mining-pool-assets.zip -d ${{ matrix.node }}/${{ matrix.flavor }}/frontend/src/resources/mining-pools
 
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: promo-video-assets
 
@@ -304,25 +314,28 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: ["24.13.0"]
+        node: ["26.12.1"]
         module: ["mempool", "liquid", "testnet4"]
 
     name: E2E tests for ${{ matrix.module }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: ${{ matrix.module }}
 
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ matrix.node }}
           cache: "npm"
           cache-dependency-path: ${{ matrix.module }}/frontend/package-lock.json
 
+      - name: Install npm 11.12.0
+        run: npm install -g npm@11.12.0
+
       - name: Cache node modules for e2e
-        uses: actions/cache@v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ matrix.module }}/frontend/node_modules
           key: ${{ runner.os }}-e2e-${{ matrix.module }}-node-${{ matrix.node }}-${{ hashFiles('${{ matrix.module }}/frontend/package-lock.json') }}
@@ -333,7 +346,7 @@ jobs:
       - name: Restore cached mining pool assets
         continue-on-error: true
         id: cache-mining-pool-restore
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             mining-pool-assets.zip
@@ -342,14 +355,14 @@ jobs:
       - name: Restore cached promo video assets
         continue-on-error: true
         id: cache-promo-video-restore
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             promo-video-assets.zip
           key: promo-video-assets-cache
 
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: mining-pool-assets
 
@@ -357,7 +370,7 @@ jobs:
         run: unzip -o mining-pool-assets.zip -d ${{ matrix.module }}/frontend/src/resources/mining-pools
 
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: promo-video-assets
 
@@ -367,7 +380,7 @@ jobs:
       # mempool
       - name: Chrome browser tests (${{ matrix.module }})
         if: ${{ matrix.module == 'mempool' }}
-        uses: cypress-io/github-action@v5
+        uses: cypress-io/github-action@bc982daf1fc26474fa0cf2c355d6c910616ce411 # v7.4.7
         with:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
@@ -392,7 +405,7 @@ jobs:
       # liquid
       - name: Chrome browser tests (${{ matrix.module }})
         if: ${{ matrix.module == 'liquid' }}
-        uses: cypress-io/github-action@v5
+        uses: cypress-io/github-action@bc982daf1fc26474fa0cf2c355d6c910616ce411 # v7.4.7
         with:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
@@ -417,7 +430,7 @@ jobs:
       # testnet
       - name: Chrome browser tests (${{ matrix.module }})
         if: ${{ matrix.module == 'testnet4' }}
-        uses: cypress-io/github-action@v5
+        uses: cypress-io/github-action@bc982daf1fc26474fa0cf2c355d6c910616ce411 # v7.4.7
         with:
           tag: ${{ github.event_name }}
           working-directory: ${{ matrix.module }}/frontend
@@ -445,7 +458,7 @@ jobs:
 
     steps: 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: docker
       

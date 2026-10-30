@@ -3,7 +3,7 @@ import * as WebSocket from 'ws';
 import {
   BlockExtended, TransactionExtended, MempoolTransactionExtended, WebsocketResponse,
   OptimizedStatistic, ILoadingIndicators, GbtCandidates, TxTrackingInfo,
-  MempoolDelta, MempoolDeltaTxids
+  MempoolDelta, MempoolDeltaTxids, CpfpInfo
 } from '../mempool.interfaces';
 import blocks from './blocks';
 import memPool from './mempool';
@@ -16,17 +16,12 @@ import transactionUtils from './transaction-utils';
 import rbfCache, { ReplacementInfo } from './rbf-cache';
 import difficultyAdjustment from './difficulty-adjustment';
 import feeApi from './fee-api';
-import BlocksRepository from '../repositories/BlocksRepository';
-import BlocksAuditsRepository from '../repositories/BlocksAuditsRepository';
-import BlocksSummariesRepository from '../repositories/BlocksSummariesRepository';
-import Audit from './audit';
 import priceUpdater from '../tasks/price-updater';
 import { ApiPrice } from '../repositories/PricesRepository';
 import { Acceleration } from './services/acceleration';
 import accelerationApi from './services/acceleration';
 import mempool from './mempool';
 import statistics from './statistics/statistics';
-import accelerationRepository from '../repositories/AccelerationRepository';
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
 import walletApi from './services/wallets';
 
@@ -37,7 +32,6 @@ interface AddressTransactions {
 }
 import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
 import { calculateMempoolTxCpfp } from './cpfp';
-import { getRecentFirstSeen } from '../utils/file-read';
 import stratumApi, { StratumJob } from './services/stratum';
 
 // valid 'want' subscriptions
@@ -63,6 +57,12 @@ class WebsocketHandler {
   private mempoolSequence: number = 0;
 
   private accelerations: Record<string, Acceleration> = {};
+
+  private MAX_BUFFERED_AMOUNT = config.MEMPOOL.MAX_BUFFERED_AMOUNT;
+  public MAX_MESSAGE_SIZE = config.MEMPOOL.MAX_MESSAGE_SIZE;
+  private MAX_TRACKED_TXS = config.MEMPOOL.MAX_TRACKED_TXS;
+  private MSG_RATE_LIMIT = config.MEMPOOL.MSG_RATE_LIMIT;
+  private MSG_RATE_WINDOW = config.MEMPOOL.MSG_RATE_WINDOW;
 
   constructor() { }
 
@@ -120,6 +120,7 @@ class WebsocketHandler {
     server.on('connection', (client: WebSocket, req) => {
       this.numConnected++;
       client['remoteAddress'] = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown';
+      client['msgTimestamps'] = [];
       client.on('error', (e) => {
         logger.info(`websocket client error from ${client['remoteAddress']}: ` + (e instanceof Error ? e.message : e));
         client.close();
@@ -127,9 +128,30 @@ class WebsocketHandler {
       client.on('close', () => {
         this.numDisconnected++;
       });
-      client.on('message', async (message: string) => {
+      client.on('message', async (message) => {
         try {
-          const parsedMessage: WebsocketResponse = JSON.parse(message);
+          const msgLength = Buffer.isBuffer(message) ? message.byteLength
+            : message instanceof ArrayBuffer ? message.byteLength
+            : message.reduce((sum, buf) => sum + buf.byteLength, 0);
+          if (msgLength > this.MAX_MESSAGE_SIZE) {
+            logger.debug(`Dropping oversized websocket message from ${client['remoteAddress']}: ${msgLength} bytes`);
+            client.terminate();
+            return;
+          }
+
+          const now = Date.now();
+          const timestamps: number[] = client['msgTimestamps'];
+          timestamps.push(now);
+          while (timestamps.length && timestamps[0] <= now - this.MSG_RATE_WINDOW) {
+            timestamps.shift();
+          }
+          if (timestamps.length > this.MSG_RATE_LIMIT) {
+            logger.debug(`Rate limiting websocket client ${client['remoteAddress']}`);
+            client.close();
+            return;
+          }
+
+          const parsedMessage: WebsocketResponse = JSON.parse(message as any);
           const response = {};
 
           const wantNow = {};
@@ -225,45 +247,60 @@ class WebsocketHandler {
           if (parsedMessage && parsedMessage['track-txs']) {
             const txids: string[] = [];
             if (Array.isArray(parsedMessage['track-txs'])) {
+              if (parsedMessage['track-txs'].length > this.MAX_TRACKED_TXS) {
+                response['track-txs-error'] = `"too many txids requested, this connection supports tracking a maximum of ${this.MAX_TRACKED_TXS} transactions"`;
+                this.send(client, this.serializeResponse(response));
+                client['track-txs'] = null;
+                client.close();
+                return;
+              }
               for (const txid of parsedMessage['track-txs']) {
                 if (/^[a-fA-F0-9]{64}$/.test(txid)) {
                   txids.push(txid);
                 }
               }
+            } else {
+              response['track-txs-error'] = `"incorrect track-txs format"`;
+              this.send(client, this.serializeResponse(response));
+              client['track-txs'] = null;
+              client.close();
+              return;
             }
 
             const txs: { [txid: string]: TxTrackingInfo } = {};
             for (const txid of txids) {
-              const txInfo: TxTrackingInfo = {
-                confirmed: true,
-              };
+              const txInfo: TxTrackingInfo = {};
               const rbfCacheTxid = rbfCache.getReplacedBy(txid);
               if (rbfCacheTxid) {
                 txInfo.replacedBy = rbfCacheTxid;
                 txInfo.confirmed = false;
+                txs[txid] = txInfo;
               }
               const tx = memPool.getMempool()[txid];
-              if (tx && tx.position) {
-                txInfo.position = {
-                  ...tx.position
-                };
-                if (tx.acceleration) {
-                  txInfo.accelerated = tx.acceleration;
-                }
-              }
               if (tx) {
+                if (tx.position) {
+                  txInfo.position = {
+                    ...tx.position
+                  };
+                  if (tx.acceleration) {
+                    txInfo.accelerated = tx.acceleration;
+                  }
+                }
                 txInfo.confirmed = false;
+                txs[txid] = txInfo;
               }
-              txs[txid] = txInfo;
             }
 
             if (txids.length) {
               client['track-txs'] = txids;
+              client['track-txs-updates'] = 0;
             } else {
               client['track-txs'] = null;
+              client['track-txs-updates'] = 0;
             }
 
             if (Object.keys(txs).length) {
+              client['track-txs-updates'] = (client['track-txs-updates'] || 0) + Object.keys(txs).length;
               response['tracked-txs'] = JSON.stringify(txs);
             }
           }
@@ -288,10 +325,13 @@ class WebsocketHandler {
             if (Object.keys(addressMap).length > config.MEMPOOL.MAX_TRACKED_ADDRESSES) {
               response['track-addresses-error'] = `"too many addresses requested, this connection supports tracking a maximum of ${config.MEMPOOL.MAX_TRACKED_ADDRESSES} addresses"`;
               client['track-addresses'] = null;
+              client['track-addresses-updates'] = 0;
             } else if (Object.keys(addressMap).length > 0) {
               client['track-addresses'] = addressMap;
+              client['track-addresses-updates'] = 0;
             } else {
               client['track-addresses'] = null;
+              client['track-addresses-updates'] = 0;
             }
           }
 
@@ -315,8 +355,10 @@ class WebsocketHandler {
           if (parsedMessage && parsedMessage['track-wallet']) {
             if (parsedMessage['track-wallet'] === 'stop') {
               client['track-wallet'] = null;
-            } else {
+            } else if (typeof parsedMessage['track-wallet'] === 'string' && walletApi.getWallets().includes(parsedMessage['track-wallet'])) {
               client['track-wallet'] = parsedMessage['track-wallet'];
+            } else {
+              client['track-wallet'] = null;
             }
           }
 
@@ -329,8 +371,8 @@ class WebsocketHandler {
           }
 
           if (parsedMessage && parsedMessage['track-mempool-block'] !== undefined) {
-            if (Number.isInteger(parsedMessage['track-mempool-block']) && parsedMessage['track-mempool-block'] >= 0) {
-              const index = parsedMessage['track-mempool-block'];
+            const index = parsedMessage['track-mempool-block'];
+            if (Number.isInteger(index) && index >= 0 && index < config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT) {
               client['track-mempool-block'] = index;
               const mBlocksWithTransactions = mempoolBlocks.getMempoolBlocksWithTransactions();
               response['projected-block-transactions'] = JSON.stringify({
@@ -381,14 +423,14 @@ class WebsocketHandler {
             if (!this.socketData['blocks']?.length) {
               return;
             }
-            client.send(this.serializedInitData);
+            this.send(client, this.serializedInitData);
           }
 
           if (parsedMessage.action === 'ping') {
             response['pong'] = JSON.stringify(true);
           }
 
-          if (parsedMessage['track-donation'] && parsedMessage['track-donation'].length === 22) {
+          if (typeof parsedMessage['track-donation'] === 'string' && parsedMessage['track-donation'].length === 22) {
             client['track-donation'] = parsedMessage['track-donation'];
           }
 
@@ -404,18 +446,18 @@ class WebsocketHandler {
             delete client['track-mempool'];
           }
 
-          if (parsedMessage && parsedMessage['track-stratum'] != null) {
-            if (parsedMessage['track-stratum']) {
+          if (parsedMessage && parsedMessage['track-stratum'] !== undefined) {
+            if (parsedMessage['track-stratum'] === 'all' || typeof parsedMessage['track-stratum'] === 'number') {
               const sub = parsedMessage['track-stratum'];
               client['track-stratum'] = sub;
-              response['stratumJobs'] = this.socketData['stratumJobs'];
+              response['stratumJobs'] = JSON.stringify(stratumApi.getJobs());
             } else {
               client['track-stratum'] = false;
             }
           }
 
           if (Object.keys(response).length) {
-            client.send(this.serializeResponse(response));
+            this.send(client, this.serializeResponse(response));
           }
         } catch (e) {
           logger.debug(`Error parsing websocket message from ${client['remoteAddress']}: ` + (e instanceof Error ? e.message : e));
@@ -438,7 +480,7 @@ class WebsocketHandler {
         return;
       }
       if (client['track-donation'] === id) {
-        client.send(JSON.stringify({ donationConfirmed: true }));
+        this.send(client, JSON.stringify({ donationConfirmed: true }));
       }
     });
     }
@@ -458,7 +500,7 @@ class WebsocketHandler {
       if (client.readyState !== WebSocket.OPEN) {
         return;
       }
-      client.send(response);
+      this.send(client, response);
     });
     }
   }
@@ -477,7 +519,7 @@ class WebsocketHandler {
       if (client.readyState !== WebSocket.OPEN) {
         return;
       }
-      client.send(response);
+      this.send(client, response);
     });
     }
   }
@@ -504,7 +546,7 @@ class WebsocketHandler {
         return;
       }
 
-      client.send(response);
+      this.send(client, response);
     });
     }
   }
@@ -537,7 +579,7 @@ class WebsocketHandler {
           if (client.readyState !== WebSocket.OPEN) {
             return;
           }
-          client.send(response);
+          this.send(client, response);
         });
       }
     } catch (e) {
@@ -575,7 +617,7 @@ class WebsocketHandler {
       }
 
       if (Object.keys(response).length) {
-        client.send(this.serializeResponse(response));
+        this.send(client, this.serializeResponse(response));
       }
     });
     }
@@ -609,7 +651,10 @@ class WebsocketHandler {
       removed = candidates?.removed || [];
     }
 
-    if (config.MEMPOOL.RUST_GBT) {
+    if (config.MEMPOOL.CLUSTER_MEMPOOL) {
+      const cmBlocks = mempool.clusterMempool?.getBlocks(config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT) ?? [];
+      mempoolBlocks.processClusterMempoolBlocks(cmBlocks, newMempool, mempool.getAccelerations());
+    } else if (config.MEMPOOL.RUST_GBT) {
       await mempoolBlocks.$rustUpdateBlockTemplates(transactionIds, newMempool, added, removed, candidates, true);
     } else {
       await mempoolBlocks.$updateBlockTemplates(transactionIds, newMempool, added, removed, candidates, accelerationDelta, true, true);
@@ -738,6 +783,8 @@ class WebsocketHandler {
       removed: websocketAccelerationDelta.filter(txid => !accelerations[txid]),
     };
 
+    const cpfpUpdatesSent = new Set<string>();
+
     // TODO - Fix indentation after PR is merged
     for (const server of this.webSocketServers) {
     server.clients.forEach(async (client) => {
@@ -815,6 +862,8 @@ class WebsocketHandler {
         }
 
         if (Object.keys(addressMap).length > 0) {
+          client['track-addresses-updates'] =
+            (client['track-addresses-updates'] || 0) + this.countAddressTransactions(addressMap);
           response['multi-address-transactions'] = JSON.stringify(addressMap);
         }
       }
@@ -906,15 +955,23 @@ class WebsocketHandler {
             calculateMempoolTxCpfp(mempoolTx, newMempool);
           }
           if (mempoolTx.cpfpDirty) {
-            positionData['cpfp'] = {
-              ancestors: mempoolTx.ancestors,
+            const cpfp: CpfpInfo = {
+              ancestors: mempoolTx.ancestors || [],
               bestDescendant: mempoolTx.bestDescendant || null,
-              descendants: mempoolTx.descendants || null,
-              effectiveFeePerVsize: mempoolTx.effectiveFeePerVsize || null,
+              descendants: mempoolTx.descendants,
+              effectiveFeePerVsize: mempoolTx.effectiveFeePerVsize,
               sigops: mempoolTx.sigops,
               adjustedVsize: mempoolTx.adjustedVsize,
               acceleration: mempoolTx.acceleration,
             };
+            if (config.MEMPOOL.CLUSTER_MEMPOOL && mempoolTx.clusterId != null) {
+              const cluster = mempool.clusterMempool?.getClusterForApi(mempoolTx.txid);
+              if (cluster) {
+                cpfp.cluster = cluster;
+              }
+            }
+            positionData['cpfp'] = cpfp;
+            cpfpUpdatesSent.add(trackTxid);
           }
           response['txPosition'] = JSON.stringify(positionData);
         }
@@ -925,13 +982,16 @@ class WebsocketHandler {
         const txs: { [txid: string]: TxTrackingInfo } = {};
         for (const txid of txids) {
           const txInfo: TxTrackingInfo = {};
+          let txHasInfo = false;
           const outspends = outspendCache[txid];
           if (outspends && Object.keys(outspends).length) {
             txInfo.utxoSpent = outspends;
+            txHasInfo = true;
           }
           const replacedBy = rbfChanges.map[txid] ? rbfCache.getReplacedBy(txid) : false;
           if (replacedBy) {
             txInfo.replacedBy = replacedBy;
+            txHasInfo = true;
           }
           const mempoolTx = newMempool[txid];
           if (mempoolTx && mempoolTx.position) {
@@ -949,16 +1009,27 @@ class WebsocketHandler {
               txInfo.cpfp = {
                 ancestors: mempoolTx.ancestors,
                 bestDescendant: mempoolTx.bestDescendant || null,
-                descendants: mempoolTx.descendants || null,
-                effectiveFeePerVsize: mempoolTx.effectiveFeePerVsize || null,
+                descendants: mempoolTx.descendants,
+                effectiveFeePerVsize: mempoolTx.effectiveFeePerVsize,
                 sigops: mempoolTx.sigops,
                 adjustedVsize: mempoolTx.adjustedVsize,
               };
+              if (config.MEMPOOL.CLUSTER_MEMPOOL && mempoolTx.clusterId != null) {
+                const cluster = mempool.clusterMempool?.getClusterForApi(mempoolTx.txid);
+                if (cluster) {
+                  (txInfo.cpfp as CpfpInfo).cluster = cluster;
+                }
+              }
+              cpfpUpdatesSent.add(txid);
             }
+            txHasInfo = true;
           }
-          txs[txid] = txInfo;
+          if (txHasInfo) {
+            txs[txid] = txInfo;
+          }
         }
         if (Object.keys(txs).length) {
+          client['track-txs-updates'] = (client['track-txs-updates'] || 0) + Object.keys(txs).length;
           response['tracked-txs'] = JSON.stringify(txs);
         }
       }
@@ -997,143 +1068,37 @@ class WebsocketHandler {
       }
 
       if (Object.keys(response).length) {
-        client.send(this.serializeResponse(response));
+        this.send(client, this.serializeResponse(response));
       }
     });
     }
+
+    for (const txid of cpfpUpdatesSent) {
+      if (newMempool[txid]) {
+        newMempool[txid].cpfpDirty = false;
+      }
+    }
   }
 
-  /** @asyncUnsafe */
-  async handleNewBlock(block: BlockExtended, txIds: string[], transactions: MempoolTransactionExtended[]): Promise<void> {
+  /** @asyncSafe */
+  async handleNewBlock(
+    block: BlockExtended,
+    txIds: string[],
+    transactions: MempoolTransactionExtended[],
+    rbfTransactions: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }}
+  ): Promise<void> {
     if (!this.webSocketServers.length) {
       throw new Error('No WebSocket.Server have been set');
     }
 
-    const blockTransactions = structuredClone(transactions);
-
     this.printLogs();
-    if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
-      await statistics.runStatistics();
-    }
 
     const _memPool = memPool.getMempool();
-    const candidateTxs = memPool.getMempoolCandidates();
-    let candidates: GbtCandidates | undefined = (memPool.limitGBT && candidateTxs) ? { txs: candidateTxs, added: [], removed: [] } : undefined;
-    let transactionIds: string[] = (memPool.limitGBT) ? Object.keys(candidates?.txs || {}) : Object.keys(_memPool);
-
-    if (config.DATABASE.ENABLED) {
-      const accelerations = Object.values(mempool.getAccelerations());
-      await accelerationRepository.$indexAccelerationsForBlock(block, accelerations, structuredClone(transactions));
-    }
-
-    const rbfTransactions = Common.findMinedRbfTransactions(transactions, memPool.getSpendMap());
-    memPool.handleRbfTransactions(rbfTransactions);
-    memPool.removeFromSpendMap(transactions);
-
-    if (config.MEMPOOL.AUDIT && memPool.isInSync()) {
-      let projectedBlocks;
-      const auditMempool = _memPool;
-      const isAccelerated = accelerationApi.isAcceleratedBlock(block, Object.values(mempool.getAccelerations()));
-
-      if (config.MEMPOOL.RUST_GBT) {
-        const added = memPool.limitGBT ? (candidates?.added || []) : [];
-        const removed = memPool.limitGBT ? (candidates?.removed || []) : [];
-        projectedBlocks = await mempoolBlocks.$rustUpdateBlockTemplates(transactionIds, auditMempool, added, removed, candidates, isAccelerated, block.extras.pool.id);
-      } else {
-        projectedBlocks = await mempoolBlocks.$makeBlockTemplates(transactionIds, auditMempool, candidates, false, isAccelerated, block.extras.pool.id);
-      }
-
-      if (Common.indexingEnabled()) {
-        const { unseen, censored, added, prioritized, fresh, sigop, fullrbf, accelerated, score, similarity } = Audit.auditBlock(block.height, blockTransactions, projectedBlocks, auditMempool);
-        const matchRate = Math.round(score * 100 * 100) / 100;
-
-        const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions : [];
-
-        let totalFees = 0;
-        let totalWeight = 0;
-        for (const tx of stripped) {
-          totalFees += tx.fee;
-          totalWeight += (tx.vsize * 4);
-        }
-
-        void BlocksSummariesRepository.$saveTemplate({
-          height: block.height,
-          template: {
-            id: block.id,
-            transactions: stripped,
-          },
-          version: 1,
-        });
-
-        void BlocksAuditsRepository.$saveAudit({
-          version: 1,
-          time: block.timestamp,
-          height: block.height,
-          hash: block.id,
-          unseenTxs: unseen,
-          addedTxs: added,
-          prioritizedTxs: prioritized,
-          missingTxs: censored,
-          freshTxs: fresh,
-          sigopTxs: sigop,
-          fullrbfTxs: fullrbf,
-          acceleratedTxs: accelerated,
-          matchRate: matchRate,
-          expectedFees: totalFees,
-          expectedWeight: totalWeight,
-        });
-
-        if (block.extras) {
-          block.extras.matchRate = matchRate;
-          block.extras.expectedFees = totalFees;
-          block.extras.expectedWeight = totalWeight;
-          block.extras.similarity = similarity;
-        }
-      }
-    } else if (block.extras) {
-      const mBlocks = mempoolBlocks.getMempoolBlocksWithTransactions();
-      if (mBlocks?.length && mBlocks[0].transactions) {
-        block.extras.similarity = Common.getSimilarity(mBlocks[0], transactions);
-      }
-    }
-
-    if (config.CORE_RPC.DEBUG_LOG_PATH && block.extras) {
-      const firstSeen = getRecentFirstSeen(block.id);
-      if (firstSeen) {
-        if (config.DATABASE.ENABLED) {
-          void BlocksRepository.$saveFirstSeenTime(block.id, firstSeen);
-        }
-        block.extras.firstSeen = firstSeen;
-      }
-    }
-
     const confirmedTxids: { [txid: string]: boolean } = {};
-
-    // Update mempool to remove transactions included in the new block
     for (const txId of txIds) {
-      delete _memPool[txId];
-      rbfCache.mined(txId);
       confirmedTxids[txId] = true;
     }
 
-    if (memPool.limitGBT) {
-      const minFeeMempool = memPool.limitGBT ? await bitcoinSecondClient.getRawMemPool() : null;
-      const minFeeTip = memPool.limitGBT ? await bitcoinSecondClient.getBlockCount() : -1;
-      candidates = memPool.getNextCandidates(minFeeMempool, minFeeTip, transactions);
-      transactionIds = Object.keys(candidates?.txs || {});
-    } else {
-      candidates = undefined;
-      transactionIds = Object.keys(memPool.getMempool());
-    }
-
-
-    if (config.MEMPOOL.RUST_GBT) {
-      const added = memPool.limitGBT ? (candidates?.added || []) : [];
-      const removed = memPool.limitGBT ? (candidates?.removed || []) : transactions;
-      await mempoolBlocks.$rustUpdateBlockTemplates(transactionIds, _memPool, added, removed, candidates, true);
-    } else {
-      await mempoolBlocks.$makeBlockTemplates(transactionIds, _memPool, candidates, true, true);
-    }
     const mBlocks = mempoolBlocks.getMempoolBlocks();
     const mBlockDeltas = mempoolBlocks.getMempoolBlockDeltas();
 
@@ -1266,6 +1231,7 @@ class WebsocketHandler {
           }
         }
         if (Object.keys(txs).length) {
+          client['track-txs-updates'] = (client['track-txs-updates'] || 0) + Object.keys(txs).length;
           response['tracked-txs'] = JSON.stringify(txs);
         }
       }
@@ -1301,6 +1267,8 @@ class WebsocketHandler {
         }
 
         if (Object.keys(addressMap).length > 0) {
+          client['track-addresses-updates'] =
+            (client['track-addresses-updates'] || 0) + this.countAddressTransactions(addressMap);
           response['multi-address-transactions'] = JSON.stringify(addressMap);
         }
       }
@@ -1394,31 +1362,33 @@ class WebsocketHandler {
       }
 
       if (Object.keys(response).length) {
-        client.send(this.serializeResponse(response));
+        this.send(client, this.serializeResponse(response));
       }
     });
-    }
-
-    if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
-      await statistics.runStatistics();
     }
   }
 
   public handleNewStratumJob(job: StratumJob): void {
-    this.updateSocketDataFields({ 'stratumJobs': stratumApi.getJobs() });
-
     for (const server of this.webSocketServers) {
       server.clients.forEach((client) => {
         if (client.readyState !== WebSocket.OPEN) {
           return;
         }
         if (client['track-stratum'] && (client['track-stratum'] === 'all' || client['track-stratum'] === job.pool)) {
-          client.send(JSON.stringify({
+          this.send(client, JSON.stringify({
             'stratumJob': job
         }));
         }
       });
     }
+  }
+
+  private send(client: WebSocket.WebSocket, data: string): void {
+    if (client.bufferedAmount > this.MAX_BUFFERED_AMOUNT) {
+      client.terminate();
+      return;
+    }
+    client.send(data);
   }
 
   // takes a dictionary of JSON serialized values
@@ -1502,25 +1472,72 @@ class WebsocketHandler {
     if (this.webSocketServers.length) {
       let numTxSubs = 0;
       let numTxsSubs = 0;
+      let numAddressSubs = 0;
+      let numAddressesSubs = 0;
       let numProjectedSubs = 0;
       let numRbfSubs = 0;
+      let trackedTxsTotal = 0;
+      let trackedAddressesTotal = 0;
+      let trackedTxsMax = 0;
+      let trackedAddressesMax = 0;
+      let trackTxsTrackedTotal = 0;
+      let trackTxsTrackedMax = 0;
+      let trackAddressesTrackedTotal = 0;
+      let trackAddressesTrackedMax = 0;
+      let trackTxsUpdatesTotal = 0;
+      let trackTxsUpdatesMax = 0;
+      let trackAddressesUpdatesTotal = 0;
+      let trackAddressesUpdatesMax = 0;
 
-      // TODO - Fix indentation after PR is merged
       for (const server of this.webSocketServers) {
-      server.clients.forEach((client) => {
-        if (client['track-tx']) {
-          numTxSubs++;
-        }
-        if (client['track-txs']) {
-          numTxsSubs++;
-        }
-        if (client['track-mempool-block'] != null && client['track-mempool-block'] >= 0) {
-          numProjectedSubs++;
-        }
-        if (client['track-rbf']) {
-          numRbfSubs++;
-        }
-      });
+        server.clients.forEach((client) => {
+          let trackedTxCount = 0;
+          let trackedAddressCount = 0;
+
+          if (client['track-tx']) {
+            numTxSubs++;
+            trackedTxCount += 1;
+          }
+          if (client['track-txs']) {
+            numTxsSubs++;
+            trackedTxCount += client['track-txs'].length;
+          }
+          if (client['track-address']) {
+            numAddressSubs++;
+            trackedAddressCount += 1;
+          }
+          if (client['track-addresses']) {
+            numAddressesSubs++;
+            const addressCount = Object.keys(client['track-addresses']).length;
+            trackedAddressCount += addressCount;
+            trackAddressesTrackedTotal += addressCount;
+            trackAddressesTrackedMax = Math.max(trackAddressesTrackedMax, addressCount);
+            const updates = client['track-addresses-updates'] || 0;
+            trackAddressesUpdatesTotal += updates;
+            trackAddressesUpdatesMax = Math.max(trackAddressesUpdatesMax, updates);
+            client['track-addresses-updates'] = 0;
+          }
+          if (client['track-mempool-block'] != null && client['track-mempool-block'] >= 0) {
+            numProjectedSubs++;
+          }
+          if (client['track-rbf']) {
+            numRbfSubs++;
+          }
+          if (client['track-txs']) {
+            const txCount = client['track-txs'].length;
+            trackTxsTrackedTotal += txCount;
+            trackTxsTrackedMax = Math.max(trackTxsTrackedMax, txCount);
+            const updates = client['track-txs-updates'] || 0;
+            trackTxsUpdatesTotal += updates;
+            trackTxsUpdatesMax = Math.max(trackTxsUpdatesMax, updates);
+            client['track-txs-updates'] = 0;
+          }
+
+          trackedTxsTotal += trackedTxCount;
+          trackedAddressesTotal += trackedAddressCount;
+          trackedTxsMax = Math.max(trackedTxsMax, trackedTxCount);
+          trackedAddressesMax = Math.max(trackedAddressesMax, trackedAddressCount);
+        });
       }
 
       let count = 0;
@@ -1529,11 +1546,32 @@ class WebsocketHandler {
       }
       const diff = count - this.numClients;
       this.numClients = count;
-      logger.debug(`${count} websocket clients | ${this.numConnected} connected | ${this.numDisconnected} disconnected | (${diff >= 0 ? '+' : ''}${diff})`);
-      logger.debug(`websocket subscriptions: track-tx: ${numTxSubs}, track-txs: ${numTxsSubs}, track-mempool-block: ${numProjectedSubs} track-rbf: ${numRbfSubs}`);
+      const trackedTxsAvg = count > 0 ? trackedTxsTotal / count : 0;
+      const trackedAddressesAvg = count > 0 ? trackedAddressesTotal / count : 0;
+      const trackTxsTrackedAvg = numTxsSubs > 0 ? trackTxsTrackedTotal / numTxsSubs : 0;
+      const trackAddressesTrackedAvg =
+        numAddressesSubs > 0 ? trackAddressesTrackedTotal / numAddressesSubs : 0;
+      const trackTxsUpdatesAvg = numTxsSubs > 0 ? trackTxsUpdatesTotal / numTxsSubs : 0;
+      const trackAddressesUpdatesAvg =
+        numAddressesSubs > 0 ? trackAddressesUpdatesTotal / numAddressesSubs : 0;
+      logger.debug(
+        `${count} websocket clients | ${this.numConnected} connected | ${this.numDisconnected} disconnected | (${diff >= 0 ? '+' : ''}${diff}) | tracked txs: total=${trackedTxsTotal}, avg=${trackedTxsAvg.toFixed(2)}, max=${trackedTxsMax} | tracked addresses: total=${trackedAddressesTotal}, avg=${trackedAddressesAvg.toFixed(2)}, max=${trackedAddressesMax} | ws-subscriptions: tx=${numTxSubs},txs=${numTxsSubs},address=${numAddressSubs},addresses=${numAddressesSubs},txs-tracked-avg=${trackTxsTrackedAvg.toFixed(2)},txs-tracked-max=${trackTxsTrackedMax},addresses-tracked-avg=${trackAddressesTrackedAvg.toFixed(2)},addresses-tracked-max=${trackAddressesTrackedMax},txs-updates-avg=${trackTxsUpdatesAvg.toFixed(2)},txs-updates-max=${trackTxsUpdatesMax},addresses-updates-avg=${trackAddressesUpdatesAvg.toFixed(2)},addresses-updates-max=${trackAddressesUpdatesMax}`
+      );
+      logger.debug(`websocket subscriptions: track-tx: ${numTxSubs}, track-txs: ${numTxsSubs}, track-address: ${numAddressSubs}, track-addresses: ${numAddressesSubs}, track-mempool-block: ${numProjectedSubs} track-rbf: ${numRbfSubs}`);
       this.numConnected = 0;
       this.numDisconnected = 0;
     }
+  }
+
+  private countAddressTransactions(addressMap: { [address: string]: AddressTransactions }): number {
+    return Object.values(addressMap).reduce(
+      (total, transactions) =>
+        total
+        + transactions.mempool.length
+        + transactions.confirmed.length
+        + transactions.removed.length,
+      0,
+    );
   }
 }
 

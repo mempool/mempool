@@ -1,16 +1,16 @@
-import { ChangeDetectionStrategy, Component, ElementRef, Inject, LOCALE_ID, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, LOCALE_ID, OnInit, ViewChild } from '@angular/core';
 import { WebsocketService } from '@app/services/websocket.service';
 import { SeoService } from '@app/services/seo.service';
 import { OpenGraphService } from '@app/services/opengraph.service';
 import { StateService } from '@app/services/state.service';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { ApiService } from '@app/services/api.service';
 import { IBackendInfo } from '@interfaces/websocket.interface';
 import { Router, ActivatedRoute } from '@angular/router';
 import { map, share, tap } from 'rxjs/operators';
 import { ITranslators } from '@interfaces/node-api.interface';
 import { DOCUMENT } from '@angular/common';
-import { EnterpriseService } from '@app/services/enterprise.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-about',
@@ -26,6 +26,8 @@ export class AboutComponent implements OnInit {
   packetJsonVersion = this.stateService.env.PACKAGE_JSON_VERSION;
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
   showNavigateToSponsor = false;
+  themeStateSubscription: Subscription;
+  loadedTheme = 'default';
 
   profiles$: Observable<any>;
   translators$: Observable<ITranslators>;
@@ -37,10 +39,11 @@ export class AboutComponent implements OnInit {
     private seoService: SeoService,
     private ogService: OpenGraphService,
     public stateService: StateService,
-    private enterpriseService: EnterpriseService,
     private apiService: ApiService,
     private router: Router,
     private route: ActivatedRoute,
+    private themeService: ThemeService,
+    private cd: ChangeDetectorRef,
     @Inject(LOCALE_ID) public locale: string,
     @Inject(DOCUMENT) private document: Document,
   ) { }
@@ -88,6 +91,14 @@ export class AboutComponent implements OnInit {
       }),
       tap(() => this.goToAnchor())
     );
+
+    this.themeStateSubscription = this.themeService.themeState$.subscribe((state) => {
+      if (state.loading) {
+        return;
+      }
+      this.loadedTheme = state.theme;
+      this.cd.markForCheck();
+    });
   }
 
   ngAfterViewInit() {
@@ -128,13 +139,11 @@ export class AboutComponent implements OnInit {
     this.promoVideo.nativeElement.muted = false;
   }
 
-  onSponsorClick(e): boolean {
-    this.enterpriseService.goal(5);
-    return true;
+  get isLightMode(): boolean {
+    return this.loadedTheme === 'nymkappa';
   }
 
-  onEnterpriseClick(e): boolean {
-    this.enterpriseService.goal(6);
-    return true;
+  ngOnDestroy(): void {
+    this.themeStateSubscription?.unsubscribe();
   }
 }

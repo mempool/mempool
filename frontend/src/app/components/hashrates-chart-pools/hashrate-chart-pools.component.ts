@@ -174,7 +174,7 @@ export class HashrateChartPoolsComponent implements OnInit {
         name: name,
         inactiveColor: 'rgb(110, 112, 121)',
         textStyle: {
-          color: 'white',
+          color: 'var(--fg)',
         },
         icon: 'roundRect',
         itemStyle: {
@@ -250,6 +250,7 @@ export class HashrateChartPoolsComponent implements OnInit {
         }
       },
       legend: (this.isMobile() || data.series.length === 0) ? undefined : {
+        top: 'top',
         data: data.legends
       },
       yAxis: data.series.length === 0 ? undefined : {

@@ -6,6 +6,7 @@ export const MempoolErrors = {
   'internal_server_error': `Something went wrong, please try again later`,
   'temporarily_unavailable': `Acceleration temporarily unavailable`,
   'acceleration_duplicated': `This transaction has already been accelerated.`,
+  'transaction_confirmed': `This transaction is already confirmed.`,
   'acceleration_outbid': `Your fee delta is too low.`,
   'cannot_accelerate_tx': `Cannot accelerate this transaction.`,
   'cannot_decode_raw_tx': `Cannot decode this raw transaction.`,
@@ -35,6 +36,7 @@ export const MempoolErrors = {
   'payment_method_not_allowed_out_of_bound': `You are not allowed to use this payment method with this amount`,
   'invalid_credentials': `Invalid credentials`,
   'forbidden': `You are not allowed to do this.`,
+  'unable_to_generate_unique_partner_code': `Unable to generate new partner code`
 } as { [error: string]: string };
 
 export function isMempoolError(error: string) {

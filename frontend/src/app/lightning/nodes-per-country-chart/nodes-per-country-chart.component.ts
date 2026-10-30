@@ -86,7 +86,7 @@ export class NodesPerCountryChartComponent implements OnInit {
         name: country.name.en + (this.isMobile() ? `` : ` (${country.share}%)`),
         label: {
           overflow: 'truncate',
-          color: 'var(--tooltip-grey)',
+          color: 'var(--grey)',
           alignTo: 'edge',
           edgeDistance: edgeDistance,
         },
@@ -120,7 +120,7 @@ export class NodesPerCountryChartComponent implements OnInit {
       name: $localize`Other (${totalShareOther.toFixed(2) + '%'})`,
       label: {
         overflow: 'truncate',
-        color: 'var(--tooltip-grey)',
+        color: 'var(--grey)',
         alignTo: 'edge',
         edgeDistance: edgeDistance
       },
@@ -180,12 +180,12 @@ export class NodesPerCountryChartComponent implements OnInit {
           itemStyle: {
             borderRadius: 1,
             borderWidth: 1,
-            borderColor: '#000',
+            borderColor: 'var(--bg)',
           },
           emphasis: {
             itemStyle: {
               shadowBlur: 40,
-              shadowColor: 'rgba(0, 0, 0, 0.75)',
+              shadowColor: 'var(--bg)',
             },
             labelLine: {
               lineStyle: {

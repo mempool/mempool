@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 export class BlockFiltersComponent implements OnInit, OnChanges, OnDestroy {
   @Input() cssWidth: number = 800;
   @Input() excludeFilters: string[] = [];
+  @Input() showTint: boolean = true;
   @Output() onFilterChanged: EventEmitter<ActiveFilter | null> = new EventEmitter();
 
   filterSubscription: Subscription;
@@ -107,7 +108,7 @@ export class BlockFiltersComponent implements OnInit, OnChanges, OnDestroy {
   @HostListener('document:click', ['$event'])
   onClick(event): boolean {
     // click away from menu
-    if (!event.target.closest('button') && !event.target.closest('label')) {
+    if (!event.target.closest('button, label, .btn-check')) {
       this.menuOpen = false;
     }
     return true;

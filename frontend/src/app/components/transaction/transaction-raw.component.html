@@ -8,7 +8,7 @@
       <div class="mb-3">
         <textarea formControlName="txRaw" class="form-control" rows="5" i18n-placeholder="transaction.hex-and-psbt" placeholder="Transaction hex or base64 encoded PSBT"></textarea>
       </div>
-      <button [disabled]="isLoading" type="submit" class="btn btn-primary mr-2" i18n="shared.preview|Preview">Preview</button>
+      <button [disabled]="isLoading" type="submit" class="btn btn-primary me-2" i18n="shared.preview|Preview">Preview</button>
       <input type="checkbox" [checked]="!offlineMode" id="offline-mode" (change)="onOfflineModeChange($event)">
       <label class="label" for="offline-mode">
         <span i18n="transaction.fetch-prevout-data">Fetch missing prevouts</span>
@@ -65,16 +65,16 @@
     @if (!hasPrevouts) {
       <div class="alert alert-mempool">
         @if (offlineMode) {
-          <span><strong>Missing prevouts are not loaded. Some fields like fee rate cannot be calculated.</strong></span>
+          <span><strong i18n="transaction.raw.no-prevouts">Missing prevouts are not loaded. Some fields like fee rate cannot be calculated.</strong></span>
         } @else {
-          <span><strong>Error loading missing prevouts</strong>. {{ errorPrevouts ? 'Reason: ' + errorPrevouts : '' }}</span>
+          <span><strong i18n="transaction.raw.prevouts-error">Error loading missing prevouts</strong>. @if (errorPrevouts) {<ng-container i18n="shared.error-reason">Reason: {{ errorPrevouts }}</ng-container>}</span>
         }
       </div>
     }
 
     @if (errorCpfpInfo) {
       <div class="alert alert-mempool">
-        <span><strong>Error loading CPFP data</strong>. Reason: {{ errorCpfpInfo }}</span>
+        <span><strong i18n="transaction.raw.cpfp-error">Error loading CPFP data</strong>. <ng-container i18n="shared.error-reason">Reason: {{ errorCpfpInfo }}</ng-container></span>
       </div>
     }
 
@@ -90,18 +90,36 @@
       [hasEffectiveFeeRate]="hasEffectiveFeeRate"
       [cpfpInfo]="cpfpInfo"
       [hasCpfp]="hasCpfp"
-      (toggleCpfp$)="this.showCpfpDetails = !this.showCpfpDetails"
+      (toggleCpfp$)="toggleCpfp()"
     ></app-transaction-details>
   
-    <app-cpfp-info *ngIf="showCpfpDetails" [cpfpInfo]="cpfpInfo" [tx]="transaction"></app-cpfp-info>
+    <ng-container *ngIf="cpfpMode && hasCpfp">
+      <br>
+      <div class="subtitle-block">
+        <div class="title">
+          <h2 *ngIf="cpfpInfo?.cluster" i18n="transaction.cluster|Cluster">Cluster</h2>
+          <h2 *ngIf="!cpfpInfo?.cluster" i18n="transaction.related-transactions|CPFP List">Related Transactions</h2>
+        </div>
+      </div>
+      <ng-container *ngIf="cpfpInfo?.cluster; else legacyCpfpRaw">
+        <div class="box">
+          <app-cluster-diagram
+            [cluster]="cpfpInfo.cluster" [txid]="transaction.txid" [isMobile]="isMobile">
+          </app-cluster-diagram>
+        </div>
+      </ng-container>
+      <ng-template #legacyCpfpRaw>
+        <app-cpfp-info [cpfpInfo]="cpfpInfo" [tx]="transaction"></app-cpfp-info>
+      </ng-template>
+    </ng-container>
     <br>
 
     <ng-container *ngIf="flowEnabled; else flowPlaceholder">
-      <div class="title float-left">
+      <div class="title float-start">
         <h2 id="flow" i18n="transaction.flow|Transaction flow">Flow</h2>
       </div>
 
-      <button type="button" class="btn btn-outline-info flow-toggle btn-sm float-right" (click)="toggleGraph()" i18n="hide-diagram">Hide diagram</button>
+      <button type="button" class="btn btn-outline-info flow-toggle btn-sm float-end" (click)="toggleGraph()" i18n="hide-diagram">Hide diagram</button>
 
       <div class="clearfix"></div>
 
@@ -152,7 +170,7 @@
 
     <app-transactions-list #txList [transactions]="[transaction]" [transactionPage]="true" [txPreview]="true" [forceSignaturesMode]="isCoinbase ? 'none' : 'all'"></app-transactions-list>
 
-    <div class="title text-left">
+    <div class="title text-start">
       <h2 i18n="transaction.details|Transaction Details">Details</h2>
     </div>
     <div class="box">
@@ -225,9 +243,13 @@
   @if (isLoading) {
     <div class="text-center">
       <div class="spinner-border text-light mt-2 mb-2"></div>
-      <h3>
-        Loading {{ isLoadingPrevouts ? 'transaction prevouts' : isLoadingCpfpInfo ? 'CPFP' : '' }}
-      </h3>
+      @if (isLoadingPrevouts) {
+        <h3 i18n="transaction.raw.loading-prevouts">Loading transaction prevouts</h3>
+      } @else if (isLoadingCpfpInfo) {
+        <h3 i18n="transaction.raw.loading-cpfp">Loading CPFP</h3>
+      } @else {
+        <h3 i18n="loading">Loading...</h3>
+      }
     </div>
   }
 </div>

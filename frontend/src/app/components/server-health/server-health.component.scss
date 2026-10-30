@@ -35,6 +35,10 @@
       &.rtt, &.height {
         text-align: right;
       }
+      &.peg {
+        text-align: right;
+        white-space: nowrap;
+      }
       &.only-small {
         display: table-cell;
       }
@@ -56,6 +60,7 @@
         font-size: 11px;
         vertical-align: middle;
         text-align: center;
+        --bs-table-bg-type: transparent;
       }
 
       span {

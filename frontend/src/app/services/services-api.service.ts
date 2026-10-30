@@ -57,17 +57,18 @@ export class ServicesApiServices {
       });
     }
 
-    this.getUserInfo$().subscribe();
+    this.fetchUserInfo$().subscribe();
     this.router.events.pipe(
       filter((event) => event instanceof NavigationStart && this.currentAuth !== localStorage.getItem('auth')),
-      switchMap(() => this.getUserInfo$()),
+      switchMap(() => this.fetchUserInfo$()),
     ).subscribe();
   }
 
   /**
-   * Do not call directly, userSubject$ instead
+   * Subscribe to userSubject$ for user state.
+   * Use refreshUserInfo$() when a hard refresh from the API is needed.
    */
-  private getUserInfo$() {
+  private fetchUserInfo$() {
     return this.getUserInfoApi$().pipe(
       tap((user) => {
         this.userSubject$.next(user);
@@ -83,6 +84,10 @@ export class ServicesApiServices {
       }),
       share(),
     );
+  }
+
+  refreshUserInfo$(): Observable<IUser | null> {
+    return this.fetchUserInfo$();
   }
 
   /**
@@ -135,20 +140,20 @@ export class ServicesApiServices {
     return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate`, { txInput: txInput, userBid: userBid});
   }
 
-  accelerateWithCashApp$(txInput: string, token: string, cashtag: string, referenceId: string, userApprovedUSD: number, referralCode: string | undefined) {
-    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/cashapp`, { txInput: txInput, token: token, cashtag: cashtag, referenceId: referenceId, userApprovedUSD: userApprovedUSD, referralCode: referralCode  });
+  accelerateWithCashApp$(txInput: string, token: string, cashtag: string, referenceId: string, userApprovedUSD: number, partnerCode: string | undefined) {
+    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/cashapp`, { txInput: txInput, token: token, cashtag: cashtag, referenceId: referenceId, userApprovedUSD: userApprovedUSD, partnerCode: partnerCode  });
   }
 
-  accelerateWithApplePay$(txInput: string, token: string, cardTag: string, referenceId: string, userApprovedUSD: number, referralCode: string | undefined) {
-    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/applePay`, { txInput: txInput, cardTag: cardTag, token: token, referenceId: referenceId, userApprovedUSD: userApprovedUSD, referralCode: referralCode  });
+  accelerateWithApplePay$(txInput: string, token: string, cardTag: string, referenceId: string, userApprovedUSD: number, partnerCode: string | undefined) {
+    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/applePay`, { txInput: txInput, cardTag: cardTag, token: token, referenceId: referenceId, userApprovedUSD: userApprovedUSD, partnerCode: partnerCode  });
   }
 
-  accelerateWithGooglePay$(txInput: string, token: string, verificationToken: string, cardTag: string, referenceId: string, userApprovedUSD: number, userChallenged: boolean, referralCode: string | undefined) {
-    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/googlePay`, { txInput: txInput, cardTag: cardTag, token: token, verificationToken: verificationToken, referenceId: referenceId, userApprovedUSD: userApprovedUSD, userChallenged: userChallenged, referralCode: referralCode });
+  accelerateWithGooglePay$(txInput: string, token: string, verificationToken: string, cardTag: string, referenceId: string, userApprovedUSD: number, userChallenged: boolean, partnerCode: string | undefined) {
+    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/googlePay`, { txInput: txInput, cardTag: cardTag, token: token, verificationToken: verificationToken, referenceId: referenceId, userApprovedUSD: userApprovedUSD, userChallenged: userChallenged, partnerCode: partnerCode });
   }
 
-  accelerateWithCardOnFile$(txInput: string, token: string, verificationToken: string, referenceId: string, userApprovedUSD: number, userChallenged: boolean, referralCode: string | undefined) {
-    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/cardOnFile`, { txInput: txInput, token: token, verificationToken: verificationToken, referenceId: referenceId, userApprovedUSD: userApprovedUSD, userChallenged: userChallenged, referralCode: referralCode  });
+  accelerateWithCardOnFile$(txInput: string, cardId: string, verificationToken: string, userApprovedUSD: number, userChallenged: boolean, partnerCode: string | undefined) {
+    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/accelerate/cardOnFile`, { txInput: txInput, token: cardId, verificationToken: verificationToken, userApprovedUSD: userApprovedUSD, userChallenged: userChallenged, partnerCode: partnerCode  });
   }
 
   getAccelerations$(): Observable<Acceleration[]> {
@@ -211,13 +216,13 @@ export class ServicesApiServices {
     return this.httpClient.get<{txid: string}>(`${this.stateService.env.SERVICES_API}/testnet4/faucet/request?address=${address}&sats=${sats}`, { responseType: 'json' });
   }
 
-  generateBTCPayAcceleratorInvoice$(txid: string, sats: number, referralCode: string | undefined): Observable<any> {
+  generateBTCPayAcceleratorInvoice$(txid: string, maxBidBoost: number, partnerCode: string | undefined): Observable<any> {
     const params = {
-      product: txid,
-      amount: sats,
-      referralCode: referralCode
+      txid: txid,
+      maxBidBoost: maxBidBoost,
+      partnerCode: partnerCode
     };
-    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/payments/bitcoin`, params);
+    return this.httpClient.post<any>(`${this.stateService.env.SERVICES_API}/accelerator/invoice`, params);
   }
 
   retrieveInvoice$(invoiceId: string): Observable<any[]> {

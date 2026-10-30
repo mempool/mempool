@@ -7,27 +7,22 @@
 
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
+  position: relative;
 }
 
 .message-container {
   display: flex;
   flex-direction: column;
-  margin-left: auto;
+  margin: 0 auto;
 }
 
-.close {
-  display: flex;
-  color: #fff;
-  align-items: center;
+.btn-close {
+  top: 50%;
+  transform: translateY(-50%);
 }
 
-button {
-  display: flex;
-  margin-left: auto;
-}
-
-span {
-  position: relative;
-  top: -2px;
+.btn-close:hover,
+.btn-close:focus {
+  opacity: 1;
 }

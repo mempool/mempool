@@ -256,13 +256,14 @@ class TransactionUtils {
 
   // returns the most significant 4 bytes of the txid as an integer
   public txidToOrdering(txid: string): number {
-    return parseInt(
-      txid.substr(62, 2) +
-        txid.substr(60, 2) +
-        txid.substr(58, 2) +
-        txid.substr(56, 2),
-      16
-    );
+    // Parse last 4 bytes of txid as little-endian uint32, without string allocation
+    let result = 0;
+    for (let i = 62; i >= 56; i -= 2) {
+      const hi = txid.charCodeAt(i);
+      const lo = txid.charCodeAt(i + 1);
+      result = result * 256 + (hi < 58 ? hi - 48 : hi - 87) * 16 + (lo < 58 ? lo - 48 : lo - 87);
+    }
+    return result;
   }
 
   public addInnerScriptsToVin(vin: IEsploraApi.Vin): void {

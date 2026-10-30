@@ -5,6 +5,12 @@ import { tap, takeUntil } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { faqData, restApiDocsData, wsApiDocsData, electrumApiDocsData } from '@app/docs/api-docs/api-docs-data';
 import { FaqTemplateDirective } from '@app/docs/faq-template/faq-template.component';
+import { AddressTypeInfo } from '@app/shared/address-utils';
+import { convertTextToBuffer, extractTapLeaves, fillTapTree, TapLeaf } from '@app/shared/transaction.utils';
+
+const FAQ_TAPROOT_ADDRESS = 'bc1pfyj4cgs4fesnnyrs2qfuydmq8lqwg0tjfc9wpjnnctgfkc25c2jshnmyl4';
+const FAQ_TAPROOT_TAPTREE = '01c0462060e531bc7b23e145618de9d21a9240e9cf1909a32e77b688f36ec67901500d58ac202edfc0c6e4166b1d5497d9c7a72e7ed4c83fe03596fe5ce5edf7311ddeddf3b1ba529c01c02220ab46f1bd685e9c768cca20e5b9a5972b4e1ebab9afda82012ffd0a09d340eb39ac';
+const FAQ_TAPROOT_INTERNAL_KEY = '8ada815478a69c1c10af26d4cb370ea53dcfdec2fd0300a6ae3510415133c126';
 
 @Component({
   selector: 'app-api-docs',
@@ -37,6 +43,8 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
   timeLtrSubscription: Subscription;
   timeLtr: boolean = this.stateService.timeLtr.value;
   isMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
+  faqTaprootAddress = FAQ_TAPROOT_ADDRESS;
+  faqTaprootInfo = this.buildFaqTaprootInfo();
 
   @ViewChildren(FaqTemplateDirective) faqTemplates: QueryList<FaqTemplateDirective>;
   dict = {};
@@ -238,5 +246,27 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     return `${wsHostname}${curlNetwork}/api/v1/ws`;
   }
 
+  buildFaqTaprootInfo(): { published: AddressTypeInfo, full: AddressTypeInfo } | null {
+    try {
+      const leaves = extractTapLeaves(undefined, [], convertTextToBuffer(FAQ_TAPROOT_TAPTREE), convertTextToBuffer(FAQ_TAPROOT_INTERNAL_KEY));
+      const publishedLeaf = leaves[1];
+      if (!publishedLeaf) {
+        return null;
+      }
+      return {
+        published: this.fillFaqTaprootInfo([publishedLeaf]),
+        full: this.fillFaqTaprootInfo(leaves),
+      };
+    } catch (error) {
+      console.warn('Failed to build Taproot FAQ example', error);
+      return null;
+    }
+  }
+
+  fillFaqTaprootInfo(leaves: TapLeaf[]): AddressTypeInfo {
+    const taprootInfo = new AddressTypeInfo('mainnet', FAQ_TAPROOT_ADDRESS);
+    fillTapTree(taprootInfo, leaves);
+    return taprootInfo;
+  }
 }
 

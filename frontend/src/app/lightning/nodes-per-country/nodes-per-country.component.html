@@ -45,7 +45,7 @@
           </tbody>
         </table>
       </div>
-      <div class="col-12 col-md-6 p-3 p-md-0 pr-md-3">
+      <div class="col-12 col-md-6 p-3 p-md-0 pe-md-3">
         <div style="background-color: var(--stat-box-bg)">
           <app-nodes-map [widget]="true" [nodes]="countryNodes.nodes" type="country"></app-nodes-map>
         </div>
@@ -57,35 +57,35 @@
     <table class="table table-borderless">
       
       <thead>
-        <th class="alias text-left" i18n="lightning.alias">Alias</th>
-        <th class="timestamp-first text-left" i18n="transaction.first-seen|Transaction first seen">First seen</th>
-        <th class="timestamp-update text-left" i18n="lightning.last_update">Last update</th>
-        <th class="capacity text-right" i18n="lightning.capacity">Capacity</th>
-        <th class="channels text-right" i18n="lightning.channels">Channels</th>
-        <th class="city text-right" i18n="lightning.location">Location</th>
+        <th class="alias text-start" i18n="lightning.alias">Alias</th>
+        <th class="timestamp-first text-start" i18n="transaction.first-seen|Transaction first seen">First seen</th>
+        <th class="timestamp-update text-start" i18n="lightning.last_update">Last update</th>
+        <th class="capacity text-end" i18n="lightning.capacity">Capacity</th>
+        <th class="channels text-end" i18n="lightning.channels">Channels</th>
+        <th class="city text-end" i18n="lightning.location">Location</th>
       </thead>
       <tbody *ngIf="nodesPagination$ | async as countryNodes; else skeleton">
         <tr *ngFor="let node of countryNodes; let i= index; trackBy: trackByPublicKey">
-          <td class="alias text-left text-truncate">
+          <td class="alias text-start text-truncate">
             <a [routerLink]="['/lightning/node/' | relativeUrl, node.public_key]">{{ node.alias }}</a>
           </td>
-          <td class="timestamp-first text-left">
+          <td class="timestamp-first text-start">
             <app-timestamp [customFormat]="'yyyy-MM-dd'" [unixTime]="node.first_seen"></app-timestamp>
           </td>
-          <td class="timestamp-update text-left">
+          <td class="timestamp-update text-start">
             <app-timestamp [customFormat]="'yyyy-MM-dd'" [unixTime]="node.updated_at"></app-timestamp>
           </td>
-          <td class="capacity text-right">
+          <td class="capacity text-end">
             <app-amount *ngIf="node.capacity > 100000000; else smallchannel" [satoshis]="node.capacity" [digitsInfo]="'1.2-2'" [noFiat]="true"></app-amount>
             <ng-template #smallchannel>
               {{ node.capacity | amountShortener: 1 }}
               <span class="sats" i18n="shared.sats">sats</span>
             </ng-template>
           </td>
-          <td class="channels text-right">
+          <td class="channels text-end">
             {{ node.channels }}
           </td>
-          <td class="city text-right text-truncate">
+          <td class="city text-end text-truncate">
             <app-geolocation [data]="node.geolocation" [type]="'list-country'"></app-geolocation>
           </td>
       </tbody>
@@ -93,22 +93,22 @@
       <ng-template #skeleton>
         <tbody>
           <tr *ngFor="let item of skeletonLines">
-            <td class="alias text-left text-truncate">
+            <td class="alias text-start text-truncate">
               <span class="skeleton-loader"></span>
             </td>
-            <td class="timestamp-first text-left">
+            <td class="timestamp-first text-start">
               <span class="skeleton-loader"></span>
             </td>
-            <td class="timestamp-update text-left">
+            <td class="timestamp-update text-start">
               <span class="skeleton-loader"></span>
             </td>
-            <td class="capacity text-right">
+            <td class="capacity text-end">
               <span class="skeleton-loader"></span>
             </td>
-            <td class="channels text-right">
+            <td class="channels text-end">
               <span class="skeleton-loader"></span>
             </td>
-            <td class="city text-right text-truncate">
+            <td class="city text-end text-truncate">
               <span class="skeleton-loader"></span>
             </td>
           </tr>
@@ -117,7 +117,7 @@
 
     </table>
 
-    <ngb-pagination *ngIf="nodes$ | async as countryNodes" class="pagination-container float-right mt-2" [class]="isLoading ? 'disabled' : ''"
+    <ngb-pagination *ngIf="nodes$ | async as countryNodes" class="pagination-container float-end mt-2" [class]="isLoading ? 'disabled' : ''"
         [collectionSize]="countryNodes.nodes.length" [rotate]="true" [maxSize]="maxSize" [pageSize]="pageSize" [(page)]="page"
         (pageChange)="pageChange(page)" [boundaryLinks]="true" [ellipses]="false">
       </ngb-pagination>

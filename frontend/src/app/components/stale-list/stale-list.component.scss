@@ -188,18 +188,6 @@
   }
 }
 
-.pool-logo {
-  width: 15px;
-  height: 15px;
-  position: relative;
-  top: -1px;
-  margin-right: 2px;
-
-  &.faded {
-    filter: grayscale(100%) brightness(1.5);
-  }
-}
-
 .beta {
   font-size: 10px;
   margin: 5px;

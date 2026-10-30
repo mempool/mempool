@@ -12,7 +12,7 @@ import backendInfo from '../backend-info';
 import transactionUtils from '../transaction-utils';
 import { IEsploraApi } from './esplora-api.interface';
 import loadingIndicators from '../loading-indicators';
-import { TransactionExtended } from '../../mempool.interfaces';
+import { CpfpInfo, TransactionExtended } from '../../mempool.interfaces';
 import logger from '../../logger';
 import blocks from '../blocks';
 import bitcoinClient from './bitcoin-client';
@@ -23,11 +23,14 @@ import { calculateMempoolTxCpfp } from '../cpfp';
 import { handleError } from '../../utils/api';
 import poolsUpdater from '../../tasks/pools-updater';
 import chainTips from '../chain-tips';
+import FlagValueRepository, { INTERVAL_PRESETS } from '../../repositories/FlagValueRepository';
 
 const TXID_REGEX = /^[a-f0-9]{64}$/i;
 const BLOCK_HASH_REGEX = /^[a-f0-9]{64}$/i;
 const ADDRESS_REGEX = /^[a-z0-9]{2,120}$/i;
 const SCRIPT_HASH_REGEX = /^([a-f0-9]{2})+$/i;
+const MAX_TRANSACTION_TIMES = 100;
+const JUST_NUMBERS_REGEX = /^[1-9]\d*$/;
 
 class BitcoinRoutes {
   public initRoutes(app: Application) {
@@ -37,6 +40,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'difficulty-adjustment', this.getDifficultyChange)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/recommended', this.getRecommendedFees)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/precise', this.getPreciseRecommendedFees)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'fee-estimates', this.getPreciseRecommendedFeesEsploraTransformed)
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/mempool-blocks', this.getMempoolBlocks)
       .get(config.MEMPOOL.API_URL_PREFIX + 'backend-info', this.getBackendInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'init-data', this.getInitData)
@@ -59,6 +63,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'blocks-bulk/:from/:to', this.getBlocksByBulk.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'chain-tips', this.getChainTips.bind(this))
       .get(config.MEMPOOL.API_URL_PREFIX + 'stale-tips', this.getStaleTips.bind(this))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'stale-tips/:height', this.getStaleTips.bind(this))
       .post(config.MEMPOOL.API_URL_PREFIX + 'prevouts', this.$getPrevouts)
       .post(config.MEMPOOL.API_URL_PREFIX + 'cpfp', this.getCpfpLocalTxs)
       // Temporarily add txs/package endpoint for all backends until esplora supports it
@@ -67,6 +72,10 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'internal/blocks/definition/list', this.getBlockDefinitionHashes)
       .get(config.MEMPOOL.API_URL_PREFIX + 'internal/blocks/definition/current', this.getCurrentBlockDefinitionHash)
       .get(config.MEMPOOL.API_URL_PREFIX + 'internal/blocks/:definitionHash', this.getBlocksByDefinitionHash)
+
+      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval/', this.getTxCountPerFlagValue)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval/:bucketSize', this.getTxCountPerFlagValue)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval/:bucketSize/:op/:mask', this.getTxCountPerFlagValue)
       ;
 
       if (config.MEMPOOL.BACKEND !== 'esplora') {
@@ -133,6 +142,58 @@ class BitcoinRoutes {
     res.json(result);
   }
 
+  private getPreciseRecommendedFeesEsploraTransformed(req: Request, res: Response) {
+    if (!mempool.isInSync()) {
+      res.statusCode = 503;
+      res.send('Service Unavailable');
+      return;
+    }
+    const result = feeApi.getPreciseRecommendedFee();
+
+    // Note: Manually tested against rust-esplora-client 0.12.3
+    // to make sure the status code and extra header didn't blow everything up.
+    // 3xx redirects with a Location header were silently followed and caused the client to
+    // blow up, 4xx and 5xx caused errors in the client as well, so only 2xx was acceptable for this endpoint.
+
+    // HTTP 203 Non-Authoritative Information is used to indicate
+    // that the response is not the original from the server, but a transformed version of it.
+    res.statusCode = 203;
+    res.setHeader(
+      'x-warning-from-mempool',
+      `This endpoint is deprecated and will be removed in a future release. Please use /api/v1/fees/precise instead.`,
+    );
+    res.json({
+      '1': result.fastestFee,
+      '2': result.fastestFee,
+      '3': result.halfHourFee,
+      '4': result.halfHourFee,
+      '5': result.halfHourFee,
+      '6': result.hourFee,
+      '7': result.hourFee,
+      '8': result.hourFee,
+      '9': result.hourFee,
+      '10': result.hourFee,
+      '11': result.hourFee,
+      '12': result.hourFee,
+      '13': result.hourFee,
+      '14': result.hourFee,
+      '15': result.hourFee,
+      '16': result.hourFee,
+      '17': result.hourFee,
+      '18': result.hourFee,
+      '19': result.hourFee,
+      '20': result.hourFee,
+      '21': result.hourFee,
+      '22': result.hourFee,
+      '23': result.hourFee,
+      '24': result.hourFee,
+      '25': result.hourFee,
+      '144': result.economyFee,
+      '504': result.economyFee,
+      '1008': result.minimumFee,
+    });
+  }
+
   private getMempoolBlocks(req: Request, res: Response) {
     try {
       const result = mempoolBlocks.getMempoolBlocks();
@@ -144,11 +205,18 @@ class BitcoinRoutes {
 
   private getTransactionTimes(req: Request, res: Response) {
     if (!req.query.txId || typeof req.query.txId !== 'object') {
-      handleError(req, res, 500, 'invalid txId format');
+      handleError(req, res, 400, 'invalid txId format');
       return;
     }
+
+    const requestedTxIds = Object.values(req.query.txId);
+    if (requestedTxIds.length > MAX_TRANSACTION_TIMES) {
+      handleError(req, res, 400, 'Too many txids requested');
+      return;
+    }
+
     const txIds: string[] = [];
-    for (const txid of Object.values(req.query.txId)) {
+    for (const txid of requestedTxIds) {
       if (typeof txid === 'string' && TXID_REGEX.test(txid)) {
         txIds.push(txid);
       }
@@ -161,7 +229,7 @@ class BitcoinRoutes {
   private async $getBatchedOutspends(req: Request, res: Response): Promise<IEsploraApi.Outspend[][] | void> {
     const txids_csv = req.query.txids;
     if (!txids_csv || typeof txids_csv !== 'string') {
-      handleError(req, res, 500, 'Invalid txids format');
+      handleError(req, res, 400, 'Invalid txids format');
       return;
     }
     const txids = txids_csv.split(',');
@@ -184,18 +252,18 @@ class BitcoinRoutes {
 
   private async $getCpfpInfo(req: Request, res: Response) {
     if (!TXID_REGEX.test(req.params.txId)) {
-      handleError(req, res, 501, `Invalid transaction ID`);
+      handleError(req, res, 400, `Invalid transaction ID`);
       return;
     }
 
     const tx = mempool.getMempool()[req.params.txId];
     if (tx) {
       if (tx?.cpfpChecked) {
-        res.json({
-          ancestors: tx.ancestors,
+        const response: CpfpInfo & { acceleratedBy?: number[], acceleratedAt?: number, feeDelta?: number } = {
+          ancestors: tx.ancestors || [],
           bestDescendant: tx.bestDescendant || null,
-          descendants: tx.descendants || null,
-          effectiveFeePerVsize: tx.effectiveFeePerVsize || null,
+          descendants: tx.descendants,
+          effectiveFeePerVsize: tx.effectiveFeePerVsize,
           sigops: tx.sigops,
           fee: tx.fee,
           adjustedVsize: tx.adjustedVsize,
@@ -203,7 +271,14 @@ class BitcoinRoutes {
           acceleratedBy: tx.acceleratedBy || undefined,
           acceleratedAt: tx.acceleratedAt || undefined,
           feeDelta: tx.feeDelta || undefined,
-        });
+        };
+        if (config.MEMPOOL.CLUSTER_MEMPOOL && tx.clusterId != null) {
+          const cluster = mempool.clusterMempool?.getClusterForApi(req.params.txId);
+          if (cluster) {
+            response.cluster = cluster;
+          }
+        }
+        res.json(response);
         return;
       }
 
@@ -239,7 +314,7 @@ class BitcoinRoutes {
 
   private async getTransaction(req: Request, res: Response) {
     if (!TXID_REGEX.test(req.params.txId)) {
-      handleError(req, res, 501, `Invalid transaction ID`);
+      handleError(req, res, 400, `Invalid transaction ID`);
       return;
     }
     try {
@@ -258,7 +333,7 @@ class BitcoinRoutes {
 
   private async getRawTransaction(req: Request, res: Response) {
     if (!TXID_REGEX.test(req.params.txId)) {
-      handleError(req, res, 501, `Invalid transaction ID`);
+      handleError(req, res, 400, `Invalid transaction ID`);
       return;
     }
     try {
@@ -346,7 +421,7 @@ class BitcoinRoutes {
 
   private async getTransactionStatus(req: Request, res: Response) {
     if (!TXID_REGEX.test(req.params.txId)) {
-      handleError(req, res, 501, `Invalid transaction ID`);
+      handleError(req, res, 400, `Invalid transaction ID`);
       return;
     }
     try {
@@ -365,7 +440,7 @@ class BitcoinRoutes {
 
   private async getStrippedBlockTransactions(req: Request, res: Response) {
     if (!BLOCK_HASH_REGEX.test(req.params.hash)) {
-      handleError(req, res, 501, `Invalid block hash`);
+      handleError(req, res, 400, `Invalid block hash`);
       return;
     }
     try {
@@ -379,11 +454,11 @@ class BitcoinRoutes {
 
   private async getStrippedBlockTransaction(req: Request, res: Response) {
     if (!BLOCK_HASH_REGEX.test(req.params.hash)) {
-      handleError(req, res, 501, `Invalid block hash`);
+      handleError(req, res, 400, `Invalid block hash`);
       return;
     }
     if (!TXID_REGEX.test(req.params.txid)) {
-      handleError(req, res, 501, `Invalid transaction ID`);
+      handleError(req, res, 400, `Invalid transaction ID`);
       return;
     }
     try {
@@ -401,7 +476,7 @@ class BitcoinRoutes {
 
   private async getBlock(req: Request, res: Response) {
     if (!BLOCK_HASH_REGEX.test(req.params.hash)) {
-      handleError(req, res, 501, `Invalid block hash`);
+      handleError(req, res, 400, `Invalid block hash`);
       return;
     }
     try {
@@ -427,7 +502,7 @@ class BitcoinRoutes {
 
   private async getBlockHeader(req: Request, res: Response) {
     if (!BLOCK_HASH_REGEX.test(req.params.hash)) {
-      handleError(req, res, 501, `Invalid block hash`);
+      handleError(req, res, 400, `Invalid block hash`);
       return;
     }
     try {
@@ -441,7 +516,7 @@ class BitcoinRoutes {
 
   private async getBlockAuditSummary(req: Request, res: Response) {
     if (!BLOCK_HASH_REGEX.test(req.params.hash)) {
-      handleError(req, res, 501, `Invalid block hash`);
+      handleError(req, res, 400, `Invalid block hash`);
       return;
     }
     try {
@@ -460,11 +535,11 @@ class BitcoinRoutes {
 
   private async $getBlockTxAuditSummary(req: Request, res: Response) {
     if (!BLOCK_HASH_REGEX.test(req.params.hash)) {
-      handleError(req, res, 501, `Invalid block hash`);
+      handleError(req, res, 400, `Invalid block hash`);
       return;
     }
     if (!TXID_REGEX.test(req.params.txid)) {
-      handleError(req, res, 501, `Invalid transaction ID`);
+      handleError(req, res, 400, `Invalid transaction ID`);
       return;
     }
     try {
@@ -560,14 +635,18 @@ class BitcoinRoutes {
   private async getStaleTips(req: Request, res: Response) {
     try {
       if (['mainnet', 'testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK)) { // Bitcoin
-        res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
-        const tips = await chainTips.getStaleTips();
-        if (tips.length > 0) {
-          res.json(tips);
-        } else {
-          handleError(req, res, 503, `Temporarily unavailable`);
-          return;
+        let fromHeight: number | undefined;
+        if (req.params.height !== undefined) {
+          fromHeight = parseInt(req.params.height, 10);
+          if (isNaN(fromHeight) || fromHeight < 0) {
+            handleError(req, res, 400, `Parameter 'height' must be a block height (integer)`);
+            return;
+          }
         }
+
+        res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
+        const tips = await chainTips.$getStaleTipsPage(fromHeight, 25);
+        res.json(tips);
       } else { // Liquid
         handleError(req, res, 404, `This API is only available for Bitcoin networks`);
         return;
@@ -614,7 +693,7 @@ class BitcoinRoutes {
 
   private async getBlockTransactions(req: Request, res: Response) {
     if (!BLOCK_HASH_REGEX.test(req.params.hash)) {
-      handleError(req, res, 501, `Invalid block hash`);
+      handleError(req, res, 400, `Invalid block hash`);
       return;
     }
     try {
@@ -656,7 +735,7 @@ class BitcoinRoutes {
       return;
     }
     if (!ADDRESS_REGEX.test(req.params.address)) {
-      handleError(req, res, 501, `Invalid address`);
+      handleError(req, res, 400, `Invalid address`);
       return;
     }
 
@@ -664,6 +743,10 @@ class BitcoinRoutes {
       const addressData = await bitcoinApi.$getAddress(req.params.address);
       res.json(addressData);
     } catch (e) {
+      if (e instanceof Error && e.message === 'Invalid Bitcoin address') {
+        res.status(400).send(e.message);
+        return;
+      }
       if (e instanceof Error && e.message && (e.message.indexOf('too long') > 0 || e.message.indexOf('confirmed status') > 0)) {
         handleError(req, res, 413, e.message);
         return;
@@ -678,7 +761,7 @@ class BitcoinRoutes {
       return;
     }
     if (!ADDRESS_REGEX.test(req.params.address)) {
-      handleError(req, res, 501, `Invalid address`);
+      handleError(req, res, 400, `Invalid address`);
       return;
     }
 
@@ -690,6 +773,10 @@ class BitcoinRoutes {
       const transactions = await bitcoinApi.$getAddressTransactions(req.params.address, lastTxId);
       res.json(transactions);
     } catch (e) {
+      if (e instanceof Error && e.message === 'Invalid Bitcoin address') {
+        res.status(400).send(e.message);
+        return;
+      }
       if (e instanceof Error && e.message && (e.message.indexOf('too long') > 0 || e.message.indexOf('confirmed status') > 0)) {
         handleError(req, res, 413, e.message);
         return;
@@ -704,7 +791,7 @@ class BitcoinRoutes {
       return;
     }
     if (!ADDRESS_REGEX.test(req.params.address)) {
-      handleError(req, res, 501, `Invalid address`);
+      handleError(req, res, 400, `Invalid address`);
       return;
     }
 
@@ -712,6 +799,10 @@ class BitcoinRoutes {
       const addressData = await bitcoinApi.$getAddressUtxos(req.params.address);
       res.json(addressData);
     } catch (e) {
+      if (e instanceof Error && e.message === 'Invalid Bitcoin address') {
+        res.status(400).send(e.message);
+        return;
+      }
       if (e instanceof Error && e.message && (e.message.indexOf('too long') > 0 || e.message.indexOf('confirmed status') > 0)) {
         handleError(req, res, 413, e.message);
         return;
@@ -733,7 +824,7 @@ class BitcoinRoutes {
       return;
     }
     if (!SCRIPT_HASH_REGEX.test(req.params.scripthash)) {
-      handleError(req, res, 501, `Invalid scripthash`);
+      handleError(req, res, 400, `Invalid scripthash`);
       return;
     }
 
@@ -757,7 +848,7 @@ class BitcoinRoutes {
       return;
     }
     if (!SCRIPT_HASH_REGEX.test(req.params.scripthash)) {
-      handleError(req, res, 501, `Invalid scripthash`);
+      handleError(req, res, 400, `Invalid scripthash`);
       return;
     }
 
@@ -785,7 +876,7 @@ class BitcoinRoutes {
       return;
     }
     if (!SCRIPT_HASH_REGEX.test(req.params.scripthash)) {
-      handleError(req, res, 501, `Invalid scripthash`);
+      handleError(req, res, 400, `Invalid scripthash`);
       return;
     }
 
@@ -918,7 +1009,7 @@ class BitcoinRoutes {
 
   private async getRawBlock(req: Request, res: Response) {
     if (!BLOCK_HASH_REGEX.test(req.params.hash)) {
-      handleError(req, res, 501, `Invalid block hash`);
+      handleError(req, res, 400, `Invalid block hash`);
       return;
     }
     try {
@@ -932,7 +1023,7 @@ class BitcoinRoutes {
 
   private async getTxIdsForBlock(req: Request, res: Response) {
     if (!BLOCK_HASH_REGEX.test(req.params.hash)) {
-      handleError(req, res, 501, `Invalid block hash`);
+      handleError(req, res, 400, `Invalid block hash`);
       return;
     }
     try {
@@ -945,7 +1036,7 @@ class BitcoinRoutes {
 
   private async validateAddress(req: Request, res: Response) {
     if (!ADDRESS_REGEX.test(req.params.address)) {
-      handleError(req, res, 501, `Invalid address`);
+      handleError(req, res, 400, `Invalid address`);
       return;
     }
     try {
@@ -958,7 +1049,7 @@ class BitcoinRoutes {
 
   private async getRbfHistory(req: Request, res: Response) {
     if (!TXID_REGEX.test(req.params.txId)) {
-      handleError(req, res, 501, `Invalid transaction ID`);
+      handleError(req, res, 400, `Invalid transaction ID`);
       return;
     }
     try {
@@ -993,7 +1084,7 @@ class BitcoinRoutes {
 
   private async getCachedTx(req: Request, res: Response) {
     if (!TXID_REGEX.test(req.params.txId)) {
-      handleError(req, res, 501, `Invalid transaction ID`);
+      handleError(req, res, 400, `Invalid transaction ID`);
       return;
     }
     try {
@@ -1010,7 +1101,7 @@ class BitcoinRoutes {
 
   private async getTransactionOutspends(req: Request, res: Response) {
     if (!TXID_REGEX.test(req.params.txId)) {
-      handleError(req, res, 501, `Invalid transaction ID`);
+      handleError(req, res, 400, `Invalid transaction ID`);
       return;
     }
     try {
@@ -1023,7 +1114,7 @@ class BitcoinRoutes {
 
   private async getTransactionMerkleProof(req: Request, res: Response): Promise<void> {
     if (!TXID_REGEX.test(req.params.txId)) {
-      handleError(req, res, 501, `Invalid transaction ID`);
+      handleError(req, res, 400, `Invalid transaction ID`);
       return;
     }
     try {
@@ -1044,6 +1135,63 @@ class BitcoinRoutes {
       }
     } catch (e) {
       handleError(req, res, 500, 'Failed to get difficulty change');
+    }
+  }
+
+  private async getTxCountPerFlagValue(req: Request, res: Response) {
+    try {
+      if (!Common.blocksSummariesIndexingEnabled()) {
+        handleError(req, res, 404, `Block summaries indexing is required for this API`);
+        return;
+      }
+
+      const presets = INTERVAL_PRESETS;
+      const operations = ['and', 'or', 'nor', undefined];
+      const intervals = Object.keys(presets);
+      const interval = req.params.interval;
+
+      if (!intervals.includes(interval)) {
+        handleError(req, res, 400, `Invalid interval, must be one of ${intervals.toString()}`);
+        return;
+      }
+
+      const validBucketSizes = presets[interval].bucketSizes;
+      const rawBucketSize = req.params.bucketSize;
+      const bucketSize: number = rawBucketSize === undefined ? validBucketSizes[0] : Number(rawBucketSize);
+      if (!Number.isInteger(bucketSize) || !validBucketSizes.includes(bucketSize)) {
+        handleError(req, res, 400, `Invalid bucket size, must be ${validBucketSizes.toString()}`);
+        return;
+      }
+
+      if (!operations.includes(req.params.op)) {
+        handleError(req, res, 400, `Invalid operation, must be 'and', 'or', 'nor' or undefined.`);
+        return;
+      }
+
+      if (req.params.mask && !JUST_NUMBERS_REGEX.test(req.params.mask)) {
+        handleError(req, res, 400, `Invalid mask value, must be a positive integer`);
+        return;
+      }
+
+      const op = (req.params.op) as 'and' | 'or' | 'nor' | undefined;
+      const mask = BigInt(req.params.mask ?? 0n);
+
+      const { tip, tail }  = await FlagValueRepository.$getTipAndTailIndexedByBucketSize(bucketSize) || { tip: undefined, tail: undefined };
+
+      if (tip === undefined || tail === undefined) {
+        handleError(req, res, 400, `Failed to get latest indexed flag values for ${interval}`);
+        return;
+      }
+
+      const totalCount = await FlagValueRepository.$getTotalBlocksIndexedByBucketSize(bucketSize === 1 ? 1008 : bucketSize) ?? tip - tail;
+
+      const startHeight = presets[interval].retentionSpan !== -1 ? (tip - presets[interval].retentionSpan) : -1;
+      const txsCount = await FlagValueRepository.$queryTxCountBasedOnMask(mask, bucketSize, op, startHeight);
+      res.header('X-total-count', totalCount.toString());
+      res.header('Expires', new Date(Date.now() + 1000 * 3600 * 24 * (presets[interval].bucketSizes[0] / 144)).toUTCString());
+      res.send(txsCount);
+    } catch (e: any) {
+      handleError(req, res, 400, e instanceof Error ? e.message : 'Failed to get flag values');
     }
   }
 
@@ -1171,7 +1319,12 @@ class BitcoinRoutes {
       }
 
       if (transactions.length > 1) {
-        handleError(req, res, 400, 'More than one transaction is not supported yet');
+        handleError(req, res, 400, 'More than one transaction is not supported');
+        return;
+      }
+
+      if (transactions[0].vin.length + transactions[0].vout.length > 2500) {
+        handleError(req, res, 400, 'Too many inputs and outputs');
         return;
       }
 

@@ -165,8 +165,8 @@ export class NodesMap implements OnInit, OnChanges {
         map: 'world',
         roam: true,
         itemStyle: {
-          borderColor: 'black',
-          color: '#272b3f'
+          borderColor: 'var(--world-map-border)',
+          color: 'var(--world-map-bg)',
         },
         scaleLimit: {
           min: 1.3,
@@ -203,7 +203,7 @@ export class NodesMap implements OnInit, OnChanges {
             borderColor: '#000',
             formatter: (value) => {
               const data = value.data;
-              const alias = data[3].length > 0 ? data[3] : data[4].slice(0, 20);
+              const alias = echarts.format.encodeHTML(data[3].length > 0 ? data[3] : data[4].slice(0, 20));
               const liquidity = data[2] >= 100000000 ?
                 `${this.amountShortenerPipe.transform(data[2] / 100000000)} BTC` :
                 `${this.amountShortenerPipe.transform(data[2], 2)} sats`;
@@ -212,7 +212,7 @@ export class NodesMap implements OnInit, OnChanges {
                 <b style="color: white">${alias}</b><br>
                 ${liquidity}<br>` +
                 $localize`:@@205c1b86ac1cc419c4d0cca51fdde418c4ffdc20:${data[5]}:INTERPOLATION: channels` + `<br>
-                ${getFlagEmoji(data[7])} ${data[6]}
+                ${getFlagEmoji(data[7])} ${echarts.format.encodeHTML(data[6])}
               `;
             }
           },

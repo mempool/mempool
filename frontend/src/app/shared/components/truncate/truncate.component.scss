@@ -41,7 +41,7 @@
   .disabled {
     pointer-events: none;
     opacity: 0.8;
-    color: #fff;
+    color: var(--transparent-fg);
   }
 }
 

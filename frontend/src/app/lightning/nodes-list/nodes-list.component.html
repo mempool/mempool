@@ -2,19 +2,19 @@
 
   <table class="table table-borderless">
     <thead>
-      <th class="alias text-left" i18n="nodes.alias">Alias</th>
-      <th class="capacity text-right" [class]="show" i18n="lightning.capacity">Capacity</th>
-      <th class="channels text-right" [class]="show" i18n="lightning.channels">Channels</th>
+      <th class="alias text-start" i18n="nodes.alias">Alias</th>
+      <th class="capacity text-end" [class]="show" i18n="lightning.capacity">Capacity</th>
+      <th class="channels text-end" [class]="show" i18n="lightning.channels">Channels</th>
     </thead>
     <tbody *ngIf="nodes$ | async as nodes; else skeleton">
       <tr *ngFor="let node of nodes; let i = index;">
-        <td class="alias text-left">
+        <td class="alias text-start">
           <a [routerLink]="['/lightning/node' | relativeUrl, node.public_key]">{{ node.alias }}</a>
         </td>
-        <td class="capacity text-right" [class]="show">
+        <td class="capacity text-end" [class]="show">
           <app-amount [satoshis]="node.capacity" digitsInfo="1.2-2"></app-amount>
         </td>
-        <td class="channels text-right" [class]="show">
+        <td class="channels text-end" [class]="show">
           {{ node.channels | number }}
         </td>
       </tr>
@@ -22,13 +22,13 @@
     <ng-template #skeleton>
       <tbody>
         <tr *ngFor="let item of [1,2,3,4,5,6,7,8,9,10]">
-          <td class="alias text-left">
+          <td class="alias text-start">
             <span class="skeleton-loader"></span>
           </td>
-          <td class="capacity text-right">
+          <td class="capacity text-end">
             <span class="skeleton-loader"></span>
           </td>
-          <td class="channels text-right">
+          <td class="channels text-end">
             <span class="skeleton-loader"></span>
           </td>
         </tr>

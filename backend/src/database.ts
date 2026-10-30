@@ -22,6 +22,7 @@ import { execSync } from 'child_process';
     password: config.DATABASE.PASSWORD,
     connectionLimit: config.DATABASE.POOL_SIZE,
     supportBigNumbers: true,
+    jsonStrings: true,
     timezone: '+00:00',
   };
 
@@ -178,7 +179,7 @@ import { execSync } from 'child_process';
   }
 
   /** @asyncSafe */
-  private async getPool(): Promise<Pool> {
+  public async getPool(): Promise<Pool> {
     if (this.pool === null) {
       this.pool = createPool(this.poolConfig);
       this.pool.on('connection', function (newConnection: PoolConnection) {

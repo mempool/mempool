@@ -33,7 +33,8 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
   @Input() template: ('widget' | 'advanced') = 'widget';
   @Input() windowPreferenceOverride: string;
   @Input() outlierCappingEnabled: boolean = false;
-  @Input() isLoading: boolean;
+  @Input() isLoading: boolean = true;
+  @Input() error: any;
 
   mempoolStatsChartOption: EChartsOption = {};
   mempoolStatsChartInitOption = {
@@ -55,14 +56,18 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
   ngOnInit() {
     this.rateUnitSub = this.stateService.rateUnits$.subscribe(rateUnits => {
       this.weightMode = rateUnits === 'wu';
-      if (this.data) {
+      if (this.data && !this.error) {
         this.mountChart();
       }
     });
   }
 
   ngOnChanges(): void {
-    if (!this.data) {
+    if (this.isLoading) {
+      return;
+    }
+    if (!this.data || (this.data && this.data.series?.[0]?.length === 0) || this.error) {
+      this.mountMessageOnChart();
       return;
     }
     this.windowPreference = (this.windowPreferenceOverride ? this.windowPreferenceOverride : this.storageService.getValue('graphWindowPreference')) || '2h';
@@ -137,7 +142,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
         silent: true,
         symbol: 'none',
         lineStyle: {
-          color: '#fff',
+          color: 'var(--fg)',
           opacity: 1,
           width: 2,
         },
@@ -145,7 +150,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
           yAxis: 1667,
           label: {
             show: false,
-            color: '#ffffff',
+            color: 'var(--fg)',
           }
         }],
       }
@@ -156,12 +161,19 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
         name: 'MA',
         data: this.MA,
         type: 'line',
+        color: 'var(--fg)',
         smooth: false,
         showSymbol: false,
         symbol: 'none',
         lineStyle: {
           width: 2,
-          color: 'white',
+          color: 'var(--fg)',
+        },
+        emphasis: {
+          lineStyle: {
+            width: 2,
+            color: 'var(--fg)',
+          },
         }
       });
     }
@@ -191,11 +203,12 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
         bottom: 0,
         selectedDataBackground: {
           lineStyle: {
-            color: '#fff',
+            color: 'var(--fg)',
             opacity: 0.45,
           },
           areaStyle: {
             opacity: 0,
+            color: 'var(--fg)',
           }
         },
       }],
@@ -251,8 +264,8 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
       ],
       yAxis: {
         max: (value): number => {
-          let cappedMax = value.max;
-          if (this.outlierCappingEnabled && value.max >= (this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER)) {
+          let cappedMax = Number.isFinite(value.max) ? value.max : 0;
+          if (this.outlierCappingEnabled && cappedMax >= (this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER)) {
             cappedMax = Math.round(this.medianVbytesPerSecond * OUTLIERS_MEDIAN_MULTIPLIER);
           }
           // always show the clearing rate line, plus a small margin
@@ -310,6 +323,28 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
         outOfRange: {
           color: '#999'
         }
+      },
+    };
+  }
+
+  mountMessageOnChart(): void {
+    let errorMessage = $localize`:error.general-loading-data:Error loading data.`;
+    if (!this.error && this.data && this.data.series[0]?.length === 0) { // Empty array
+      errorMessage = $localize`No data to display yet. Try again later.`;
+    }
+    if (this.template === 'widget') {
+      errorMessage = $localize`Awaiting live update...`;
+    }
+
+    this.mempoolStatsChartOption = {
+      title: {
+        textStyle: {
+          color: 'grey',
+          fontSize: 15
+        },
+        text: errorMessage,
+        left: 'center',
+        top: 'center',
       },
     };
   }

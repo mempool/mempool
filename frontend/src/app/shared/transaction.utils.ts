@@ -1,6 +1,6 @@
 import { TransactionFlags } from '@app/shared/filters.utils';
 import { getVarIntLength, parseMultisigScript, isPoint, parseTapscriptMultisig, parseTapscriptUnanimousMultisig, ScriptInfo } from '@app/shared/script.utils';
-import { Transaction, Vin, Utxo } from '@interfaces/electrs.interface';
+import { Transaction, Vin, Vout } from '@interfaces/electrs.interface';
 import { CpfpInfo, RbfInfo, TransactionStripped } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { hash, Hash } from '@app/shared/sha256';
@@ -713,7 +713,7 @@ function isNonStandardLegacySigops(tx: Transaction, height?: number, network?: s
 // A witness program is any valid scriptpubkey that consists of a 1-byte push opcode
 // followed by a data push between 2 and 40 bytes.
 // https://github.com/bitcoin/bitcoin/blob/2c79abc7ad4850e9e3ba32a04c530155cda7f980/src/script/script.cpp#L224-L240
-function isWitnessProgram(scriptpubkey: string): false | { version: number, program: string } {
+export function isWitnessProgram(scriptpubkey: string): false | { version: number, program: string } {
   if (scriptpubkey.length < 8 || scriptpubkey.length > 84) {
     return false;
   }
@@ -935,7 +935,15 @@ export function getTransactionFlags(tx: Transaction, cpfpInfo?: CpfpInfo, replac
   // fast but bad heuristic to detect possible coinjoins
   // (at least 5 inputs and 5 outputs, less than half of which are unique amounts, with no address reuse)
   const addressReuse = Object.keys(reusedOutputAddresses).reduce((acc, key) => Math.max(acc, (reusedInputAddresses[key] || 0) + (reusedOutputAddresses[key] || 0)), 0) > 1;
-  if (!addressReuse && tx.vin.length >= 5 && tx.vout.length >= 5 && (Object.keys(inValues).length + Object.keys(outValues).length) <= (tx.vin.length + tx.vout.length) / 2 ) {
+  const tokenRelated = (flags & (TransactionFlags.inscription | TransactionFlags.op_return)) !== 0n;
+  if (!addressReuse &&
+      tx.vin.length >= 5 &&
+      tx.vout.length >= 5 &&
+      (Object.keys(inValues).length + Object.keys(outValues).length) <= (tx.vin.length + tx.vout.length) / 2 &&
+      !tokenRelated &&
+      tx.vin.length / tx.vout.length < 5 &&
+      tx.vin.length / tx.vout.length > 0.2
+      ) {
     flags |= TransactionFlags.coinjoin;
   }
   // more than 5:1 input:output ratio
@@ -1448,6 +1456,11 @@ function fromBuffer(buffer: Uint8Array, network: string, inputs?: PsbtKeyValueMa
 export type PsbtKeyValue = { keyData: Uint8Array; value: Uint8Array; };
 export type PsbtKeyValueMap = Map<number, PsbtKeyValue[]>;
 
+export const PSBT_GLOBAL = {
+  UNSIGNED_TX: 0x00,
+  GENERIC_SIGNED_MESSAGE: 0x09,
+};
+
 export const PSBT_IN = {
   NON_WITNESS_UTXO: 0x00,
   WITNESS_UTXO: 0x01,
@@ -1593,9 +1606,10 @@ function decodePsbt(psbtBuffer: Uint8Array): { rawTx: Uint8Array; inputs: PsbtKe
  * @param rawTx - The unsigned transaction as Uint8Array
  * @param inputs - Array of input maps containing key-value pairs for each input
  * @param outputs - Array of output maps containing key-value pairs for each output
+ * @param globals - Global key-value pairs for the PSBT
  * @returns PSBT buffer as Uint8Array
  */
-export function encodePsbt(rawTx: Uint8Array, inputs: PsbtKeyValueMap[], outputs: PsbtKeyValueMap[]): Uint8Array {
+export function encodePsbt(rawTx: Uint8Array, inputs: PsbtKeyValueMap[], outputs: PsbtKeyValueMap[], globals: PsbtKeyValueMap = new Map()): Uint8Array {
   const result: number[] = [];
 
   // Magic bytes: "psbt" in ASCII
@@ -1625,7 +1639,15 @@ export function encodePsbt(rawTx: Uint8Array, inputs: PsbtKeyValueMap[], outputs
 
   // GLOBAL MAP
   // Add unsigned transaction (key type 0x00)
-  writeKeyValue(0x00, new Uint8Array(), rawTx);
+  writeKeyValue(PSBT_GLOBAL.UNSIGNED_TX, new Uint8Array(), rawTx);
+  for (const [keyType, items] of globals) {
+    if (keyType === PSBT_GLOBAL.UNSIGNED_TX) {
+      throw new Error('PSBT global map must not include UNSIGNED_TX (0x00); provide it via rawTx');
+    }
+    for (const record of items) {
+      writeKeyValue(keyType, record.keyData, record.value);
+    }
+  }
 
   // End global map
   result.push(0x00);
@@ -1642,6 +1664,143 @@ export function encodePsbt(rawTx: Uint8Array, inputs: PsbtKeyValueMap[], outputs
 
   return new Uint8Array(result);
 }
+
+export type TxCheck = (tx: Transaction) => CheckResult;
+export type CheckResult = {
+  passed: boolean;
+  label: string;
+};
+
+export const TX_CHECKS = {
+  fee: (expected: number): TxCheck => (tx) => {
+    const feeKnown = tx.fee !== undefined;
+    const passed = feeKnown && tx.fee === expected;
+    let label: string;
+    if (!feeKnown) {
+      label = `Can't calculate tx fee, expected ${expected} sats`;
+    } else if (passed) {
+      label = `Fee: ${expected} sats`;
+    } else {
+      label = `Fee: ${tx.fee} sats, expected ${expected} sats`;
+    }
+    return { label, passed };
+  },
+  input: (index: number, expected: Pick<Vin, 'txid' | 'vout'>): TxCheck => (tx) => {
+    const input = tx.vin[index];
+    if (!input) {
+      return { label: `Input #${index} is missing`, passed: false };
+    }
+
+    const passed = input.txid === expected.txid && input.vout === expected.vout;
+    let label = `Input #${index}: ${input.txid.slice(0, 20)}...:${input.vout}`;
+    if (!passed) {
+      label += `, expected ${expected.txid.slice(0, 20)}...:${expected.vout}`;
+    }
+    return { label, passed };
+  },
+  outputValue: (index: number, expected: number): TxCheck => (tx) => {
+    const output = tx.vout[index];
+    if (!output) {
+      return { label: `Output #${index} is missing`, passed: false };
+    }
+
+    const passed = output.value === expected;
+    let label = `Output #${index} value: ${output.value} sats`;
+    if (!passed) {
+      label += `, expected ${expected} sats`;
+    }
+    return { passed, label };
+  },
+  outputScriptPubKey: (index: number, expected: string): TxCheck => (tx) => {
+    const output = tx.vout[index];
+    if (!output) {
+      return { label: `Output #${index} is missing`, passed: false };
+    }
+
+    const passed = output.scriptpubkey === expected;
+    let label = `Output #${index} scriptPubKey: ${output.scriptpubkey.slice(0, 20)}...`;
+    if (!passed) {
+      label += `, expected ${expected.slice(0, 20)}...`;
+    }
+    return { passed, label };
+  },
+  outputScriptPubKeyAsm: (index: number, expected: string): TxCheck => (tx) => {
+    const output = tx.vout[index];
+    if (!output) {
+      return { label: `Output #${index} is missing`, passed: false };
+    }
+
+    const passed = output.scriptpubkey_asm === expected;
+    let label = `Output #${index} scriptPubKey: ${output.scriptpubkey_asm.slice(0, 20)}...`;
+    if (!passed) {
+      label += `, expected ${expected.slice(0, 20)}...`;
+    }
+    return { passed, label };
+  },
+  outputAddress: (index: number, expected: string): TxCheck => (tx) => {
+    const output = tx.vout[index];
+    if (!output) {
+      return { label: `Output #${index} is missing`, passed: false };
+    }
+
+    const passed = output.scriptpubkey_address === expected;
+    let label = `Output #${index} address: ${output.scriptpubkey_address}`;
+    if (!passed) {
+      label += `, expected ${expected}`;
+    }
+    return { passed, label };
+  },
+  sequence: (index: number, expected: number): TxCheck => (tx) => {
+    const input = tx.vin[index];
+    if (!input) {
+      return { label: `Input #${index} is missing`, passed: false };
+    }
+
+    const passed = input.sequence === expected;
+    let label = `Input #${index} sequence: 0x${input.sequence.toString(16).padStart(8, '0')}`;
+    if (!passed) {
+      label += `, expected 0x${expected.toString(16).padStart(8, '0')}`;
+    }
+    return { label, passed };
+  },
+  locktime: (expected: number): TxCheck => (tx) => {
+    const locktime = tx.locktime;
+    const passed = locktime === expected;
+    let label = `Locktime: ${locktime}`;
+    if (!passed) {
+      label += `, expected ${expected}`;
+    }
+    return { passed, label };
+  },
+  version: (expected: number): TxCheck => (tx) => {
+    const version = tx.version;
+    const passed = version === expected;
+    let label = `Version: ${version}`;
+    if (!passed) {
+      label += `, expected ${expected}`;
+    }
+    return { passed, label };
+  },
+  inputSignature: (index: number, expected: SighashValue[]): TxCheck => (tx) => {
+    const input = tx.vin[index];
+    const signatures = extractDERSignaturesASM(input.scriptsig_asm || '')
+      .concat(extractDERSignaturesWitness(input.witness || []))
+      .concat(extractSchnorrSignatures(input.witness || []));
+    const sighashes = Array.from(new Set(signatures.map(sigInfo => sigInfo.sighash)));
+    const passed = signatures.length > 0 && sighashes.every((sighash) => expected.includes(sighash));
+    const actualSighash = sighashes.map((sighash) => SighashLabels[sighash] || `UNKNOWN(${sighash})`).join(' or ');
+
+    let label = `Input #${index}:`;
+    if (signatures.length === 0) {
+      label += ' no signatures found';
+    } else if (passed) {
+      label += ` signed with ${actualSighash}`;
+    } else {
+      label += ` signed with ${actualSighash}, expected ${expected.map((s) => SighashLabels[s]).join(' or ')}`;
+    }
+    return { label, passed };
+  }
+};
 
 export function decodeRawTransaction(input: string, network: string): { tx: Transaction, hex: string, psbt?: string } {
   const buffer = convertTextToBuffer(input);
@@ -1703,7 +1862,7 @@ export function serializeTransaction(tx: Transaction, includeWitness: boolean = 
   return new Uint8Array(result);
 }
 
-function txid(tx: Transaction): string {
+export function txid(tx: Transaction): string {
   const serializedTx = serializeTransaction(tx, false);
   const hash1 = new Hash().update(serializedTx).digest();
   const hash2 = new Hash().update(hash1).digest();

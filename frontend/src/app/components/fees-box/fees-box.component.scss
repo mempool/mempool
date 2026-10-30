@@ -41,7 +41,7 @@
       top: 0px;
     }
     .fee-text{
-      border-bottom: 1px solid #ffffff1c;
+      border-bottom: 1px solid var(--border-subtle);
       width: fit-content;
       margin: auto;
       font-size: 20px;
@@ -79,7 +79,7 @@
   display: flex;
   flex-direction: row;
   transition: background-color 1s;
-  color: #fff;
+  color: var(--fg);
   &.priority {
     width: 75%;
     border-radius: 0px 10px 10px 0px;
@@ -103,10 +103,10 @@
     height: 22px;
     background: repeating-linear-gradient(
       90deg,
-      rgb(45, 51, 72),
-      rgb(45, 51, 72) 2px,
-      rgb(29, 31, 49) 2px,
-      rgb(29, 31, 49) 4px
+      var(--secondary),
+      var(--secondary) 2px,
+      var(--bg) 2px,
+      var(--bg) 4px
     );  
   }
 }

@@ -1,7 +1,11 @@
 <div class="container-xl">
   <div class="text-center">
     <br>
-    <img [src]="officialMempoolSpace ? '/resources/mempool-space-logo-bigger.png' : '/resources/mempool-logo-bigger.png'" style="width: 250px;height:63px;">
+    @if (isLightMode) {
+      <img [src]="officialMempoolSpace ? '/resources/mempool-space-logo-bigger-light.png' : '/resources/mempool-logo-bigger-light.png'" style="width: 250px;height:63px;">
+    } @else {
+      <img [src]="officialMempoolSpace ? '/resources/mempool-space-logo-bigger.png' : '/resources/mempool-logo-bigger.png'" style="width: 250px;height:63px;">
+    }
     <br><br>
 
     <h2>Privacy Policy</h2>
@@ -9,7 +13,7 @@
 
     <br><br>
 
-    <div class="text-left">
+    <div class="text-start">
 
       <h4>USE YOUR OWN SELF-HOSTED MEMPOOL EXPLORER</h4>
 
@@ -39,7 +43,7 @@
 
         <br>
 
-        <li>We use a self-hosted statistics application (matomo) for analytics purposes, which collects your IP address along with the requests you make. Our matomo instance is configured to respect your privacy by redacting your IP address and other methods, and we do not share this data with any third-party. To conceal your activity from our analytics, we recommend that you use a privacy protecting browser extension that blocks matomo from being loaded.</li>
+        <li>We use a self-hosted statistics application for analytics purposes, which collects your IP address along with the requests you make. Our instance is configured to respect your privacy by redacting your IP address and other methods, and we do not share this data with any third-party. To conceal your activity from our analytics, we recommend that you use a privacy protecting browser extension that blocks it from being loaded.</li>
 
       </ul>
 

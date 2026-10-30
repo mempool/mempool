@@ -178,7 +178,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
       name: treasury.wallet,
       inactiveColor: 'var(--grey)',
       textStyle: {
-        color: 'white',
+        color: 'var(--fg)',
       },
       icon: 'roundRect',
     }));
@@ -402,6 +402,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
 
     this.chartOptions = {
       legend: {
+        top: 'top',
         selected: this.selectedWallets,
       }
     };

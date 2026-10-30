@@ -1,15 +1,18 @@
 @if (loading) {
   <div class="spinner-wrapper">
-    <div class="ml-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
+    <div class="ms-2 spinner-border text-light" style="width: 25px; height: 25px"></div>
   </div>
 } @else if (error) {
   <div class="error-wrapper">
-    <span>failed to load X timeline</span>
+    <span i18n="twitter.load-error">failed to load X timeline</span>
   </div>
 }
-<iframe id="twitter-widget-0" scrolling="no" frameborder="0" allowtransparency="true" allowfullscreen="true"
+<iframe id="twitter-widget-0" scrolling="yes" frameborder="0" allowtransparency="true" allowfullscreen="true"
   title="Twitter Timeline"
   [src]="iframeSrc"
+  sandbox="allow-scripts allow-presentation"
+  referrerpolicy="no-referrer"
+  loading="lazy"
   style="position: static; visibility: visible; width: 100%; height: 100%; display: block; flex-grow: 1;"
   (load)="onReady()"
 ></iframe>

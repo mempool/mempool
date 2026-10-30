@@ -23,6 +23,7 @@
 
     .card-text {
       font-size: 22px;
+      text-align: center;
       span {
         font-size: 11px;
         position: relative;
@@ -36,7 +37,7 @@
       top: 0px;
     }
     .fee-text{
-      border-bottom: 1px solid #ffffff1c;
+      border-bottom: 1px solid var(--border-subtle);
       width: fit-content;
       margin: auto;
       line-height: 1.45;
@@ -46,6 +47,20 @@
       display: block;
       font-size: 14px !important;
     }
+  }
+}
+
+.fee-estimation-container.volume-header {
+  justify-content: center;
+
+  .item {
+    margin: 0;
+    max-width: none;
+    width: auto;
+  }
+
+  h5 {
+    margin: 0;
   }
 }
 

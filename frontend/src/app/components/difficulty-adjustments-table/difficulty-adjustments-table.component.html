@@ -3,9 +3,9 @@
     <thead>
       <tr>
         <th class="" i18n="block.height">Height</th>
-        <th class="date text-left" i18n="mining.adjusted">Adjusted</th>
-        <th class="text-right" i18n="mining.difficulty">Difficulty</th>
-        <th class="text-right" i18n="mining.change">Change</th>
+        <th class="date text-start" i18n="mining.adjusted">Adjusted</th>
+        <th class="text-end" i18n="mining.difficulty">Difficulty</th>
+        <th class="text-end" i18n="mining.change">Change</th>
       </tr>
     </thead>
     <tbody *ngIf="(hashrateObservable$ | async) as data">
@@ -13,11 +13,11 @@
         <td class="">
           <a [routerLink]="['/block' | relativeUrl, diffChange.height]">{{ diffChange.height }}</a>
         </td>
-        <td class="date text-left">
+        <td class="date text-start">
           <app-time kind="since" [time]="diffChange.timestamp" [fastRender]="true" [precision]="1" [showTooltip]="true"></app-time>
         </td>
-        <td class="text-right">{{ diffChange.difficultyShorten }}</td>
-        <td class="text-right" [style]="diffChange.change >= 0 ? 'color: #42B747' : 'color: #B74242'">
+        <td class="text-end">{{ diffChange.difficultyShorten }}</td>
+        <td class="text-end" [style]="diffChange.change >= 0 ? 'color: #42B747' : 'color: #B74242'">
           {{ diffChange.change >= 0 ? '+' : '' }}{{ diffChange.change | amountShortener: 2 }}%
         </td>
       </tr>
@@ -25,9 +25,9 @@
     <tbody *ngIf="isLoading">
       <tr *ngFor="let item of [1,2,3,4,5,6]">
         <td class=""><span class="skeleton-loader"></span></td>
-        <td class="date text-left"><span class="skeleton-loader w-75"></span></td>
-        <td class="text-right"><span class="skeleton-loader w-75"></span></td>
-        <td class="text-right"><span class="skeleton-loader w-75"></span></td>
+        <td class="date text-start"><span class="skeleton-loader w-75"></span></td>
+        <td class="text-end"><span class="skeleton-loader w-75"></span></td>
+        <td class="text-end"><span class="skeleton-loader w-75"></span></td>
       </tr>
     </tbody>
   </table>

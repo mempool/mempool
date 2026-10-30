@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
-import { Observable, Subject, combineLatest, of, timer } from 'rxjs';
+import { Observable, Subject, combineLatest, merge, of, timer } from 'rxjs';
 import { delayWhen, filter, map, share, shareReplay, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import { ApiService } from '@app/services/api.service';
 import { Env, StateService } from '@app/services/state.service';
@@ -43,10 +43,11 @@ export class FederationAddressesListComponent implements OnInit {
   ngOnInit(): void {
     this.isLoading = !this.widget;
     this.env = this.stateService.env;
-    this.skeletonLines = this.widget === true ? [...Array(5).keys()] : [...Array(15).keys()];
+    this.skeletonLines = this.widget === true ? [...Array(6).keys()] : [...Array(15).keys()];
     if (!this.widget) {
       this.websocketService.want(['blocks']);
-      this.auditStatus$ = this.stateService.blocks$.pipe(
+      // Bitcoin reserves can change even when no new Liquid block arrives.
+      this.auditStatus$ = merge(this.stateService.blocks$, timer(0, 60_000)).pipe(
         takeUntil(this.destroy$),
         throttleTime(40000),
         delayWhen(_ => this.isLoad ? timer(0) : timer(2000)),

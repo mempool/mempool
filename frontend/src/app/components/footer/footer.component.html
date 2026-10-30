@@ -5,7 +5,7 @@
         <span class="txPerSecond" i18n="dashboard.incoming-transactions">Incoming Transactions</span>&nbsp;
         <ng-template [ngIf]="(isLoadingWebSocket$ | async) === false && mempoolInfoData" [ngIfElse]="loadingTransactions">
           <span *ngIf="(mempoolLoadingStatus$ | async) !== 100; else inSync">
-            &nbsp;<span class="badge badge-pill badge-warning"><ng-container i18n="dashboard.backend-is-synchronizing">Backend is synchronizing</ng-container> ({{ mempoolLoadingStatus$ | async }}%)</span>
+            &nbsp;<span class="badge rounded-pill bg-warning"><ng-container i18n="dashboard.backend-is-synchronizing">Backend is synchronizing</ng-container> ({{ mempoolLoadingStatus$ | async }}%)</span>
           </span>
           <ng-template #inSync>
             <div class="progress inc-tx-progress-bar">

@@ -52,6 +52,10 @@ export class LiquidMasterPageComponent implements OnInit, OnDestroy {
     });
   }
 
+  get networkDisplayName(): string {
+    return this.stateService.networkDisplayName;
+  }
+
   collapse(): void {
     this.navCollapsed = !this.navCollapsed;
   }

@@ -1,7 +1,7 @@
 .acceleration-tooltip {
   position: fixed;
   z-index: 3;
-  background: color-mix(in srgb, var(--active-bg) 95%, transparent);
+	background: color-mix(in srgb, #11131f 95%, transparent);
   border-radius: 4px;
   box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
   color: var(--tooltip-grey);
@@ -24,15 +24,6 @@
   .label {
     padding-right: 30px;
     vertical-align: top;
-  }
-
-  .pool-logo {
-    width: 22px;
-    height: 22px;
-    position: relative;
-    top: -1px;
-    margin-right: 4px;
-    margin-bottom: 4px;
   }
 
   .oobFees {

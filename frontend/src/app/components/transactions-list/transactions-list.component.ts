@@ -59,7 +59,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   refreshOutspends$: ReplaySubject<string[]> = new ReplaySubject();
   refreshChannels$: ReplaySubject<string[]> = new ReplaySubject();
   showDetails$ = new BehaviorSubject<boolean>(false);
-  assetsMinimal: any;
+  assetsMinimal: any = {};
   transactionsLength: number = 0;
   inputRowLimit: number = 12;
   outputRowLimit: number = 12;
@@ -67,8 +67,8 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   showFullWitness: { [vinIndex: number]: { [witnessIndex: number]: boolean } } = {};
   showFullScriptPubkeyAsm: { [voutIndex: number]: boolean } = {};
   showFullScriptPubkeyHex: { [voutIndex: number]: boolean } = {};
-  showFullOpReturnData: { [voutIndex: number]: boolean } = {};
-  showFullOpReturnPreview: { [voutIndex: number]: boolean } = {};
+  showFullOpReturnData: { [key: string]: boolean } = {};
+  showFullOpReturnPreview: { [key: string]: boolean } = {};
   showTaprootControlBlock: { [vinIndex: number]: boolean } = {};
   showOrdData: { [key: string]: { show: boolean; inscriptions?: Inscription[]; runestone?: Runestone, runeInfo?: { [id: string]: { etching: Etching; txid: string; } }; } } = {};
   similarityMatches: Map<string, Map<string, { score: number, match: AddressMatch, group: number }>> = new Map();
@@ -117,12 +117,6 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
         this.updateSignaturesMode();
       }
     });
-
-    if (this.network === 'liquid' || this.network === 'liquidtestnet') {
-      this.assetsService.getAssetsMinimalJson$.subscribe((assets) => {
-        this.assetsMinimal = assets;
-      });
-    }
 
     this.outspendsSubscription = merge(
       this.refreshOutspends$
@@ -238,6 +232,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
       }
 
       this.transactionsLength = this.transactions.length;
+      this.loadLiquidAssetData();
 
       if (!this.txPreview) {
         this.cacheService.setTxCache(this.transactions);
@@ -368,6 +363,19 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
     }
+  }
+
+  private loadLiquidAssetData(): void {
+    if (!this.isLiquid) {
+      return;
+    }
+
+    this.assetsService.getLiquidAssetsMinimalData(this.transactions).then((assets) => {
+      this.assetsMinimal = assets;
+      this.ref.markForCheck();
+    }).catch(() => {
+      this.ref.markForCheck();
+    });
   }
 
   updateAddressSimilarities(): void {
@@ -532,6 +540,12 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  setDetailsOpen(open: boolean): void {
+    if (open !== this.showDetails$.value) {
+      this.toggleDetails();
+    }
+  }
+
   loadMoreInputs(tx: Transaction): void {
     if (!tx['@vinLoaded'] && !this.txPreview) {
       this.electrsApiService.getTransaction$(tx.txid)
@@ -543,6 +557,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
           for (const [index, vin] of temp.entries()) {
             newTx.vin[index].isInscription = vin.isInscription;
           }
+          this.loadLiquidAssetData();
           this.ref.markForCheck();
         });
     }
@@ -599,12 +614,14 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
     this.showFullScriptPubkeyHex[voutIndex] = !this.showFullScriptPubkeyHex[voutIndex];
   }
 
-  toggleShowFullOpReturnData(voutIndex: number): void {
-    this.showFullOpReturnData[voutIndex] = !this.showFullOpReturnData[voutIndex];
+  toggleShowFullOpReturnData(txid: string, voutIndex: number): void {
+    const key = txid + '-vout-' + voutIndex;
+    this.showFullOpReturnData[key] = !this.showFullOpReturnData[key];
   }
 
-  toggleShowFullOpReturnPreview(voutIndex: number): void {
-    this.showFullOpReturnPreview[voutIndex] = !this.showFullOpReturnPreview[voutIndex];
+  toggleShowFullOpReturnPreview(txid: string, voutIndex: number): void {
+    const key = txid + '-vout-' + voutIndex;
+    this.showFullOpReturnPreview[key] = !this.showFullOpReturnPreview[key];
   }
 
   toggleTaprootControlBlock(vinIndex: number): void {

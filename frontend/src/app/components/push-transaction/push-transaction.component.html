@@ -1,17 +1,17 @@
 <div class="container-xl">
-  <h1 class="text-left" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</h1>
+  <h1 class="text-start" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</h1>
 
   <form [formGroup]="pushTxForm" (submit)="pushTxForm.valid && postTx()" novalidate>
     <div class="mb-3">
       <textarea formControlName="txHash" class="form-control" rows="5" i18n-placeholder="transaction.hex" placeholder="Transaction hex"></textarea>
     </div>
-    <button [disabled]="isLoading" type="submit" class="btn btn-primary mr-2" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</button>
+    <button [disabled]="isLoading" type="submit" class="btn btn-primary me-2" i18n="shared.broadcast-transaction|Broadcast Transaction">Broadcast Transaction</button>
     <p class="red-color d-inline">{{ error }}</p> <a *ngIf="txId" [routerLink]="['/tx/' | relativeUrl, txId]">{{ txId }}</a>
   </form>
 
   @if (network === '' || network === 'testnet' || network === 'testnet4' || network === 'signet') {
     <br>
-    <h1 class="text-left" style="margin-top: 1rem;" i18n="shared.submit-transactions|Submit Package">Submit Package</h1>
+    <h1 class="text-start" style="margin-top: 1rem;" i18n="shared.submit-transactions|Submit Package">Submit Package</h1>
 
     <form [formGroup]="submitTxsForm" (submit)="submitTxsForm.valid && submitTxs()" novalidate>
       <div class="mb-3">
@@ -24,7 +24,7 @@
       <input type="number" class="form-control input-dark" formControlName="maxburnamount" id="maxburnamount"
           [value]="0" placeholder="0 sat" [class]="{invalid: invalidMaxburnamount}">
       <br>
-      <button [disabled]="isLoadingPackage" type="submit" class="btn btn-primary mr-2" i18n="shared.submit-transactions|Submit Package">Submit Package</button>
+      <button [disabled]="isLoadingPackage" type="submit" class="btn btn-primary me-2" i18n="shared.submit-transactions|Submit Package">Submit Package</button>
       <p *ngIf="errorPackage" class="red-color d-inline">{{ errorPackage }}</p>
       <p *ngIf="packageMessage" class="d-inline">{{ packageMessage }}</p>
       

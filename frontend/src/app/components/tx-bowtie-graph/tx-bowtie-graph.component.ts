@@ -78,7 +78,7 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   zeroValueWidth = 60;
   zeroValueThickness = 20;
   hasLine: boolean;
-  assetsMinimal: any;
+  assetsMinimal: any = {};
   nativeAssetId = this.stateService.network === 'liquidtestnet' ? environment.nativeTestAssetId : environment.nativeAssetId;
 
   outspendsSubscription: Subscription;
@@ -116,12 +116,6 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.initGraph();
 
-    if (this.network === 'liquid' || this.network === 'liquidtestnet') {
-      this.assetsService.getAssetsMinimalJson$.subscribe((assets) => {
-        this.assetsMinimal = assets;
-      });
-    }
-
     this.outspendsSubscription = merge(
       this.refreshOutspends$
         .pipe(
@@ -156,9 +150,20 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void {
     this.initGraph();
+    this.loadLiquidAssetData();
     if (!this.cached) {
       this.refreshOutspends$.next(this.tx.txid);
     }
+  }
+
+  private loadLiquidAssetData(): void {
+    if (!this.isLiquid || !this.tx) {
+      return;
+    }
+
+    this.assetsService.getLiquidAssetsMinimalData([this.tx]).then((assets) => {
+      this.assetsMinimal = assets;
+    }).catch(() => {});
   }
 
   initGraph(): void {
@@ -550,12 +555,13 @@ export class TxBowtieGraphComponent implements OnInit, OnChanges {
       const output = this.tx.vout[index];
       const outspend = this.outspends[index];
       if (side === 'output-connector' && output && outspend && outspend.spent && outspend.txid) {
+        const fragmentParams = new URLSearchParams({ flow: '' });
+        if (outspend.vin !== undefined) {
+          fragmentParams.set('vin', outspend.vin.toString());
+        }
         this.router.navigate([this.relativeUrlPipe.transform('/tx'), outspend.txid], {
           queryParamsHandling: 'merge',
-          fragment: (new URLSearchParams({
-            flow: '',
-            vin: outspend.vin.toString(),
-          })).toString(),
+          fragment: fragmentParams.toString(),
         });
       } else if (index != null) {
         this.router.navigate([this.relativeUrlPipe.transform('/tx'), this.tx.txid], {

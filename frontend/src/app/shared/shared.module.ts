@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgbCollapseModule, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbCollapseModule, NgbTypeaheadModule, NgbNavModule, NgbTooltipModule, NgbPaginationModule, NgbDropdownModule, NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, faCogs, faDatabase, faExchangeAlt, faInfoCircle,
   faLink, faList, faSearch, faCaretUp, faCaretDown, faTachometerAlt, faThList, faTint, faClock, faAngleDoubleDown, faSortUp, faAngleDoubleUp, faChevronDown,
@@ -8,8 +8,9 @@ import { faFilter, faAngleDown, faAngleUp, faAngleRight, faAngleLeft, faBolt, fa
   faFastForward, faWallet, faUserClock, faWrench, faUserFriends, faQuestionCircle, faHistory, faSignOutAlt, faKey, faSuitcase, faIdCardAlt, faNetworkWired, faUserCheck,
   faCircleCheck, faUserCircle, faCheck, faRocket, faScaleBalanced, faHourglassStart, faHourglassHalf, faHourglassEnd, faWandMagicSparkles, faTimeline,
   faCircleXmark, faCalendarCheck, faMoneyBillTrendUp, faRobot, faShareNodes, faCreditCard, faMicroscope, faExclamationTriangle, faLockOpen, faPaperclip, faAddressCard,
-  faMedal, faBug, faFilePdf, faPiggyBank, faLayerGroup, faHeart, faCashRegister, faCodeFork, faCode } from '@fortawesome/free-solid-svg-icons';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+  faMedal, faBug, faFilePdf, faPiggyBank, faLayerGroup, faHeart, faCashRegister, faCodeFork, faCode, 
+  faCalendar, faPause, faPlay, faExpand, faCompress} from '@fortawesome/free-solid-svg-icons';
+import { InfiniteScrollDirective } from '@app/shared/directives/infinite-scroll.directive';
 import { MenuComponent } from '@components/menu/menu.component';
 import { PreviewTitleComponent } from '@components/master-page-preview/preview-title.component';
 import { VbytesPipe } from '@app/shared/pipes/bytes-pipe/vbytes.pipe';
@@ -32,10 +33,9 @@ import { TimeComponent } from '@components/time/time.component';
 import { ClipboardComponent } from '@components/clipboard/clipboard.component';
 import { QrcodeComponent } from '@components/qrcode/qrcode.component';
 import { FiatComponent } from '@app/fiat/fiat.component';
-import { NgbNavModule, NgbTooltipModule, NgbPaginationModule, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { TxFeaturesComponent } from '@components/tx-features/tx-features.component';
 import { TxFeeRatingComponent } from '@components/tx-fee-rating/tx-fee-rating.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LanguageSelectorComponent } from '@components/language-selector/language-selector.component';
 import { FiatSelectorComponent } from '@components/fiat-selector/fiat-selector.component';
 import { RateUnitSelectorComponent } from '@components/rate-unit-selector/rate-unit-selector.component';
@@ -85,6 +85,7 @@ import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { DifficultyAdjustmentsTable } from '@components/difficulty-adjustments-table/difficulty-adjustments-table.components';
 import { BlocksList } from '@components/blocks-list/blocks-list.component';
 import { RbfList } from '@components/rbf-list/rbf-list.component';
+import { RecentTransactionsList } from '@components/recent-transactions-list/recent-transactions-list.component';
 import { StaleList } from '@components/stale-list/stale-list.component';
 import { StratumList } from '@components/stratum/stratum-list/stratum-list.component';
 import { RewardStatsComponent } from '@components/reward-stats/reward-stats.component';
@@ -107,6 +108,7 @@ import { GeolocationComponent } from '@app/shared/components/geolocation/geoloca
 import { TestnetAlertComponent } from '@app/shared/components/testnet-alert/testnet-alert.component';
 import { GlobalFooterComponent } from '@app/shared/components/global-footer/global-footer.component';
 import { MempoolErrorComponent } from '@app/shared/components/mempool-error/mempool-error.component';
+import { MiningPoolComponent } from '@app/shared/components/mining-pool/mining-pool.component';
 import { AccelerationsListComponent } from '@components/acceleration/accelerations-list/accelerations-list.component';
 import { PendingStatsComponent } from '@components/acceleration/pending-stats/pending-stats.component';
 import { AccelerationStatsComponent } from '@components/acceleration/acceleration-stats/acceleration-stats.component';
@@ -167,6 +169,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     ColoredPriceDirective,
     BrowserOnlyDirective,
     ServerOnlyDirective,
+    InfiniteScrollDirective,
     BlockchainComponent,
     BlockViewComponent,
     EightBlocksComponent,
@@ -210,6 +213,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     DifficultyAdjustmentsTable,
     BlocksList,
     RbfList,
+    RecentTransactionsList,
     StaleList,
     StratumList,
     DataCyDirective,
@@ -231,6 +235,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     GeolocationComponent,
     TestnetAlertComponent,
     GlobalFooterComponent,
+    MiningPoolComponent,
     CalculatorComponent,
     BitcoinsatoshisPipe,
     BlockViewComponent,
@@ -260,6 +265,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
   imports: [
     CommonModule,
     RouterModule,
+    FormsModule,
     ReactiveFormsModule,
     NgbNavModule,
     NgbTooltipModule,
@@ -267,7 +273,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     NgbTypeaheadModule,
     NgbDropdownModule,
     NgbCollapseModule,
-    InfiniteScrollModule,
+    NgbDatepickerModule,
     FontAwesomeModule,
   ],
   providers: [
@@ -291,7 +297,6 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     NgbTypeaheadModule,
     NgbDropdownModule,
     NgbCollapseModule,
-    InfiniteScrollModule,
     FontAwesomeModule,
     TimeComponent,
     ClipboardComponent,
@@ -323,6 +328,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     ColoredPriceDirective,
     BrowserOnlyDirective,
     ServerOnlyDirective,
+    InfiniteScrollDirective,
     NoSanitizePipe,
     BlockchainComponent,
     MempoolBlocksComponent,
@@ -361,6 +367,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     AmountShortenerPipe,
     DifficultyAdjustmentsTable,
     BlocksList,
+    RecentTransactionsList,
     StaleList,
     StratumList,
     DataCyDirective,
@@ -381,6 +388,7 @@ import { GithubLogin } from '@components/github-login.component/github-login.com
     ToggleComponent,
     GeolocationComponent,
     TestnetAlertComponent,
+    MiningPoolComponent,
     PreviewTitleComponent,
     GlobalFooterComponent,
     MempoolErrorComponent,
@@ -469,6 +477,7 @@ export class SharedModule {
     library.addIcons(faTimeline);
     library.addIcons(faCircleXmark);
     library.addIcons(faCalendarCheck);
+    library.addIcons(faCalendar);
     library.addIcons(faMoneyBillTrendUp);
     library.addIcons(faRobot);
     library.addIcons(faShareNodes);
@@ -487,5 +496,9 @@ export class SharedModule {
     library.addIcons(faCashRegister);
     library.addIcons(faCodeFork);
     library.addIcons(faCode);
+    library.addIcons(faPause);
+    library.addIcons(faPlay);
+    library.addIcons(faExpand);
+    library.addIcons(faCompress);
   }
 }

@@ -52,7 +52,7 @@ if (browserWindowEnv.BASE_MODULE && browserWindowEnv.BASE_MODULE === 'liquid') {
     },
     {
       path: '**',
-      redirectTo: 'api/faq'
+      redirectTo: 'faq'
     }
   ];
 }

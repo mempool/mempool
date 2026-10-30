@@ -4,7 +4,7 @@
 $bg: #11131f;
 $active-bg: #000000;
 $hover-bg: #12131e;
-$fg: #d2d2d2;
+$fg: #fff;
 $nav-bg: #111e60;
 $title-fg: #2055e3;
 
@@ -38,7 +38,7 @@ $pagination-hover-bg:              $hover-bg;
 $pagination-hover-border-color:     $bg;
 $pagination-disabled-bg:          $bg;
 
-$custom-select-indicator-color: $fg;
+$form-select-indicator-color: $fg;
 
 .input-group-text {
   background-color: #1c2031 !important;
@@ -105,9 +105,10 @@ $dropdown-link-active-bg: $active-bg;
   --green: #83fd00;
   --red: #ff3d00;
   --yellow: #fff000;
-  --grey: #7e7e7e;
+  --grey: #6c757d;
   --tooltip-grey: #b1b1b1;
   --orange: #ff9f00;
+  --pink: #e83e8c;
 
   --search-button: #d5a90a;
   --search-button-border: #d5a90a;

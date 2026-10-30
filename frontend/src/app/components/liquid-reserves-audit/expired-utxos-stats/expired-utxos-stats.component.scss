@@ -41,8 +41,8 @@
       top: 0px;
     }
     .fee-text{
-      border-bottom: 1px solid #ffffff1c;
-      color: #ffffff;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--fg);
       width: fit-content;
       margin: auto;
       line-height: 1.45;

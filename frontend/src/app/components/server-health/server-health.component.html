@@ -19,7 +19,8 @@
             <th class="rtt only-small">RTT</th>
             <th class="rtt only-large">RTT</th>
             <th class="height">Height</th>
-            <th class="hybrid hash">Hybrid</th>
+            <th *ngIf="isLiquidMainnet" class="peg">Peg</th>
+            <th *ngIf="showHybridHash" class="hybrid hash">Hybrid</th>
             <th class="frontend hash">Front</th>
             <th class="backend hash">Back</th>
             <th class="electrs hash">Electrs</th>
@@ -35,8 +36,9 @@
             <td class="rtt only-small">{{ (host.rtt / 1000) | number : '1.1-1' }} {{ host.rtt == null ? '' : 's'}} {{ !host.checked ? '⏳' : (host.unreachable ? '🔥' : '✅') }}</td>
             <td class="rtt only-large">{{ host.rtt | number : '1.0-0' }} {{ host.rtt == null ? '' : 'ms'}} {{ !host.checked ? '⏳' : (host.unreachable ? '🔥' : '✅') }}</td>
             <td class="height">{{ host.latestHeight }} {{ !host.checked ? '⏳' : (host.outOfSync ? '🚫' : (host.latestHeight && host.latestHeight < maxHeight ? '🟧' : '✅')) }}</td>
+            <td class="peg" *ngIf="isLiquidMainnet">{{ formatPegRatio(host.liquidAudit?.pegRatio) }}</td>
             <ng-container *ngFor="let type of ['hybrid', 'frontend', 'backend', 'electrs', 'ssr', 'core', 'os']">
-              <td class="{{type}}" [class.hash]="type !== 'core' && type !== 'os'" [class.version]="type === 'core' || type === 'os'" [style.background-color]="colors[host.host][type]">
+              <td *ngIf="showHybridHash || type !== 'hybrid'" class="{{type}}" [class.hash]="type !== 'core' && type !== 'os'" [class.version]="type === 'core' || type === 'os'" [style.background-color]="colors[host.host][type]">
                 @if (type !== 'core' && type !== 'os' && host.hashes?.[type]) {
                   <a [style.color]="'white'" href="https://github.com/mempool/{{repoMap[type]}}/commit/{{ host.hashes[type] }}" target="_blank">{{ host.hashes[type].slice(0, 8) || '?' }}</a>
                 } @else if (host.hashes?.[type]) {

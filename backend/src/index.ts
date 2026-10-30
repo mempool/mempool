@@ -1,5 +1,6 @@
 import express from 'express';
 import { Application, Request, Response, NextFunction } from 'express';
+import * as fs from 'fs';
 import * as http from 'http';
 import * as WebSocket from 'ws';
 import bitcoinApi from './api/bitcoin/bitcoin-api-factory';
@@ -44,7 +45,6 @@ import redisCache from './api/redis-cache';
 import accelerationApi from './api/services/acceleration';
 import bitcoinCoreRoutes from './api/bitcoin/bitcoin-core.routes';
 import bitcoinSecondClient from './api/bitcoin/bitcoin-second-client';
-import accelerationRoutes from './api/acceleration/acceleration.routes';
 import aboutRoutes from './api/about.routes';
 import mempoolBlocks from './api/mempool-blocks';
 import walletApi from './api/services/wallets';
@@ -66,6 +66,11 @@ class Server {
 
   constructor() {
     this.app = express();
+    this.app.set('case sensitive routing', true);
+
+    if (cluster.isPrimary && config.MEMPOOL.UNIX_SOCKET_PATH) {
+      this.clearStaleUnixSocket(config.MEMPOOL.UNIX_SOCKET_PATH);
+    }
 
     if (!config.MEMPOOL.SPAWN_CLUSTER_PROCS) {
       void this.startServer();
@@ -154,17 +159,17 @@ class Server {
     }
 
     this.server = http.createServer(this.app);
-    this.wss = new WebSocket.Server({ server: this.server });
+    this.wss = new WebSocket.Server({ server: this.server, maxPayload: websocketHandler.MAX_MESSAGE_SIZE });
     if (config.MEMPOOL.UNIX_SOCKET_PATH) {
       this.serverUnixSocket = http.createServer(this.app);
-      this.wssUnixSocket = new WebSocket.Server({ server: this.serverUnixSocket });
+      this.wssUnixSocket = new WebSocket.Server({ server: this.serverUnixSocket, maxPayload: websocketHandler.MAX_MESSAGE_SIZE });
     }
 
     this.setUpWebsocketHandling();
 
     await poolsUpdater.updatePoolsJson(); // Needs to be done before loading the disk cache because we sometimes wipe it
     if (config.DATABASE.ENABLED === true && config.MEMPOOL.ENABLED && ['mainnet', 'testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK) && !poolsUpdater.currentSha) {
-      logger.err(`Failed to retreive pools-v2.json sha, cannot run block indexing. Please make sure you've set valid urls in your mempool-config.json::MEMPOOL::POOLS_JSON_URL and mempool-config.json::MEMPOOL::POOLS_JSON_TREE_UR, aborting now`);
+      logger.err(`Failed to retrieve pools-v2.json sha, cannot run block indexing. Please make sure you've set valid urls in your mempool-config.json::MEMPOOL::POOLS_JSON_URL and mempool-config.json::MEMPOOL::POOLS_JSON_TREE_UR, aborting now`);
       return process.exit(1);
     }
 
@@ -177,8 +182,14 @@ class Server {
       if (config.MEMPOOL.CACHE_ENABLED) {
         await diskCache.$loadMempoolCache();
       } else if (config.REDIS.ENABLED) {
+        let currentMempoolTxids: Set<string> | undefined;
+        try {
+          currentMempoolTxids = new Set(await bitcoinApi.$getRawMempool());
+        } catch (e) {
+          logger.warn(`Failed to fetch raw mempool before loading Redis cache. Reason: ${e instanceof Error ? e.message : e}`);
+        }
         /** @asyncUnsafe */
-        await redisCache.$loadCache();
+        await redisCache.$loadCache(currentMempoolTxids);
       }
     }
 
@@ -209,6 +220,7 @@ class Server {
 
     if (config.MEMPOOL.ENABLED) {
       void this.runMainUpdateLoop();
+      indexer.scheduleSingleTask('poolsStats', 0);
     }
 
     setInterval(() => { this.healthCheck(); }, 2500);
@@ -224,6 +236,8 @@ class Server {
         logger.notice(`Mempool Server is running on port ${config.MEMPOOL.HTTP_PORT}`);
       }
     });
+    this.server.keepAliveTimeout = 70 * 1000;
+    this.server.headersTimeout = 71 * 1000;
 
     if (this.serverUnixSocket) {
       this.serverUnixSocket.listen(config.MEMPOOL.UNIX_SOCKET_PATH, () => {
@@ -233,9 +247,23 @@ class Server {
           logger.notice(`Mempool Server is listening on ${config.MEMPOOL.UNIX_SOCKET_PATH}`);
         }
       });
+
+      this.serverUnixSocket.keepAliveTimeout = 70 * 1000;
+      this.serverUnixSocket.headersTimeout = 71 * 1000;
     }
 
     void poolsUpdater.$startService();
+  }
+
+  clearStaleUnixSocket(path: string): void {
+    try {
+      if (fs.existsSync(path)) {
+        fs.unlinkSync(path);
+        logger.notice(`Removed stale unix socket ${path}`);
+      }
+    } catch (e) {
+      logger.err(`Failed to remove stale unix socket ${path}. Reason: ${e instanceof Error ? e.message : e}`);
+    }
   }
 
   /** @asyncSafe */
@@ -257,6 +285,7 @@ class Server {
       const minFeeTip = memPool.limitGBT ? await bitcoinSecondClient.getBlockCount() : -1;
       const latestAccelerations = await accelerationApi.$updateAccelerations();
       const numHandledBlocks = await blocks.$updateBlocks();
+      await poolsUpdater.$recheckBlocks();
       const pollRate = config.MEMPOOL.POLL_RATE_MS * (indexer.indexerIsRunning() ? 10 : 1);
       if (numHandledBlocks === 0) {
         await memPool.$updateMempool(newMempool, latestAccelerations, minFeeMempool, minFeeTip, pollRate);
@@ -322,20 +351,22 @@ class Server {
     }
 
     if (Common.isLiquid() && config.DATABASE.ENABLED) {
-      blocks.setNewBlockCallback(async () => {
+      /** @asyncSafe */
+      const parseElements = async (): Promise<void> => {
         try {
           await elementsParser.$parse();
-          await elementsParser.$updateFederationUtxos();
         } catch (e) {
           logger.warn('Elements parsing error: ' + (e instanceof Error ? e.message : e));
         }
-      });
+      };
+      blocks.setNewBlockCallback(parseElements);
+      void parseElements();
+      setInterval(() => { void parseElements(); }, 60_000);
     }
     websocketHandler.setupConnectionHandling();
     if (config.MEMPOOL.ENABLED) {
       statistics.setNewStatisticsEntryCallback(websocketHandler.handleNewStatistic.bind(websocketHandler));
       memPool.setAsyncMempoolChangedCallback(websocketHandler.$handleMempoolChange.bind(websocketHandler));
-      blocks.setNewAsyncBlockCallback(websocketHandler.handleNewBlock.bind(websocketHandler));
     }
     if (config.FIAT_PRICE.ENABLED) {
       priceUpdater.setRatesChangedCallback(websocketHandler.handleNewConversionRates.bind(websocketHandler));
@@ -368,9 +399,6 @@ class Server {
       nodesRoutes.initRoutes(this.app);
       channelsRoutes.initRoutes(this.app);
     }
-    if (config.MEMPOOL_SERVICES.ACCELERATIONS) {
-      accelerationRoutes.initRoutes(this.app);
-    }
     if (config.WALLETS.ENABLED) {
       servicesRoutes.initRoutes(this.app);
     }
@@ -396,6 +424,16 @@ class Server {
       this.warnedHeapCritical = false;
       this.maxHeapSize = 0;
       this.lastHeapLogTime = now;
+      this.server?.getConnections((error, count) => {
+        if (!error) {
+          logger.debug(`${count} open TCP sockets`);
+        }
+      });
+      this.serverUnixSocket?.getConnections((error, count) => {
+        if (!error) {
+          logger.debug(`${count} open unix sockets`);
+        }
+      });
     }
   }
 

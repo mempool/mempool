@@ -46,7 +46,7 @@
     </div>
     <div class="col">
       <div class="card">
-        <div class="card-body pl-2 pr-2">
+        <div class="card-body ps-2 pe-2">
           <h5 class="card-title" i18n="dashboard.treasury-distribution">Treasury Distribution</h5>
           <div *ngIf="walletStats$ | async as walletStats">
             <app-treasuries-pie
@@ -87,7 +87,7 @@
     </div>
     <div class="col" style="margin-bottom: 1.47rem">
       <div class="card">
-        <div class="card-body pl-lg-3 pr-lg-3 pl-2 pr-2">
+        <div class="card-body ps-lg-3 pe-lg-3 ps-2 pe-2">
           <app-price-chart [height]="335" [widget]="true"></app-price-chart>
           <div class="mt-1"><a [routerLink]="['/graphs/price' | relativeUrl]" fragment="1y" i18n="dashboard.view-more">View more &raquo;</a></div>
         </div>

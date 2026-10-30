@@ -1,7 +1,10 @@
-<div *ngIf="stateService.env.MINING_DASHBOARD || stateService.env.LIGHTNING || stateService.env.ACCELERATOR" class="mb-3 d-flex menu" [style]="{'flex-wrap': flexWrap ? 'wrap' : ''}">
+<div *ngIf="stateService.env.MINING_DASHBOARD || stateService.env.LIGHTNING || stateService.env.ACCELERATOR || (stateService.env.HISTORICAL_PRICE && isMainnet)" class="mb-3 d-flex menu" [style]="{'flex-wrap': flexWrap ? 'wrap' : ''}">
 
   <a routerLinkActive="active" class="btn btn-primary w-33"
     [routerLink]="['/graphs/mempool' | relativeUrl]">Mempool</a>
+
+  <a routerLinkActive="active" class="btn btn-primary w-33"
+    [routerLink]="['/graphs/goggles' | relativeUrl]" i18n="mining.goggles">Goggles</a>
 
   <div ngbDropdown class="w-33" *ngIf="stateService.env.MINING_DASHBOARD">
     <button class="btn btn-primary w-100" id="dropdownBasic1" ngbDropdownToggle i18n="mining">Mining</button>
@@ -16,7 +19,7 @@
         i18n="mining.block-fee-rates">Block Fee Rates</a>
       <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/mining/block-fees' | relativeUrl]"
         i18n="mining.block-fees">Block Fees</a>
-      <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/mining/block-fees-subsidy' | relativeUrl]"
+      <a *ngIf="isMainnet" class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/mining/block-fees-subsidy' | relativeUrl]"
         i18n="mining.block-fees-subsidy-subsidy">Block Fees Vs Subsidy</a>
       <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/mining/block-rewards' | relativeUrl]"
         i18n="mining.block-rewards">Block Rewards</a>
@@ -45,13 +48,22 @@
     </div>
   </div>
 
-  <div ngbDropdown class="w-33" *ngIf="stateService.env.ACCELERATOR && isMainnet">
-    <button class="btn btn-primary w-100" id="dropdownBasic1" ngbDropdownToggle i18n="accelerator.accelerations">Accelerations</button>
-    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-      <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]"
-        i18n="accelerator.acceleration-fees">Acceleration Fees</a>
+  @if (isMainnet) {
+    <div ngbDropdown class="w-33">
+      <button class="btn btn-primary w-100" id="dropdownBasic1" ngbDropdownToggle i18n="more">More</button>
+        <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+          @if (stateService.env.ACCELERATOR) {
+            <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/acceleration/fees' | relativeUrl]"
+              i18n="accelerator.acceleration-fees">Acceleration Fees</a>
+          }
+          @if (stateService.env.HISTORICAL_PRICE) {
+            <a class="dropdown-item" routerLinkActive="active" [routerLink]="['/graphs/price' | relativeUrl]"
+              i18n="price">Price</a>
+          }
+        </div>
     </div>
-  </div>
+  }
+
 </div>
 
 <router-outlet></router-outlet>

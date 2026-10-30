@@ -5,7 +5,7 @@
     flex-direction: row;
   }
 
-  .avg-ratio {
+  .emergency-keys {
     display: none;
     @media (min-width: 480px) and (max-width: 767px), (min-width: 915px) {
       display: block;
@@ -34,12 +34,6 @@
         font-size: 11px;
         position: relative;
         top: -2px;
-      }
-      .danger {
-        color: var(--red);
-      }
-      .correct {
-        color: var(--green);
       }
     }
 

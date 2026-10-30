@@ -6941,6 +6941,131 @@ export const restApiDocsData = [
     type: 'endpoint',
     category: 'mining',
     httpRequestMethod: 'GET',
+    fragment: 'get-block-feerates-precise',
+    title: 'GET Block Feerates (Precise)',
+    description: {
+      default: '<p>Returns average feerate percentiles with up to 3 decimal places, including sub-sat feerates, for blocks in the specified <code>:timePeriod</code>, ordered oldest to newest. <code>:timePeriod</code> can be any of the following: ' + miningTimeIntervals + '.</p><p>For <code>24h</code> and <code>3d</code> time periods, every block is included and percentiles are exact (not averages). For the <code>1w</code> time period, percentiles may be averages depending on how fast blocks were found around a particular timestamp. For other time periods, percentiles are averages.</p>'
+    },
+    urlString: '/v1/mining/blocks/fee-rates/:timePeriod/precise',
+    showConditions: bitcoinNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/mining/blocks/fee-rates/%{1}/precise`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`1m`],
+          response: `[
+  {
+    "avgHeight": 967377,
+    "timestamp": 1789629242,
+    "avgFee_0": 0.756,
+    "avgFee_10": 1.991,
+    "avgFee_25": 2.5,
+    "avgFee_50": 2.645,
+    "avgFee_75": 3.709,
+    "avgFee_90": 4.982,
+    "avgFee_100": 122.5
+  },
+  {
+    "avgHeight": 967380,
+    "timestamp": 1789631055,
+    "avgFee_0": 0.805,
+    "avgFee_10": 0.838,
+    "avgFee_25": 0.892,
+    "avgFee_50": 1.17,
+    "avgFee_75": 1.838,
+    "avgFee_90": 3.277,
+    "avgFee_100": 287.08
+  },
+  {
+    "avgHeight": 967384,
+    "timestamp": 1789632303,
+    "avgFee_0": 0.34,
+    "avgFee_10": 0.347,
+    "avgFee_25": 0.348,
+    "avgFee_50": 0.354,
+    "avgFee_75": 0.38,
+    "avgFee_90": 2.01,
+    "avgFee_100": 419.184
+  },
+  ...
+]`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`1m`],
+          response: `[
+  {
+    "avgHeight": 2196306,
+    "timestamp": 1650360168,
+    "avgFee_0": 1,
+    "avgFee_10": 1.012,
+    "avgFee_25": 1.126,
+    "avgFee_50": 1.5,
+    "avgFee_75": 2.25,
+    "avgFee_90": 28.143,
+    "avgFee_100": 2644.012
+  },
+  {
+    "avgHeight": 2196308,
+    "timestamp": 1650361209,
+    "avgFee_0": 0.5,
+    "avgFee_10": 1,
+    "avgFee_25": 1.333,
+    "avgFee_50": 4.25,
+    "avgFee_75": 12.667,
+    "avgFee_90": 65.5,
+    "avgFee_100": 102.041
+  },
+  ...
+]`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [`1m`],
+          response: `[
+  {
+    "avgHeight": 86620,
+    "timestamp": 1650360010,
+    "avgFee_0": 0.1,
+    "avgFee_10": 0.1,
+    "avgFee_25": 0.5,
+    "avgFee_50": 1,
+    "avgFee_75": 1,
+    "avgFee_90": 1.25,
+    "avgFee_100": 1.5
+  },
+  {
+    "avgHeight": 86623,
+    "timestamp": 1650361330,
+    "avgFee_0": 0.1,
+    "avgFee_10": 0.25,
+    "avgFee_25": 0.5,
+    "avgFee_50": 1,
+    "avgFee_75": 1,
+    "avgFee_90": 1,
+    "avgFee_100": 2
+  },
+  ...
+]`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: 'endpoint',
+    category: 'mining',
+    httpRequestMethod: 'GET',
     fragment: 'get-sizes-weights',
     title: 'GET Block Sizes and Weights',
     description: {
@@ -11949,6 +12074,8 @@ export const restApiDocsData = [
       }
     }
   },
+
+  // ACCELERATOR PUBLIC
   {
     type: 'category',
     category: 'accelerator-public',
@@ -11980,7 +12107,7 @@ export const restApiDocsData = [
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: ['txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29'],
+          curl: ['txid=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29'],
           headers: 'X-Mempool-Auth: stacksats',
           response: `{
   "txSummary": {
@@ -12013,7 +12140,7 @@ export const restApiDocsData = [
       "fee": 12500
     }
   ],
-  "hasAccess": false,
+  "isProUser": false,
   "availablePaymentMethods": {
     "bitcoin": {
       "enabled": true,
@@ -12042,32 +12169,31 @@ export const restApiDocsData = [
     description: {
       default: '<p>Request a LN invoice to accelerate a transaction.</p>'
     },
-    urlString: '/v1/services/payments/bitcoin',
+    urlString: '/v1/services/accelerator/invoice',
     showConditions: [''],
     showJsExamples: showJsExamplesDefaultFalse,
     codeExample: {
       default: {
         codeTemplate: {
-          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/payments/bitcoin`, //custom interpolation technique handled in replaceCurlPlaceholder()
+          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/invoice`, //custom interpolation technique handled in replaceCurlPlaceholder()
           commonJS: ``,
           esModule: ``
         },
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: ['product=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&amount=12500'],
+          curl: ['txid=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&maxBidBoost=12500'],
           headers: '',
-          response: `[
-  {
-    "btcpayInvoiceId": "4Ww53d7VgSa596jmCFufe7",
-    "btcDue": "0.000625",
-    "addresses": {
-      "BTC": "bc1qcvqx2kr5mktd7gvym0atrrx0sn27mwv5kkghl3m78kegndm5t8ksvcqpja",
-      "BTC_LNURLPAY": null,
-      "BTC_LightningLike": "lnbc625u1pngl0wzpp56j7cqghsw2y5q7vdu9shmpxgpzsx4pqra4wcm9vdnvqegutplk2qdxj2pskjepqw3hjqnt9d4cx7mmvypqkxcm9d3jhyct5daezq2z0wfjx2u3qf9zr5grpvd3k2mr9wfshg6t0dckk2ef3xdjkyc3e8ymrxv3nxumkxvf4vvungwfcxqen2dmxxcmngepj8q6kzce5xyengdfjxq6nqvpnx9jkzdnyvdjrxefevgexgcej8yknzdejxqmrjd3jx5mrgdpj9ycqzpuxqrpr5sp58593dzj2uauaj3afa7x47qeam8k9yyqrh9qasj2ssdzstew6qv3q9qxpqysgqj8qshfkxmj0gfkly5xfydysvsx55uhnc6fgpw66uf6hl8leu07454axe2kq0q788yysg8guel2r36d6f75546nkhmdcmec4mmlft8dsq62rnsj"
-    }
-  }
-]`,
+          response: `
+{
+  "btcpayInvoiceId": "3CEohkS3fAVChyBXjYpGXY",
+  "btcDue": "0.002875",
+  "addresses": {
+    "BTC_LightningLike": "lnbc2875u1p5ax5v4pp5lmvl5rfsz6vrc4w9tg2fx6xm0z4w0385806yknd4zdqg4h5ep5rsd9l2pskjepqw3hjqmt9d4cx7mmvyq5y7unyv4ezqj2y8gsxzcmrv4kx2unpw35k7m3dxumk2e3kxf3rxcejxgenqwfjxgunzvtp8ycrjwr9xcunwcnyvymnwerrvc6ngenrx93nvctzxajnvefhv3nxxv3nxgckyef4xcerqd3dxymnwdf5x5mrvd3s8qcrz2gcqzxrxqzrhsp53sentrc2vdptappwmr4rwrqap7wqpvft6ey59lxujgpctfgmqgyq9qxpqysgq6ea2qfqav2l7jjhcrx6ugjdm7z2pmsa3267hsu354ucupagfw82874jkekul309dku3lwpk9j7puypd4kav4u6vgurj8ppd3mm4azusqy4x0he"
+  },
+  "expirationTime": 1775456780
+}
+`,
         },
       }
     }
@@ -12135,13 +12261,13 @@ export const restApiDocsData = [
       Filters can be applied:<ul>
       <li><code>status</code>: <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code></li>
       <li><code>timeframe</code>: <code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>, <code>4y</code>, <code>all</code></li>
-      <li><code>minedByPoolUniqueId</code>: any id from <a target="_blank" href="https://github.com/mempool/mining-pools/blob/master/pools-v2.json">pools-v2.json</a>
-      <li><code>blockHash</code>: a block hash</a>
-      <li><code>blockHeight</code>: a block height</a>
-      <li><code>page</code>: the requested page number if using pagination <i>(min: 1)</i></a>
-      <li><code>pageLength</code>: the page lenght if using pagination <i>(min: 1, max: 50)</i></a>
-      <li><code>from</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</a>
-      <li><code>to</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</a>
+      <li><code>minedByPoolUniqueId</code>: any id from <a target="_blank" href="https://github.com/mempool/mining-pools/blob/master/pools-v2.json">pools-v2.json</a></li>
+      <li><code>blockHash</code>: a block hash</li>
+      <li><code>blockHeight</code>: a block height</li>
+      <li><code>page</code>: the requested page number if using pagination <i>(min: 1)</i></li>
+      <li><code>pageLength</code>: the page length if using pagination <i>(min: 1, max: 50)</i></li>
+      <li><code>from</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</li>
+      <li><code>to</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</li>
       </ul></p>`
     },
     urlString: '/v1/services/accelerator/accelerations/history',
@@ -12184,6 +12310,67 @@ export const restApiDocsData = [
     }
   },
   {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-public',
+    httpRequestMethod: 'GET',
+    fragment: 'accelerator-public-stats',
+    title: 'GET Acceleration Stats',
+    description: {
+      default: `<p>Aggregated statistics for transaction accelerations, with optional filtering by pool, block, or time range.
+      Filters can be applied:<ul>
+      <li><code>timeframe</code>: <code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>, <code>4y</code>, <code>all</code></li>
+      <li><code>poolUniqueId</code>: any id from <a target="_blank" href="https://github.com/mempool/mining-pools/blob/master/pools-v2.json">pools-v2.json</a></li>
+      <li><code>blockHash</code>: a block hash</li>
+      <li><code>blockHeight</code>: a block height</li>
+      <li><code>from</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</li>
+      <li><code>to</code>: unix timestamp (<i>overrides <code>timeframe</code></i>)</li>
+      </ul></p>
+      <p>
+        Response fields:
+        <ul>
+          <li><code>totalRequested</code>: number of acceleration requests.</li>
+          <li><code>totalAccepted</code>: accelerations accepted into a block template.
+            <br><strong class="ms-3">- Per-pool</strong>: count this pool put in its template.
+            <br><strong class="ms-3">- Global</strong>: count accepted by any pool. Per-pool values do not sum to the global value.</li>
+          <li><code>totalCompleted</code>: accelerations mined into a confirmed block. Per-pool values sum to roughly the global value.</li>
+          <li><code>totalBidBoost</code>: total acceleration fees in sats.</li>
+          <li><code>totalVsize</code>: Total virtual size of accelerated transactions, in vbytes.</li>
+        </ul>
+      </p>
+      `
+    },
+    urlString: '/v1/services/accelerator/accelerations/stats',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/services/accelerator/accelerations/stats?blockHash=000000000000000000002c55e353486c1013ce8bd6d637fd5be7798f44b731dc`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          headers: '',
+          response: `
+  {
+   "totalRequested": 3,
+   "totalAccepted": 3,
+   "totalCompleted": 3,
+   "totalBidBoost": 1552,
+   "totalVsize": 1846
+  }
+`,
+        },
+      },
+    }
+  },
+
+  // ACCELERATOR AUTHENTICATED
+  {
     type: 'category',
     category: 'accelerator-private',
     fragment: 'accelerator-private',
@@ -12195,9 +12382,49 @@ export const restApiDocsData = [
     options: { officialOnly: true },
     type: 'endpoint',
     category: 'accelerator-private',
+    httpRequestMethod: 'POST',
+    fragment: 'accelerator-top-up',
+    title: 'POST Top-up Accelerator Credits',
+    description: {
+      default: '<p>Generate a bitcoin invoice to top-up your accelerator credits. Minimum is <code>1,000,000</code> sats.</p>'
+    },
+    urlString: '/v1/services/accelerator/top-up',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/top-up`, //custom interpolation technique handled in replaceCurlPlaceholder()
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['amount=1234567'],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `
+{
+  "btcpayInvoiceId": "VMWgxjbxdL2VvUYmS7y4ga",
+  "btcDue": "0.01234567",
+  "addresses": {
+    "BTC": "bc1qps2yjasmp27p8e8h7jrd36aurlavf2tveqmq0m",
+    "BTC_LightningLike": "lnbc12345670n1p5ax5y4pp5c7ml3pkc254nmrg3ffwag70jzzkmkc5c7fjrvg4ydje0a4v2g87qdzc2pskjepqw3hjqmt9d4cx7mmvyq5y7unyv4ezqj2y8gsrgttpvd3k2mr9wfshgmmj95cnwde4xs6nvdpsx5enqwffcqzxrxqzrhsp5z4dnrkfj2g0a3ue95c08ghr05ny0wja34q48y2cv83krszf5rwqs9qxpqysgq27dcg0khmvmpeyntsl5vtn48ydg3phnt6na6l83e4dt2hqx5drv44l3adyvluw0cvlcsuj57yczend8wasdplh69f5txgwem7ez9smcpnd2x8c"
+  },
+  "expirationTime": 1775456525
+}
+`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-private',
     httpRequestMethod: 'GET',
     fragment: 'accelerator-top-up-history',
-    title: 'GET Top Up History',
+    title: 'GET Credits Top-up History',
     description: {
       default: '<p>Returns a list of top ups the user has made as prepayment for the accelerator service.</p>'
     },
@@ -12245,9 +12472,9 @@ export const restApiDocsData = [
     category: 'accelerator-private',
     httpRequestMethod: 'GET',
     fragment: 'accelerator-balance',
-    title: 'GET Available Balance',
+    title: 'GET Available Credit Balance',
     description: {
-      default: '<p>Returns the user\'s currently available balance, currently locked funds, and total fees paid so far.</p>'
+      default: '<p>Returns the user\'s currently available accelerator credit balance, locked funds, and total fees paid so far.</p>'
     },
     urlString: '/v1/services/accelerator/balance',
     showConditions: [''],
@@ -12279,9 +12506,9 @@ export const restApiDocsData = [
     category: 'accelerator-private',
     httpRequestMethod: 'POST',
     fragment: 'accelerator-accelerate',
-    title: 'POST Accelerate A Transaction (Pro)',
+    title: 'POST Accelerate A Transaction',
     description: {
-      default: '<p>Sends a request to accelerate a transaction.</p>'
+      default: '<p>Sends a request to accelerate a transaction <u><strong>using accelerator credits.</strong></u></p>'
     },
     urlString: '/v1/services/accelerator/accelerate',
     showConditions: [''],
@@ -12296,127 +12523,9 @@ export const restApiDocsData = [
         codeSampleMainnet: {
           esModule: [],
           commonJS: [],
-          curl: ['txInput=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&userBid=21000000'],
+          curl: ['txid=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&maxBidBoost=21000000'],
           headers: 'X-Mempool-Auth: stacksats',
           response: `HTTP/1.1 200 OK`,
-        },
-      }
-    }
-  },
-  {
-    options: { officialOnly: true },
-    type: 'endpoint',
-    category: 'accelerator-private',
-    httpRequestMethod: 'GET',
-    fragment: 'accelerator-history',
-    title: 'GET Acceleration History',
-    description: {
-      default: '<p>Returns the user\'s past acceleration requests.</p><p>Pass one of the following for <code>:status</code> (required): <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code>.<br>Pass <code>true</code> in <code>:details</code> to get a detailed <code>history</code> of the acceleration request.</p>'
-    },
-    urlString: '/v1/services/accelerator/history?status=:status&details=:details',
-    showConditions: [''],
-    showJsExamples: showJsExamplesDefaultFalse,
-    codeExample: {
-      default: {
-        codeTemplate: {
-          curl: `/api/v1/services/accelerator/history?status=all&details=true`,
-          commonJS: ``,
-          esModule: ``
-        },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          headers: 'X-Mempool-Auth: stacksats',
-          response: `[
-  {
-    "id": 89,
-    "user_id": 1,
-    "txid": "ae2639469ec000ed1d14e2550cbb01794e1cd288a00cdc7cce18398ba3cc2ffe",
-    "status": "failed"
-    "fee_paid": 0,
-    "added": 1706378712,
-    "last_updated": 1706378712,
-    "confirmations": 4,
-    "base_fee": 0,
-    "vsize_fee": 0,
-    "max_bid": 7000,
-    "effective_vsize": 135,
-    "effective_fee": 3128,
-    "history": [
-      {
-        "event": "user-requested-acceleration",
-        "timestamp": 1706378712
-      },
-      {
-        "event": "accepted_test-api-key",
-        "timestamp": 1706378712
-      },
-      {
-        "event": "failed-at-block-827672",
-        "timestamp": 1706380261
-      }
-    ]
-  },
-  {
-    "id": 88,
-    "user_id": 1,
-    "txid": "c5840e89173331760e959a190b24e2a289121277ed7f8a095fe289b37cee9fde",
-    "status": "completed"
-    "fee_paid": 140019,
-    "added": 1706378704,
-    "last_updated": 1706380231,
-    "confirmations": 6,
-    "base_fee": 40000,
-    "vsize_fee": 100000,
-    "max_bid": 14000,
-    "effective_vsize": 135,
-    "effective_fee": 3152,
-    "history": [
-      {
-        "event": "user-requested-acceleration",
-        "timestamp": 1706378704
-      },
-      {
-        "event": "accepted_test-api-key",
-        "timestamp": 1706378704
-      },
-      {
-        "event": "complete-at-block-827670",
-        "timestamp": 1706380231
-      }
-    ]
-  },
-  {
-    "id": 87,
-    "user_id": 1,
-    "txid": "178b5b9b310f0d667d7ea563a2cdcc17bc8cd15261b58b1653860a724ca83458",
-    "status": "completed"
-    "fee_paid": 90062,
-    "added": 1706378684,
-    "last_updated": 1706380231,
-    "confirmations": 6,
-    "base_fee": 40000,
-    "vsize_fee": 50000,
-    "max_bid": 14000,
-    "effective_vsize": 135,
-    "effective_fee": 3260,
-    "history": [
-      {
-        "event": "user-requested-acceleration",
-        "timestamp": 1706378684
-      },
-      {
-        "event": "accepted_test-api-key",
-        "timestamp": 1706378684
-      },
-      {
-        "event": "complete-at-block-827670",
-        "timestamp": 1706380231
-      }
-    ]
-  }
-]`,
         },
       }
     }
@@ -12447,6 +12556,265 @@ export const restApiDocsData = [
           curl: ['id=42'],
           headers: 'X-Mempool-Auth: stacksats',
           response: `HTTP/1.1 200 OK`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-private',
+    httpRequestMethod: 'POST',
+    fragment: 'accelerator-auto-accelerate',
+    title: 'POST Auto-Accelerate A Transaction (Pro)',
+    description: {
+      default: `
+      <p>
+        <span>Sends a request to automatically accelerate a transaction based on specified trigger conditions. Competing requests are allowed (one per <code>txInput</code>/<code>type</code>).</span>
+      </p>
+      <div>
+        <span>The <code>type</code> parameter must be one of: <code>time_delay</code>, <code>block_height</code>, <code>timestamp</code>, or <code>next_block</code>.</span><br>
+        <span>The <code>value</code> parameter is required for types other than <code>next_block</code> and depends on the type:</span>
+        <ul>
+          <li><code>time_delay</code> - in hours, a floating point value >= 0.5</li>
+          <li><code>block_height</code> - a block height >= next block height</li>
+          <li><code>timestamp</code> - a Unix timestamp in seconds >= now + 60 seconds</li>
+        </ul>
+      </div>
+      `
+    },
+    urlString: '/v1/services/accelerator/auto-accelerate',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/auto-accelerate`, //custom interpolation technique handled in replaceCurlPlaceholder()
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['txid=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&type=time_delay&value=0.5'],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `HTTP/1.1 200 OK`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-private',
+    httpRequestMethod: 'GET',
+    fragment: 'accelerator-auto-accelerate-history',
+    title: 'GET Auto-Acceleration History (Pro)',
+    description: {
+      default: `
+      <p>
+        <span>Returns the user's auto-acceleration requests history.</span><br>
+        <span>Possible status values: <code>tracking</code>, <code>accelerated</code>, <code>confirmed</code>, <code>canceled</code>.</span>
+      </p>`
+    },
+    urlString: '/v1/services/accelerator/auto-accelerate/history',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/services/accelerator/auto-accelerate/history`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `[
+  {
+    "txid": "ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29",
+    "status": "accelerated",
+    "added": 1706378712,
+    "trigger_type": "time_delay",
+    "trigger_value": 0.5
+  },
+  {
+    "txid": "c5840e89173331760e959a190b24e2a289121277ed7f8a095fe289b37cee9fde",
+    "status": "confirmed",
+    "added": 1706378704,
+    "trigger_type": "block_height",
+    "trigger_value": 827670
+  },
+  {
+    "txid": "178b5b9b310f0d667d7ea563a2cdcc17bc8cd15261b58b1653860a724ca83458",
+    "status": "tracking",
+    "added": 1706378684,
+    "trigger_type": "next_block",
+    "trigger_value": null
+  }
+]`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-private',
+    httpRequestMethod: 'POST',
+    fragment: 'accelerator-auto-accelerate-cancel',
+    title: 'POST Cancel Auto-Acceleration (Pro)',
+    description: {
+      default: `
+        <p>
+          <span>Sends a request to cancel an auto-acceleration in the <code>tracking</code> status.</span><br>
+          <span>You can retrieve eligible auto-acceleration <code>txid</code> using the history endpoint GET <code>/api/v1/services/accelerator/auto-accelerate/history</code>.</span>
+        </p>
+        <p>
+          <span>When calling this endpoint without a <code>type</code> parameter, this will cancel all your active auto-acceleration requests matching the <code>txid</code>.</span>
+          <span>To cancel a single auto-acceleration request, send both <code>txid</code> and <code>type</code> parameters.</span><br>
+        </p>
+        <p>
+          <span>Parameter <code>type</code> can take the following values: <code>next_block</code>, <code>time_delay</code>, <code>block_height</code> or <code>timestamp</code>.</span>
+        </p>
+      `
+    },
+    urlString: '/v1/services/accelerator/auto-accelerate/cancel',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/auto-accelerate/cancel`, //custom interpolation technique handled in replaceCurlPlaceholder()
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['txid=178b5b9b310f0d667d7ea563a2cdcc17bc8cd15261b58b1653860a724ca83458&type=time_delay'],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `If a request has been canceled:\nHTTP/1.1 200 OK\n\nWhen no request matches the query parameters:\nHTTP/1.1 204 No Content`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-private',
+    httpRequestMethod: 'GET',
+    fragment: 'accelerator-history',
+    title: 'GET User Acceleration History',
+    description: {
+      default: '<p>Returns the user\'s past acceleration requests.</p><p>Pass one of the following for <code>:status</code> (required): <code>all</code>, <code>requested</code>, <code>accelerating</code>, <code>mined</code>, <code>completed</code>, <code>failed</code>.<br>Pass <code>true</code> in <code>:details</code> to get a detailed <code>history</code> of the acceleration request.</p>'
+    },
+    urlString: '/v1/services/accelerator/history?status=:status&details=:details',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/services/accelerator/history?status=all&details=true`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `[
+  {
+    "id": 89,
+    "user_id": 1,
+    "txid": "ae2639469ec000ed1d14e2550cbb01794e1cd288a00cdc7cce18398ba3cc2ffe",
+    "status": "failed",
+    "fee_paid": 0,
+    "added": 1706378712,
+    "last_updated": 1706378712,
+    "confirmations": 4,
+    "base_fee": 0,
+    "vsize_fee": 0,
+    "max_bid": 7000,
+    "effective_vsize": 135,
+    "effective_fee": 3128,
+    "history": [
+      {
+        "event": "user-requested-acceleration",
+        "timestamp": 1706378712
+      },
+      {
+        "event": "accepted_test-api-key",
+        "timestamp": 1706378712
+      },
+      {
+        "event": "failed-at-block-827672",
+        "timestamp": 1706380261
+      }
+    ]
+  },
+  {
+    "id": 88,
+    "user_id": 1,
+    "txid": "c5840e89173331760e959a190b24e2a289121277ed7f8a095fe289b37cee9fde",
+    "status": "completed",
+    "fee_paid": 140019,
+    "added": 1706378704,
+    "last_updated": 1706380231,
+    "confirmations": 6,
+    "base_fee": 40000,
+    "vsize_fee": 100000,
+    "max_bid": 14000,
+    "effective_vsize": 135,
+    "effective_fee": 3152,
+    "history": [
+      {
+        "event": "user-requested-acceleration",
+        "timestamp": 1706378704
+      },
+      {
+        "event": "accepted_test-api-key",
+        "timestamp": 1706378704
+      },
+      {
+        "event": "complete-at-block-827670",
+        "timestamp": 1706380231
+      }
+    ]
+  },
+  {
+    "id": 87,
+    "user_id": 1,
+    "txid": "178b5b9b310f0d667d7ea563a2cdcc17bc8cd15261b58b1653860a724ca83458",
+    "status": "completed",
+    "fee_paid": 90062,
+    "added": 1706378684,
+    "last_updated": 1706380231,
+    "confirmations": 6,
+    "base_fee": 40000,
+    "vsize_fee": 50000,
+    "max_bid": 14000,
+    "effective_vsize": 135,
+    "effective_fee": 3260,
+    "history": [
+      {
+        "event": "user-requested-acceleration",
+        "timestamp": 1706378684
+      },
+      {
+        "event": "accepted_test-api-key",
+        "timestamp": 1706378684
+      },
+      {
+        "event": "complete-at-block-827670",
+        "timestamp": 1706380231
+      }
+    ]
+  }
+]`,
         },
       }
     }
@@ -12658,7 +13026,7 @@ export const faqData = [
     category: 'advanced',
     showConditions: bitcoinNetworks,
     fragment: 'how-do-mempool-goggles-work',
-    title: 'How do Mempool Goggles™ work?',
+    title: 'How do Mempool Goggles® work?',
   },
   {
     type: 'endpoint',
@@ -12680,6 +13048,20 @@ export const faqData = [
     showConditions: bitcoinNetworks,
     fragment: 'why-do-the-projected-block-fee-ranges-overlap',
     title: 'Why do the projected block fee ranges overlap?',
+  },
+  {
+    type: 'endpoint',
+    category: 'advanced',
+    showConditions: bitcoinNetworks,
+    fragment: 'how-does-the-taproot-tree-work',
+    title: 'How does the Taproot Tree work?',
+  },
+  {
+    type: 'endpoint',
+    category: 'advanced',
+    showConditions: bitcoinNetworks,
+    fragment: 'how-can-i-share-or-verify-taproot-scripts',
+    title: 'How can I share or verify Taproot scripts?',
   },
   {
     type: 'category',

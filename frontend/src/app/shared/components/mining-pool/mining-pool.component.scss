@@ -1,0 +1,22 @@
+.mining-pool-logo {
+  width: 15px;
+  height: 15px;
+  position: relative;
+  top: -1px;
+  margin-right: 5px;
+}
+
+.mining-pool-name {
+  display: inline;
+  color: var(--fg);
+
+  &.truncate {
+    display: inline-block;
+    vertical-align: text-top;
+    padding-left: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 160px;
+  }
+}

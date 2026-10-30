@@ -171,7 +171,7 @@
           width: 100%;
           height: 100%;
           border-radius: 50%;
-          background: white;
+          background: var(--fg);
           z-index: 1;
         }
 
@@ -224,7 +224,7 @@
         .badge.badge-waiting {
           opacity: 0.5;
           background-color: var(--grey);
-          color: white;
+          color: var(--nav-icon);
         }
         
         .badge.badge-accelerated {

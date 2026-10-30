@@ -28,7 +28,7 @@ export class SearchResultsComponent implements OnChanges {
   ngOnChanges() {
     this.activeIdx = 0;
     if (this.results) {
-      this.resultsFlattened = [...(this.results.hashQuickMatch ? [this.results.searchText] : []), ...this.results.addresses, ...this.results.pools, ...this.results.nodes, ...this.results.channels, ...this.results.otherNetworks];
+      this.resultsFlattened = [...(this.results.hashQuickMatch ? [this.results.searchText] : []), ...this.results.addresses, ...this.results.pools, ...this.results.nodes, ...this.results.channels, ...this.results.otherNetworks, ...this.results.liquidAssets];
       // If searchText is a public key corresponding to a node, select it by default
       if (this.results.publicKey && this.results.nodes.length > 0) {
         this.activeIdx = 1;

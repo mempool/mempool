@@ -22,7 +22,6 @@ interface GraphBar {
 export class AccelerateFeeGraphComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   @Input() tx: Transaction;
   @Input() estimate: AccelerationEstimate;
-  @Input() showEstimate = false;
   @Input() maxRateOptions: RateOption[] = [];
   @Input() maxRateIndex: number = 0;
   @Output() setUserBid = new EventEmitter<{ fee: number, index: number }>();
@@ -70,11 +69,11 @@ export class AccelerateFeeGraphComponent implements OnInit, AfterViewInit, OnCha
     const numBars = hasNextBlockRate ? 4 : 3;
     const maxRate = Math.max(...this.maxRateOptions.map(option => option.rate));
     const baseRate = this.estimate.txSummary.effectiveFee / this.estimate.txSummary.effectiveVsize;
-    let baseHeight = Math.max(this.height - (numBars * 30), this.height * (baseRate / maxRate));
+    let baseHeight = Math.max(this.height - (numBars * 50), this.height * (baseRate / maxRate));
     const bars: GraphBar[] = [];
     let lastHeight = 0;
     if (hasNextBlockRate) {
-      lastHeight = Math.max(lastHeight + 30, (this.height * ((this.estimate.targetFeeRate - baseRate) / maxRate)));
+      lastHeight = Math.max(lastHeight + 50, (this.height * ((this.estimate.targetFeeRate - baseRate) / maxRate)));
       bars.push({
         rate: this.estimate.targetFeeRate,
         height: lastHeight,
@@ -84,12 +83,12 @@ export class AccelerateFeeGraphComponent implements OnInit, AfterViewInit, OnCha
       });
     }
     this.maxRateOptions.forEach((option, index) => {
-      lastHeight = Math.max(lastHeight + 30, (this.height * ((option.rate - baseRate) / maxRate)));
+      lastHeight = Math.max(lastHeight + 50, (this.height * ((option.rate - baseRate) / maxRate)));
       bars.push({
         rate: option.rate,
         height: lastHeight,
         class: 'max',
-        label: this.showEstimate ? $localize`maximum` : $localize`:@@b484583f0ce10f3341ab36750d05271d9d22c9a1:Accelerated`.toLowerCase(),
+        label: this.estimate.isProUser ? $localize`maximum` : $localize`:@@b484583f0ce10f3341ab36750d05271d9d22c9a1:Accelerated`.toLowerCase(),
         active: option.index === this.maxRateIndex,
         rateIndex: option.index,
         fee: option.fee,
@@ -98,6 +97,14 @@ export class AccelerateFeeGraphComponent implements OnInit, AfterViewInit, OnCha
 
     bars.reverse();
 
+    const minBaseHeight = 50;
+    if (this.height - lastHeight < minBaseHeight) {
+      const scale = (this.height - minBaseHeight) / lastHeight;
+      lastHeight = this.height - minBaseHeight;
+      for (const bar of bars) {
+        bar.height = Math.round(bar.height * scale);
+      }
+    }
     baseHeight = this.height - lastHeight;
 
     for (const bar of bars) {

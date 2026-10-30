@@ -10,6 +10,13 @@ import { TransactionModule } from '@components/transaction/transaction.module';
 
 const routes: Routes = [
   {
+    path: ':id/accelerate',
+    component: TrackerComponent,
+    data: {
+      ogImage: true
+    }
+  },
+  {
     path: ':id',
     component: TrackerComponent,
     data: {

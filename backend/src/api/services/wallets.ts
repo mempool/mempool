@@ -8,7 +8,6 @@ import { promises as fsPromises } from 'fs';
 
 interface WalletAddress {
   address: string;
-  active: boolean;
   stats: {
     funded_txo_count: number;
     funded_txo_sum: number;
@@ -244,15 +243,18 @@ class WalletApi {
 
   // resync address transactions from esplora
   async $syncWalletAddress(wallet: Wallet, address: WalletAddress): Promise<void> {
-    // fetch full transaction data if the address is new or still active and hasn't been synced in the last hour
-    const refreshTransactions = !wallet.addresses[address.address] || (address.active && (Date.now() - wallet.addresses[address.address].lastSync) > 60 * 60 * 1000);
+    if (address.address === 'private') {
+      // skip pseudo-address for private balances
+      return;
+    }
+    // fetch full transaction data if the address is new or hasn't been synced in the last hour
+    const refreshTransactions = !wallet.addresses[address.address] || (Date.now() - wallet.addresses[address.address].lastSync) > 60 * 60 * 1000;
     if (refreshTransactions) {
       try {
         const summary = await bitcoinApi.$getAddressTransactionSummary(address.address);
         const addressInfo = await bitcoinApi.$getAddress(address.address);
         const walletAddress: WalletAddress = {
           address: address.address,
-          active: address.active,
           transactions: summary,
           stats: addressInfo.chain_stats,
           lastSync: Date.now(),
@@ -322,7 +324,6 @@ function convertBalancesToWalletAddress(wallet: string, balances: { balance: num
   const sortedBalances = balances.sort((a, b) => a.time - b.time);
   const walletAddress: WalletAddress = {
     address: 'private',
-    active: false,
     stats: {
       funded_txo_count: 0,
       funded_txo_sum: sortedBalances[sortedBalances.length - 1].balance,

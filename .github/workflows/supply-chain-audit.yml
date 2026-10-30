@@ -1,0 +1,58 @@
+name: Supply Chain Audit
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !(startsWith(github.head_ref, 'ops/') && github.event.pull_request.head.repo.full_name == github.repository)) || github.event_name == 'push'"
+    runs-on: mempool-ci
+    name: Backend install-script audit
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "26.12.1"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install npm 11.12.0
+        run: npm install -g npm@11.12.0
+
+      - name: Audit backend install scripts
+        run: bash backend/meta/scripts/check-install-scripts.sh
+
+      - name: Run backend safe install
+        run: bash backend/meta/scripts/safe-install.sh
+
+  frontend:
+    if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !(startsWith(github.head_ref, 'ops/') && github.event.pull_request.head.repo.full_name == github.repository)) || github.event_name == 'push'"
+    runs-on: mempool-ci
+    name: Frontend install-script audit
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "26.12.1"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install npm 11.12.0
+        run: npm install -g npm@11.12.0
+
+      - name: Audit frontend install scripts
+        run: bash frontend/meta/scripts/check-install-scripts.sh
+
+      - name: Run frontend safe install
+        run: bash frontend/meta/scripts/safe-install.sh

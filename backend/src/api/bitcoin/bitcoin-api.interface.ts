@@ -53,6 +53,7 @@ export namespace IBitcoinApi {
     nTx: number;                     //  (numeric) The number of transactions in the block
     previousblockhash: string;       //  (string) The hash of the previous block
     nextblockhash: string;           //  (string) The hash of the next block
+    dynamic_parameters?: any;        //  (object) Elements only: dynamic parameters at this block
   }
 
   export interface Transaction {
@@ -90,6 +91,7 @@ export namespace IBitcoinApi {
     };
     sequence: number;                //  (numeric) The script sequence number
     txinwitness?: string[];          //  (string) hex-encoded witness data
+    pegin_witness?: string[];        //  (string) Elements peg-in witness
     coinbase?: string;
     is_pegin?: boolean;              //  (boolean) Elements peg-in
   }
@@ -203,6 +205,13 @@ export namespace IBitcoinApi {
     'txs': number;
     'utxo_increase': number;
     'utxo_size_inc': number;
+  }
+
+  export interface TxSpendingPrevout {
+    txid: string;
+    vout: number;
+    spendingtxid?: string; // the transaction id of the transaction spending this output (omitted if unspent)
+    blockhash?: string; // the hash of the block containing the spending transaction (omitted if unspent or the spending tx is not confirmed)
   }
 }
 

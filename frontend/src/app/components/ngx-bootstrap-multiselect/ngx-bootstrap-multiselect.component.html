@@ -9,11 +9,9 @@
     [class.pull-right]="settings.pullRight" [class.dropdown-menu-right]="settings.pullRight" [style.max-height]="settings.maxHeight"
     style="display: block; height: auto; overflow-y: auto;" (keydown.tab)="focusItem(1, $event)" (keydown.shift.tab)="focusItem(-1, $event)">
     <div class="input-group search-container" *ngIf="settings.enableSearch && (renderFilteredOptions.length > 1 || filterControl.value.length > 0)">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="basic-addon1">
-          <i class="fa fa-search" aria-hidden="true"></i>
-        </span>
-      </div>
+      <span class="input-group-text" id="basic-addon1">
+        <i class="fa fa-search" aria-hidden="true"></i>
+      </span>
       <input type="text" class="form-control" ssAutofocus [formControl]="filterControl" [placeholder]="texts.searchPlaceholder"
         class="form-control">
       <div class="input-group-append" *ngIf="filterControl.value.length>0">

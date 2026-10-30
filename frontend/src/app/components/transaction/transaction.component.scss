@@ -191,7 +191,7 @@
 	}
 }
 
-.details-button, .flow-toggle, .accelerator-toggle {
+.details-button, .flow-toggle, .accelerator-toggle, .rbf-diff-toggle {
   margin-top: -5px;
   margin-left: 10px;
 	@media (min-width: 768px){
@@ -204,6 +204,16 @@
 .accelerator-toggle, .details-button {
   position: relative;
   bottom: -13px;
+}
+
+.cpfp-beta {
+  font-size: 10px;
+  padding: 3px 5px;
+}
+
+h2 .cpfp-beta {
+  margin-left: 5px;
+  vertical-align: super;
 }
 
 .subtitle-block {
@@ -292,14 +302,6 @@
 .goggles-icon {
   display: block;
   width: 2.7em;
-}
-
-.pool-logo {
-  width: 15px;
-  height: 15px;
-  position: relative;
-  top: -1px;
-  margin-right: 2px;
 }
 
 .oobFees {

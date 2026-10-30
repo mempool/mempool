@@ -126,13 +126,6 @@
   }
 }
 
-.btn-group-toggle {
-  display: inline-flex;
-  @media (min-width: 830px) {
-    display: block;
-  }
-}
-
 .small-buttons {
   width: 100%;
   display: flex;
@@ -153,7 +146,6 @@
     width: 50%;
     flex-grow: 1;
     flex-shrink: 1;
-    margin: 1px 0;
     margin-right: 0.5rem;
     @media (min-width: 830px) {
       width: auto;
@@ -196,11 +188,11 @@
   }
 
   @media (min-width: 500px) {
-    .btn-group:first-child > .btn:last-child {
+    .btn-group:first-child > .btn:last-of-type {
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
     }
-    .btn-group:last-child > .btn:first-child {
+    .btn-group:last-child > .btn:first-of-type {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
     }
@@ -209,16 +201,16 @@
   @media (max-width: 499px) {
     flex-direction: column;
 
-    .btn-group:first-child > .btn:first-child {
+    .btn-group:first-child > .btn:first-of-type {
       border-bottom-left-radius: 0;
     }
-    .btn-group:first-child > .btn:last-child {
+    .btn-group:first-child > .btn:last-of-type {
       border-bottom-right-radius: 0;
     }
-    .btn-group:last-child > .btn:first-child {
+    .btn-group:last-child > .btn:first-of-type {
       border-top-left-radius: 0;
     }
-    .btn-group:last-child > .btn:last-child {
+    .btn-group:last-child > .btn:last-of-type {
       border-top-right-radius: 0;
     }
   }

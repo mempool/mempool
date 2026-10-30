@@ -37,6 +37,7 @@ interface LeafNode {
 })
 export class TaprootAddressScriptsComponent implements OnChanges {
   @Input() address: string;
+  @Input() network?: string;
   @Input() scripts: Map<string, ScriptInfo>;
   @Output() tapTreeIncomplete = new EventEmitter<boolean>(true);
 
@@ -117,7 +118,7 @@ export class TaprootAddressScriptsComponent implements OnChanges {
     // Expand the tree to include public key, internal key and merkle root
     const internalKeyNode = scripts[0].taprootInfo.scriptPath.internalKey;
     const merkleRootNode = treeStructure.length > 0 ? treeStructure[0].keys().next().value : leaves.keys().next().value;
-    const outputKeyNode = addressToScriptPubKey(this.address, this.stateService.network || '').scriptPubKey.slice(4);
+    const outputKeyNode = addressToScriptPubKey(this.address, this.network || this.stateService.network || '').scriptPubKey.slice(4);
     treeStructure.unshift(new Map<string, [string, string]>());
     treeStructure[0].set(outputKeyNode, [internalKeyNode, merkleRootNode]);
     this.depth++;

@@ -372,19 +372,24 @@ export class Common {
 
   // Individual versioned standardness rules
 
+  static getActivationHeight(activationHeights: Record<string, number>): number | undefined {
+    return activationHeights[config.MEMPOOL.NETWORK || 'mainnet'];
+  }
+
   static V3_STANDARDNESS_ACTIVATION_HEIGHT = {
     'testnet4': 42_000,
     'testnet': 2_900_000,
     'signet': 211_000,
     'regtest': 0,
-    '': 863_500,
+    'mainnet': 863_500,
   };
   static isNonStandardVersion(tx: TransactionExtended, height?: number): boolean {
     let TX_MAX_STANDARD_VERSION = 3;
+    const activationHeight = this.getActivationHeight(this.V3_STANDARDNESS_ACTIVATION_HEIGHT);
     if (
       height != null
-      && this.V3_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
-      && height <= this.V3_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      && activationHeight
+      && height <= activationHeight
     ) {
       // V3 transactions were non-standard to spend before v28.x (scheduled for 2024/09/30 https://github.com/bitcoin/bitcoin/issues/29891)
       TX_MAX_STANDARD_VERSION = 2;
@@ -401,13 +406,14 @@ export class Common {
     'testnet': 2_900_000,
     'signet': 211_000,
     'regtest': 0,
-    '': 863_500,
+    'mainnet': 863_500,
   };
   static isNonStandardAnchor(vin: IEsploraApi.Vin, height?: number): boolean {
+    const activationHeight = this.getActivationHeight(this.ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT);
     if (
       height != null
-      && this.ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
-      && height <= this.ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      && activationHeight
+      && height <= activationHeight
       && vin.prevout?.scriptpubkey === '51024e73'
     ) {
       // anchor outputs were non-standard to spend before v28.x (scheduled for 2024/09/30 https://github.com/bitcoin/bitcoin/issues/29891)
@@ -422,14 +428,15 @@ export class Common {
     'testnet': 4_550_000,
     'signet': 260_000,
     'regtest': 0,
-    '': 905_000,
+    'mainnet': 905_000,
   };
   static isStandardEphemeralDust(tx: TransactionExtended, height?: number): boolean {
+    const activationHeight = this.getActivationHeight(this.EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT);
     if (
       tx.fee === 0
       && (height == null || (
-        this.EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
-        && height >= this.EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+        activationHeight != null
+        && height >= activationHeight
       ))
     ) {
       return true;
@@ -443,14 +450,15 @@ export class Common {
     'testnet': 4_750_000,
     'signet': 276_500,
     'regtest': 0,
-    '': 921_000,
+    'mainnet': 921_000,
   };
   static MAX_DATACARRIER_BYTES = 83;
   static isStandardOpReturn(bytes: number, outputs: number,height?: number): boolean {
+    const activationHeight = this.getActivationHeight(this.OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT);
     if (
       (height == null || (
-        this.OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
-        && height >= this.OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+        activationHeight != null
+        && height >= activationHeight
       )) // limits lifted
       || // OR
       (bytes <= this.MAX_DATACARRIER_BYTES && outputs <= 1) // below old limits
@@ -466,13 +474,14 @@ export class Common {
     'testnet': 4_750_000,
     'signet': 276_500,
     'regtest': 0,
-    '': 921_000,
+    'mainnet': 921_000,
   };
   static isNonStandardLegacySigops(tx: TransactionExtended, height?: number): boolean {
+    const activationHeight = this.getActivationHeight(this.LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT);
     if (
       height == null || (
-        this.LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
-        && height >= this.LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+        activationHeight != null
+        && height >= activationHeight
       )
     ) {
       if (!transactionUtils.checkSigopsBIP54(tx, MAX_TX_LEGACY_SIGOPS)) {
@@ -626,6 +635,13 @@ export class Common {
 
     // Already processed static flags, no need to do it again
     if (tx.flags) {
+      // except standardness, which depends on the policy in force at the mined height
+      if (height != null) {
+        flags &= ~TransactionFlags.nonstandard;
+        if (this.isNonStandard(tx, height)) {
+          flags |= TransactionFlags.nonstandard;
+        }
+      }
       return Number(flags);
     }
 
@@ -749,7 +765,15 @@ export class Common {
     // fast but bad heuristic to detect possible coinjoins
     // (at least 5 inputs and 5 outputs, less than half of which are unique amounts, with no address reuse)
     const addressReuse = Object.keys(reusedOutputAddresses).reduce((acc, key) => Math.max(acc, (reusedInputAddresses[key] || 0) + (reusedOutputAddresses[key] || 0)), 0) > 1;
-    if (!addressReuse && tx.vin.length >= 5 && tx.vout.length >= 5 && (Object.keys(inValues).length + Object.keys(outValues).length) <= (tx.vin.length + tx.vout.length) / 2 ) {
+    const tokenRelated = (flags & (TransactionFlags.inscription | TransactionFlags.op_return)) !== 0n;
+    if (!addressReuse &&
+        tx.vin.length >= 5 &&
+        tx.vout.length >= 5 &&
+        (Object.keys(inValues).length + Object.keys(outValues).length) <= (tx.vin.length + tx.vout.length) / 2 &&
+        !tokenRelated &&
+        tx.vin.length / tx.vout.length < 5 &&
+        tx.vin.length / tx.vout.length > 0.2
+      ) {
       flags |= TransactionFlags.coinjoin;
     }
     // more than 5:1 input:output ratio
@@ -894,6 +918,15 @@ export class Common {
     );
   }
 
+  // must match the conditions under which the indexer runs the 'blocksPrices' task,
+  // otherwise queries will join against a blocks_prices table that is never populated
+  static blockPricesIndexingEnabled(): boolean {
+    return (
+      !['testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK) &&
+      config.FIAT_PRICE.ENABLED === true
+    );
+  }
+
   static setDateMidnight(date: Date): void {
     date.setUTCHours(0);
     date.setUTCMinutes(0);
@@ -1030,8 +1063,18 @@ export class Common {
   }
 
   static calcEffectiveFeeStatistics(transactions: { weight: number, fee?: number, effectiveFeePerVsize?: number, txid: string, acceleration?: boolean }[]): EffectiveFeeStats {
-    const sortedTxs = transactions.map(tx => { return { txid: tx.txid, weight: tx.weight, rate: tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4)) }; }).sort((a, b) => a.rate - b.rate);
-    const totalWeight = transactions.reduce((acc, tx) => acc + tx.weight, 0);
+    // return early with safe default values
+    if (transactions.length <= 1) {
+      return {
+        medianFee: 0,
+        feeRange: [0, 0, 0, 0, 0, 0, 0],
+      };
+    }
+    // assume the first transaction is a coinbase if the fee is falsy (0 or undefined)
+    const nonCoinbaseTransactions = transactions[0].fee ? transactions : transactions.slice(1);
+
+    const sortedTxs = nonCoinbaseTransactions.map(tx => { return { txid: tx.txid, weight: tx.weight, rate: tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4)) }; }).sort((a, b) => a.rate - b.rate);
+    const totalWeight = nonCoinbaseTransactions.reduce((acc, tx) => acc + tx.weight, 0);
 
     // include any unused space
     let weightCount = config.MEMPOOL.BLOCK_WEIGHT_UNITS - totalWeight;
@@ -1060,7 +1103,7 @@ export class Common {
     // b) the minimum effective fee rate in the last 2% of transactions (in block order)
     const minFee = Math.min(
       Common.getNthPercentile(1, sortedTxs).rate,
-      transactions.slice(-transactions.length / 50).reduce((min, tx) => { return Math.min(min, tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4))); }, Infinity)
+      nonCoinbaseTransactions.slice(Math.ceil(nonCoinbaseTransactions.length * 49 / 50)).reduce((min, tx) => { return Math.min(min, tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4))); }, Infinity)
     );
 
     // maximum effective fee heuristic:
@@ -1069,7 +1112,7 @@ export class Common {
     // b) the maximum effective fee rate in the first 2% of transactions (in block order)
     const maxFee = Math.max(
       Common.getNthPercentile(99, sortedTxs).rate,
-      transactions.slice(0, transactions.length / 50).reduce((max, tx) => { return Math.max(max, tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4))); }, 0)
+      nonCoinbaseTransactions.slice(0, nonCoinbaseTransactions.length / 50).reduce((max, tx) => { return Math.max(max, tx.effectiveFeePerVsize || ((tx.fee || 0) / (tx.weight / 4))); }, 0)
     );
 
     return {
@@ -1083,6 +1126,9 @@ export class Common {
   }
 
   static getNthPercentile(n: number, sortedDistribution: any[]): any {
+    if (sortedDistribution.length === 0) {
+      return { rate: 0 };
+    }
     return sortedDistribution[Math.floor((sortedDistribution.length - 1) * (n / 100))];
   }
 
@@ -1133,6 +1179,20 @@ export class Common {
       // Guaranteed to pass validation (see function below)
       return this.validateTransactionHex(matches[1].toLowerCase());
     });
+  }
+
+  static isBip54Coinbase (block: IEsploraApi.Block | {id: string, height: number, timestamp: number}, coinbaseTx: IEsploraApi.Transaction): boolean | null {
+    if (typeof block.height !== 'number' || typeof block.timestamp !== 'number') {
+      return null;
+    }
+
+    const timeFirstMainnetBip54Coinbase = 1771507776;
+    if (block.timestamp < timeFirstMainnetBip54Coinbase) {
+      return null;
+    }
+
+    const seq = coinbaseTx.vin[0].sequence;
+    return (block.height > 0 && coinbaseTx.locktime === block.height - 1 && typeof seq === 'number' && seq !== 0xffffffff);
   }
 
   private static validateTransactionHex(txhex: string): string {

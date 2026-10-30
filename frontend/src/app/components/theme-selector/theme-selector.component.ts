@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
 })
 export class ThemeSelectorComponent implements OnInit, OnDestroy {
   themeForm: UntypedFormGroup;
-  themes = ['default', 'contrast', 'softsimon', 'bukele'];
+  themes = ['default', 'contrast', 'softsimon', 'bukele', 'nymkappa'];
   themeStateSubscription: Subscription;
 
   constructor(
@@ -36,7 +36,7 @@ export class ThemeSelectorComponent implements OnInit, OnDestroy {
 
   changeTheme() {
     const newTheme = this.themeForm.get('theme')?.value;
-    this.themeService.apply(newTheme);
+    this.themeService.setTheme(newTheme);
   }
 
   ngOnDestroy() {

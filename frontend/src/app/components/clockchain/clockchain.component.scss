@@ -3,7 +3,7 @@
   left: -0.5px;
   top: 0;
   .divider-line {
-    stroke: white;
+    stroke: var(--nav-icon);
     stroke-width: 4px;
     stroke-linecap: butt;
     stroke-dasharray: 25px 25px;

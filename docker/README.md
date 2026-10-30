@@ -146,6 +146,11 @@ Corresponding `docker-compose.yml` overrides:
       MEMPOOL_MAX_BLOCKS_BULK_QUERY: ""
       MEMPOOL_DISK_CACHE_BLOCK_INTERVAL: ""
       MEMPOOL_PRICE_UPDATES_PER_HOUR: ""
+      MEMPOOL_MAX_BUFFERED_AMOUNT: ""
+      MEMPOOL_MAX_MESSAGE_SIZE: ""
+      MEMPOOL_MAX_TRACKED_TXS: ""
+      MEMPOOL_MSG_RATE_LIMIT: ""
+      MEMPOOL_MSG_RATE_WINDOW: ""
       ...
 ```
 

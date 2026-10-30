@@ -5,28 +5,23 @@
       <span *ngIf="user$ | async as user" class="menu-click">
         <span class="menu-click text-nowrap ellipsis">
           <strong>
-            <span *ngIf="user.username.includes('@'); else usernamenospace">{{ user.username }}</span>
+            <span *ngIf="user.username?.includes('@'); else usernamenospace">{{ user.username }}</span>
             <ng-template #usernamenospace>&#64;{{ user.username }}</ng-template>
           </strong>
         </span>
-        <span class="badge mr-1 badge-og" *ngIf="user.ogRank">
+        <span class="badge me-1 badge-og" *ngIf="user.ogRank">
           OG #{{ user.ogRank }}
         </span>
-        @if (user.subscription_tag !== 'free') {
-          <span class="badge mr-1 badge-default" [class]="'badge-' + user.subscription_tag">
+        @if (user.subscription_tag && user.subscription_tag !== 'free') {
+          <span class="badge me-1 badge-default" [class]="'badge-' + user.subscription_tag">
             {{ user.subscription_tag.toUpperCase() }}
           </span>
         } @else if (user.type === 'mining_pool') {
-          <span class="badge mr-1 badge-default" [class]="'badge-mining-pool'">
+          <span class="badge me-1 badge-default" [class]="'badge-mining-pool'" i18n="menu.mining-pool">
             MINING POOL
           </span>
         }
       </span>
-      <a *ngIf="!userAuth" class="d-flex justify-content-center align-items-center nav-link m-0  menu-click" routerLink="/login" role="tab" (click)="onLinkClick('/login')">
-        <fa-icon class="menu-click" [icon]="['fas', 'user-circle']" [fixedWidth]="true" style="font-size: 25px;margin-right: 15px;"></fa-icon>
-        <span class="menu-click" style="font-size: 20px;" i18n="shared.sign-in">Sign In</span>
-      </a>
-
       <ng-container *ngIf="userMenuGroups$ | async as menuGroups">
         <div class="menu-click" *ngFor="let group of menuGroups" style="height: max-content;">
           @if (menuGroups.length > 1) {
@@ -43,7 +38,7 @@
               <a *ngIf="item.title !== 'Logout'" class="nav-link menu-click" [routerLink]="[item.link]" role="tab">
                 {{ item.title }}
                 @if (item.isExternal === true) {
-                  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="margin-left: 5px; font-size: 13px; color: lightgray"></fa-icon>
+                  <fa-icon [icon]="['fas', 'external-link-alt']" [fixedWidth]="true" style="margin-left: 5px; font-size: 13px; color: var(--fg)"></fa-icon>
                 }
               </a>
             </li>

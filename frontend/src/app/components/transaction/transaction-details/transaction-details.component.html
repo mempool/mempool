@@ -46,7 +46,12 @@
 <ng-template #detailsRight>
   <ng-container *ngTemplateOutlet="feeRow"></ng-container>
   <ng-container *ngTemplateOutlet="feeRateRow"></ng-container>
-  @if (!isLoadingTx && !tx?.status?.confirmed && isAcceleration && ((cpfpInfo && hasEffectiveFeeRate) || accelerationInfo)) {
+  @if (showAcceleratorSavingsMsg) {
+    <tr>
+      <td colspan="2" style="--bs-table-bg-type: var(--tertiary); white-space: normal; text-align: center;" i18n="transaction.pro-savings">Could have saved <app-fiat [blockConversion]="tx.price" [value]="acceleratorSavingsSats"></app-fiat> using <a href="https://mempool.space/enterprise#accelerator-pro" target="_blank" rel="noopener">Mempool Accelerator&reg; Pro</a></td>
+    </tr>
+  }
+  @if (!isLoadingTx && !tx?.status?.confirmed && isAcceleration) {
     <ng-container *ngTemplateOutlet="acceleratingRow"></ng-container>
   } @else {
     <ng-container *ngTemplateOutlet="effectiveRateRow"></ng-container>
@@ -124,22 +129,22 @@
           <td class="wrap-cell">
             <ng-container>
               @if (auditStatus.coinbase) {
-                <span class="badge badge-primary mr-1" i18n="transactions-list.coinbase">Coinbase</span>
+                <span class="badge bg-primary me-1" i18n="transactions-list.coinbase">Coinbase</span>
               } @else if (auditStatus.expected) {
-                <span class="badge badge-success mr-1" i18n-ngbTooltip="Expected in block tooltip" ngbTooltip="This transaction was projected to be included in the block" placement="bottom" i18n="tx-features.tag.expected|Expected in Block">Expected in Block</span>
+                <span class="badge bg-success me-1" i18n-ngbTooltip="Expected in block tooltip" ngbTooltip="This transaction was projected to be included in the block" placement="bottom" i18n="tx-features.tag.expected|Expected in Block">Expected in Block</span>
               } @else if (auditStatus.seen) {
-                <span class="badge badge-success mr-1" i18n-ngbTooltip="Seen in mempool tooltip" ngbTooltip="This transaction was seen in the mempool prior to mining" placement="bottom" i18n="tx-features.tag.seen|Seen in Mempool">Seen in Mempool</span>
+                <span class="badge bg-success me-1" i18n-ngbTooltip="Seen in mempool tooltip" ngbTooltip="This transaction was seen in the mempool prior to mining" placement="bottom" i18n="tx-features.tag.seen|Seen in Mempool">Seen in Mempool</span>
               } @else if (!auditStatus.conflict) {
-                <span class="badge badge-warning mr-1" i18n-ngbTooltip="Not seen in mempool tooltip" ngbTooltip="This transaction was missing from our mempool prior to mining" placement="bottom" i18n="tx-features.tag.not-seen|Not seen in Mempool">Not seen in Mempool</span>
+                <span class="badge bg-warning me-1" i18n-ngbTooltip="Not seen in mempool tooltip" ngbTooltip="This transaction was missing from our mempool prior to mining" placement="bottom" i18n="tx-features.tag.not-seen|Not seen in Mempool">Not seen in Mempool</span>
               }
               @if (auditStatus.added) {
-                <span class="badge badge-warning mr-1" i18n-ngbTooltip="Added transaction tooltip" ngbTooltip="This transaction may have been added out-of-band" placement="bottom" i18n="tx-features.tag.added|Added">Added</span>
+                <span class="badge bg-warning me-1" i18n-ngbTooltip="Added transaction tooltip" ngbTooltip="This transaction may have been added out-of-band" placement="bottom" i18n="tx-features.tag.added|Added">Added</span>
               }
               @if (auditStatus.prioritized) {
-                <span class="badge badge-warning mr-1" i18n-ngbTooltip="Prioritized transaction tooltip" ngbTooltip="This transaction may have been prioritized out-of-band" placement="bottom" i18n="tx-features.tag.prioritized|Prioritized">Prioritized</span>
+                <span class="badge bg-warning me-1" i18n-ngbTooltip="Prioritized transaction tooltip" ngbTooltip="This transaction may have been prioritized out-of-band" placement="bottom" i18n="tx-features.tag.prioritized|Prioritized">Prioritized</span>
               }
               @if (auditStatus.conflict) {
-                <span class="badge badge-warning mr-1" i18n-ngbTooltip="Conflict in mempool tooltip" ngbTooltip="This transaction conflicted with another version in our mempool" placement="bottom" i18n="tx-features.tag.conflict|Conflict">Conflict</span>
+                <span class="badge bg-warning me-1" i18n-ngbTooltip="Conflict in mempool tooltip" ngbTooltip="This transaction conflicted with another version in our mempool" placement="bottom" i18n="tx-features.tag.conflict|Conflict">Conflict</span>
               }
             </ng-container>
           </td>
@@ -169,8 +174,8 @@
                 }
                 @if (!tx?.acceleration && acceleratorAvailable && accelerateCtaType === 'button' && !showAccelerationSummary && notAcceleratedOnLoad) {
                   <div class="d-flex accelerate">
-                    <a class="btn btn-sm accelerateDeepMempool btn-small-height" [class.disabled]="!eligibleForAcceleration" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
-                    <a *ngIf="!eligibleForAcceleration" href="https://mempool.space/accelerator#why-cant-accelerate" target="_blank" class="info-badges ml-1" i18n-ngbTooltip="Mempool Accelerator&reg; tooltip" ngbTooltip="This transaction cannot be accelerated">
+                    <a class="btn btn-sm accelerateDeepMempool btn-small-height btn-purple" [class.disabled]="!eligibleForAcceleration" i18n="transaction.accelerate|Accelerate button label" (click)="onAccelerateClicked()">Accelerate</a>
+                    <a *ngIf="!eligibleForAcceleration" href="https://mempool.space/accelerator#why-cant-accelerate" target="_blank" class="info-badges ms-1" i18n-ngbTooltip="Mempool Accelerator&reg; tooltip" ngbTooltip="This transaction cannot be accelerated">
                         <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
                     </a>
                   </div>
@@ -198,10 +203,10 @@
         </td>
         <td class="wrap-cell">
           @if (isAcceleration) {
-            <span class="badge badge-accelerated mr-1" i18n="transaction.audit.accelerated">Accelerated</span>
+            <span class="badge badge-accelerated me-1" i18n="transaction.audit.accelerated">Accelerated</span>
           }
           <ng-container *ngFor="let filter of filters;">
-            <span class="badge badge-primary filter-tag mr-1">{{ filter.label }}</span>
+            <span class="badge bg-primary filter-tag me-1">{{ filter.label }}</span>
           </ng-container>
         </td>
       </tr>
@@ -214,7 +219,7 @@
     <tr>
       <td class="td-width" i18n="transaction.fee|Transaction fee">Fee</td>
       <td class="text-wrap">{{ (tx.fee | number) ?? '-' }} <span class="symbol" i18n="shared.sats">sats</span>
-        @if (isAcceleration && (accelerationInfo?.bidBoost ?? tx.feeDelta > 0)) {
+        @if (isAcceleration && ((accelerationInfo?.bidBoost ?? tx.feeDelta) > 0)) {
           <span class="oobFees" i18n-ngbTooltip="Acceleration Fees" ngbTooltip="Acceleration fees paid out-of-band"> +{{ accelerationInfo?.bidBoost ?? tx.feeDelta | number }} </span><span class="symbol" i18n="shared.sats">sats</span>
         }
         <span class="fiat"><app-fiat *ngIf="tx.fee >= 0" [blockConversion]="tx.price" [value]="tx.fee + (isAcceleration ? ((accelerationInfo?.bidBoost ?? tx.feeDelta) || 0) : 0)"></app-fiat></span>
@@ -245,6 +250,32 @@
 <ng-template #effectiveRateRow>
   @if (!isLoadingTx) {
     @if ((cpfpInfo && hasEffectiveFeeRate) || (accelerationInfo && isAcceleration)) {
+      <ng-template #clusterPreviewButton let-cluster="cluster" let-txid="txid">
+        <div class="cluster-preview-inline" role="button" tabindex="0"
+          [ngbTooltip]="clusterPreviewTooltip"
+          [disableTooltip]="isMobile"
+          placement="bottom"
+          tooltipClass="cluster-preview-ngb-tooltip"
+          container="body"
+          (click)="toggleCpfp()"
+          (keydown.enter)="toggleCpfp()"
+          (keydown.space)="toggleCpfp(); $event.preventDefault()">
+          <app-cluster-diagram class="cluster-preview-diagram" [cluster]="cluster" [txid]="txid" [preview]="true" [isMobile]="isMobile"></app-cluster-diagram>
+          <fa-icon class="cluster-preview-expand" [icon]="['fas', cpfpMode ? 'compress' : 'expand']" [fixedWidth]="true"></fa-icon>
+        </div>
+        <ng-template #clusterPreviewTooltip>
+          @if (clusterPreviewStats.chunkSize === 1) {
+            <p i18n="cluster.preview.chunk-line-one">This transaction belongs to a chunk of 1 transaction, with combined effective fee rate <strong>{{ clusterPreviewStats.chunkFeerate | feeRounding }} sat/vB</strong>.</p>
+          } @else {
+            <p i18n="cluster.preview.chunk-line-many">This transaction belongs to a chunk of {{ clusterPreviewStats.chunkSize }} transactions, with combined effective fee rate <strong>{{ clusterPreviewStats.chunkFeerate | feeRounding }} sat/vB</strong>.</p>
+          }
+          @if (clusterPreviewStats.otherChunks === 1) {
+            <p i18n="cluster.preview.cluster-line-one">In a mempool cluster containing 1 other chunk.</p>
+          } @else if (clusterPreviewStats.otherChunks > 1) {
+            <p i18n="cluster.preview.cluster-line-many">In a mempool cluster containing {{ clusterPreviewStats.otherChunks }} other chunks.</p>
+          }
+        </ng-template>
+      </ng-template>
       <tr>
         @if (isAcceleration) {
           <td i18n="transaction.accelerated-fee-rate|Accelerated transaction fee rate">Accelerated fee rate</td>
@@ -252,22 +283,33 @@
           <td i18n="transaction.effective-fee-rate|Effective transaction fee rate">Effective fee rate</td>
         }
         <td>
-          <div class="effective-fee-container">
-            @if (accelerationInfo?.acceleratedFeeRate && (!tx.effectiveFeePerVsize || accelerationInfo.acceleratedFeeRate >= tx.effectiveFeePerVsize || tx.acceleration)) {
-              <app-fee-rate [class.oobFees]="isAcceleration" [fee]="accelerationInfo.acceleratedFeeRate"></app-fee-rate>
-            } @else {
-              <app-fee-rate [class.oobFees]="isAcceleration" [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
-            }
+          <div class="effective-fee-row" [class.has-cluster-preview]="cpfpInfo?.cluster && tx?.txid && !isAcceleration">
+            <div class="effective-fee-container">
+              @if (accelerationInfo?.acceleratedFeeRate && (!tx.effectiveFeePerVsize || accelerationInfo.acceleratedFeeRate >= tx.effectiveFeePerVsize || tx.acceleration)) {
+                <app-fee-rate [class.oobFees]="isAcceleration" [fee]="accelerationInfo.acceleratedFeeRate"></app-fee-rate>
+              } @else {
+                <app-fee-rate [class.oobFees]="isAcceleration" [fee]="tx.effectiveFeePerVsize"></app-fee-rate>
+              }
 
-            @if (tx?.status?.confirmed && !tx.acceleration && !accelerationInfo && tx.fee && tx.effectiveFeePerVsize) {
-              <app-tx-fee-rating class="ml-2 mr-2 effective-fee-rating" [tx]="tx"></app-tx-fee-rating>
+              @if (tx?.status?.confirmed && !tx.acceleration && !accelerationInfo && tx.fee && tx.effectiveFeePerVsize) {
+                <app-tx-fee-rating class="ms-2 me-2 effective-fee-rating" [tx]="tx"></app-tx-fee-rating>
+              }
+            </div>
+            @if (cpfpInfo?.cluster && tx?.txid && !isAcceleration) {
+              <ng-container *ngTemplateOutlet="clusterPreviewButton; context: { cluster: cpfpInfo.cluster, txid: tx.txid }"></ng-container>
+            } @else if (hasCpfp) {
+              <button type="button" class="btn btn-outline-info btn-sm btn-small-height float-end" (click)="toggleCpfp()">CPFP</button>
             }
           </div>
-          @if (hasCpfp) {
-            <button type="button" class="btn btn-outline-info btn-sm btn-small-height float-right" (click)="toggleCpfp()">CPFP</button>
-          }
         </td>
       </tr>
+      @if (cpfpInfo?.cluster && tx?.txid && !isAcceleration) {
+        <tr class="cluster-preview-table-row">
+          <td colspan="2">
+            <ng-container *ngTemplateOutlet="clusterPreviewButton; context: { cluster: cpfpInfo.cluster, txid: tx.txid }"></ng-container>
+          </td>
+        </tr>
+      }
     }
   } @else {
     <ng-container *ngTemplateOutlet="skeletonDetailsRow"></ng-container>
@@ -290,16 +332,22 @@
         <td class="td-width" i18n="block.miner">Miner</td>
         @if (pool) {
           <td class="wrap-cell">
-            <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, pool.slug]" class="badge" style="color: #FFF;padding:0;">
-              <span class="miner-name" *ngIf="pool.minerNames?.length > 1 && pool.minerNames[1] != ''">
-                @if (pool.minerNames[1].length > 16) {
-                  {{ pool.minerNames[1].slice(0, 15) }}…
-                } @else {
-                  {{ pool.minerNames[1] }}
-                }
-              </span>
-              <img class="pool-logo" [src]="'/resources/mining-pools/' + pool.slug + '.svg'" onError="this.src = '/resources/mining-pools/default.svg'" [alt]="'Logo of ' + pool.name + ' mining pool'">
-              {{ pool.name }}
+            <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, pool.slug]" class="badge" style="color: var(--fg);padding:0;">
+              <ng-container *ngIf="pool.minerSlug && pool.minerName; else minerName">
+                <app-mining-pool [slug]="pool.minerSlug" [name]="pool.minerName" [showName]="false"></app-mining-pool>
+                <span class="miner-name">{{ pool.minerName }}</span>
+                <app-mining-pool [slug]="pool.slug" [name]="pool.name"></app-mining-pool>
+              </ng-container>
+              <ng-template #minerName>
+                <span class="miner-name" *ngIf="pool.minerNames?.length > 1 && pool.minerNames[1] != ''">
+                  @if (pool.minerNames[1].length > 16) {
+                    {{ pool.minerNames[1].slice(0, 15) }}…
+                  } @else {
+                    {{ pool.minerNames[1] }}
+                  }
+                </span>
+                <app-mining-pool [slug]="pool.slug" [name]="pool.name"></app-mining-pool>
+              </ng-template>
             </a>
           </td>
         } @else {

@@ -17,6 +17,7 @@ export interface PoolInfo {
   name: string;
   link: string;
   blockCount: number;
+  emptyBlocks: number;
   slug: string;
   avgMatchRate: number | null;
   avgFeeDelta: number | null;
@@ -25,7 +26,11 @@ export interface PoolInfo {
 
 export interface PoolStats extends PoolInfo {
   rank: number;
-  emptyBlocks: number;
+}
+
+export enum TemplateAlgorithm {
+  legacy = 0,
+  clusterMempool = 1,
 }
 
 export interface BlockAudit {
@@ -45,6 +50,7 @@ export interface BlockAudit {
   expectedFees?: number,
   expectedWeight?: number,
   template?: any[];
+  templateAlgorithm?: TemplateAlgorithm,
 }
 
 export interface TransactionAudit {
@@ -132,6 +138,8 @@ export interface TransactionExtended extends IEsploraApi.Transaction {
   replacement?: boolean;
   uid?: number;
   flags?: number;
+  clusterId?: number;
+  chunkIndex?: number;
 }
 
 export interface MempoolTransactionExtended extends TransactionExtended {
@@ -227,6 +235,7 @@ export interface CpfpInfo {
   adjustedVsize?: number,
   acceleration?: boolean,
   fee?: number;
+  cluster?: CpfpClusterData & { chunkIndex: number };
 }
 
 export interface TransactionStripped {
@@ -269,6 +278,7 @@ export const TransactionFlags = {
   cpfp_parent:                               0b00000001_00000000_00000000n,
   cpfp_child:                                0b00000010_00000000_00000000n,
   replacement:                               0b00000100_00000000_00000000n,
+  acceleration:                              0b00001000_00000000_00000000n,
   // data
   op_return:                        0b00000001_00000000_00000000_00000000n,
   fake_pubkey:                      0b00000010_00000000_00000000_00000000n,
@@ -310,6 +320,7 @@ export interface BlockExtension {
   coinbaseAddresses: string[] | null;
   coinbaseSignature: string | null;
   coinbaseSignatureAscii: string | null;
+  coinbaseBip54: boolean | null;
   virtualSize: number;
   avgTxSize: number;
   totalInputs: number;
@@ -388,6 +399,25 @@ export interface CpfpCluster {
   height: number,
   txs: Ancestor[],
   effectiveFeePerVsize: number,
+  templateAlgorithm?: TemplateAlgorithm,
+  clusterData?: CpfpClusterData,
+}
+
+export interface CpfpClusterTx {
+  txid: string;
+  fee: number;
+  weight: number;
+  parents: number[];
+}
+
+export interface CpfpClusterChunk {
+  txs: number[];
+  feerate: number;
+}
+
+export interface CpfpClusterData {
+  txs: CpfpClusterTx[];
+  chunks: CpfpClusterChunk[];
 }
 
 export interface CpfpSummary {

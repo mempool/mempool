@@ -287,12 +287,13 @@ export class HashrateChartComponent implements OnInit {
         }
       },
       legend: (this.widget || data.hashrates.length === 0) ? undefined : {
+        top: 'top',
         data: [
           {
             name: $localize`:@@79a9dc5b1caca3cbeb1733a19515edacc5fc7920:Hashrate`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
             itemStyle: {
@@ -303,7 +304,7 @@ export class HashrateChartComponent implements OnInit {
             name: $localize`:@@25148835d92465353fc5fe8897c27d5369978e5a:Difficulty`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
@@ -311,7 +312,7 @@ export class HashrateChartComponent implements OnInit {
             name: $localize`Hashrate (MA)`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
             itemStyle: {

@@ -45,13 +45,14 @@
   right: 0;
 }
 
-.sidenav a, button{
+.sidenav a, .sidenav button{
   text-decoration: none;
-  color: lightgray;
+  color: var(--fg);
   margin-left: 20px;
 }
-.sidenav a:hover {
-  color: white;
+
+.sidenav a:hover, .sidenav button:hover, .sidenav button:focus-visible {
+  color: var(--fg);
 }
 .sidenav nav {
   width: 100%;
@@ -71,7 +72,8 @@
 }
 
 .badge-default {
-  background-color: black;
+  background-color: var(--secondary);
+  color: var(--fg);
 }
 
 .badge-og {

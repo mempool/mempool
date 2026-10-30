@@ -200,13 +200,13 @@ export class LightningStatisticsChartComponent implements OnInit, OnChanges {
         }
       },
       legend: this.widget || data.channel_count.length === 0 ? undefined : {
-        padding: 10,
+        top: 'top',
         data: [
           {
             name: $localize`:@@807cf11e6ac1cde912496f764c176bdfdd6b7e19:Channels`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
@@ -214,7 +214,7 @@ export class LightningStatisticsChartComponent implements OnInit, OnChanges {
             name: $localize`:@@ce9dfdc6dccb28dc75a78c704e09dc18fb02dcfa:Capacity`,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },

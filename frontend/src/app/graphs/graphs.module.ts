@@ -9,6 +9,7 @@ import { BlockFeesSubsidyGraphComponent } from '@components/block-fees-subsidy-g
 import { PriceChartComponent } from '@components/price-chart/price-chart.component';
 import { BlockRewardsGraphComponent } from '@components/block-rewards-graph/block-rewards-graph.component';
 import { BlockFeeRatesGraphComponent } from '@components/block-fee-rates-graph/block-fee-rates-graph.component';
+import { BlockGogglesGraphComponent } from '@components/block-goggles-graph/block-goggles-graph.component';
 import { BlockSizesWeightsGraphComponent } from '@components/block-sizes-weights-graph/block-sizes-weights-graph.component';
 import { FeeDistributionGraphComponent } from '@components/fee-distribution-graph/fee-distribution-graph.component';
 import { IncomingTransactionsGraphComponent } from '@components/incoming-transactions-graph/incoming-transactions-graph.component';
@@ -20,7 +21,6 @@ import { ReservesRatioStatsComponent } from '@components/liquid-reserves-audit/r
 import { ReservesRatioComponent } from '@components/liquid-reserves-audit/reserves-ratio/reserves-ratio.component';
 import { RecentPegsStatsComponent } from '@components/liquid-reserves-audit/recent-pegs-stats/recent-pegs-stats.component';
 import { RecentPegsListComponent } from '@components/liquid-reserves-audit/recent-pegs-list/recent-pegs-list.component';
-import { FederationAddressesStatsComponent } from '@components/liquid-reserves-audit/federation-addresses-stats/federation-addresses-stats.component';
 import { FederationAddressesListComponent } from '@components/liquid-reserves-audit/federation-addresses-list/federation-addresses-list.component';
 import { GraphsComponent } from '@components/graphs/graphs.component';
 import { StatisticsComponent } from '@components/statistics/statistics.component';
@@ -46,9 +46,8 @@ import { TreasuriesVerifyProgressComponent } from '@components/treasuries/verify
 import { UtxoGraphComponent } from '@components/utxo-graph/utxo-graph.component';
 import { ActiveAccelerationBox } from '@components/acceleration/active-acceleration-box/active-acceleration-box.component';
 import { AddressesTreemap } from '@components/addresses-treemap/addresses-treemap.component';
-import { TaprootAddressScriptsComponent } from '@components/taproot-address-scripts/taproot-address-scripts.component';
+import { TaprootAddressScriptsModule } from '@components/taproot-address-scripts/taproot-address-scripts.module';
 import { CommonModule } from '@angular/common';
-import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
 
 @NgModule({
   declarations: [
@@ -72,6 +71,7 @@ import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
     PriceChartComponent,
     BlockRewardsGraphComponent,
     BlockFeeRatesGraphComponent,
+    BlockGogglesGraphComponent,
     BlockSizesWeightsGraphComponent,
     FeeDistributionGraphComponent,
     IncomingTransactionsGraphComponent,
@@ -83,7 +83,6 @@ import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
     ReservesRatioComponent,
     RecentPegsStatsComponent,
     RecentPegsListComponent,
-    FederationAddressesStatsComponent,
     FederationAddressesListComponent,
     HashrateChartComponent,
     HashrateChartPoolsComponent,
@@ -96,11 +95,11 @@ import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
     UtxoGraphComponent,
     ActiveAccelerationBox,
     AddressesTreemap,
-    TaprootAddressScriptsComponent,
   ],
   imports: [
     CommonModule,
     SharedModule,
+    TaprootAddressScriptsModule,
     GraphsRoutingModule,
     NgxEchartsModule.forRoot({
       echarts: () => import('@app/graphs/echarts').then(m => m.echarts),
@@ -110,8 +109,5 @@ import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
     NgxEchartsModule,
     ActiveAccelerationBox,
   ],
-  providers: [
-    AsmStylerPipe
-  ]
 })
 export class GraphsModule { }

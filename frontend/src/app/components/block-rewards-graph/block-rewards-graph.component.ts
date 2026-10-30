@@ -107,6 +107,7 @@ export class BlockRewardsGraphComponent implements OnInit {
   }
 
   prepareChartOptions(data) {
+    const showFiat = !this.stateService.isAnyTestnet() && data.blockRewardsFiat.length > 0;
     let title: object;
     if (data.blockRewards.length === 0) {
       title = {
@@ -182,13 +183,14 @@ export class BlockRewardsGraphComponent implements OnInit {
           hideOverlap: true,
         }
       },
-      legend: data.blockRewards.length === 0 ? undefined : {
+      legend: (data.blockRewards.length === 0 || !showFiat) ? undefined : {
+        top: 'top',
         data: [
           {
             name: 'Rewards BTC',
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
@@ -196,7 +198,7 @@ export class BlockRewardsGraphComponent implements OnInit {
             name: 'Rewards ' + this.currency,
             inactiveColor: 'rgb(110, 112, 121)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
@@ -225,7 +227,7 @@ export class BlockRewardsGraphComponent implements OnInit {
             }
           },
         },
-        {
+        ...(showFiat ? [{
           min: (value) => {
             return Math.round(value.min * (1.0 - scaleFactor) * 10) / 10;
           },
@@ -237,13 +239,13 @@ export class BlockRewardsGraphComponent implements OnInit {
           axisLabel: {
             color: 'rgb(110, 112, 121)',
             formatter: function(val) {
-              return this.fiatShortenerPipe.transform(val, null, this.currency);
+              return this.fiatShortenerPipe.transform(val, this.currency);
             }.bind(this)
           },
           splitLine: {
             show: false,
           },
-        },
+        }] : []),
       ],
       series: data.blockRewards.length === 0 ? undefined : [
         {
@@ -256,7 +258,7 @@ export class BlockRewardsGraphComponent implements OnInit {
           smooth: 0.25,
           symbol: 'none',
         },
-        {
+        ...(showFiat ? [{
           legendHoverLink: false,
           zlevel: 1,
           yAxisIndex: 1,
@@ -272,7 +274,7 @@ export class BlockRewardsGraphComponent implements OnInit {
           areaStyle: {
             opacity: 0.05,
           }
-        },
+        }] : []),
       ],
       dataZoom: data.blockRewards.length === 0 ? undefined : [{
         type: 'inside',

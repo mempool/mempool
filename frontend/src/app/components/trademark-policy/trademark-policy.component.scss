@@ -30,4 +30,8 @@
   ol ol ol li {
     font-size: 1.15rem;
   }
+
+  .table {
+  --bs-table-border-color: var(--fg);
+  }
 }

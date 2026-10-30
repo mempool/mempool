@@ -1,4 +1,4 @@
-<div class="text-center" class="blockchain-wrapper" [class.time-ltr]="timeLtr" [class.ltr-transition]="ltrTransitionEnabled" #container>
+<div class="text-center blockchain-wrapper" [class.time-ltr]="timeLtr" [class.ltr-transition]="ltrTransitionEnabled" #container>
   <div #positionContainer class="position-container" [ngClass]="network ? network : ''" [style]="positionStyle">
     <span>
       <div class="blocks-wrapper">
@@ -10,8 +10,31 @@
         </ng-container>
       </div>
       <div id="divider" [hidden]="pageIndex > 0">
-        <button class="block-display-toggle" (click)="toggleBlockDisplayMode()"><fa-icon [icon]="['fas', 'exchange-alt']" [fixedWidth]="true"></fa-icon></button>
-        <button class="time-toggle" (click)="toggleTimeDirection()"><fa-icon [icon]="['fas', 'exchange-alt']" [fixedWidth]="true"></fa-icon></button>
+        <button
+          type="button"
+          class="block-display-toggle"
+          (click)="toggleBlockDisplayMode()"
+          [attr.aria-label]="blockDisplayMode === 'fees'
+            ? 'Switch to displaying block sizes'
+            : 'Switch to displaying total fees per block'"
+          [attr.title]="blockDisplayMode === 'fees'
+            ? 'Switch to displaying block sizes'
+            : 'Switch to displaying total fees per block'">
+          <fa-icon [icon]="['fas', 'exchange-alt']" [fixedWidth]="true"></fa-icon>
+        </button>
+
+        <button
+          type="button"
+          class="time-toggle"
+          (click)="toggleTimeDirection()"
+          [attr.aria-label]="timeLtr
+            ? 'Switch to displaying newest blocks on the right'
+            : 'Switch to displaying newest blocks on the left'"
+          [attr.title]="timeLtr
+            ? 'Switch to displaying newest blocks on the right'
+            : 'Switch to displaying newest blocks on the left'">
+          <fa-icon [icon]="['fas', 'exchange-alt']" [fixedWidth]="true"></fa-icon>
+        </button>
       </div>
     </span>
   </div>

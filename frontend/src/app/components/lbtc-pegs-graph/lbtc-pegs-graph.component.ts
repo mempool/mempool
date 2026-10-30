@@ -38,7 +38,7 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
   subscription: Subscription;
 
   right: number | string = '5';
-  top: number | string = '20';
+  top: number | string = '32';
   left: number | string = '60';
   template: ('widget' | 'advanced') = 'widget';
   isLoading = true;
@@ -127,12 +127,13 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
         }
       }],
       legend: {
+        top: -5,
         data: [
           {
             name: 'LBTC',
             inactiveColor: 'var(--grey)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
@@ -140,7 +141,7 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
             name: 'BTC',
             inactiveColor: 'var(--grey)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           },
@@ -148,7 +149,7 @@ export class LbtcPegsGraphComponent implements OnInit, OnChanges {
             name: 'USD',
             inactiveColor: 'var(--grey)',
             textStyle: {
-              color: 'white',
+              color: 'var(--fg)',
             },
             icon: 'roundRect',
           }

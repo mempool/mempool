@@ -18,6 +18,41 @@
     flex-wrap: wrap;
     row-gap: 0.25em;
     margin-left: 0.5em;
+    width: 100%;
+
+    &.menu-open {
+      white-space: nowrap;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      margin-right: 0.5em;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      -webkit-mask-image: linear-gradient(
+        to right,
+        transparent 0,
+        #000 var(--fade-l),
+        #000 calc(100% - var(--fade-r)),
+        transparent 100%
+      );
+
+      mask-image: linear-gradient(
+        to right,
+        transparent 0,
+        #000 var(--fade-l),
+        #000 calc(100% - var(--fade-r)),
+        transparent 100%
+      );
+
+      animation: goggles-fade-l linear both, goggles-fade-r linear both;
+      animation-timeline: scroll(self inline);
+      animation-range:0 1.5em, 0 100%;
+      animation-duration: 1ms;
+    }
   }
 
   .info-badges {
@@ -55,7 +90,7 @@
 
     h5 {
       font-size: 0.8rem;
-      color: white;
+      color: var(--fg);
       margin: 0;
       margin-top: 0.5em;
     }
@@ -96,9 +131,9 @@
 
   &.none-mode {
     .filter-tag {
-      border: solid 1px var(--danger);
+      border: solid 1px var(--red);
       &.selected {
-        background-color: var(--danger);
+        background-color: var(--red);
       }
     }
   }
@@ -113,6 +148,7 @@
     pointer-events: all;
     line-height: 1.5;
     background: #181b2daf;
+    color: #fff;
 
     &:first-child {
       border-top-left-radius: 0.2rem;
@@ -136,9 +172,9 @@
       }
     }
     &.red {
-      border: solid 1px var(--danger);
+      border: solid 1px var(--red);
       &.active {
-        background: var(--danger);
+        background: var(--red);
       }
     }
     &.yellow {
@@ -156,7 +192,7 @@
 
       &:hover {
         opacity: 1;
-        background: #181b2d7f;
+        background: var(--block-goggles-overlay);
       }
     }
 
@@ -166,7 +202,7 @@
         background: none;
 
         &:hover {
-          background: #181b2d7f;
+          background: var(--block-goggles-overlay);
         }
       }
     }
@@ -178,14 +214,14 @@
       background: none;
 
       &:hover {
-        background: #181b2d7f;
+        background: var(--block-goggles-overlay);
       }
     }
   }
 
   &.menu-open {
     pointer-events: all;
-    background: #181b2d7f;
+    background: var(--block-goggles-overlay);
   }
 
   &.small {
@@ -215,5 +251,28 @@
     .filter-tag {
       font-size: 0.5em;
     }
+  }
+}
+
+@property --fade-l {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --fade-r {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes goggles-fade-l {
+  to {
+    --fade-l: 1em;
+  }
+}
+@keyframes goggles-fade-r {
+  from {
+    --fade-r: 1em;
   }
 }

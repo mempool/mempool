@@ -52,6 +52,7 @@ module.exports = {
   getTxOut: 'gettxout', // bitcoind v0.7.0+
   getTxOutProof: 'gettxoutproof', // bitcoind v0.11.0+
   getTxOutSetInfo: 'gettxoutsetinfo', // bitcoind v0.7.0+
+  getTxSpendingPrevout: 'gettxspendingprevout',
   getUnconfirmedBalance: 'getunconfirmedbalance', // bitcoind v0.9.0+
   getWalletInfo: 'getwalletinfo', // bitcoind v0.9.2+
   help: 'help',
@@ -94,4 +95,5 @@ module.exports = {
   getTxoutSetinfo: 'gettxoutsetinfo',
   getIndexInfo: 'getindexinfo',
   testMempoolAccept: 'testmempoolaccept',
+  tweakFedPegScript: 'tweakfedpegscript',
 };

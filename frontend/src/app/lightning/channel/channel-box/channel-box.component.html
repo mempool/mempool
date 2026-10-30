@@ -39,13 +39,13 @@
               </span>
             </span>
             <ng-template [ngIf]="channel.base_fee_mtokens !== null">
-              <span class="badge badge-success" *ngIf="channel.base_fee_mtokens === 0; else nonZeroBaseFee"
+              <span class="badge bg-success" *ngIf="channel.base_fee_mtokens === 0; else nonZeroBaseFee"
                 i18n-ngbTooltip="lightning.zero-base-fee-tooltip"
                 ngbTooltip="This channel supports zero base fee routing"
                 placement="bottom" i18n="lightning.zero-base-fee">Zero base fee</span>
             </ng-template>
             <ng-template #nonZeroBaseFee>
-              <span class="badge badge-danger"
+              <span class="badge bg-danger"
                 i18n-ngbTooltip="lightning.non-zero-base-fee-tooltip"
                 ngbTooltip="This channel does not support zero base fee routing"
                 placement="bottom" i18n="lightning.non-zero-base-fee">Non-zero base fee</span>

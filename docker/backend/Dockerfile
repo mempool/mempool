@@ -7,8 +7,8 @@ WORKDIR /build
 
 RUN apt-get update && \
     apt-get install -y curl ca-certificates && \
-    curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
-    apt-get install -y nodejs=24.13.0-1nodesource1 build-essential python3 pkg-config && \
+    curl -fsSL https://deb.nodesource.com/setup_26.x | bash - && \
+    apt-get install -y nodejs=26.12.1-1nodesource1 build-essential python3 pkg-config && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -19,7 +19,7 @@ ENV PATH="/usr/local/cargo/bin:$PATH"
 COPY --from=backend . .
 COPY --from=rustgbt . ../rust/
 ENV FD=/build/rust-gbt
-RUN npm install --omit=dev --omit=optional
+RUN bash meta/scripts/check-install-scripts.sh && npm ci --omit=dev --omit=optional
 
 WORKDIR /build
 RUN npm run package
@@ -28,8 +28,8 @@ FROM rust:1.84-bookworm AS runtime
 
 RUN apt-get update && \
     apt-get install -y curl ca-certificates && \
-    curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
-    apt-get install -y nodejs=24.13.0-1nodesource1 && \
+    curl -fsSL https://deb.nodesource.com/setup_26.x | bash - && \
+    apt-get install -y nodejs=26.12.1-1nodesource1 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

@@ -1,5 +1,5 @@
 <ng-template [ngIf]="button" [ngIfElse]="btnLink">
-  <button [class]="class" type="button" [disabled]="text === ''" style="box-shadow: none;" (click)="copyText()">
+  <button [class]="class" type="button" [disabled]="text === ''" style="box-shadow: none;" (click)="copyText()" [attr.aria-label]="showMessage ? 'Copied to clipboard' : 'Copy to clipboard'" [attr.title]="showMessage ? 'Copied' : 'Copy'">
     <span style="position: relative;top: -2px;left: 1px;">
       <app-svg-images name="clippy" [width]="widths[size]" viewBox="0 0 1000 1000"></app-svg-images>
       <span *ngIf="showMessage" class="copied-message" style="top: 29px; left: -23.5px;">{{ copiedMessage }}</span>
@@ -9,7 +9,7 @@
 
 <ng-template #btnLink>
   <span style="position: relative;">
-    <button class="btn btn-sm btn-link pt-0 {{ leftPadding ? 'padding' : '' }}" style="box-shadow: none;" (click)="copyText()">
+    <button class="btn btn-sm btn-link pt-0 {{ leftPadding ? 'padding' : '' }}" style="box-shadow: none;" (click)="copyText()" tabindex="-1" type="button" [attr.aria-label]="showMessage ? 'Copied to clipboard' : 'Copy to clipboard'" [attr.title]="showMessage ? 'Copied' : 'Copy'">
       <app-svg-images name="clippy" [width]="widths[size]" viewBox="0 0 1000 1000"></app-svg-images>
     </button>
     <span *ngIf="showMessage" class="copied-message" style="top: 29px; left: -23.5px;">{{ copiedMessage }}</span>

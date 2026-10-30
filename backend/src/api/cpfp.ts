@@ -1,20 +1,30 @@
-import { Ancestor, CpfpCluster, CpfpInfo, CpfpSummary, MempoolTransactionExtended, TransactionExtended } from '../mempool.interfaces';
+import { Ancestor, CpfpCluster, CpfpInfo, MempoolTransactionExtended, TemplateAlgorithm, TransactionExtended } from '../mempool.interfaces';
 import { GraphTx, convertToGraphTx, expandRelativesGraph, initializeRelatives, makeBlockTemplate, mempoolComparator, removeAncestors, setAncestorScores } from './mini-miner';
 import memPool from './mempool';
 import { Acceleration } from './acceleration/acceleration';
+import { ClusterMempool } from '../cluster-mempool/cluster-mempool';
 
 const CPFP_UPDATE_INTERVAL = 60_000; // update CPFP info at most once per 60s per transaction
 const MAX_CLUSTER_ITERATIONS = 100;
 
-export function calculateFastBlockCpfp(height: number, transactions: MempoolTransactionExtended[], saveRelatives: boolean = false): CpfpSummary {
+type TransactionCpfpData = Partial<CpfpInfo & { cpfpDirty?: boolean, clusterId?: number, chunkIndex?: number }>;
+export interface BlockCpfpData {
+  txs: Record<string, TransactionCpfpData>,
+  clusters: CpfpCluster[];
+  version: number;
+}
+
+export function calculateFastBlockCpfp(height: number, transactions: MempoolTransactionExtended[], saveRelatives: boolean = false): BlockCpfpData {
   const clusters: CpfpCluster[] = []; // list of all cpfp clusters in this block
   const clusterMap: { [txid: string]: CpfpCluster } = {}; // map transactions to their cpfp cluster
   let clusterTxs: TransactionExtended[] = []; // working list of elements of the current cluster
   let ancestors: { [txid: string]: boolean } = {}; // working set of ancestors of the current cluster root
   const txMap: { [txid: string]: TransactionExtended } = {};
+  const cpfpData: Record<string, TransactionCpfpData> = {};
   // initialize the txMap
   for (const tx of transactions) {
     txMap[tx.txid] = tx;
+    cpfpData[tx.txid] = {};
   }
   // reverse pass to identify CPFP clusters
   for (let i = transactions.length - 1; i >= 0; i--) {
@@ -38,7 +48,9 @@ export function calculateFastBlockCpfp(height: number, transactions: MempoolTran
         clusters.push(cluster);
       }
       clusterTxs.forEach(tx => {
-        txMap[tx.txid].effectiveFeePerVsize = effectiveFeePerVsize;
+        cpfpData[tx.txid] = {
+          effectiveFeePerVsize
+        };
         if (cluster) {
           clusterMap[tx.txid] = cluster;
         }
@@ -54,17 +66,19 @@ export function calculateFastBlockCpfp(height: number, transactions: MempoolTran
   }
   // forward pass to enforce ancestor rate caps
   for (const tx of transactions) {
-    let minAncestorRate = tx.effectiveFeePerVsize;
+    const txRate = cpfpData[tx.txid]?.effectiveFeePerVsize ?? tx.effectiveFeePerVsize;
+    let minAncestorRate = txRate;
     for (const vin of tx.vin) {
-      if (txMap[vin.txid]?.effectiveFeePerVsize) {
-        minAncestorRate = Math.min(minAncestorRate, txMap[vin.txid].effectiveFeePerVsize);
+      const vinRate = cpfpData[vin.txid]?.effectiveFeePerVsize ?? txMap[vin.txid]?.effectiveFeePerVsize;
+      if (vinRate) {
+        minAncestorRate = Math.min(minAncestorRate, vinRate);
       }
     }
     // check rounded values to skip cases with almost identical fees
     const roundedMinAncestorRate = Math.ceil(minAncestorRate);
-    const roundedEffectiveFeeRate = Math.floor(tx.effectiveFeePerVsize);
+    const roundedEffectiveFeeRate = Math.floor(txRate);
     if (roundedMinAncestorRate < roundedEffectiveFeeRate) {
-      tx.effectiveFeePerVsize = minAncestorRate;
+      cpfpData[tx.txid].effectiveFeePerVsize = minAncestorRate;
       if (!clusterMap[tx.txid]) {
         // add a single-tx cluster to record the dependent rate
         const cluster = {
@@ -84,23 +98,25 @@ export function calculateFastBlockCpfp(height: number, transactions: MempoolTran
   if (saveRelatives) {
     for (const cluster of clusters) {
       cluster.txs.forEach((member, index) => {
-        txMap[member.txid].descendants = cluster.txs.slice(0, index).reverse();
-        txMap[member.txid].ancestors = cluster.txs.slice(index + 1).reverse();
-        txMap[member.txid].effectiveFeePerVsize = cluster.effectiveFeePerVsize;
+        cpfpData[member.txid].descendants = cluster.txs.slice(0, index).reverse();
+        cpfpData[member.txid].ancestors = cluster.txs.slice(index + 1).reverse();
+        cpfpData[member.txid].effectiveFeePerVsize = cluster.effectiveFeePerVsize;
       });
     }
   }
   return {
-    transactions,
+    txs: cpfpData,
     clusters,
     version: 1,
   };
 }
 
-export function calculateGoodBlockCpfp(height: number, transactions: MempoolTransactionExtended[], accelerations: Acceleration[]): CpfpSummary {
+export function calculateGoodBlockCpfp(height: number, transactions: MempoolTransactionExtended[], accelerations: Acceleration[]): BlockCpfpData {
   const txMap: { [txid: string]: MempoolTransactionExtended } = {};
+  const cpfpData: Record<string, TransactionCpfpData> = {};
   for (const tx of transactions) {
     txMap[tx.txid] = tx;
+    cpfpData[tx.txid] = {};
   }
   const template = makeBlockTemplate(transactions, accelerations, 1, Infinity, Infinity);
   const clusters = new Map<string, string[]>();
@@ -110,15 +126,15 @@ export function calculateGoodBlockCpfp(height: number, transactions: MempoolTran
     if (cluster.length > 1 && root && !clusters.has(root)) {
       clusters.set(root, cluster);
     }
-    txMap[tx.txid].effectiveFeePerVsize = tx.effectiveFeePerVsize;
+    cpfpData[tx.txid].effectiveFeePerVsize = tx.effectiveFeePerVsize;
   }
 
   const clusterArray: CpfpCluster[] = [];
 
   for (const cluster of clusters.values()) {
     for (const txid of cluster) {
-      const mempoolTx = txMap[txid];
-      if (mempoolTx) {
+      const mempoolTxCpfpData = cpfpData[txid];
+      if (mempoolTxCpfpData) {
         const ancestors: Ancestor[] = [];
         const descendants: Ancestor[] = [];
         let matched = false;
@@ -138,10 +154,10 @@ export function calculateGoodBlockCpfp(height: number, transactions: MempoolTran
             }
           }
         });
-        if (mempoolTx.ancestors?.length !== ancestors.length || mempoolTx.descendants?.length !== descendants.length) {
-          mempoolTx.cpfpDirty = true;
+        if (mempoolTxCpfpData.ancestors?.length !== ancestors.length || mempoolTxCpfpData.descendants?.length !== descendants.length) {
+          mempoolTxCpfpData.cpfpDirty = true;
         }
-        Object.assign(mempoolTx, { ancestors, descendants, bestDescendant: null, cpfpChecked: true });
+        Object.assign(mempoolTxCpfpData, { ancestors, descendants, bestDescendant: null, cpfpChecked: true });
       }
     }
     const root = cluster[cluster.length - 1];
@@ -153,14 +169,72 @@ export function calculateGoodBlockCpfp(height: number, transactions: MempoolTran
         fee: txMap[txid].fee,
         weight: (txMap[txid].adjustedVsize * 4) || txMap[txid].weight,
       })),
-      effectiveFeePerVsize: txMap[root].effectiveFeePerVsize,
+      effectiveFeePerVsize: cpfpData[root].effectiveFeePerVsize ?? txMap[root].effectiveFeePerVsize,
     });
   }
 
   return {
-    transactions: transactions.map(tx => txMap[tx.txid]),
+    txs: cpfpData,
     clusters: clusterArray,
     version: 2,
+  };
+}
+
+export function calculateClusterMempoolBlockCpfp(height: number, transactions: MempoolTransactionExtended[], accelerations: Acceleration[]): BlockCpfpData {
+  const txMap: { [txid: string]: MempoolTransactionExtended } = {};
+  const cpfpData: Record<string, TransactionCpfpData> = {};
+  for (const tx of transactions) {
+    txMap[tx.txid] = tx;
+    cpfpData[tx.txid] = {};
+  }
+
+  const accelMap: { [txid: string]: { feeDelta: number } } = {};
+  for (const acc of accelerations) {
+    accelMap[acc.txid] = { feeDelta: acc.max_bid };
+  }
+
+  const cm = new ClusterMempool(txMap, accelMap, false, 25000);
+
+  const seenClusters = new Set<number>();
+  const clusters: CpfpCluster[] = [];
+
+  for (const txid in cpfpData) {
+    const txCpfpData = cm.getCpfpDataForTx(txid);
+    if (!txCpfpData) {
+      continue;
+    }
+    cpfpData[txid].effectiveFeePerVsize = txCpfpData.effectiveFeePerVsize;
+    cpfpData[txid].clusterId = txCpfpData.clusterId;
+    cpfpData[txid].chunkIndex = txCpfpData.chunkIndex;
+    cpfpData[txid].ancestors = txCpfpData.ancestors;
+    cpfpData[txid].descendants = txCpfpData.descendants;
+    if (txCpfpData.clusterId !== undefined && !seenClusters.has(txCpfpData.clusterId)) {
+      seenClusters.add(txCpfpData.clusterId);
+
+      const clusterData = cm.getCluster(txCpfpData.clusterId);
+      if (clusterData && clusterData.txs.length > 1) {
+        let totalFee = 0;
+        let totalWeight = 0;
+        for (const t of clusterData.txs) {
+          totalFee += t.fee;
+          totalWeight += t.weight;
+        }
+        clusters.push({
+          root: clusterData.txs[0].txid,
+          height,
+          txs: clusterData.txs.map(t => ({ txid: t.txid, weight: t.weight, fee: t.fee })),
+          effectiveFeePerVsize: totalFee / (totalWeight / 4),
+          templateAlgorithm: TemplateAlgorithm.clusterMempool,
+          clusterData,
+        });
+      }
+    }
+  }
+
+  return {
+    txs: cpfpData,
+    clusters,
+    version: 3,
   };
 }
 

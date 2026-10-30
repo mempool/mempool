@@ -167,7 +167,7 @@ export class FeeDistributionGraphComponent implements OnInit, OnChanges, OnDestr
         label: {
           show: true,
           position: 'top',
-          color: '#ffffff',
+          color: 'var(--fg)',
           textShadowBlur: 0,
           fontSize: this.smallScreen ? 10 : 12,
           formatter: (label: { data: number[] }): string => {

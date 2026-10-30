@@ -29,7 +29,7 @@
   <ng-template #pegout>
     <ng-container *ngIf="line.pegout; else normal">
       <p *ngIf="!isConnector">Peg Out</p>
-      <p *ngIf="line.displayValue != null"><app-amount [satoshis]="line.displayValue"></app-amount></p>
+      <p *ngIf="line.displayValue != null"><app-amount [satoshis]="line.displayValue" [unitStyle]="'color: #ffffff66'"></app-amount></p>
       <p class="address">
         <app-truncate [text]="line.pegout"></app-truncate>
       </p>
@@ -83,13 +83,18 @@
                 </ng-template>
               </ng-container>
             </p>
-            <p *ngSwitchCase="'output'"><span i18n="transaction.input">Input</span>&nbsp; #{{ line.vin }}
+            <p *ngSwitchCase="'output'">
+              @if (line.vin !== undefined) {
+                <span i18n="transaction.input">Input</span>&nbsp; #{{ line.vin }}
+              }
               <ng-container *ngIf="line.blockHeight">
                 <ng-container *ngIf="line?.status?.block_height; else noBlockHeight">
                   <ng-container *ngTemplateOutlet="nBlocksLater; context:{n: line?.status?.block_height - line.blockHeight, connector: true}"></ng-container>
                 </ng-container>
                 <ng-template #noBlockHeight>
-                  <ng-container *ngTemplateOutlet="nBlocksLater; context:{n: chainTip + 1 - line.blockHeight, connector: true}"></ng-container>
+                  @if (line?.status?.confirmed !== true) {
+                    <ng-container *ngTemplateOutlet="nBlocksLater; context:{n: chainTip + 1 - line.blockHeight, connector: true}"></ng-container>
+                  }
                 </ng-template>
               </ng-container>
             </p>
@@ -106,7 +111,7 @@
           </ng-template>
         </ng-template>
         <ng-template #defaultOutput>
-          <app-amount [blockConversion]="isConnector ? blockConversions[line?.status?.block_time] : blockConversions[line?.timestamp]" [satoshis]="line.displayValue" [forceBlockConversion]="isConnector && line?.status?.block_time"></app-amount>
+          <app-amount [blockConversion]="isConnector ? blockConversions[line?.status?.block_time] : blockConversions[line?.timestamp]" [satoshis]="line.displayValue" [forceBlockConversion]="isConnector && line?.status?.block_time" [unitStyle]="'color: #ffffff66'"></app-amount>
         </ng-template>
       </p>
       <p *ngIf="line.type !== 'fee' && line.address" class="address">

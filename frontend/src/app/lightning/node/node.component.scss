@@ -33,6 +33,15 @@
 
 #inputGroupFileAddon04 {
   position: relative;
+  border-start-start-radius: var(--bs-border-radius);
+  border-start-end-radius: var(--bs-border-radius);
+  border-end-start-radius: var(--bs-border-radius);
+  border-end-end-radius: var(--bs-border-radius);
+}
+
+.input-group > .form-control {
+  border-start-end-radius: var(--bs-border-radius) !important;
+  border-end-end-radius: var(--bs-border-radius) !important;
 }
 
 app-fiat {

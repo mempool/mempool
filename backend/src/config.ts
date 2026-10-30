@@ -34,6 +34,8 @@ interface IConfig {
     POOLS_JSON_TREE_URL: string,
     POOLS_UPDATE_DELAY: number,
     AUDIT: boolean;
+    CLUSTER_MEMPOOL: boolean;
+    CLUSTER_MEMPOOL_INDEXING: boolean;
     RUST_GBT: boolean;
     LIMIT_GBT: boolean;
     CPFP_INDEXING: boolean;
@@ -43,6 +45,11 @@ interface IConfig {
     ALLOW_UNREACHABLE: boolean;
     PRICE_UPDATES_PER_HOUR: number;
     MAX_TRACKED_ADDRESSES: number;
+    MAX_BUFFERED_AMOUNT: number;
+    MAX_MESSAGE_SIZE: number;
+    MAX_TRACKED_TXS: number;
+    MSG_RATE_LIMIT: number;
+    MSG_RATE_WINDOW: number;
   };
   ESPLORA: {
     REST_API_URL: string;
@@ -205,6 +212,8 @@ const defaults: IConfig = {
     'POOLS_JSON_TREE_URL': 'https://api.github.com/repos/mempool/mining-pools/git/trees/master',
     'POOLS_UPDATE_DELAY': 604800, // in seconds, default is one week
     'AUDIT': false,
+    'CLUSTER_MEMPOOL': false,
+    'CLUSTER_MEMPOOL_INDEXING': false,
     'RUST_GBT': true,
     'LIMIT_GBT': false,
     'CPFP_INDEXING': false,
@@ -214,6 +223,11 @@ const defaults: IConfig = {
     'ALLOW_UNREACHABLE': true,
     'PRICE_UPDATES_PER_HOUR': 1,
     'MAX_TRACKED_ADDRESSES': 1,
+    'MAX_BUFFERED_AMOUNT': 10_000_000,
+    'MAX_MESSAGE_SIZE': 50_000,
+    'MAX_TRACKED_TXS': 100,
+    'MSG_RATE_LIMIT': 100,
+    'MSG_RATE_WINDOW': 10_000,
   },
   'ESPLORA': {
     'REST_API_URL': 'http://127.0.0.1:3000',

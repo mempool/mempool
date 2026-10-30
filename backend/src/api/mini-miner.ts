@@ -110,8 +110,8 @@ export function convertToGraphTx(tx: MempoolTransactionExtended, spendMap?: Map<
       base: tx.fee || 0,
       ancestor: tx.fee || 0,
     },
-    depends: (tx.vin.map(vin => vin.txid).filter(depend => depend) as string[]),
-    spentby: spendMap ? (tx.vout.map((vout, index) => { const spend = spendMap.get(`${tx.txid}:${index}`); return (spend?.['txid'] || spend); }).filter(spent => spent) as string[]) : [],
+    depends: Array.from(new Set(tx.vin.map(vin => vin.txid).filter(depend => depend) as string[])),
+    spentby: spendMap ? Array.from(new Set(tx.vout.map((vout, index) => { const spend = spendMap.get(`${tx.txid}:${index}`); return (spend?.['txid'] || spend); }).filter(spent => spent) as string[])) : [],
 
     ancestorcount: 1,
     ancestorsize: Math.max(tx.sigops * 5, Math.ceil(tx.weight / 4)),
@@ -127,6 +127,7 @@ export function convertToGraphTx(tx: MempoolTransactionExtended, spendMap?: Map<
  */
 export function expandRelativesGraph(mempool: { [txid: string]: MempoolTransactionExtended }, ancestors: Map<string, GraphTx>, spendMap: Map<string, MempoolTransactionExtended>): Map<string, GraphTx> {
   const relatives: Map<string, GraphTx> = new Map();
+  const converted: Set<string> = new Set();
   const stack: GraphTx[] = Array.from(ancestors.values());
   while (stack.length > 0) {
     if (relatives.size > MAX_RELATIVE_GRAPH_SIZE) {
@@ -140,7 +141,7 @@ export function expandRelativesGraph(mempool: { [txid: string]: MempoolTransacti
     relatives.set(nextTx.txid, nextTx);
 
     for (const relativeTxid of [...nextTx.depends, ...nextTx.spentby]) {
-      if (relatives.has(relativeTxid)) {
+      if (relatives.has(relativeTxid) || converted.has(relativeTxid)) {
         // already processed this tx
         continue;
       }
@@ -148,6 +149,7 @@ export function expandRelativesGraph(mempool: { [txid: string]: MempoolTransacti
       if (!ancestorTx && relativeTxid in mempool) {
         const mempoolTx = mempool[relativeTxid];
         ancestorTx = convertToGraphTx(mempoolTx, spendMap);
+        converted.add(relativeTxid);
       }
       if (ancestorTx) {
         stack.push(ancestorTx);

@@ -9,11 +9,11 @@ COPY . .
 RUN apt-get update
 RUN apt-get install -y build-essential rsync
 RUN cp mempool-frontend-config.sample.json mempool-frontend-config.json
-RUN npm install --omit=dev --omit=optional
+RUN bash meta/scripts/check-install-scripts.sh && npm ci --omit=dev --omit=optional
 
 RUN npm run build
 
-FROM nginx:1.27.0-alpine
+FROM nginx:1.30.1-alpine
 
 WORKDIR /patch
 
@@ -21,6 +21,7 @@ COPY --from=builder /build/entrypoint.sh .
 COPY --from=builder /build/wait-for .
 COPY --from=builder /build/dist/mempool /var/www/mempool
 COPY --from=builder /build/nginx.conf /etc/nginx/
+COPY --from=builder /build/http-basic.conf /etc/nginx/
 COPY --from=builder /build/nginx-mempool.conf /etc/nginx/conf.d/
 
 RUN chmod +x /patch/entrypoint.sh
@@ -30,6 +31,7 @@ RUN chown -R 1000:1000 /patch && chmod -R 755 /patch && \
         chown -R 1000:1000 /var/cache/nginx && \
         chown -R 1000:1000 /var/log/nginx && \
         chown -R 1000:1000 /etc/nginx/nginx.conf && \
+        chown -R 1000:1000 /etc/nginx/http-basic.conf && \
         chown -R 1000:1000 /etc/nginx/conf.d && \
         chown -R 1000:1000 /var/www/mempool
 

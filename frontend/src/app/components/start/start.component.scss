@@ -55,6 +55,14 @@
   &.time-rtl .reset-scroll {
     left: 10px;
   }
+
+  &:hover {
+    cursor: grab;
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
 }
 
 .warning-label {
