@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   project-automation:
+    if: github.event_name == 'issues' || github.event.pull_request.head.repo.full_name == github.repository
     uses: mempool/.github/.github/workflows/project-board-automation.yml@1b41bb42b0876d8469dc5c5878711aeffb678266 # master
     with:
       project-number: 8
