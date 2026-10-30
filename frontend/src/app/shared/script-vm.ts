@@ -586,7 +586,11 @@ export function buildProgram(vin: Vin): ScriptProgram | null {
       }
       redeem.label = pushLabels.redeemScript;
       spk[1].label = pushLabels.scriptHash;
-      const rest = witness.length ? segwitOps(redeem.data, witness, 'redeemscript') : parseScript(redeem.data, 'redeemscript');
+      // decided by the redeem script's shape, not the witness: a witness program is nested segwit even with an empty
+      // witness (segwitOps rejects future versions, which run no script, and v0 without its witness items)
+      const rest = isWitnessProgram(redeem.data)
+        ? segwitOps(redeem.data, witness, 'redeemscript')
+        : witness.length ? null : parseScript(redeem.data, 'redeemscript');
       return rest && labelPushes({ ops: [...scriptsig, ...spk, ...rest], tapscript: false, emptyRedeem: !rest.length || undefined });
     }
     case 'v0_p2wpkh':
