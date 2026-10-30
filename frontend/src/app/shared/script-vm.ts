@@ -28,7 +28,7 @@ export interface ScriptProgram {
 export interface OpContext {
   stack: string[];
   alt: string[];
-  exec: boolean[];
+  exec: ConditionStack;
   op: ScriptOp;
   executing: boolean;
   tapscript: boolean;
@@ -133,6 +133,57 @@ function hashHex(fn: (data: Uint8Array) => Uint8Array, hex: string): string {
   return uint8ArrayToHexString(fn(hexStringToUint8Array(hex)));
 }
 
+// The IF / NOTIF / ELSE / ENDIF condition stack, like Bitcoin Core's ConditionStack: only its size and the position of
+// its first false are kept, so "is every open branch on?" is one comparison instead of a scan of every open IF.
+// A list scanned on each op made deeply nested scripts (tens of thousands of open IFs) take seconds to run
+class ConditionStack {
+  private size = 0;
+  private firstFalse = -1; // -1: no false entry
+
+  get length(): number {
+    return this.size;
+  }
+
+  // every open IF is on: the op runs
+  get allTrue(): boolean {
+    return this.firstFalse === -1;
+  }
+
+  // every open IF except the innermost is on: whether an ELSE / ENDIF itself sits in a branch that runs
+  get outerTrue(): boolean {
+    return this.firstFalse === -1 || this.firstFalse === this.size - 1;
+  }
+
+  push(value: boolean): void {
+    if (!value && this.firstFalse === -1) {
+      this.firstFalse = this.size;
+    }
+    this.size++;
+  }
+
+  pop(): void {
+    if (!this.size) {
+      throw new ScriptError(errors.unbalanced);
+    }
+    this.size--;
+    if (this.firstFalse === this.size) {
+      this.firstFalse = -1;
+    }
+  }
+
+  // OP_ELSE. With a false below the innermost IF, the innermost's value doesn't matter, so nothing changes
+  toggleTop(): void {
+    if (!this.size) {
+      throw new ScriptError(errors.unbalanced);
+    }
+    if (this.firstFalse === -1) {
+      this.firstFalse = this.size - 1;
+    } else if (this.firstFalse === this.size - 1) {
+      this.firstFalse = -1;
+    }
+  }
+}
+
 function verify(value: string): void {
   if (!castToBool(value)) {
     throw new ScriptError(errors.verify);
@@ -229,20 +280,10 @@ export const OPCODES: Record<number, OpcodeDef> = {
   0x66: { name: 'OP_VERNOTIF', category: 'disabled', reads: 0, description: describe.disabled },
   0x67: { name: 'OP_ELSE', category: 'flow', reads: 0, flow: true,
     description: $localize`:@@script-debugger.op.else:Switches between executing and not executing the opcodes until ENDIF`,
-    run: ({ exec }) => {
-      if (!exec.length) {
-        throw new ScriptError(errors.unbalanced);
-      }
-      exec[exec.length - 1] = !exec[exec.length - 1];
-    } },
+    run: ({ exec }) => exec.toggleTop() },
   0x68: { name: 'OP_ENDIF', category: 'flow', reads: 0, flow: true,
     description: $localize`:@@script-debugger.op.endif:Ends an IF / ELSE block`,
-    run: ({ exec }) => {
-      if (!exec.length) {
-        throw new ScriptError(errors.unbalanced);
-      }
-      exec.pop();
-    } },
+    run: ({ exec }) => exec.pop() },
   0x69: { name: 'OP_VERIFY', category: 'compare', reads: 1,
     description: $localize`:@@script-debugger.op.verify:Pops the top item. The transaction is invalid if it is false`,
     run: ({ stack }) => verify(pop(stack)) },
@@ -661,7 +702,7 @@ export class ScriptVM {
     const steps: Step[] = [];
     let stack: string[] = [];
     let alt: string[] = [];
-    const exec: boolean[] = [];
+    const exec = new ConditionStack();
     let afterScriptSig: string[] = [];
     const opSuccessAt = tapscript ? ops.findIndex(op => op.code !== null && isOpSuccess(op.code)) : -1;
 
@@ -729,7 +770,7 @@ export class ScriptVM {
           stack.push(op.data);
         } else {
           const def = OPCODES[op.code];
-          const executing = exec.every(Boolean);
+          const executing = exec.allTrue;
           if (def.category === 'disabled') {
             throw new ScriptError(errors.disabled);
           }
@@ -741,8 +782,8 @@ export class ScriptVM {
               step.reads = readsOf(def, stack);
             }
             // a nested IF / ELSE / ENDIF inside a branch that's already off only tracks nesting: show it as not executed
-            const outer = op.code === 0x67 || op.code === 0x68 ? exec.slice(0, -1) : exec;
-            if (def.flow && !outer.every(Boolean)) {
+            const outerOn = op.code === 0x67 || op.code === 0x68 ? exec.outerTrue : executing;
+            if (def.flow && !outerOn) {
               step.notExecuted = true;
             }
             def.run({ stack, alt, exec, op, executing, tapscript });
