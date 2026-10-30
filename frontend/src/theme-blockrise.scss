@@ -1,0 +1,152 @@
+@use "sass:color";
+
+/* Blockrise brand palette */
+$dark-green: #12211F;
+$black: #0F1719;
+$aqua-deep: #01554A;
+$mid-green: #4A877F;
+$light-teal: #679993;
+$keppel: #00C1A8;
+$castle: #DAD3C9;
+$sunrise: #ED9121;
+
+/* Theme */
+$bg: $dark-green;
+$active-bg: $black;
+$hover-bg: color.mix($aqua-deep, $dark-green, 15%);
+$fg: #fff;
+$nav-bg: $black;
+$title-fg: $castle;
+
+$taproot: #eba814;
+$taproot-light: #d5a90a;
+$taproot-dark: #9d7c05;
+
+/* Bootstrap */
+$body-bg: $bg;
+$body-color: $fg;
+$gray-800: $bg;
+$gray-700: $fg;
+
+$nav-tabs-link-active-bg: $active-bg;
+
+$primary: $aqua-deep;
+$secondary: color.mix($mid-green, $dark-green, 35%);
+$tertiary: $sunrise;
+$success: #0aab2f;
+$info: $keppel;
+
+$h5-font-size: 1.15rem !default;
+
+$pagination-bg: $body-bg;
+$pagination-border-color: $gray-800;
+$pagination-disabled-bg:           $fg;
+$pagination-disabled-border-color: $bg;
+$pagination-active-color:          $fg;
+$pagination-active-bg:             $tertiary;
+$pagination-hover-bg:              $hover-bg;
+$pagination-hover-border-color:     $bg;
+$pagination-disabled-bg:          $bg;
+
+$form-select-indicator-color: $fg;
+
+.input-group-text {
+  background-color: color.mix($aqua-deep, $dark-green, 25%) !important;
+  border: 1px solid color.mix($mid-green, $dark-green, 30%) !important;
+}
+
+$link-color:                $info;
+$link-decoration:           none !default;
+$link-hover-color:          color.adjust($link-color, $lightness: -15%) !default;
+$link-hover-decoration:     underline !default;
+
+$dropdown-bg: $bg;
+$dropdown-link-color: $fg;
+
+$dropdown-link-hover-color: $fg;
+$dropdown-link-hover-bg: $active-bg;
+
+$dropdown-link-active-color: $fg;
+$dropdown-link-active-bg: $active-bg;
+
+$box-bg: color.mix($aqua-deep, $dark-green, 22%);
+
+:root {
+  --bg: #{$bg};
+  --active-bg: #{$active-bg};
+  --hover-bg: #{$hover-bg};
+  --fg: #{$fg};
+  --nav-bg: #{$nav-bg};
+  --title-fg: #{$title-fg};
+
+  --primary: #{$primary};
+  --secondary: #{$secondary};
+  --tertiary: #{$tertiary};
+  --success: #{$success};
+  --info: #{$info};
+  --link-color: #{$link-color};
+  --link-hover-color: #{$link-hover-color};
+  --icon: #{$castle};
+  --skeleton-bg: #{color.mix($mid-green, $dark-green, 30%)};
+  --skeleton-bg-light: #{$light-teal};
+
+  --box-bg: #{$box-bg};
+  --stat-box-bg: #{$black};
+  --alert-bg: #{$aqua-deep};
+  --transparent-fg: #ffffffbb;
+  --fade-out-box-bg-start: #{rgba($box-bg, 0)};
+  --fade-out-box-bg-end: #{rgba($box-bg, 1)};
+  --opacity: 0.9;
+
+  --testnet: #1d486f;
+  --signet: #6f1d5d;
+  --regtest: #7d7d7d;
+  --liquid: #116761;
+  --liquidtestnet: #494a4a;
+
+  --mainnet-alt: #{$aqua-deep};
+  --testnet-alt: #183550;
+  --signet-alt: #471850;
+  --regtest-alt: #4a4a4a;
+  --liquidtestnet-alt: #272e46;
+
+  --taproot: #{$taproot};
+  --taproot-light: #{$taproot-light};
+  --taproot-dark: #{$taproot-dark};
+
+  --green: #83fd00;
+  --red: #ff3d00;
+  --yellow: #fff000;
+  --grey: #8a9492;
+  --tooltip-grey: #b7bcbb;
+  --orange: #ff9f00;
+  --pink: #e83e8c;
+
+  --search-button: #{$aqua-deep};
+  --search-button-border: #{$aqua-deep};
+  --search-button-focus: #{$mid-green};
+  --search-button-shadow: #{rgba($keppel, 0.5)};
+}
+
+.nav-item.active, .btn-purple {
+  --icon: white;
+}
+
+.btn-purple:not(:disabled):not(.disabled):active, .btn-purple:not(:disabled):not(.disabled).active, .show > .btn-purple.dropdown-toggle {
+  color: #fff;
+  background-color: var(--search-button);
+  border-color: var(--search-button-border);
+}
+
+.btn-purple:focus, .btn-purple.focus {
+  color: #fff;
+  background-color: var(--search-button-focus);
+  border-color: var(--search-button);
+  box-shadow: 0 0 0 0.2rem var(--search-button-shadow);
+}
+
+.btn-purple:hover {
+  color: #fff;
+  background-color: var(--search-button-focus);
+  border-color: var(--search-button);
+}
