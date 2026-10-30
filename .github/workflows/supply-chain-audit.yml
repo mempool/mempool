@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   backend:
-    if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
+    if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !(startsWith(github.head_ref, 'ops/') && github.event.pull_request.head.repo.full_name == github.repository)) || github.event_name == 'push'"
     runs-on: mempool-ci
     name: Backend install-script audit
     steps:
@@ -35,7 +35,7 @@ jobs:
         run: bash backend/meta/scripts/safe-install.sh
 
   frontend:
-    if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !contains(github.head_ref, 'ops/')) || github.event_name == 'push'"
+    if: "(github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ops') && !(startsWith(github.head_ref, 'ops/') && github.event.pull_request.head.repo.full_name == github.repository)) || github.event_name == 'push'"
     runs-on: mempool-ci
     name: Frontend install-script audit
     steps:
