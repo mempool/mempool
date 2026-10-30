@@ -556,15 +556,23 @@ function labelPushes(program: ScriptProgram): ScriptProgram {
   return program;
 }
 
+const P2WPKH = /^0014[0-9a-f]{40}$/;
+const P2WSH = /^0020[0-9a-f]{64}$/;
+
+// whether segwitOps builds this witness program
+function hasSegwitScript(program: string, witness: string[]): boolean {
+  return (P2WPKH.test(program) && witness.length === 2) || (P2WSH.test(program) && witness.length > 0);
+}
+
 // witness program (0014<hash> / 0020<hash>) from a native scriptPubKey or a nested P2SH redeem script
 function segwitOps(program: string, witness: string[], inner: ScriptSection): ScriptOp[] | null {
-  if (/^0014[0-9a-f]{40}$/.test(program) && witness.length === 2) {
+  if (P2WPKH.test(program) && witness.length === 2) {
     const template = parseScript('76a914' + program.slice(4) + '88ac', 'template');
     template[2].inner = inner;
     template[2].label = pushLabels.publicKeyHash;
     return [...witness.map(item => witnessOp(item)), ...template];
   }
-  if (/^0020[0-9a-f]{64}$/.test(program) && witness.length) {
+  if (P2WSH.test(program) && witness.length) {
     return [
       ...witness.slice(0, -1).map(item => witnessOp(item)),
       ...parseScript(witness[witness.length - 1], 'witnessscript'),
@@ -653,8 +661,39 @@ export function buildProgram(vin: Vin): ScriptProgram | null {
   return null;
 }
 
+// buildProgram's cases from the input's shape alone, without parsing any script, so the transaction page can mark every
+// debuggable input cheaply; the program is built only for the input opened in the debugger
 export function isDebuggable(vin: Vin): boolean {
-  return buildProgram(vin) !== null;
+  const prevout = vin.prevout;
+  if (vin.is_coinbase || vin.is_pegin || !prevout) {
+    return false;
+  }
+  const witness = vin.witness || [];
+  switch (prevout.scriptpubkey_type) {
+    case 'unknown':
+    case 'nonstandard':
+      return !isWitnessProgram(prevout.scriptpubkey);
+    case 'p2pk':
+    case 'multisig':
+    case 'p2pkh':
+      return true;
+    case 'p2sh': {
+      // nested segwit's scriptSig is a single push of a witness program; otherwise BIP16 makes it pushes only, the last
+      // being the redeem script, and a non-segwit redeem script can't have a witness
+      const scriptsig = vin.scriptsig || '';
+      const pushed = scriptsig.slice(2);
+      if (parseInt(scriptsig.slice(0, 2), 16) * 2 === pushed.length && isWitnessProgram(pushed)) {
+        return hasSegwitScript(pushed, witness);
+      }
+      return !!scriptsig && !witness.length;
+    }
+    case 'v0_p2wpkh':
+    case 'v0_p2wsh':
+      return hasSegwitScript(prevout.scriptpubkey, witness);
+    case 'v1_p2tr':
+      return (vin.taprootInfo ?? parseTaproot(witness))?.scriptPath?.leafVersion === 0xc0;
+  }
+  return false;
 }
 
 // a P2SH or nested segwit handover: the script after ScriptPubKey runs on a new stack.
