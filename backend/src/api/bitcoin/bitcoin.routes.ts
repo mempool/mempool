@@ -73,9 +73,10 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'internal/blocks/definition/current', this.getCurrentBlockDefinitionHash)
       .get(config.MEMPOOL.API_URL_PREFIX + 'internal/blocks/:definitionHash', this.getBlocksByDefinitionHash)
 
-      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval/', this.getTxCountPerFlagValue)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval/:bucketSize', this.getTxCountPerFlagValue)
-      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval/:bucketSize/:op/:mask', this.getTxCountPerFlagValue)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval/', this.getTxCountPerFlagValue.bind(this))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval/:bucketSize', this.getTxCountPerFlagValue.bind(this))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval/:bucketSize/script-types', this.$getScriptTypeTxCounts.bind(this))
+      .get(config.MEMPOOL.API_URL_PREFIX + 'goggles/:interval/:bucketSize/:op/:mask', this.getTxCountPerFlagValue.bind(this))
       ;
 
       if (config.MEMPOOL.BACKEND !== 'esplora') {
@@ -1138,31 +1139,50 @@ class BitcoinRoutes {
     }
   }
 
+  /**
+   * Validates the goggles interval and bucket size params and resolves the indexed range to query.
+   * Sends the error response and returns null when the request can't be served.
+   *
+   * @asyncUnsafe */
+  private async $resolveFlagValuesRange(req: Request, res: Response): Promise<{ bucketSize: number, startHeight: number, totalCount: number, expires: Date } | null> {
+    if (!Common.blocksSummariesIndexingEnabled()) {
+      handleError(req, res, 404, `Block summaries indexing is required for this API`);
+      return null;
+    }
+
+    const presets = INTERVAL_PRESETS;
+    const intervals = Object.keys(presets);
+    const interval = req.params.interval;
+
+    if (!intervals.includes(interval)) {
+      handleError(req, res, 400, `Invalid interval, must be one of ${intervals.toString()}`);
+      return null;
+    }
+
+    const validBucketSizes = presets[interval].bucketSizes;
+    const rawBucketSize = req.params.bucketSize;
+    const bucketSize: number = rawBucketSize === undefined ? validBucketSizes[0] : Number(rawBucketSize);
+    if (!Number.isInteger(bucketSize) || !validBucketSizes.includes(bucketSize)) {
+      handleError(req, res, 400, `Invalid bucket size, must be ${validBucketSizes.toString()}`);
+      return null;
+    }
+
+    const { tip, tail }  = await FlagValueRepository.$getTipAndTailIndexedByBucketSize(bucketSize) || { tip: undefined, tail: undefined };
+
+    if (tip === undefined || tail === undefined) {
+      handleError(req, res, 400, `Failed to get latest indexed flag values for ${interval}`);
+      return null;
+    }
+
+    const totalCount = await FlagValueRepository.$getTotalBlocksIndexedByBucketSize(bucketSize === 1 ? 1008 : bucketSize) ?? tip - tail;
+    const startHeight = presets[interval].retentionSpan !== -1 ? (tip - presets[interval].retentionSpan) : -1;
+    const expires = new Date(Date.now() + 1000 * 3600 * 24 * (presets[interval].bucketSizes[0] / 144));
+    return { bucketSize, startHeight, totalCount, expires };
+  }
+
   private async getTxCountPerFlagValue(req: Request, res: Response) {
     try {
-      if (!Common.blocksSummariesIndexingEnabled()) {
-        handleError(req, res, 404, `Block summaries indexing is required for this API`);
-        return;
-      }
-
-      const presets = INTERVAL_PRESETS;
       const operations = ['and', 'or', 'nor', undefined];
-      const intervals = Object.keys(presets);
-      const interval = req.params.interval;
-
-      if (!intervals.includes(interval)) {
-        handleError(req, res, 400, `Invalid interval, must be one of ${intervals.toString()}`);
-        return;
-      }
-
-      const validBucketSizes = presets[interval].bucketSizes;
-      const rawBucketSize = req.params.bucketSize;
-      const bucketSize: number = rawBucketSize === undefined ? validBucketSizes[0] : Number(rawBucketSize);
-      if (!Number.isInteger(bucketSize) || !validBucketSizes.includes(bucketSize)) {
-        handleError(req, res, 400, `Invalid bucket size, must be ${validBucketSizes.toString()}`);
-        return;
-      }
-
       if (!operations.includes(req.params.op)) {
         handleError(req, res, 400, `Invalid operation, must be 'and', 'or', 'nor' or undefined.`);
         return;
@@ -1176,22 +1196,33 @@ class BitcoinRoutes {
       const op = (req.params.op) as 'and' | 'or' | 'nor' | undefined;
       const mask = BigInt(req.params.mask ?? 0n);
 
-      const { tip, tail }  = await FlagValueRepository.$getTipAndTailIndexedByBucketSize(bucketSize) || { tip: undefined, tail: undefined };
-
-      if (tip === undefined || tail === undefined) {
-        handleError(req, res, 400, `Failed to get latest indexed flag values for ${interval}`);
+      const range = await this.$resolveFlagValuesRange(req, res);
+      if (!range) {
         return;
       }
 
-      const totalCount = await FlagValueRepository.$getTotalBlocksIndexedByBucketSize(bucketSize === 1 ? 1008 : bucketSize) ?? tip - tail;
-
-      const startHeight = presets[interval].retentionSpan !== -1 ? (tip - presets[interval].retentionSpan) : -1;
-      const txsCount = await FlagValueRepository.$queryTxCountBasedOnMask(mask, bucketSize, op, startHeight);
-      res.header('X-total-count', totalCount.toString());
-      res.header('Expires', new Date(Date.now() + 1000 * 3600 * 24 * (presets[interval].bucketSizes[0] / 144)).toUTCString());
+      const txsCount = await FlagValueRepository.$queryTxCountBasedOnMask(mask, range.bucketSize, op, range.startHeight);
+      res.header('X-total-count', range.totalCount.toString());
+      res.header('Expires', range.expires.toUTCString());
       res.send(txsCount);
     } catch (e: any) {
       handleError(req, res, 400, e instanceof Error ? e.message : 'Failed to get flag values');
+    }
+  }
+
+  private async $getScriptTypeTxCounts(req: Request, res: Response): Promise<void> {
+    try {
+      const range = await this.$resolveFlagValuesRange(req, res);
+      if (!range) {
+        return;
+      }
+
+      const scriptTypeTxCounts = await FlagValueRepository.$queryScriptTypeTxCounts(range.bucketSize, range.startHeight);
+      res.header('X-total-count', range.totalCount.toString());
+      res.header('Expires', range.expires.toUTCString());
+      res.send(scriptTypeTxCounts);
+    } catch (e) {
+      handleError(req, res, 500, 'Failed to get script type tx counts');
     }
   }
 
