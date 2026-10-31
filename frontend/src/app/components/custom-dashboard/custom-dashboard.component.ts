@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
-import { combineLatest, merge, Observable, of, Subject, Subscription } from 'rxjs';
+import { combineLatest, interval, merge, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { catchError, filter, map, retry, scan, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
-import { BlockExtended, OptimizedMempoolStats, TransactionStripped } from '@interfaces/node-api.interface';
+import { BlockExtended, OptimizedMempoolStats, TransactionStripped, WalletAddress } from '@interfaces/node-api.interface';
 import { MempoolInfo, ReplacementInfo } from '@interfaces/websocket.interface';
 import { ApiService } from '@app/services/api.service';
 import { StateService } from '@app/services/state.service';
@@ -66,7 +66,6 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
   widgets;
 
   addressSubscription: Subscription;
-  walletSubscription: Subscription;
   blockTxSubscription: Subscription;
   addressSummary$: Observable<AddressTxSummary[]>;
   walletSummary$: Observable<AddressTxSummary[]>;
@@ -113,10 +112,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
       this.websocketService.stopTrackingAddress();
       this.address = null;
     }
-    if (this.walletSubscription) {
-      this.walletSubscription.unsubscribe();
-      this.websocketService.stopTrackingWallet();
-    }
+    this.websocketService.stopTrackingWallet();
     this.destroy$.next(1);
     this.destroy$.complete();
   }
@@ -306,34 +302,39 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
     this.stateService.activeGoggles$.next(selected);
   }
 
+  fetchOnRefresh$<T>(apiCall: Observable<T>): Observable<T> {
+    return merge(
+      this.stateService.connectionState$.pipe(
+        filter((state, index) => index === 0 || state === 2)
+      ),
+      interval(60 * 60 * 1000)
+    ).pipe(
+      switchMap(() => apiCall.pipe(
+        retry({ delay: (_, n) => timer(Math.min(60000, n * 5000)) })
+      ))
+    );
+  }
+
   startAddressSubscription(): void {
     if (this.stateService.env.customize && this.stateService.env.customize.dashboard.widgets.some(w => w.props?.address)) {
       let addressString = this.stateService.env.customize.dashboard.widgets.find(w => w.props?.address).props.address;
       addressString = (/^[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,100}|04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}$/.test(addressString)) ? addressString.toLowerCase() : addressString;
 
-      this.addressSubscription = (
+      this.addressSubscription = this.fetchOnRefresh$<Address>(
         addressString.match(/04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}/)
         ? this.electrsApiService.getPubKeyAddress$(addressString)
         : this.electrsApiService.getAddress$(addressString)
-      ).pipe(
-          catchError((err) => {
-            console.log(err);
-            return of(null);
-          }),
-          filter((address) => !!address),
-        ).subscribe((address: Address) => {
-          this.websocketService.startTrackAddress(address.address);
-          this.address = address;
-          this.cd.markForCheck();
-        });
+      ).subscribe((address: Address) => {
+        this.websocketService.startTrackAddress(address.address);
+        this.address = address;
+        this.cd.markForCheck();
+      });
 
-      this.addressSummary$ = (
+      this.addressSummary$ = this.fetchOnRefresh$<AddressTxSummary[]>(
         addressString.match(/04[a-fA-F0-9]{128}|(02|03)[a-fA-F0-9]{64}/)
         ? this.electrsApiService.getScriptHashSummary$((addressString.length === 66 ? '21' : '41') + addressString + 'ac')
-        : this.electrsApiService.getAddressSummary$(addressString)).pipe(
-        catchError(e => {
-          return of(null);
-        }),
+        : this.electrsApiService.getAddressSummary$(addressString)
+      ).pipe(
         switchMap(initial => this.stateService.blockTransactions$.pipe(
           startWith(null),
           scan((summary, tx) => {
@@ -384,48 +385,53 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
       const walletName = this.stateService.env.customize.dashboard.widgets.find(w => w.props?.wallet).props.wallet;
       this.websocketService.startTrackingWallet(walletName);
 
-      this.walletSummary$ =  this.apiService.getWallet$(walletName).pipe(
-        catchError(e => {
-          return of({});
-        }),
-        switchMap(wallet => this.stateService.walletTransactions$.pipe(
-          startWith([]),
-          scan((summaries, newTransactions) => {
-            const newSummaries: AddressTxSummary[] = [];
-            for (const tx of newTransactions) {
-              const funded: Record<string, number> = {};
-              const spent: Record<string, number> = {};
-              const fundedCount: Record<string, number> = {};
-              const spentCount: Record<string, number> = {};
-              for (const vin of tx.vin) {
-                const address = vin.prevout?.scriptpubkey_address;
-                if (address && wallet[address]) {
-                  spent[address] = (spent[address] ?? 0) + (vin.prevout?.value ?? 0);
-                  spentCount[address] = (spentCount[address] ?? 0) + 1;
+      this.walletSummary$ = this.fetchOnRefresh$<Record<string, WalletAddress>>(
+        this.apiService.getWallet$(walletName)
+      ).pipe(
+        switchMap(wallet =>
+          this.stateService.walletTransactions$.pipe(
+            startWith([]),
+            scan((summaries, newTransactions) => {
+              const newSummaries: AddressTxSummary[] = [];
+              const known = new Set(summaries.map(s => s.txid));
+              for (const tx of newTransactions) {
+                if (known.has(tx.txid)) {
+                  continue;
                 }
-              }
-              for (const vout of tx.vout) {
-                const address = vout.scriptpubkey_address;
-                if (address && wallet[address]) {
-                  funded[address] = (funded[address] ?? 0) + (vout.value ?? 0);
-                  fundedCount[address] = (fundedCount[address] ?? 0) + 1;
+                const funded: Record<string, number> = {};
+                const spent: Record<string, number> = {};
+                const fundedCount: Record<string, number> = {};
+                const spentCount: Record<string, number> = {};
+                for (const vin of tx.vin) {
+                  const address = vin.prevout?.scriptpubkey_address;
+                  if (address && wallet[address]) {
+                    spent[address] = (spent[address] ?? 0) + (vin.prevout?.value ?? 0);
+                    spentCount[address] = (spentCount[address] ?? 0) + 1;
+                  }
                 }
-              }
-              for (const address of Object.keys({ ...funded, ...spent })) {
+                for (const vout of tx.vout) {
+                  const address = vout.scriptpubkey_address;
+                  if (address && wallet[address]) {
+                    funded[address] = (funded[address] ?? 0) + (vout.value ?? 0);
+                    fundedCount[address] = (fundedCount[address] ?? 0) + 1;
+                  }
+                }
+                for (const address of Object.keys({ ...funded, ...spent })) {
                 // add tx to summary
-                const txSummary: AddressTxSummary = {
-                  txid: tx.txid,
-                  value: (funded[address] ?? 0) - (spent[address] ?? 0),
-                  height: tx.status.block_height,
-                  time: tx.status.block_time,
-                };
-                wallet[address].transactions?.push(txSummary);
-                newSummaries.push(txSummary);
+                  const txSummary: AddressTxSummary = {
+                    txid: tx.txid,
+                    value: (funded[address] ?? 0) - (spent[address] ?? 0),
+                    height: tx.status.block_height,
+                    time: tx.status.block_time,
+                  };
+                  wallet[address].transactions?.push(txSummary);
+                  newSummaries.push(txSummary);
+                }
               }
-            }
-            return this.deduplicateWalletTransactions([...summaries, ...newSummaries]);
-          }, this.deduplicateWalletTransactions(Object.values(wallet).flatMap(address => address.transactions)))
-        )),
+              return this.deduplicateWalletTransactions([...summaries, ...newSummaries]);
+            }, this.deduplicateWalletTransactions(Object.values(wallet).flatMap(address => address.transactions)))
+          )
+        ),
         shareReplay({ bufferSize: 1, refCount: true }),
       );
     }

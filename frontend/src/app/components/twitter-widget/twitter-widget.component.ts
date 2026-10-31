@@ -1,7 +1,8 @@
-import { Component, Input, ChangeDetectionStrategy, SecurityContext, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, SecurityContext, SimpleChanges, OnInit, OnChanges, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { LanguageService } from '@app/services/language.service';
 import { StateService } from '@app/services/state.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-twitter-widget',
@@ -10,7 +11,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TwitterWidgetComponent implements OnChanges {
+export class TwitterWidgetComponent implements OnInit, OnChanges, OnDestroy {
   @Input() handle: string;
   @Input() width = 300;
   @Input() height = 400;
@@ -20,14 +21,25 @@ export class TwitterWidgetComponent implements OnChanges {
   lang: string = 'en';
 
   iframeSrc: SafeResourceUrl;
+  subscription: Subscription;
 
   constructor(
     private stateService: StateService,
     private languageService: LanguageService,
     public sanitizer: DomSanitizer,
+    private cd: ChangeDetectorRef
   ) {
     this.lang = this.languageService.getLanguage();
     this.setIframeSrc();
+  }
+
+  ngOnInit() {
+    const refreshMs = 60 * 60 * 1000; // hourly
+
+    this.subscription = interval(refreshMs).subscribe(() => {
+      this.setIframeSrc();
+      this.cd.markForCheck();
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -52,5 +64,11 @@ export class TwitterWidgetComponent implements OnChanges {
   onFailed(): void {
     this.loading = false;
     this.error = true;
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 }
