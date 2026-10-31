@@ -265,7 +265,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       });
 
     if (this.stateService.network === 'liquid') {
-      this.auditStatus$ = this.stateService.blocks$.pipe(
+      // Bitcoin reserves can change even when no new Liquid block arrives.
+      this.auditStatus$ = merge(this.stateService.blocks$, timer(0, 60_000)).pipe(
         takeUntil(this.destroy$),
         throttleTime(40000),
         delayWhen(_ => this.isLoad ? timer(0) : timer(2000)),

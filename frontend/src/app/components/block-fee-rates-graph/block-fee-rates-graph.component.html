@@ -12,43 +12,56 @@
     <form [formGroup]="radioGroupForm" class="formRadioGroup" *ngIf="(statsObservable$ | async) as stats">
       <div class="btn-group" role="group" name="radioBasic">
         <ng-container *ngIf="stats.blockCount >= 144">
-          <input type="radio" class="btn-check" id="feerates-24h" [value]="'24h'" fragment="24h" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="dateSpan">
+          <input type="radio" class="btn-check" id="feerates-24h" [value]="'24h'" [fragment]="getFragment({time: '24h'})" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="feerates-24h">24h</label>
         </ng-container>
         <ng-container *ngIf="stats.blockCount >= 432">
-          <input type="radio" class="btn-check" id="feerates-3d" [value]="'3d'" fragment="3d" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="dateSpan">
+          <input type="radio" class="btn-check" id="feerates-3d" [value]="'3d'" [fragment]="getFragment({time: '3d'})" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="feerates-3d">3D</label>
         </ng-container>
         <ng-container *ngIf="stats.blockCount >= 1008">
-          <input type="radio" class="btn-check" id="feerates-1w" [value]="'1w'" fragment="1w" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="dateSpan">
+          <input type="radio" class="btn-check" id="feerates-1w" [value]="'1w'" [fragment]="getFragment({time: '1w'})" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="feerates-1w">1W</label>
         </ng-container>
         <ng-container *ngIf="stats.blockCount >= 4320">
-          <input type="radio" class="btn-check" id="feerates-1m" [value]="'1m'" fragment="1m" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="dateSpan">
+          <input type="radio" class="btn-check" id="feerates-1m" [value]="'1m'" [fragment]="getFragment({time: '1m'})" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="feerates-1m">1M</label>
         </ng-container>
         <ng-container *ngIf="stats.blockCount >= 12960">
-          <input type="radio" class="btn-check" id="feerates-3m" [value]="'3m'" fragment="3m" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="dateSpan">
+          <input type="radio" class="btn-check" id="feerates-3m" [value]="'3m'" [fragment]="getFragment({time: '3m'})" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="feerates-3m">3M</label>
         </ng-container>
         <ng-container *ngIf="stats.blockCount >= 25920">
-          <input type="radio" class="btn-check" id="feerates-6m" [value]="'6m'" fragment="6m" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="dateSpan">
+          <input type="radio" class="btn-check" id="feerates-6m" [value]="'6m'" [fragment]="getFragment({time: '6m'})" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="feerates-6m">6M</label>
         </ng-container>
         <ng-container *ngIf="stats.blockCount >= 52560">
-          <input type="radio" class="btn-check" id="feerates-1y" [value]="'1y'" fragment="1y" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="dateSpan">
+          <input type="radio" class="btn-check" id="feerates-1y" [value]="'1y'" [fragment]="getFragment({time: '1y'})" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="feerates-1y">1Y</label>
         </ng-container>
         <ng-container *ngIf="stats.blockCount >= 105120">
-          <input type="radio" class="btn-check" id="feerates-2y" [value]="'2y'" fragment="2y" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="dateSpan">
+          <input type="radio" class="btn-check" id="feerates-2y" [value]="'2y'" [fragment]="getFragment({time: '2y'})" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="feerates-2y">2Y</label>
         </ng-container>
         <ng-container *ngIf="stats.blockCount >= 157680">
-          <input type="radio" class="btn-check" id="feerates-3y" [value]="'3y'" fragment="3y" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="dateSpan">
+          <input type="radio" class="btn-check" id="feerates-3y" [value]="'3y'" [fragment]="getFragment({time: '3y'})" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="dateSpan">
           <label class="btn btn-primary btn-sm" for="feerates-3y">3Y</label>
         </ng-container>
-        <input type="radio" class="btn-check" id="feerates-all" [value]="'all'" fragment="all" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="dateSpan">
+        <input type="radio" class="btn-check" id="feerates-all" [value]="'all'" [fragment]="getFragment({time: 'all'})" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="dateSpan">
         <label class="btn btn-primary btn-sm" for="feerates-all">ALL</label>
+      </div>
+    </form>
+
+    <form [formGroup]="scaleForm" class="formRadioGroup me-1">
+      <div class="btn-group" role="group" name="radioScale">
+        <ng-container>
+          <input type="radio" class="btn-check" id="feerates-linear" [value]="'linear'" [fragment]="getFragment({scale: 'linear'})" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="scaleFunction">
+          <label class="btn btn-primary btn-sm" for="feerates-linear" [class.active]="scaleForm.get('scaleFunction').value === 'linear'" i18n="charts.linear-scale">Linear</label>
+        </ng-container>
+        <ng-container>
+          <input type="radio" class="btn-check" id="feerates-log" [value]="'log'" [fragment]="getFragment({scale: 'log'})" [routerLink]="['/graphs/mining/block-fee-rates' | relativeUrl]" formControlName="scaleFunction">
+          <label class="btn btn-primary btn-sm" for="feerates-log" [class.active]="scaleForm.get('scaleFunction').value === 'log'" i18n="charts.log-scale">Log</label>
+        </ng-container>
       </div>
     </form>
   </div>

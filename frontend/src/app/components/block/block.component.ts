@@ -174,7 +174,7 @@ export class BlockComponent implements OnInit, OnDestroy {
                 this.fees = block.extras.reward / 100000000 - this.blockSubsidy;
               }
             }
-          } else if (block.height === this.block?.height) {
+          } else if (block.height === this.block?.height && block.id !== this.block?.id) {
             this.block.stale = true;
             this.block.canonical = block.id;
             this.fetchCanonicalBlock();
@@ -274,6 +274,7 @@ export class BlockComponent implements OnInit, OnDestroy {
         }
         this.updateAuditAvailableFromBlockHeight(block.height);
         this.block = block;
+        this.blockHash = block.id;
         if (block.extras) {
           block.extras.minFee = this.getMinBlockFee(block);
           block.extras.maxFee = this.getMaxBlockFee(block);

@@ -1,8 +1,12 @@
-import { Component, Input, OnInit, OnChanges, Inject, LOCALE_ID, HostListener } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, OnDestroy, Inject, LOCALE_ID, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { RbfTree, RbfTransaction } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { ApiService } from '@app/services/api.service';
+import { forkJoin, of, Observable, Subject } from 'rxjs';
+import { catchError, map, retry, switchMap, takeUntil } from 'rxjs/operators';
+import { Transaction } from '@interfaces/electrs.interface';
+import { buildRbfDiffView, RbfDiffView } from '@app/shared/rbf-diff.utils';
 
 type Connector = 'pipe' | 'corner';
 
@@ -23,10 +27,13 @@ function isTimelineCell(val: RbfTree | TimelineCell): boolean {
   styleUrls: ['./rbf-timeline.component.scss'],
   standalone: false,
 })
-export class RbfTimelineComponent implements OnInit, OnChanges {
+export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
   @Input() replacements: RbfTree;
   @Input() txid: string;
   @Input() rowLimit: number = 5; // If explicitly set to 0, all timelines rows will be displayed by default
+  // Owned by the parent so the toggle can live beside the section heading, the
+  // same way the transaction flow diagram is driven from transaction.component
+  @Input() showDiff: boolean = false;
   rows: TimelineCell[][] = [];
   timelineExpanded: boolean = this.rowLimit === 0;
 
@@ -34,6 +41,29 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
   tooltipPosition = null;
 
   dir: 'rtl' | 'ltr' = 'ltr';
+
+  // RBF Diff state
+  selectedOldTx: Transaction | null = null;
+  selectedNewTx: Transaction | null = null;
+  diffLoading: boolean = false;
+  diffError: boolean = false;
+  diffView: RbfDiffView | null = null;
+
+  // The pair currently being diffed. Any two nodes in the tree can be compared,
+  // not just adjacent ones, so both ends are tracked independently.
+  diffOldTxid: string | null = null;
+  diffNewTxid: string | null = null;
+  // First half of a two-click selection, waiting for the user to pick the other end
+  pendingAnchorTxid: string | null = null;
+
+  // the pair the tables currently show, which can lag behind the selection while
+  // a new comparison is loading or after one failed to load
+  private renderedPair: { oldTxid: string, newTxid: string } | null = null;
+  private nodeIndex = new Map<string, RbfTree>();
+  private destroy$ = new Subject<void>();
+  // Comparisons go through one stream so a slower earlier request can never land
+  // on top of a newer selection. A null request cancels whatever is in flight.
+  private diffRequest$ = new Subject<{ oldTxid: string, newTxid: string } | null>();
 
   constructor(
     private router: Router,
@@ -44,17 +74,65 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
     if (this.locale.startsWith('ar') || this.locale.startsWith('fa') || this.locale.startsWith('he')) {
       this.dir = 'rtl';
     }
+    // subscribed here rather than in ngOnInit because ngOnChanges runs first and
+    // can already have queued a comparison
+    this.diffRequest$.pipe(
+      switchMap((request) => request ? forkJoin({
+        oldTx: this.fetchCachedTx$(request.oldTxid),
+        newTx: this.fetchCachedTx$(request.newTxid),
+      }) : of(null)),
+      takeUntil(this.destroy$),
+    ).subscribe((result) => {
+      if (!result) {
+        return; // cancelled by a newer selection
+      }
+      this.diffLoading = false;
+      if (!result.oldTx || !result.newTx) {
+        this.diffError = true;
+        // stay on the comparison that is still on screen, so the highlighted
+        // pair keeps matching the table below it
+        if (this.renderedPair) {
+          this.diffOldTxid = this.renderedPair.oldTxid;
+          this.diffNewTxid = this.renderedPair.newTxid;
+        }
+        return;
+      }
+      this.selectedOldTx = result.oldTx;
+      this.selectedNewTx = result.newTx;
+      this.diffView = buildRbfDiffView(result.oldTx, result.newTx);
+      this.renderedPair = { oldTxid: result.oldTx.txid, newTxid: result.newTx.txid };
+    });
   }
 
   ngOnInit(): void {
     this.rows = this.buildTimelines(this.replacements);
+    this.indexNodes();
+    this.resolveDefaultPair(true);
   }
 
   ngOnChanges(changes): void {
     this.rows = this.buildTimelines(this.replacements);
-    if (changes.txid && !changes.txid.firstChange && changes.txid.previousValue !== changes.txid.currentValue) {
+    this.indexNodes();
+    const txidChanged = changes.txid && changes.txid.previousValue !== changes.txid.currentValue;
+    const previousPair = `${this.diffOldTxid}:${this.diffNewTxid}`;
+    this.resolveDefaultPair(txidChanged);
+    if (changes.showDiff) {
+      this.pendingAnchorTxid = null;
+      this.clearDiffResult();
+      if (this.showDiff) {
+        this.loadDiff();
+      }
+    } else if (this.showDiff && `${this.diffOldTxid}:${this.diffNewTxid}` !== previousPair) {
+      this.loadDiff();
+    }
+    if (txidChanged && !changes.txid.firstChange) {
       setTimeout(() => { this.scrollToSelected(); });
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   // converts a tree of RBF events into a format that can be more easily rendered in HTML
@@ -216,5 +294,222 @@ export class RbfTimelineComponent implements OnInit, OnChanges {
 
   onBlur(event): void {
     this.hoverInfo = null;
+  }
+
+  // Builds a txid -> node lookup so the template can resolve the diff pair in
+  // constant time instead of walking the tree on every change detection cycle
+  private indexNodes(): void {
+    this.nodeIndex.clear();
+    const walk = (node: RbfTree): void => {
+      if (!node) { return; }
+      this.nodeIndex.set(node.tx.txid, node);
+      node.replaces.forEach(walk);
+    };
+    walk(this.replacements);
+  }
+
+  // The tree always has at least one replacement edge if the root replaced anything
+  private get hasReplacements(): boolean {
+    return !!this.replacements?.replaces?.length;
+  }
+
+  // While a pick is in progress the previous pair's colours are dropped: leaving
+  // a stale red and green on the timeline alongside the dashed anchor reads as if
+  // three transactions were selected at once.
+  get highlightedOldTxid(): string | null {
+    return this.showDiff && !this.pendingAnchorTxid ? this.diffOldTxid : null;
+  }
+
+  get highlightedNewTxid(): string | null {
+    return this.showDiff && !this.pendingAnchorTxid ? this.diffNewTxid : null;
+  }
+
+  /**
+   * True when the user has picked one end of a comparison and we're waiting for
+   * the other. The tables are hidden in this state so the hint is unambiguous.
+   */
+  get awaitingSecondPick(): boolean {
+    return this.showDiff && this.pendingAnchorTxid !== null;
+  }
+
+  /**
+   * Which end of the comparison a node is. The fills alone cannot say it: red
+   * and green are exactly the pair a red-green colour blind reader cannot
+   * separate, and a screen reader never sees them at all.
+   */
+  diffRole(txid: string): 'previous' | 'new' | 'pending' | null {
+    if (!this.showDiff) {
+      return null;
+    }
+    if (this.pendingAnchorTxid === txid) {
+      return 'pending';
+    }
+    if (this.highlightedOldTxid === txid) {
+      return 'previous';
+    }
+    if (this.highlightedNewTxid === txid) {
+      return 'new';
+    }
+    return null;
+  }
+
+  get pendingAnchorShort(): string {
+    return this.pendingAnchorTxid ? this.pendingAnchorTxid.substring(0, 8) : '';
+  }
+
+  // Walks forward in time from `from` via replacedBy, looking for `target`
+  private replacedByChainReaches(from: RbfTree, targetTxid: string): boolean {
+    const seen = new Set<string>();
+    let cursor: RbfTree | undefined = from;
+    while (cursor?.replacedBy && !seen.has(cursor.tx.txid)) {
+      seen.add(cursor.tx.txid);
+      if (cursor.replacedBy.txid === targetTxid) {
+        return true;
+      }
+      cursor = this.nodeIndex.get(cursor.replacedBy.txid);
+    }
+    return false;
+  }
+
+  /**
+   * Works out which of two freely-picked nodes is the older one. Ancestry in the
+   * replacement chain decides it; nodes on separate branches have no such
+   * relationship, so those fall back to the timestamps.
+   */
+  private orderPair(a: RbfTree, b: RbfTree): [string, string] {
+    if (this.replacedByChainReaches(a, b.tx.txid)) {
+      return [a.tx.txid, b.tx.txid];
+    }
+    if (this.replacedByChainReaches(b, a.tx.txid)) {
+      return [b.tx.txid, a.tx.txid];
+    }
+    return (a.time ?? 0) <= (b.time ?? 0)
+      ? [a.tx.txid, b.tx.txid]
+      : [b.tx.txid, a.tx.txid];
+  }
+
+  private resolveDefaultPair(force: boolean = false): void {
+    // a websocket refresh shouldn't throw away whichever pair the user picked
+    if (!force && this.diffOldTxid && this.diffNewTxid
+        && this.nodeIndex.has(this.diffOldTxid) && this.nodeIndex.has(this.diffNewTxid)) {
+      return;
+    }
+    this.pendingAnchorTxid = null;
+    this.diffOldTxid = null;
+    this.diffNewTxid = null;
+
+    const current = (this.txid ? this.nodeIndex.get(this.txid) : null) ?? null;
+
+    // the viewed transaction is itself a replacement: diff it against what it replaced
+    if (current?.replaces.length) {
+      this.diffOldTxid = current.replaces[0].tx.txid;
+      this.diffNewTxid = current.tx.txid;
+      return;
+    }
+
+    // the viewed transaction was replaced: keep it as the old endpoint. Using the
+    // parent's first child instead would open the diff on a sibling whenever the
+    // replacement swallowed several transactions at once.
+    const parent = current?.replacedBy ? this.nodeIndex.get(current.replacedBy.txid) : null;
+    if (current && parent) {
+      this.diffOldTxid = current.tx.txid;
+      this.diffNewTxid = parent.tx.txid;
+      return;
+    }
+
+    // nothing selected (the replacements list): fall back to the tip of the tree
+    if (this.hasReplacements) {
+      this.diffOldTxid = this.replacements.replaces[0].tx.txid;
+      this.diffNewTxid = this.replacements.tx.txid;
+    }
+  }
+
+  /**
+   * With the diff open, nodes stop being links and become comparison endpoints.
+   * The first click anchors one end, the second picks the other — which is what
+   * makes it possible to compare transactions that aren't next to each other.
+   */
+  onNodeClick(event: Event, node: RbfTree): void {
+    if (!this.showDiff) {
+      return;
+    }
+    // routerLink is already null while the diff is open, so this only has to
+    // suppress the anchor's own default behaviour
+    event.preventDefault();
+    if (!this.pendingAnchorTxid) {
+      this.pendingAnchorTxid = node.tx.txid;
+      this.clearDiffResult();
+      return;
+    }
+    if (this.pendingAnchorTxid === node.tx.txid) {
+      // clicking the anchor again cancels the selection
+      this.pendingAnchorTxid = null;
+      this.loadDiff();
+      return;
+    }
+    const anchor = this.nodeIndex.get(this.pendingAnchorTxid);
+    this.pendingAnchorTxid = null;
+    if (!anchor) {
+      return;
+    }
+    [this.diffOldTxid, this.diffNewTxid] = this.orderPair(anchor, node);
+    this.loadDiff();
+  }
+
+  /**
+   * Clicking the line joining two dots compares exactly those two — the quick
+   * path for the common case of two consecutive replacements.
+   */
+  onEdgeClick(event: Event, node: RbfTree | undefined): void {
+    if (!this.showDiff || !node?.replacedBy) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    this.pendingAnchorTxid = null;
+    this.diffOldTxid = node.tx.txid;
+    this.diffNewTxid = node.replacedBy.txid;
+    this.loadDiff();
+  }
+
+  private clearDiffResult(): void {
+    this.diffRequest$.next(null); // drop anything still in flight
+    this.diffLoading = false;
+    this.diffError = false;
+    this.selectedOldTx = null;
+    this.selectedNewTx = null;
+    this.diffView = null;
+    this.renderedPair = null;
+  }
+
+  private loadDiff(): void {
+    if (!this.diffOldTxid || !this.diffNewTxid) {
+      return;
+    }
+    this.diffError = false;
+    this.diffLoading = true;
+    // diffView is deliberately left alone: a slow or failed comparison shouldn't
+    // wipe the table the user is already reading
+    this.diffRequest$.next({ oldTxid: this.diffOldTxid, newTxid: this.diffNewTxid });
+  }
+
+  /**
+   * The RBF cache lives in the memory of each backend instance, so the same txid
+   * can come back empty from one instance and populated from another. An empty
+   * body arrives as HTTP 204, which is a *success* with a null body rather than
+   * an error, so it has to be turned into one for the retry to see it. Retrying
+   * usually lands on an instance that has the transaction.
+   */
+  private fetchCachedTx$(txid: string): Observable<Transaction | null> {
+    return this.apiService.getRbfCachedTx$(txid).pipe(
+      map((tx) => {
+        if (!tx) {
+          throw new Error(`no cached transaction for ${txid}`);
+        }
+        return tx;
+      }),
+      retry({ count: 2, delay: 400 }),
+      catchError(() => of(null)),
+    );
   }
 }

@@ -45,7 +45,6 @@ import redisCache from './api/redis-cache';
 import accelerationApi from './api/services/acceleration';
 import bitcoinCoreRoutes from './api/bitcoin/bitcoin-core.routes';
 import bitcoinSecondClient from './api/bitcoin/bitcoin-second-client';
-import accelerationRoutes from './api/acceleration/acceleration.routes';
 import aboutRoutes from './api/about.routes';
 import mempoolBlocks from './api/mempool-blocks';
 import walletApi from './api/services/wallets';
@@ -67,6 +66,7 @@ class Server {
 
   constructor() {
     this.app = express();
+    this.app.set('case sensitive routing', true);
 
     if (cluster.isPrimary && config.MEMPOOL.UNIX_SOCKET_PATH) {
       this.clearStaleUnixSocket(config.MEMPOOL.UNIX_SOCKET_PATH);
@@ -285,6 +285,7 @@ class Server {
       const minFeeTip = memPool.limitGBT ? await bitcoinSecondClient.getBlockCount() : -1;
       const latestAccelerations = await accelerationApi.$updateAccelerations();
       const numHandledBlocks = await blocks.$updateBlocks();
+      await poolsUpdater.$recheckBlocks();
       const pollRate = config.MEMPOOL.POLL_RATE_MS * (indexer.indexerIsRunning() ? 10 : 1);
       if (numHandledBlocks === 0) {
         await memPool.$updateMempool(newMempool, latestAccelerations, minFeeMempool, minFeeTip, pollRate);
@@ -350,13 +351,17 @@ class Server {
     }
 
     if (Common.isLiquid() && config.DATABASE.ENABLED) {
-      blocks.setNewBlockCallback(async () => {
+      /** @asyncSafe */
+      const parseElements = async (): Promise<void> => {
         try {
           await elementsParser.$parse();
         } catch (e) {
           logger.warn('Elements parsing error: ' + (e instanceof Error ? e.message : e));
         }
-      });
+      };
+      blocks.setNewBlockCallback(parseElements);
+      void parseElements();
+      setInterval(() => { void parseElements(); }, 60_000);
     }
     websocketHandler.setupConnectionHandling();
     if (config.MEMPOOL.ENABLED) {
@@ -393,9 +398,6 @@ class Server {
       generalLightningRoutes.initRoutes(this.app);
       nodesRoutes.initRoutes(this.app);
       channelsRoutes.initRoutes(this.app);
-    }
-    if (config.MEMPOOL_SERVICES.ACCELERATIONS) {
-      accelerationRoutes.initRoutes(this.app);
     }
     if (config.WALLETS.ENABLED) {
       servicesRoutes.initRoutes(this.app);

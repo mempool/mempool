@@ -61,38 +61,6 @@ class AccelerationRepository {
     }
   }
 
-  /** @asyncSafe */
-  public async $getAccelerationInfoForTxid(txid: string): Promise<PublicAcceleration | null> {
-    try {
-      const [rows] = await DB.query(`
-        SELECT *, UNIX_TIMESTAMP(requested) as requested_timestamp, UNIX_TIMESTAMP(added) as block_timestamp FROM accelerations
-        JOIN pools on pools.unique_id = accelerations.pool
-        WHERE txid = ?
-      `, [txid]) as RowDataPacket[][];
-      if (rows?.length) {
-        const row = rows[0];
-        return {
-          txid: row.txid,
-          height: row.height,
-          added: row.requested_timestamp || row.block_timestamp,
-          pool: {
-            id: row.id,
-            slug: row.slug,
-            name: row.name,
-          },
-          effective_vsize: row.effective_vsize,
-          effective_fee: row.effective_fee,
-          boost_rate: row.boost_rate,
-          boost_cost: row.boost_cost,
-        };
-      }
-    } catch (e: any) {
-      logger.err(`Cannot get acceleration info for txid ${txid}. Reason: ` + (e instanceof Error ? e.message : e));
-      return null;
-    }
-    return null;
-  }
-
   public async $getAccelerationInfo(poolSlug: string | null = null, height: number | null = null, interval: string | null = null): Promise<PublicAcceleration[]> {
     if (!interval || !['24h', '3d', '1w', '1m'].includes(interval)) {
       interval = '1m';
@@ -396,6 +364,46 @@ class AccelerationRepository {
     } catch (e) {
       logger.err('Cannot delete indexed accelerations. Reason: ' + (e instanceof Error ? e.message : e));
     }
+  }
+
+  /**
+   * Retrieves transactions IDs between two heights
+   * @asyncSafe */
+  public async $getAccelerationsBetween(from: number, to: number): Promise<string[]> {
+    try {
+      const [rows]: any[] = await DB.query('SELECT txid FROM accelerations WHERE height > ? AND height <= ?', [from, to]);
+
+      if (rows.length > 0) {
+        return rows.map((row) => row.txid);
+      }
+    } catch (e) {
+      logger.err(`Failed to get accelerations between #${from} and #${to}. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+    return [];
+  }
+
+  /** @asyncSafe */
+  public async $getAccelerationCountsPerBucket(bucketSize: number, from: number, to: number): Promise<Record<string, number>> {
+    try {
+      const [rows]: any[]= await DB.query(`
+        SELECT FLOOR(height / ?) * ? AS startHeight, 
+        COUNT(*) AS count
+        FROM accelerations
+        WHERE height > ? AND height <= ?
+        GROUP BY startHeight
+        `, [bucketSize, bucketSize, from, to]);
+
+      const counts = {};
+      if (rows.length > 0) {
+        for (const row of rows) {
+          counts[row.startHeight] = row.count;
+        }
+        return counts;
+      }
+    } catch (e) {
+      logger.err(`Failed to get acceleration counts per ${bucketSize} blocks. Reason: ` + (e instanceof Error ? e.message : e));
+    }
+    return {};
   }
 }
 

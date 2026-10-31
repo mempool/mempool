@@ -47,7 +47,7 @@
                   </ng-template>
                   <div class="block-size" *ngIf="chainTip.stale?.size" [innerHTML]="'&lrm;' + (chainTip.stale.size | bytes: 2)"></div>
                   <div class="transaction-count" *ngIf="chainTip.stale?.tx_count">
-                    {{ chainTip.stale.tx_count | number }} transaction<ng-container *ngIf="chainTip.stale.tx_count !== 1">s</ng-container>
+                    <ng-container *ngTemplateOutlet="chainTip.stale.tx_count === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: chainTip.stale.tx_count | number}"></ng-container>
                   </div>
                   <div class="time-difference" *ngIf="chainTip.stale?.timestamp">
                     <app-time kind="since" [time]="chainTip.stale.timestamp" [fastRender]="true" [precision]="1" minUnit="minute"></app-time>
@@ -99,7 +99,7 @@
                   </ng-template>
                   <div class="block-size" *ngIf="chainTip.canonical?.size" [innerHTML]="'&lrm;' + (chainTip.canonical.size | bytes: 2)"></div>
                   <div class="transaction-count" *ngIf="chainTip.canonical?.tx_count">
-                    {{ chainTip.canonical.tx_count | number }} transaction<ng-container *ngIf="chainTip.canonical.tx_count !== 1">s</ng-container>
+                    <ng-container *ngTemplateOutlet="chainTip.canonical.tx_count === 1 ? transactionsSingular : transactionsPlural; context: {$implicit: chainTip.canonical.tx_count | number}"></ng-container>
                   </div>
                   <div class="time-difference" *ngIf="chainTip.canonical?.timestamp">
                     <app-time kind="since" [time]="chainTip.canonical.timestamp" [fastRender]="true" [precision]="1" minUnit="minute"></app-time>
@@ -142,5 +142,8 @@
       <button type="button" class="btn btn-sm btn-danger ms-2" (click)="retryLoadMore()" i18n="chain-tips.retry">Retry</button>
     </div>
   </div>
-  
+
 </div>
+
+<ng-template #transactionsSingular let-i i18n="shared.transaction-count.singular">{{ i }} transaction</ng-template>
+<ng-template #transactionsPlural let-i i18n="shared.transaction-count.plural">{{ i }} transactions</ng-template>

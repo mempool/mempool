@@ -146,6 +146,11 @@ Corresponding `docker-compose.yml` overrides:
       MEMPOOL_MAX_BLOCKS_BULK_QUERY: ""
       MEMPOOL_DISK_CACHE_BLOCK_INTERVAL: ""
       MEMPOOL_PRICE_UPDATES_PER_HOUR: ""
+      MEMPOOL_MAX_BUFFERED_AMOUNT: ""
+      MEMPOOL_MAX_MESSAGE_SIZE: ""
+      MEMPOOL_MAX_TRACKED_TXS: ""
+      MEMPOOL_MSG_RATE_LIMIT: ""
+      MEMPOOL_MSG_RATE_WINDOW: ""
       ...
 ```
 
@@ -355,7 +360,6 @@ Corresponding `docker-compose.yml` overrides:
   "LIGHTNING": {
     "ENABLED": false
     "BACKEND": "lnd"
-    "TOPOLOGY_FOLDER": ""
     "STATS_REFRESH_INTERVAL": 600
     "GRAPH_REFRESH_INTERVAL": 600
     "LOGGER_UPDATE_INTERVAL": 30
@@ -368,7 +372,6 @@ Corresponding `docker-compose.yml` overrides:
     environment:
       LIGHTNING_ENABLED: false
       LIGHTNING_BACKEND: "lnd"
-      LIGHTNING_TOPOLOGY_FOLDER: ""
       LIGHTNING_STATS_REFRESH_INTERVAL: 600
       LIGHTNING_GRAPH_REFRESH_INTERVAL: 600
       LIGHTNING_LOGGER_UPDATE_INTERVAL: 30

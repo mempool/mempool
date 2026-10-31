@@ -3,34 +3,60 @@
   width: 100%;
   padding: 1em 0;
 
-  &::after, &::before {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 2em;
-    z-index: 2;
-  }
-
-  &::before {
-    left: 0;
-    background: linear-gradient(to right, var(--box-bg), var(--box-bg), transparent);
-  }
-
-  &::after {
-    right: 0;
-    background: linear-gradient(to left, var(--box-bg), var(--box-bg), transparent);
-  }
-
-  .timeline-wrapper {
+  // Non-scrolling frame around the scroller. The edge fades live here because an
+  // absolutely positioned child of an overflow container scrolls away with its
+  // contents, which left the fade sitting mid-timeline covering the track.
+  // It wraps only the timeline, so the fades never reach the diff tables below.
+  .timeline-viewport {
     position: relative;
     width: calc(100% - 2em);
     margin: auto;
+
+    &::after, &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2em;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    &::before {
+      left: 0;
+      background: linear-gradient(to right, var(--box-bg), var(--box-bg), transparent);
+    }
+
+    &::after {
+      right: 0;
+      background: linear-gradient(to left, var(--box-bg), var(--box-bg), transparent);
+    }
+
+    // On a phone the viewport is barely wider than a couple of nodes, so a 2em
+    // band of solid background reads as the line being cut rather than fading.
+    @media (max-width: 575.98px) {
+      &::before, &::after {
+        width: 1em;
+      }
+
+      &::before {
+        background: linear-gradient(to right, var(--box-bg), transparent);
+      }
+
+      &::after {
+        background: linear-gradient(to left, var(--box-bg), transparent);
+      }
+    }
+  }
+
+  // owns horizontal scrolling and nothing else
+  .timeline-wrapper {
+    width: 100%;
     overflow-x: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
-  
+
     &::-webkit-scrollbar {
       display: none;
     }
@@ -94,6 +120,21 @@
 
   .node, .interval-spacer {
     position: relative;
+
+    &.diff-selectable {
+      cursor: pointer;
+
+      &:hover .track {
+        background: var(--info);
+
+        // a full RBF track is already --info, so the usual highlight would be
+        // invisible on exactly the lines that need to look clickable
+        &.fullrbf {
+          background: var(--fg);
+        }
+      }
+    }
+
     .track {
       position: absolute;
       height: 10px;
@@ -195,6 +236,28 @@
           }
         }
       }
+
+      // The pair currently being diffed, matching the Previous / New column
+      // accents in .rbf-diff-section. The template drops .selected and .mined
+      // while the diff is open, so these never have to outrank them.
+      &.diff-old .shape-border {
+        background: var(--red);
+      }
+
+      // bigger as well as green: red and green are the one pair a red-green
+      // colour blind reader cannot separate, so size carries the distinction.
+      // Same dimensions the selected-and-mined state already uses.
+      &.diff-new .shape-border {
+        background: var(--green);
+        height: calc(1em + 16px);
+        width: calc(1em + 16px);
+      }
+
+      // first half of a two-click comparison, waiting for the other end
+      &.diff-pending .shape-border {
+        background: var(--tertiary);
+        outline: 2px dashed var(--fg);
+      }
     }
 
     .connector {
@@ -223,6 +286,303 @@
         &.fullrbf {
           border-bottom: solid 10px var(--info);
         }
+      }
+    }
+  }
+
+  .diff-hint {
+    width: calc(100% - 2em);
+    margin: 0.5em auto 0;
+    padding: 0 0.5em;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--transparent-fg);
+
+    code {
+      background: transparent;
+      padding: 0;
+      color: var(--link-color);
+    }
+  }
+
+  .diff-loading {
+    width: 100%;
+    padding: 1rem 0;
+  }
+
+  .diff-notice {
+    width: calc(100% - 2em);
+    margin: 0.5em auto 0;
+    padding: 0 0.5em;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--transparent-fg);
+  }
+}
+
+// styles.scss:1575 pads every cell of every .table with 0.75rem, overriding
+// bootstrap's own value. The merged output cell drops that padding and re-applies
+// it to its children, so this has to stay in step with that rule.
+$diff-cell-padding-x: 0.75rem;
+
+.rbf-diff-section {
+  width: calc(100% - 2em);
+  margin: 1rem auto 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-subtle);
+
+  .rbf-diff-table {
+    margin-bottom: 0;
+    // fixed layout so a long address can never widen the table and push the
+    // third column off the box
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  col.label-col {
+    width: 30%;
+  }
+
+  // styles.scss applies `tr { white-space: nowrap }` to every table, which makes a
+  // long field name spill out of its column and land on top of the value next to
+  // it. Names wrap inside their own column instead.
+  .row-label {
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+
+  thead th {
+    font-weight: 600;
+    text-align: left;
+    padding-bottom: 0.5rem;
+    // each column carries the colour of its node in the timeline above
+    border-bottom: 2px solid transparent;
+
+    &.previous-col {
+      border-bottom-color: var(--red);
+    }
+
+    &.new-col {
+      border-bottom-color: var(--green);
+    }
+  }
+
+  // The name and the txid share one line. A wrapper rather than the th itself,
+  // because turning a table cell into a flex container drops it out of the table
+  // and the columns stop lining up with the colgroup.
+  .col-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    overflow: hidden;
+  }
+
+  .col-name {
+    flex: 0 0 auto;
+  }
+
+  // gives way before the column does, so the header can never push the table wide
+  thead code {
+    margin: 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--link-color);
+    background: transparent;
+    padding: 0;
+    opacity: 0.9;
+  }
+
+  td {
+    text-align: left;
+    vertical-align: top;
+  }
+
+  // repeated inside every value cell, for the stacked layout below; the header
+  // row says the same thing while the table still has columns
+  .col-label {
+    display: none;
+  }
+
+  // the only content of its cell when an output exists on one side only, so it
+  // sits on the same axis as the amounts rather than hugging the column's edge
+  .null-placeholder {
+    display: block;
+    text-align: center;
+    opacity: 0.5;
+  }
+
+  .difference.positive {
+    color: var(--green);
+  }
+
+  .difference.negative {
+    color: var(--red);
+  }
+
+  // neither an improvement nor a regression, so it stays out of the red/green
+  // vocabulary the percentages use
+  .count-delta {
+    margin-left: 0.35rem;
+    color: var(--transparent-fg);
+  }
+
+  // a replaced destination is a warning, not a neutral delta. The field name
+  // carries the colour so the address itself still reads as an ordinary link.
+  tr.address-changed .row-label {
+    color: var(--red);
+  }
+
+  // the warning sits next to the address, so the address has to be the part that
+  // shrinks when the column is narrow
+  .output-address-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+  }
+
+  .output-address {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
+
+  .output-warning {
+    flex: 0 0 auto;
+    font-size: 0.8rem;
+    cursor: help;
+  }
+
+  .output-script-type {
+    font-size: 0.9rem;
+    color: var(--transparent-fg);
+  }
+
+  // Centred inside the column rather than pinned to its left edge, and the same
+  // way whether the row shares an address or not, so every amount in a column
+  // lands on one axis regardless of which presentation its row uses.
+  .output-value,
+  .output-amount {
+    display: block;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--transparent-fg);
+  }
+
+  // The destination spans the two columns it would otherwise be repeated in,
+  // centred over them. The amounts below split the same cell in half so they
+  // still line up with the Previous and New columns of every other row.
+  .output-merged {
+    // The cell spans two columns, so its own padding would push the split point
+    // off the column boundary and leave the second amount out of line with every
+    // other row. The padding is moved onto the children instead: each half is
+    // then exactly one column wide and starts where that column's content starts.
+    padding-left: 0;
+    padding-right: 0;
+
+    // The destination is the one thing both transactions share, so it is centred
+    // across the pair of columns it replaces. The amounts below are not shared,
+    // so they stay in the column they belong to.
+    .output-address-row {
+      justify-content: center;
+      padding: 0 $diff-cell-padding-x;
+    }
+
+    .output-address {
+      flex: 0 1 auto;
+    }
+
+    .output-amounts {
+      display: flex;
+    }
+
+    .output-amount {
+      flex: 1 1 50%;
+      min-width: 0;
+      padding: 0 $diff-cell-padding-x;
+    }
+  }
+
+  // Three columns don't fit on a phone, so the table folds: the field name
+  // becomes a heading and its two values stack underneath it, each one labelled
+  // with the transaction it belongs to.
+  @media (max-width: 575.98px) {
+    // the table itself has to leave the table formatting context too, otherwise
+    // the colgroup keeps sizing the cells to their desktop columns and the
+    // stacked content spills out of a third of the width
+    .rbf-diff-table,
+    tbody {
+      display: block;
+    }
+
+    thead {
+      display: none;
+    }
+
+    tbody tr {
+      display: block;
+      padding: 0.4rem 0;
+    }
+
+    tbody td {
+      display: block;
+      width: 100%;
+      padding: 0.1rem 0.5rem;
+    }
+
+    .row-label {
+      font-weight: 600;
+      padding-bottom: 0.2rem;
+    }
+
+    // stacked and label-led at this width, so there is no column to centre in
+    .output-value,
+    .output-amount,
+    .null-placeholder {
+      text-align: left;
+    }
+
+    // a scalar value fits beside its label
+    .col-label {
+      display: inline-block;
+      min-width: 5.5em;
+      vertical-align: top;
+      font-size: 0.8rem;
+      color: var(--transparent-fg);
+    }
+
+    // an address does not: app-truncate only ellipsizes inside a flex container
+    // with a resolved width, which an inline-level box beside a label never has.
+    // So the label takes its own line and the address gets the full cell.
+    .output-row {
+      .col-label {
+        display: block;
+        min-width: 0;
+      }
+
+      .output-address-row {
+        width: 100%;
+      }
+    }
+
+    // there are no columns left to span here, so the merged cell unwinds: the
+    // address sits left like every other value and the amounts stack, each one
+    // taking its label back beside it
+    .output-merged {
+      .output-address-row {
+        justify-content: flex-start;
+      }
+
+      .output-amounts {
+        display: block;
+      }
+
+      .col-label {
+        display: inline-block;
+        min-width: 5.5em;
       }
     }
   }

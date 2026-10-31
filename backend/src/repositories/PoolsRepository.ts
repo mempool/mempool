@@ -4,6 +4,7 @@ import config from '../config';
 import DB from '../database';
 import logger from '../logger';
 import { PoolInfo, PoolTag } from '../mempool.interfaces';
+import { PoolConnection } from 'mysql2/promise';
 
 // Intervals the pools stats cache is built for. 'all' has no time filter; the rest resolve via Common.getSqlInterval
 export const POOLS_STATS_INTERVALS = ['24h', '3d', '1w', '1m', '3m', '6m', '1y', '2y', '3y', '4y', 'all'];
@@ -13,8 +14,8 @@ class PoolsRepository {
    * Get all pools tagging info
    * @asyncUnsafe
    */
-  public async $getPools(): Promise<PoolTag[]> {
-    const [rows] = await DB.query('SELECT id, unique_id as uniqueId, name, addresses, regexes, slug FROM pools');
+  public async $getPools(connection?: PoolConnection): Promise<PoolTag[]> {
+    const [rows] = await DB.query('SELECT id, unique_id as uniqueId, name, addresses, regexes, slug FROM pools', undefined, 'debug', connection);
     return <PoolTag[]>rows;
   }
 
@@ -227,17 +228,18 @@ class PoolsRepository {
    * Insert a new mining pool in the database
    *
    * @param pool
-   * @asyncSafe
+   * @asyncUnsafe
    */
-  public async $insertNewMiningPool(pool: any, slug: string): Promise<void> {
+  public async $insertNewMiningPool(pool: any, slug: string, connection?: PoolConnection): Promise<void> {
     try {
       await DB.query(`
         INSERT INTO pools
         SET name = ?, link = ?, addresses = ?, regexes = ?, slug = ?, unique_id = ?`,
-        [pool.name, pool.link, JSON.stringify(pool.addresses), JSON.stringify(pool.regexes), slug, pool.id]
+        [pool.name, pool.link, JSON.stringify(pool.addresses), JSON.stringify(pool.regexes), slug, pool.id], 'debug', connection
       );
     } catch (e: any) {
       logger.err(`Cannot insert new mining pool into db. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
     }
   }
 
@@ -247,18 +249,19 @@ class PoolsRepository {
    * @param dbId
    * @param newSlug
    * @param newName
-   * @asyncSafe
+   * @asyncUnsafe
    */
-  public async $renameMiningPool(dbId: number, newSlug: string, newName: string): Promise<void> {
+  public async $renameMiningPool(dbId: number, newSlug: string, newName: string, connection?: PoolConnection): Promise<void> {
     try {
       await DB.query(`
         UPDATE pools
         SET slug = ?, name = ?
         WHERE id = ?`,
-        [newSlug, newName, dbId]
+        [newSlug, newName, dbId], 'debug', connection
       );
     } catch (e: any) {
       logger.err(`Cannot rename mining pool id ${dbId}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
     }
   }
 
@@ -267,18 +270,19 @@ class PoolsRepository {
    *
    * @param dbId
    * @param newLink
-   * @asyncSafe
+   * @asyncUnsafe
    */
-  public async $updateMiningPoolLink(dbId: number, newLink: string): Promise<void> {
+  public async $updateMiningPoolLink(dbId: number, newLink: string, connection?: PoolConnection): Promise<void> {
     try {
       await DB.query(`
         UPDATE pools
         SET link = ?
         WHERE id = ?`,
-        [newLink, dbId]
+        [newLink, dbId], 'debug', connection
       );
     } catch (e: any) {
       logger.err(`Cannot update link for mining pool id ${dbId}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
     }
 
   }
@@ -289,18 +293,19 @@ class PoolsRepository {
    * @param dbId
    * @param addresses
    * @param regexes
-   * @asyncSafe
+   * @asyncUnsafe
    */
-  public async $updateMiningPoolTags(dbId: number, addresses: string, regexes: string): Promise<void> {
+  public async $updateMiningPoolTags(dbId: number, addresses: string, regexes: string, connection?: PoolConnection): Promise<void> {
     try {
       await DB.query(`
         UPDATE pools
         SET addresses = ?, regexes = ?
         WHERE id = ?`,
-        [JSON.stringify(addresses), JSON.stringify(regexes), dbId]
+        [JSON.stringify(addresses), JSON.stringify(regexes), dbId], 'debug', connection
       );
     } catch (e: any) {
       logger.err(`Cannot update mining pool id ${dbId}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
     }
   }
 
