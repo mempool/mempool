@@ -12,7 +12,7 @@ export class CodeTemplateComponent implements OnInit {
   @Input() code: any;
   @Input() hostname: string;
   @Input() baseNetworkUrl: string;
-  @Input() method: 'GET' | 'POST' | 'websocket' = 'GET';
+  @Input() method: 'GET' | 'POST' | 'DELETE' | 'websocket' = 'GET';
   @Input() showCodeExample: any;
   env: Env;
 
@@ -283,18 +283,19 @@ yarn add @mempool/liquid.js`;
     }
 
     const headersString = code.headers ? ` -H "${code.headers}"` : ``;
+    const methodString = this.method === 'DELETE' ? ' -X DELETE' : '';
 
     if (this.env.BASE_MODULE === 'mempool') {
       if (this.network === 'main' || this.network === '' || this.network === this.env.ROOT_NETWORK) {
         if (this.method === 'POST') {
           return `curl${headersString} -X POST -sSLd "${text}"`;
         }
-        return `curl${headersString} -sSL "${this.hostname}${text}"`;
+        return `curl${headersString}${methodString} -sSL "${this.hostname}${text}"`;
       }
       if (this.method === 'POST') {
         return `curl${headersString} -X POST -sSLd "${text}"`;
       }
-      return `curl${headersString} -sSL "${this.hostname}/${this.network}${text}"`;
+      return `curl${headersString}${methodString} -sSL "${this.hostname}/${this.network}${text}"`;
     } else if (this.env.BASE_MODULE === 'liquid') {
       if (this.method === 'POST') {
         if (this.network !== 'liquid' || this.network === this.env.ROOT_NETWORK) {
@@ -302,9 +303,9 @@ yarn add @mempool/liquid.js`;
         }
         return `curl${headersString} -X POST -sSLd "${text}"`;
       }
-      return ( this.network === 'liquid' ? `curl${headersString} -sSL "${this.hostname}${text}"` : `curl${headersString} -sSL "${this.hostname}/${this.network}${text}"` );
+      return ( this.network === 'liquid' ? `curl${headersString}${methodString} -sSL "${this.hostname}${text}"` : `curl${headersString}${methodString} -sSL "${this.hostname}/${this.network}${text}"` );
     } else {
-        return `curl${headersString} -sSL "${this.hostname}${text}"`;
+        return `curl${headersString}${methodString} -sSL "${this.hostname}${text}"`;
     }
 
   }
