@@ -18,6 +18,8 @@ import {
   distinctUntilChanged
 } from 'rxjs/operators';
 import { Transaction } from '@interfaces/electrs.interface';
+import { isDebuggable } from '@app/shared/script-vm';
+import { scrollBehavior } from '@components/script-debugger/script-debugger.component';
 import { of, merge, Subscription, Observable, Subject, from, throwError, combineLatest, BehaviorSubject, timer } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 import { CacheService } from '@app/services/cache.service';
@@ -66,6 +68,8 @@ const DUPLICATE_TX_BLOCKS: Record<string, [number, number]> = {
   'e3bf3d07d4b0375638d5f1db5255fe07ba2c4cb067cd81b84ee974b6585fb468': [91722, 91880],
   'd5d27987d2a3dfc724e359870c6644b40e497bdc0589a033220fe15429d88599': [91812, 91842],
 };
+
+const NO_INPUTS: number[] = []; // one shared empty list, so the inputs list doesn't see a "change" on every check
 
 @Component({
   selector: 'app-transaction',
@@ -186,6 +190,9 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   private fragmentAnchor: string | null = null;
   private scrolledFragmentAnchor: string | null = null;
   private firstFragmentScroll = true;
+
+  debugVin: number | null = null;
+  private debuggableCache: { vin: Transaction['vin'], inputs: number[] } | null = null;
 
   @ViewChild('txList')
   set txListSetter(component: TransactionsListComponent | undefined) {
@@ -1077,7 +1084,32 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     return false;
   }
 
+  // inputs with a script the debugger can step through (not on Liquid, whose script rules differ)
+  get debuggableInputs(): number[] {
+    if (!this.tx || this.stateService.isLiquid()) {
+      return [];
+    }
+    // keyed on the inputs list: "Show more inputs" replaces tx.vin but keeps the same tx
+    if (this.debuggableCache?.vin !== this.tx.vin) {
+      this.debuggableCache = { vin: this.tx.vin, inputs: this.tx.vin.map((vin, i) => isDebuggable(vin) ? i : -1).filter(i => i >= 0) };
+    }
+    return this.debuggableCache.inputs;
+  }
+
+  openScriptDebugger(vinIndex: number): void {
+    this.debugVin = vinIndex;
+    setTimeout(() => {
+      document.getElementById('debug')?.scrollIntoView({ behavior: scrollBehavior() });
+      document.querySelector<HTMLElement>('app-script-debugger')?.focus({ preventScroll: true });
+    });
+  }
+
+  closeScriptDebugger(): void {
+    this.debugVin = null;
+  }
+
   resetTransaction() {
+    this.closeScriptDebugger();
     this.firstLoad = false;
     this.firstFragmentScroll = this.fragmentAnchor !== null;
     this.scrolledFragmentAnchor = null;
