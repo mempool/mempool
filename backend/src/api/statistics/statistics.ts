@@ -79,8 +79,13 @@ class Statistics {
 
     const weightVsizeFees: { [feePerWU: number]: number } = {};
     const lastItem = logFees.length - 1;
+    // breakdown of the 0-1 sat/vB band into 0.1 sat/vB steps (not on Liquid, where rates are scaled)
+    const subOneVsizes: number[] = new Array(10).fill(0);
 
     memPoolArray.forEach((transaction) => {
+      if (!Common.isLiquid() && transaction.effectiveFeePerVsize < 1) {
+        subOneVsizes[Math.min(9, Math.floor(transaction.effectiveFeePerVsize * 10 + 1e-9))] += transaction.vsize;
+      }
       for (let i = 0; i < logFees.length; i++) {
         if (
           (Common.isLiquid() && (i === lastItem || transaction.effectiveFeePerVsize * 10 < logFees[i + 1]))
@@ -111,6 +116,16 @@ class Statistics {
         fee_data: '',
         min_fee: minFee,
         vsize_0: weightVsizeFees['0'] || 0,
+        vsize_0_0: subOneVsizes[0],
+        vsize_0_1: subOneVsizes[1],
+        vsize_0_2: subOneVsizes[2],
+        vsize_0_3: subOneVsizes[3],
+        vsize_0_4: subOneVsizes[4],
+        vsize_0_5: subOneVsizes[5],
+        vsize_0_6: subOneVsizes[6],
+        vsize_0_7: subOneVsizes[7],
+        vsize_0_8: subOneVsizes[8],
+        vsize_0_9: subOneVsizes[9],
         vsize_1: weightVsizeFees['1'] || 0,
         vsize_2: weightVsizeFees['2'] || 0,
         vsize_3: weightVsizeFees['3'] || 0,
