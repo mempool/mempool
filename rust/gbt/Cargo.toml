@@ -14,8 +14,8 @@ crate-type = ["cdylib"]
 [dependencies]
 priority-queue = "2.0.2"
 bytes = "1.4.0"
-napi = { version = "2", features = ["napi8", "tokio_rt"] }
-napi-derive = "2"
+napi = { version = "3", features = ["napi8", "tokio_rt"] }
+napi-derive = "3"
 bytemuck = "1.13.1"
 tracing = "0.1.36"
 tracing-log = "0.2.0"

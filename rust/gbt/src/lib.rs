@@ -39,7 +39,7 @@ pub struct GbtGenerator {
     max_blocks: usize,
 }
 
-#[napi::module_init]
+#[napi_derive::module_init]
 fn init() {
     // Set all `tracing` logs to print to STDOUT
     // Note: Passing RUST_LOG env variable to the node process
