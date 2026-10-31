@@ -2,18 +2,19 @@ import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
-import { switchMap, filter, catchError, map, tap } from 'rxjs/operators';
+import { switchMap, filter, catchError, map, tap, expand, last } from 'rxjs/operators';
 import { Address, ChainStats, Transaction, Utxo, Vin } from '@interfaces/electrs.interface';
 import { WebsocketService } from '@app/services/websocket.service';
 import { StateService } from '@app/services/state.service';
 import { AudioService } from '@app/services/audio.service';
 import { ApiService } from '@app/services/api.service';
-import { of, merge, Subscription, Observable, forkJoin } from 'rxjs';
+import { of, merge, Subscription, Observable, forkJoin, Subject, EMPTY } from 'rxjs';
 import { SeoService } from '@app/services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { AddressInformation } from '@interfaces/node-api.interface';
 import { AddressTypeInfo } from '@app/shared/address-utils';
 import { extractTapLeaves, fillTapTree, convertTextToBuffer, PsbtKeyValue } from '@app/shared/transaction.utils';
+import { HttpResponse } from '@angular/common/http';
 
 class AddressStats implements ChainStats {
   address: string;
@@ -91,6 +92,24 @@ class AddressStats implements ChainStats {
   }
 }
 
+// Filtered pages are completed client side, since electrs may stop scanning before filling a page
+const TX_PAGE_SIZE = 50;
+const MAX_SCAN_REQUESTS = 10;
+
+interface TxPage {
+  transactions: Transaction[];
+  cursor: string;      // after_txid for the next request, empty when there are no more transactions
+  truncated: boolean;  // electrs hit its scan limit before filling the page
+}
+
+export interface TxFilters {
+  direction?: 'incoming' | 'outgoing';
+  min?: string;
+  max?: string;
+  from?: string;
+  to?: string;
+}
+
 @Component({
   selector: 'app-address',
   templateUrl: './address.component.html',
@@ -138,9 +157,19 @@ export class AddressComponent implements OnInit, OnDestroy {
   now = Date.now() / 1000;
   balancePeriod: 'all' | '1m' = 'all';
 
+  filters$: Subject<TxFilters> = new Subject();
+  filters: TxFilters;
+  filtersSubscription: Subscription;
+  loadMoreSubscription: Subscription;
+  draftFilters: TxFilters = {};
+  showFilters = false;
+  rangeMode: 'date' | 'height' = 'date';
+  amountUnit: 'sats' | 'btc' = this.stateService.viewAmountMode$.value === 'sats' ? 'sats' : 'btc';
+  amountInputs: { min: string, max: string } = { min: '', max: '' };
+
   private tempTransactions: Transaction[];
   private timeTxIndexes: number[];
-  private lastTransactionTxId: string;
+  private nextTxCursor: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -246,104 +275,13 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.address = address;
           this.updateChainStats();
           this.isLoadingAddress = false;
-          this.isLoadingTransactions = true;
-          const utxoCount = this.chainStats.utxos + this.mempoolStats.utxos;
-          return forkJoin([
-            address.is_pubkey
-              ? this.electrsApiService.getScriptHashTransactions$((address.address.length === 66 ? '21' : '41') + address.address + 'ac')
-              : this.electrsApiService.getAddressTransactions$(address.address),
-            (utxoCount > 2 && utxoCount <= 500 ? (address.is_pubkey
-              ? this.electrsApiService.getScriptHashUtxos$((address.address.length === 66 ? '21' : '41') + address.address + 'ac')
-              : this.electrsApiService.getAddressUtxos$(address.address)) : of(null)).pipe(
-                catchError(() => {
-                  return of(null);
-                })
-              )
-          ]);
-        }),
-        switchMap(([transactions, utxos]) => {
-          this.utxos = utxos;
-
-          this.tempTransactions = transactions;
-          if (transactions.length) {
-            this.lastTransactionTxId = transactions[transactions.length - 1].txid;
-          }
-
-          const fetchTxs: string[] = [];
-          this.timeTxIndexes = [];
-          transactions.forEach((tx, index) => {
-            if (!tx.status.confirmed) {
-              fetchTxs.push(tx.txid);
-              this.timeTxIndexes.push(index);
-            }
-          });
-          if (!fetchTxs.length) {
-            return of([]);
-          }
-          return this.apiService.getTransactionTimes$(fetchTxs).pipe(
-            catchError((err) => {
-              this.isLoadingAddress = false;
-              this.isLoadingTransactions = false;
-              this.error = err;
-              this.seoService.logSoft404();
-              console.log(err);
-              return of([]);
-            })
-          );
+          return this.loadFirstPage$();
         })
       )
-      .subscribe((times: number[] | null) => {
-        if (!times) {
-          return;
-        }
-        times.forEach((time, index) => {
-          this.tempTransactions[this.timeTxIndexes[index]].firstSeen = time;
-        });
-        this.tempTransactions.sort((a, b) => {
-          if (b.status.confirmed) {
-            if (b.status.block_height === a.status.block_height) {
-              return b.status.block_time - a.status.block_time;
-            }
-            return b.status.block_height - a.status.block_height;
-          }
-          return b.firstSeen - a.firstSeen;
-        });
-
-        this.transactions = this.tempTransactions;
-        if (this.transactions.length === (this.mempoolStats.tx_count + this.chainStats.tx_count)) {
-          this.fullyLoaded = true;
-        }
-        this.isLoadingTransactions = false;
-
-        const addressVin: Vin[] = [];
-        const vinIds: string[] = [];
-        for (const tx of this.transactions) {
-          tx.vin.forEach((v, index) => {
-            if (v.prevout?.scriptpubkey_address === this.address.address) {
-              addressVin.push(v);
-              vinIds.push(`${tx.txid}:${index}`);
-            }
-          });
-        }
-        this.addressTypeInfo.processInputs(addressVin, vinIds);
-        if (this.addressTypeInfo.type === 'v1_p2tr' && !this.addressTypeInfo.tapscript) {
-          this.setTapTreeIncomplete(true);
-        }
-        // hack to trigger change detection
-        this.addressTypeInfo = this.addressTypeInfo.clone();
-
-        if (!this.showBalancePeriod()) {
-          this.setBalancePeriod('all');
-        } else {
-          this.setBalancePeriod('1m');
-        }
-      },
-      (error) => {
-        console.log(error);
-        this.error = error;
-        this.seoService.logSoft404();
-        this.isLoadingAddress = false;
-      });
+      .subscribe(
+        (times) => this.onTransactionsLoaded(times),
+        (error) => this.onTransactionsError(error),
+      );
 
     this.mempoolTxSubscription = this.stateService.mempoolTransactions$
       .subscribe(tx => {
@@ -373,6 +311,160 @@ export class AddressComponent implements OnInit, OnDestroy {
         }
         this.chainStats.addTx(transaction);
       });
+
+    this.filtersSubscription = this.filters$.pipe(
+      tap((filters) => {
+        this.filters = {
+          ...this.filters,
+          ...filters
+        };
+      }),
+      switchMap(() => this.loadFirstPage$()),
+    ).subscribe(
+      (times) => this.onTransactionsLoaded(times),
+      (error) => this.onTransactionsError(error),
+    );
+  }
+
+  // Loads the first page of transactions and utxos, and returns the first seen times of unconfirmed transactions
+  private loadFirstPage$(): Observable<number[]> {
+    this.loadMoreSubscription?.unsubscribe();
+    this.isLoadingTransactions = true;
+    this.fullyLoaded = false;
+    const utxoCount = this.chainStats.utxos + this.mempoolStats.utxos;
+    return forkJoin([
+      this.fetchTxPage$(),
+      (utxoCount > 2 && utxoCount <= 500 ? (this.address.is_pubkey
+        ? this.electrsApiService.getScriptHashUtxos$(this.getPubkeyScript())
+        : this.electrsApiService.getAddressUtxos$(this.address.address)) : of(null)).pipe(
+          catchError(() => {
+            return of(null);
+          })
+        )
+    ]).pipe(
+      switchMap(([page, utxos]) => {
+        this.utxos = utxos;
+        this.tempTransactions = page.transactions;
+        this.nextTxCursor = page.cursor;
+        this.fullyLoaded = !page.cursor;
+
+        const fetchTxs: string[] = [];
+        this.timeTxIndexes = [];
+        page.transactions.forEach((tx, index) => {
+          if (!tx.status.confirmed) {
+            fetchTxs.push(tx.txid);
+            this.timeTxIndexes.push(index);
+          }
+        });
+        if (!fetchTxs.length) {
+          return of([]);
+        }
+        return this.apiService.getTransactionTimes$(fetchTxs).pipe(
+          catchError((err) => {
+            this.isLoadingAddress = false;
+            this.isLoadingTransactions = false;
+            this.error = err;
+            this.seoService.logSoft404();
+            console.log(err);
+            return of([]);
+          })
+        );
+      })
+    );
+  }
+
+  // Requests pages until it has a full one, electrs finished scanning, or MAX_SCAN_REQUESTS is reached
+  private fetchTxPage$(afterTxid?: string): Observable<TxPage> {
+    const request$ = (cursor?: string) => (this.address.is_pubkey
+      ? this.electrsApiService.getFilteredScriptHashTransactions$(this.getPubkeyScript(), cursor, this.filters)
+      : this.electrsApiService.getFilteredAddressTransactions$(this.address.address, cursor, this.filters)
+    ).pipe(
+      map((response) => this.toTxPage(response)),
+    );
+
+    return request$(afterTxid).pipe(
+      expand((page, index) => {
+        const requestsDone = index + 1;
+        if (!page.truncated || page.transactions.length >= TX_PAGE_SIZE || requestsDone >= MAX_SCAN_REQUESTS) {
+          return EMPTY;
+        }
+        return request$(page.cursor).pipe(
+          map((nextPage) => ({ ...nextPage, transactions: page.transactions.concat(nextPage.transactions) })),
+        );
+      }),
+      last(),
+    );
+  }
+
+  // Electrs stops scanning after 10k txs; when it does, the next page must continue from the last scanned tx
+  private toTxPage(response: HttpResponse<Transaction[]>): TxPage {
+    const transactions = response.body || [];
+    const lastScannedTxid = response.headers.get('X-Last-Scanned-Txid');
+    // Without a last scanned txid we can't resume the scan, so treat it as a regular page
+    const truncated = response.headers.get('X-Scan-Truncated') === 'true' && !!lastScannedTxid;
+    return {
+      transactions,
+      truncated,
+      cursor: truncated ? lastScannedTxid : transactions[transactions.length - 1]?.txid,
+    };
+  }
+
+  private getPubkeyScript(): string {
+    return (this.address.address.length === 66 ? '21' : '41') + this.address.address + 'ac';
+  }
+
+  private onTransactionsLoaded(times: number[] | null): void {
+    if (!times) {
+      return;
+    }
+    times.forEach((time, index) => {
+      this.tempTransactions[this.timeTxIndexes[index]].firstSeen = time;
+    });
+    this.tempTransactions.sort((a, b) => {
+      if (b.status.confirmed) {
+        if (b.status.block_height === a.status.block_height) {
+          return b.status.block_time - a.status.block_time;
+        }
+        return b.status.block_height - a.status.block_height;
+      }
+      return b.firstSeen - a.firstSeen;
+    });
+
+    this.transactions = this.tempTransactions;
+    if (this.transactions.length === (this.mempoolStats.tx_count + this.chainStats.tx_count)) {
+      this.fullyLoaded = true;
+    }
+    this.isLoadingTransactions = false;
+
+    const addressVin: Vin[] = [];
+    const vinIds: string[] = [];
+    for (const tx of this.transactions) {
+      tx.vin.forEach((v, index) => {
+        if (v.prevout?.scriptpubkey_address === this.address.address) {
+          addressVin.push(v);
+          vinIds.push(`${tx.txid}:${index}`);
+        }
+      });
+    }
+    this.addressTypeInfo.processInputs(addressVin, vinIds);
+    if (this.addressTypeInfo.type === 'v1_p2tr' && !this.addressTypeInfo.tapscript) {
+      this.setTapTreeIncomplete(true);
+    }
+    // hack to trigger change detection
+    this.addressTypeInfo = this.addressTypeInfo.clone();
+
+    if (!this.showBalancePeriod()) {
+      this.setBalancePeriod('all');
+    } else {
+      this.setBalancePeriod('1m');
+    }
+  }
+
+  private onTransactionsError(error: any): void {
+    console.log(error);
+    this.error = error;
+    this.seoService.logSoft404();
+    this.isLoadingAddress = false;
   }
 
   addTransaction(transaction: Transaction, playSound: boolean = true): boolean {
@@ -493,16 +585,11 @@ export class AddressComponent implements OnInit, OnDestroy {
     }
     this.isLoadingTransactions = true;
     this.retryLoadMore = false;
-    (this.address.is_pubkey
-    ? this.electrsApiService.getScriptHashTransactions$((this.address.address.length === 66 ? '21' : '41') + this.address.address + 'ac', this.lastTransactionTxId)
-    : this.electrsApiService.getAddressTransactions$(this.address.address, this.lastTransactionTxId))
-      .subscribe((transactions: Transaction[]) => {
-        if (transactions && transactions.length) {
-          this.lastTransactionTxId = transactions[transactions.length - 1].txid;
-          this.transactions = this.transactions.concat(transactions);
-        } else {
-          this.fullyLoaded = true;
-        }
+    this.loadMoreSubscription = this.fetchTxPage$(this.nextTxCursor)
+      .subscribe((page: TxPage) => {
+        this.transactions = this.transactions.concat(page.transactions);
+        this.nextTxCursor = page.cursor;
+        this.fullyLoaded = !page.cursor;
         this.isLoadingTransactions = false;
       },
       (error) => {
@@ -652,6 +739,98 @@ export class AddressComponent implements OnInit, OnDestroy {
     }
   }
 
+  setFilters(filters: TxFilters) {
+    this.filters$.next(filters);
+  }
+
+  hasInvalidFilters(): boolean {
+    const isInvalidRange = (lower?: string, upper?: string) => !!lower && !!upper && Number(lower) > Number(upper);
+    const { min, max, from, to } = this.draftFilters;
+    return isInvalidRange(min, max) || isInvalidRange(from, to);
+  }
+
+  applyFilters() {
+    if (this.hasPendingFilters() && !this.hasInvalidFilters()) {
+      this.setFilters({ ...this.draftFilters });
+    }
+  }
+
+  setDraftFilter<K extends keyof TxFilters>(key: K, value: TxFilters[K]) {
+    this.draftFilters = { ...this.draftFilters, [key]: value };
+  }
+
+  hasActiveFilters(): boolean {
+    return Object.values(this.filters || {}).some((value) => !!value);
+  }
+
+  hasPendingFilters(): boolean {
+    const keys: (keyof TxFilters)[] = ['direction', 'min', 'max', 'from', 'to'];
+    return keys.some((key) => (this.draftFilters[key] || '') !== (this.filters?.[key] || ''));
+  }
+
+  // Amount filters are always stored in sats, the inputs keep what the user typed in the selected unit
+  setAmountFilter(key: 'min' | 'max', value: string) {
+    this.amountInputs = { ...this.amountInputs, [key]: value };
+    const amount = Number(value);
+    if (!value || isNaN(amount) || amount < 0) {
+      this.setDraftFilter(key, '');
+    } else {
+      this.setDraftFilter(key, Math.round(this.amountUnit === 'btc' ? amount * 100_000_000 : amount).toString());
+    }
+  }
+
+  toggleAmountUnit() {
+    this.amountUnit = this.amountUnit === 'btc' ? 'sats' : 'btc';
+    const toInput = (sats?: string) => {
+      if (!sats) {
+        return '';
+      }
+      return this.amountUnit === 'btc' ? (Number(sats) / 100_000_000).toFixed(8).replace(/\.?0+$/, '') : sats;
+    };
+    this.amountInputs = { min: toInput(this.draftFilters.min), max: toInput(this.draftFilters.max) };
+  }
+
+  // The backend treats from/to values below 500M as block heights and the rest as unix timestamps
+  toggleRangeMode() {
+    this.rangeMode = this.rangeMode === 'date' ? 'height' : 'date';
+    this.draftFilters = { ...this.draftFilters, from: '', to: '' };
+  }
+
+  setRangeFilter(key: 'from' | 'to', value: string) {
+    let filterValue = '';
+    if (value && this.rangeMode === 'date') {
+      // Include the whole selected day (local time) in the range
+      const date = new Date(`${value}T${key === 'from' ? '00:00:00' : '23:59:59'}`);
+      if (!isNaN(date.getTime())) {
+        filterValue = Math.floor(date.getTime() / 1000).toString();
+      }
+    } else if (value) {
+      const height = parseInt(value, 10);
+      if (height >= 0 && height < 500_000_000) {
+        filterValue = height.toString();
+      }
+    }
+    this.setDraftFilter(key, filterValue);
+  }
+
+  rangeInputValue(key: 'from' | 'to'): string {
+    const value = this.draftFilters[key];
+    if (!value) {
+      return '';
+    }
+    if (this.rangeMode === 'height') {
+      return value;
+    }
+    const date = new Date(parseInt(value, 10) * 1000);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  }
+
+  resetFilters() {
+    this.draftFilters = {};
+    this.amountInputs = { min: '', max: '' };
+    this.setFilters({ direction: undefined, min: '', max: '', from: '', to: '' });
+  }
+
   ngOnDestroy(): void {
     this.mainSubscription.unsubscribe();
     this.mempoolTxSubscription.unsubscribe();
@@ -662,5 +841,7 @@ export class AddressComponent implements OnInit, OnDestroy {
     this.networkChangeSubscription?.unsubscribe();
     this.accelerationsSubscription?.unsubscribe();
     this.websocketService.stopTrackAccelerations();
+    this.filtersSubscription?.unsubscribe();
+    this.loadMoreSubscription?.unsubscribe();
   }
 }

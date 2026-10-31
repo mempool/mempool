@@ -136,13 +136,76 @@
     </ng-container>
 
     <br>
-    <div class="title-tx">
+    <div class="title-tx title-tx-filters">
       <h2 class="text-start">
         <ng-template [ngIf]="!transactions?.length">&nbsp;</ng-template>
         <ng-template i18n="X of X Address Transaction" [ngIf]="transactions?.length === 1">{{ (transactions?.length | number) || '?' }} of {{ mempoolStats.tx_count + chainStats.tx_count | number }} transaction</ng-template>
         <ng-template i18n="X of X Address Transactions (Plural)" [ngIf]="transactions?.length > 1">{{ (transactions?.length | number) || '?' }} of {{ mempoolStats.tx_count + chainStats.tx_count | number }} transactions</ng-template>
       </h2>
+      <button type="button" class="btn filters-toggle" [class.open]="showFilters" [class.filters-active]="hasActiveFilters()" (click)="showFilters = !showFilters"
+        i18n-ngbTooltip="address.filters.toggle" ngbTooltip="Filter transactions" placement="bottom" [attr.aria-expanded]="showFilters">
+        <fa-icon [icon]="['fas', 'filter']" [fixedWidth]="true"></fa-icon>
+      </button>
     </div>
+
+    <form *ngIf="showFilters" class="tx-filters" (submit)="$event.preventDefault(); applyFilters()">
+      <div class="filter-group">
+        <span class="filter-label" i18n="address.filters.direction">Direction</span>
+        <div class="btn-group" role="group">
+          <input type="radio" class="btn-check" name="tx-direction" id="tx-direction-all" [checked]="!draftFilters.direction" (change)="setDraftFilter('direction', undefined)">
+          <label class="btn btn-primary btn-sm" for="tx-direction-all" i18n="all">All</label>
+          <input type="radio" class="btn-check" name="tx-direction" id="tx-direction-incoming" [checked]="draftFilters.direction === 'incoming'" (change)="setDraftFilter('direction', 'incoming')">
+          <label class="btn btn-primary btn-sm" for="tx-direction-incoming" i18n="address.filters.incoming">Incoming</label>
+          <input type="radio" class="btn-check" name="tx-direction" id="tx-direction-outgoing" [checked]="draftFilters.direction === 'outgoing'" (change)="setDraftFilter('direction', 'outgoing')">
+          <label class="btn btn-primary btn-sm" for="tx-direction-outgoing" i18n="address.filters.outgoing">Outgoing</label>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-label" i18n="dashboard.latest-transactions.amount">Amount</span>
+        <div class="input-group input-group-sm range-input amount-range">
+          <input type="number" min="0" [attr.step]="amountUnit === 'btc' ? '0.00000001' : '1'" class="form-control" placeholder="Min" i18n-placeholder="address.filters.min" [value]="amountInputs.min" (input)="setAmountFilter('min', $any($event.target).value)">
+          <span class="input-group-text">–</span>
+          <input type="number" min="0" [attr.step]="amountUnit === 'btc' ? '0.00000001' : '1'" class="form-control" placeholder="Max" i18n-placeholder="address.filters.max" [value]="amountInputs.max" (input)="setAmountFilter('max', $any($event.target).value)">
+          <button type="button" class="input-group-text unit-toggle" (click)="toggleAmountUnit()" i18n-title="address.filters.toggle-unit" title="Switch between sats and BTC">
+            @if (amountUnit === 'btc') {
+              <ng-container i18n="shared.btc|BTC">BTC</ng-container>
+            } @else {
+              <ng-container i18n="shared.sats">sats</ng-container>
+            }
+          </button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-label" i18n="address.filters.range">Range</span>
+        <div class="input-group input-group-sm range-input block-range">
+          @if (rangeMode === 'date') {
+            <input type="date" class="form-control" min="2009-01-03" [value]="rangeInputValue('from')" (change)="setRangeFilter('from', $any($event.target).value)">
+            <span class="input-group-text">–</span>
+            <input type="date" class="form-control" min="2009-01-03" [value]="rangeInputValue('to')" (change)="setRangeFilter('to', $any($event.target).value)">
+          } @else {
+            <input type="number" min="0" max="499999999" step="1" class="form-control" placeholder="From block" i18n-placeholder="address.filters.from-block" [value]="rangeInputValue('from')" (input)="setRangeFilter('from', $any($event.target).value)">
+            <span class="input-group-text">–</span>
+            <input type="number" min="0" max="499999999" step="1" class="form-control" placeholder="To block" i18n-placeholder="address.filters.to-block" [value]="rangeInputValue('to')" (input)="setRangeFilter('to', $any($event.target).value)">
+          }
+          <button type="button" class="input-group-text unit-toggle" (click)="toggleRangeMode()" i18n-title="address.filters.toggle-range-mode" title="Switch between date and block height">
+            @if (rangeMode === 'date') {
+              <ng-container i18n="shared.date">Date</ng-container>
+            } @else {
+              <ng-container i18n="latest-blocks.height">Height</ng-container>
+            }
+          </button>
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        @if (hasActiveFilters()) {
+          <button type="button" class="btn btn-sm btn-outline-info" (click)="resetFilters()" i18n="Search Clear Button">Clear</button>
+        }
+        <button type="submit" class="btn btn-sm btn-purple" [disabled]="!hasPendingFilters() || hasInvalidFilters()" i18n="address.filters.apply">Apply</button>
+      </div>
+    </form>
 
     <app-transactions-list [transactions]="transactions" [showConfirmations]="true" [addresses]="[address.address]" [acceleratedTxids]="acceleratedTxids" (loadMore)="loadMore()"></app-transactions-list>
 
