@@ -150,3 +150,20 @@ $box-bg: color.mix($aqua-deep, $dark-green, 22%);
   background-color: var(--search-button-focus);
   border-color: var(--search-button);
 }
+
+/* Keep Mempool Accelerator elements in the default purple */
+app-accelerate-checkout,
+app-accelerate-fee-graph,
+app-acceleration-timeline,
+app-acceleration-timeline-tooltip,
+.badge-accelerated,
+.accelerate,
+.accelerateDeepMempool,
+.btn-accelerate,
+td:has(> a[href$="#accelerator-pro"]) {
+  --tertiary: #6225b2;
+  --search-button: #4d2d77;
+  --search-button-border: #472a6e;
+  --search-button-focus: #533180;
+  --search-button-shadow: #7c58ab80;
+}
