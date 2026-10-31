@@ -24,8 +24,16 @@ export interface PoolInfo {
   poolUniqueId: number;
 }
 
-export interface PoolStats extends PoolInfo {
+// only $getPoolsInfoPerInterval selects the BIP-54 count, so the other PoolInfo producers
+// must not claim to return it
+export interface PoolIntervalInfo extends PoolInfo {
+  bip54BlockCount: number;
+  bip54PendingCount: number; // not yet tagged by the backfill, internal only
+}
+
+export interface PoolStats extends Omit<PoolIntervalInfo, 'bip54PendingCount'> {
   rank: number;
+  bip54Recent: boolean | null;
 }
 
 export enum TemplateAlgorithm {

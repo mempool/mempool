@@ -30,6 +30,8 @@ export class Common {
   static nativeAssetId = config.MEMPOOL.NETWORK === 'liquidtestnet' ?
     '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49'
   : '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
+  // blocks before this can't carry a BIP-54 coinbase, so they are never tagged
+  static timeFirstMainnetBip54Coinbase = 1771507776;
 
   static isLiquid(): boolean {
     return config?.MEMPOOL?.NETWORK === 'liquid' || config?.MEMPOOL?.NETWORK === 'liquidtestnet';
@@ -1186,8 +1188,7 @@ export class Common {
       return null;
     }
 
-    const timeFirstMainnetBip54Coinbase = 1771507776;
-    if (block.timestamp < timeFirstMainnetBip54Coinbase) {
+    if (block.timestamp < Common.timeFirstMainnetBip54Coinbase) {
       return null;
     }
 
