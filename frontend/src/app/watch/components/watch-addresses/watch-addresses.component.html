@@ -1,0 +1,53 @@
+<div class="title-tx address-title">
+  <h2 class="text-start" i18n="watch.addresses">Addresses</h2>
+  <div class="address-summary" i18n="watch.address-summary">
+    <span *ngIf="!isAddressList"><strong>{{ stats.total }}</strong> derived</span>
+    <span *ngIf="isAddressList"><strong>{{ stats.total }}</strong> listed</span>
+    <span><strong>{{ stats.used }}</strong> used</span>
+    <span><strong>{{ stats.funded }}</strong> with balance</span>
+  </div>
+</div>
+<div class="box">
+  <div class="explorer-controls">
+    <select *ngIf="!isAddressList" class="form-select form-select-sm" [(ngModel)]="chainFilter" (ngModelChange)="applyFilters()" aria-label="Chain" i18n-aria-label="watch.filter-chain">
+      <option value="all" i18n="watch.filter-all-chains">Receive and change</option>
+      <option value="receive" i18n="watch.filter-receive">Receive only</option>
+      <option value="change" i18n="watch.filter-change">Change only</option>
+    </select>
+    <select class="form-select form-select-sm" [(ngModel)]="usageFilter" (ngModelChange)="applyFilters()" aria-label="Usage" i18n-aria-label="watch.filter-usage">
+      <option value="all" i18n="watch.filter-all-usage">Used and unused</option>
+      <option value="unused" i18n="watch.filter-unused">Unused only</option>
+      <option value="used" i18n="watch.filter-used">Used only</option>
+    </select>
+    <label class="form-check mb-0">
+      <input class="form-check-input" type="checkbox" [(ngModel)]="fundedOnly" (ngModelChange)="applyFilters()">
+      <span class="form-check-label" i18n="watch.filter-funded">With balance</span>
+    </label>
+  </div>
+  <p class="text-muted mb-0" *ngIf="!visible.length" i18n="watch.no-matching-addresses">No addresses match these filters.</p>
+  <div class="table-responsive" *ngIf="visible.length">
+    <table class="table table-borderless table-striped table-sm">
+      <thead>
+        <tr>
+          <th i18n="watch.address">Address</th>
+          <th *ngIf="!isAddressList" i18n="watch.derivation-path">Path</th>
+          <th class="text-end" i18n="watch.balance">Balance</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of visible; trackBy: trackByAddress" [class.used-address]="row.used">
+          <td class="address-cell">
+            <span class="status-dot" [class.used]="row.used" [title]="row.used ? usedLabel : unusedLabel" aria-hidden="true"></span>
+            <span class="visually-hidden">{{ row.used ? usedLabel : unusedLabel }}</span>
+            <a [routerLink]="['/address/' | relativeUrl, row.derived.address]">{{ row.derived.address }}</a>
+            <app-clipboard [text]="row.derived.address" size="small"></app-clipboard>
+          </td>
+          <td *ngIf="!isAddressList" class="path-cell">{{ row.path }}</td>
+          <td class="text-end balance-cell" [class.zero-balance]="row.balance === 0">
+            <app-amount [satoshis]="row.balance" [noFiat]="true"></app-amount>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

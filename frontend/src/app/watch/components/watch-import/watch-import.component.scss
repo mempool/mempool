@@ -1,0 +1,16 @@
+.import {
+  max-width: 720px;
+  margin-bottom: 1.5rem;
+}
+.import-cancel {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: .5rem;
+}
+textarea.form-control { font-family: monospace; font-size: .85rem; word-break: break-all; }
+.detected-hint { color: var(--primary); }
+.privacy-note {
+  margin: 1rem 0 0;
+  color: var(--transparent-fg);
+  font-size: .8rem;
+}

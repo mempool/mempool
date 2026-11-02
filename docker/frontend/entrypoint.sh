@@ -60,6 +60,8 @@ __SERVICES_API__=${SERVICES_API:=https://mempool.space/api/v1/services}
 __PUBLIC_ACCELERATIONS__=${PUBLIC_ACCELERATIONS:=false}
 __HISTORICAL_PRICE__=${HISTORICAL_PRICE:=true}
 __ADDITIONAL_CURRENCIES__=${ADDITIONAL_CURRENCIES:=false}
+__WALLET_ENABLED__=${WALLET_ENABLED:=false}
+__WALLET_REQUIRES_INVITE__=${WALLET_REQUIRES_INVITE:=false}
 __STRATUM_ENABLED__=${STRATUM_ENABLED:=false}
 
 # Export as environment variables to be used by envsubst
@@ -100,6 +102,8 @@ export __SERVICES_API__
 export __PUBLIC_ACCELERATIONS__
 export __HISTORICAL_PRICE__
 export __ADDITIONAL_CURRENCIES__
+export __WALLET_ENABLED__
+export __WALLET_REQUIRES_INVITE__
 export __STRATUM_ENABLED__
 
 folder=$(find /var/www/mempool -name "config.js" | xargs dirname)
