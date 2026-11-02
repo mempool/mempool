@@ -58,11 +58,11 @@ class WebsocketHandler {
 
   private accelerations: Record<string, Acceleration> = {};
 
-  private MAX_BUFFERED_AMOUNT = 10_000_000;
-  public MAX_MESSAGE_SIZE = 50_000;
-  private MAX_TRACKED_TXS = 100;
-  private MSG_RATE_LIMIT = 100;
-  private MSG_RATE_WINDOW = 10_000;
+  private MAX_BUFFERED_AMOUNT = config.MEMPOOL.MAX_BUFFERED_AMOUNT;
+  public MAX_MESSAGE_SIZE = config.MEMPOOL.MAX_MESSAGE_SIZE;
+  private MAX_TRACKED_TXS = config.MEMPOOL.MAX_TRACKED_TXS;
+  private MSG_RATE_LIMIT = config.MEMPOOL.MSG_RATE_LIMIT;
+  private MSG_RATE_WINDOW = config.MEMPOOL.MSG_RATE_WINDOW;
 
   constructor() { }
 
