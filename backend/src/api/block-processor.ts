@@ -152,7 +152,19 @@ class BlockProcessor {
       );
     }
 
-    const auditResult = Audit.auditBlock(block.height, transactions, projectedBlocks, auditMempool);
+    const poolAccelerated = Audit.getPoolAcceleratedTxids(auditMempool, accelerations, pool.uniqueId);
+    const auditResult = Audit.auditBlock(transactions, projectedBlocks, auditMempool, poolAccelerated);
+
+    // copy rather than mutate, since projectedBlocks may be the live mempool blocks on GBT failure
+    if (projectedBlocks[0]?.transactions) {
+      projectedBlocks = [
+        {
+          ...projectedBlocks[0],
+          transactions: projectedBlocks[0].transactions.map(tx => ({ ...tx, acc: poolAccelerated.has(tx.txid) || undefined })),
+        },
+        ...projectedBlocks.slice(1),
+      ];
+    }
 
     const stripped = projectedBlocks[0]?.transactions ? projectedBlocks[0].transactions : [];
 
