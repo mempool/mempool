@@ -1,4 +1,4 @@
-package-lock.json
+/package-lock.json
 index.js
 index.d.ts
 *.node

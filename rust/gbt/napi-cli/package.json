@@ -1,0 +1,8 @@
+{
+  "name": "gbt-napi-cli",
+  "private": true,
+  "description": "Pinned @napi-rs/cli build tooling for rust/gbt",
+  "dependencies": {
+    "@napi-rs/cli": "3.10.8"
+  }
+}
