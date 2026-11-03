@@ -19,6 +19,8 @@ export function describeInputError(code: InputErrorCode, params: InputErrorParam
       return $localize`:@@watch.error.xpub-length:Malformed extended key: unexpected length.`;
     case 'xpub-checksum':
       return $localize`:@@watch.error.xpub-checksum:Invalid extended key: checksum does not match. Check for a typo.`;
+    case 'xpub-multisig-key':
+      return $localize`:@@watch.error.xpub-multisig-key:A ${p.prefix}:prefix: key is one cosigner of a multisig wallet. Import the wallet's output descriptor instead.`;
     case 'xpub-version':
       return $localize`:@@watch.error.xpub-version:Extended key version bytes do not match its "${p.prefix}:prefix:" prefix.`;
     case 'descriptor-character':
@@ -60,7 +62,7 @@ export function describeInputError(code: InputErrorCode, params: InputErrorParam
     case 'descriptor-multipath-values':
       return $localize`:@@watch.error.descriptor-multipath-values:The multipath element must be <0;1> (receive and change), not ${p.element}:element:.`;
     case 'descriptor-path-steps':
-      return $localize`:@@watch.error.descriptor-path-steps:Only keys ending in /<0;1>/* are supported, with no derivation steps between the key and <0;1>.`;
+      return $localize`:@@watch.error.descriptor-path-steps:Only keys ending in /<0;1>/* are supported, with no derivation steps between the key and <0;1>. A multisig cosigner may instead end in one fixed step, such as /0/*.`;
     case 'descriptor-whitespace':
       return $localize`:@@watch.error.descriptor-whitespace:Descriptors cannot contain spaces or line breaks. Paste the descriptor exactly as your wallet exported it.`;
     case 'descriptor-checksum-present':
@@ -80,7 +82,7 @@ export function describeInputError(code: InputErrorCode, params: InputErrorParam
     case 'descriptor-multisig-duplicate':
       return $localize`:@@watch.error.descriptor-multisig-duplicate:The same key appears more than once in this multisig.`;
     case 'descriptor-multipath-mixed':
-      return $localize`:@@watch.error.descriptor-multipath-mixed:All keys must use the same path ending: …/<0;1>/*, or all …/0/* or all …/1/*.`;
+      return $localize`:@@watch.error.descriptor-multipath-mixed:Some keys end in …/0/* and others in …/1/*. Use …/<0;1>/* for the keys that have receive and change paths.`;
     case 'descriptor-function':
       return $localize`:@@watch.error.descriptor-function:"${p.fn}:fn:()" descriptors are not supported. Use pkh, sh(wpkh), wpkh, tr, or multi/sortedmulti inside wsh, sh(wsh) or sh.`;
     case 'descriptor-no-multipath':

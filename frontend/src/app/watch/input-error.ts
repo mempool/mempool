@@ -9,6 +9,7 @@ export type InputErrorCode =
   | 'xpub-length'
   | 'xpub-checksum'
   | 'xpub-version'
+  | 'xpub-multisig-key'
   | 'descriptor-character'
   | 'descriptor-checksum'
   | 'address-other-network'

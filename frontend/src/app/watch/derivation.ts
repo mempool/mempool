@@ -106,10 +106,11 @@ export function prepareInput(rawInput: string, network: WatchNetwork, scriptType
     if (!keyMatchesNetwork(norm.keyNetwork, network)) {
       throw new InputError('key-network', { keyNetwork: norm.keyNetwork, network: network });
     }
-    const bareType = scriptTypeHint ?? norm.scriptType;
-    if (!bareType) {
-      throw new InputError('unrecognized-input');
+    if (!norm.scriptType) {
+      // A Ypub/Zpub is one cosigner of a multisig; the other keys and threshold are in the descriptor.
+      throw new InputError('xpub-multisig-key', { prefix: input.slice(0, 4) });
     }
+    const bareType = scriptTypeHint ?? norm.scriptType;
     scriptType = bareType;
     descriptor = buildDescriptor(norm.xpub, bareType);
   } else {
@@ -136,6 +137,7 @@ function keyInfo(key: DescriptorKey): KeyInfo {
     fingerprint: key.originFingerprint ?? keyFingerprint(key.key),
     fingerprintIsMaster: !!key.originFingerprint || key.key.depth === 0,
     originPath: formatOriginPath(key.originPath),
+    ...(key.singlePath ? { fixedStep: key.multipath[0] } : {}),
   };
 }
 

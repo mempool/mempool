@@ -32,6 +32,8 @@ export interface KeyInfo {
   fingerprint: string;
   fingerprintIsMaster: boolean;
   originPath?: string;
+  /** A single-path cosigner's fixed step (KEY/n/*), used on both chains. */
+  fixedStep?: number;
 }
 
 export interface MultisigInfo {

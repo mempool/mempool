@@ -1,7 +1,8 @@
 /**
  * BIP-380 descriptor parsing and derivation for public keys only, on @scure/bip32 and
  * @scure/btc-signer: pkh, sh(wpkh), wpkh and tr(KEY), and multi/sortedmulti inside wsh, sh(wsh)
- * or sh, each key of the form KEY/<0;1>/*.
+ * or sh, each key of the form KEY/<0;1>/*. A multisig cosigner may instead use one fixed step,
+ * KEY/n/*, which it then uses on both chains (BIP-389).
  * Whitespace is rejected, not stripped: `/1 0/` would become `/10/`, and the stored text
  * must be exactly what was derived.
  */
@@ -26,8 +27,12 @@ export interface DescriptorKey {
   originPath: number[];
   xpub: string;
   key: HDKey;
-  /** Always [0, 1]: receive and change. */
+  /** The step per chain: [0, 1] for receive and change, or [n, n] for a single-path key. */
   multipath: number[];
+  /** KEY/n/* rather than KEY/<0;1>/*; allowed only next to a multipath key (BIP-389). */
+  singlePath: boolean;
+  /** KEY/* with no step at all; refused once the other keys are known. */
+  noStep?: boolean;
 }
 
 export interface SingleKeyDescriptor {
@@ -123,7 +128,15 @@ function parseKey(text: string): DescriptorKey {
     fail('descriptor-multipath-count');
   }
   if (multipathAt.length === 0) {
-    fail('descriptor-no-multipath');
+    if (body.length === 0) {
+      return { originFingerprint, originPath, xpub, key, multipath: [], singlePath: true, noStep: true };
+    }
+    // Extra steps would make the displayed derivation paths wrong.
+    if (body.length !== 1) {
+      fail('descriptor-path-steps');
+    }
+    const step = parsePathStep(body[0], false);
+    return { originFingerprint, originPath, xpub, key, multipath: [step, step], singlePath: true };
   }
   const multipathMatch = /^<([^<>]+)>$/.exec(body[multipathAt[0]]);
   if (!multipathMatch) {
@@ -138,7 +151,7 @@ function parseKey(text: string): DescriptorKey {
     fail('descriptor-path-steps');
   }
 
-  return { originFingerprint, originPath, xpub, key, multipath };
+  return { originFingerprint, originPath, xpub, key, multipath, singlePath: false };
 }
 
 function unwrap(text: string): [string, string] | null {
@@ -173,6 +186,18 @@ export function parseDescriptor(descriptor: string): ParsedDescriptor {
   }
   const [fn, inner] = outer;
 
+  const desc = parseFunction(fn, inner);
+  if (desc.keys.every((key) => key.singlePath)) {
+    fail('descriptor-no-multipath');
+  }
+  // Next to a <0;1> key, KEY/* needs a step: …/<0;1>/* or one fixed step such as …/0/*.
+  if (desc.keys.some((key) => key.noStep)) {
+    fail('descriptor-path-steps');
+  }
+  return desc;
+}
+
+function parseFunction(fn: string, inner: string): ParsedDescriptor {
   switch (fn) {
     case 'pkh':
       return { descType: 'Pkh', keys: [parseKey(inner)] };
@@ -221,8 +246,11 @@ function parseMultisig(descType: MultisigDescType, text: string, maxKeys: number
     fail('descriptor-multisig-threshold', { threshold: thresholdText, count: keyTexts.length });
   }
   const keys = keyTexts.map(parseKey);
-  if (new Set(keys.map((k) => k.xpub)).size !== keys.length) {
-    fail('descriptor-multisig-duplicate');
+  // The same xpub on different steps is allowed (Bitcoin Core accepts it); on the same step it is not.
+  for (const chain of [0, 1]) {
+    if (new Set(keys.map((k) => `${k.xpub}/${k.multipath[chain]}`)).size !== keys.length) {
+      fail('descriptor-multisig-duplicate');
+    }
   }
   return { descType, keys, threshold, sorted: multi[0] === 'sortedmulti' };
 }

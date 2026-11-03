@@ -24,7 +24,8 @@ function isKeyInfo(key: unknown): boolean {
   return isObject(key)
     && isString(key.fingerprint)
     && typeof key.fingerprintIsMaster === 'boolean'
-    && isOptional(key.originPath, isString);
+    && isOptional(key.originPath, isString)
+    && isOptional(key.fixedStep, (v) => Number.isInteger(v));
 }
 
 function isMultisig(multisig: unknown): boolean {

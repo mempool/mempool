@@ -50,6 +50,9 @@ export class WatchImportComponent {
     if (this.needsScriptTypeHint) {
       return $localize`:@@watch.detected-xpub:Extended public key`;
     }
+    if (/^[YZUV]pub/.test(input)) {
+      return $localize`:@@watch.detected-multisig-key:Multisig cosigner key (import the wallet's descriptor)`;
+    }
     if (/^[zv]pub/.test(input)) {
       return scriptTypeName('wpkh');
     }
