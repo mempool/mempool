@@ -130,7 +130,15 @@ export class WatchImportComponent {
       detectScriptType: bareKey && !this.scriptTypeChosen && isBareExtendedKey(this.keyInput),
     });
     if (done) {
-      this.onKeyInput('');
+      this.clearForm();
     }
+  }
+
+  /** Unlike onKeyInput(''), leaves the session error alone: showing an already-saved wallet can fail. */
+  private clearForm(): void {
+    this.keyInput = '';
+    this.scriptTypeHint = 'wpkh';
+    this.scriptTypeChosen = false;
+    this.session.checkScriptType('');
   }
 }
