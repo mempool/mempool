@@ -64,6 +64,7 @@ export class WalletTrackerService implements OnDestroy {
     const mine = new Set(addresses);
     this.trackingSubscription.add(this.stateService.trackAddressesError$.subscribe(() => {
       const refused = this.callbacks;
+      // Also keeps the websocket service from replaying the refused request on reconnect.
       this.stop();
       refused?.onRefused();
     }));

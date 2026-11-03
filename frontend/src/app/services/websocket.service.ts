@@ -476,14 +476,7 @@ export class WebsocketService {
     }
 
     if (response['track-addresses-error']) {
-      // It may answer an earlier request, so it refuses the current one only if that has more
-      // distinct addresses (what the server counts) than the limit too.
-      const limit = Number(/maximum of (\d+)/.exec(response['track-addresses-error'])?.[1]);
-      if (this.isTrackingAddresses && !(new Set(this.isTrackingAddresses).size <= limit)) {
-        // The server tracks nothing after refusing, so don't replay the request on reconnect.
-        this.isTrackingAddresses = false;
-        this.stateService.trackAddressesError$.next(response['track-addresses-error']);
-      }
+      this.stateService.trackAddressesError$.next(response['track-addresses-error']);
     }
 
     if (response['block-transactions']) {
