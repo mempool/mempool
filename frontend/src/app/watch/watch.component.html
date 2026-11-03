@@ -27,7 +27,7 @@
             <ng-template #automatic><small *ngIf="!state.error" i18n="watch.updates-automatically">Updates automatically with each new block</small></ng-template>
           </ng-template>
         </span>
-        <button type="button" class="btn btn-sm btn-outline-info" (click)="session.refresh()" [disabled]="state.scanning">
+        <button type="button" class="btn btn-sm btn-outline-info" (click)="session.checkMempool()" [disabled]="state.scanning">
           <span *ngIf="state.scanning" class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
           <ng-container *ngIf="state.error && !state.scanning; else checkLabel" i18n="watch.try-again">Try again</ng-container>
           <ng-template #checkLabel><ng-container i18n="watch.check-mempool">Check Mempool</ng-container></ng-template>
