@@ -7,14 +7,19 @@ import { buildWalletView, currentReceiveIndex, WalletView } from '@app/watch/wal
 import { fromMempoolNetwork } from '@app/watch/watch-key.utils';
 import { ScriptType, WalletDefinition, WatchNetwork, WatchWallet } from '@app/watch/watch.types';
 import { DerivationService } from '@app/watch/services/derivation.service';
-import { HistoryCache, ScanIncompleteError, ScanProgress, walletId, WalletScannerService } from '@app/watch/services/wallet-scanner.service';
+import { applyLiveUpdate, HistoryCache, ScanIncompleteError, ScanProgress, walletId, WalletScannerService } from '@app/watch/services/wallet-scanner.service';
 import { BlockExtended } from '@interfaces/node-api.interface';
 import { WalletStorageService } from '@app/watch/services/wallet-storage.service';
-import { WalletTrackerService } from '@app/watch/services/wallet-tracker.service';
+import { LiveUpdate, trackedAddresses, WalletTrackerService } from '@app/watch/services/wallet-tracker.service';
 
 export const MIN_GAP_LIMIT = 5;
 export const MAX_GAP_LIMIT = 1000;
 export const DEFAULT_GAP_LIMIT = 20;
+
+/** A burst of websocket updates is checked against the server once. */
+const LIVE_REFRESH_DELAY_MS = 3000;
+/** A live-triggered refresh starts at least this long after the last refresh of any kind finished. */
+const LIVE_REFRESH_INTERVAL_MS = 30_000;
 
 export interface WalletImportForm {
   input: string;
@@ -37,6 +42,8 @@ export interface WalletPageState {
   progress: ScanProgress | null;
   error: string | null;
   notice: string | null;
+  /** 'on' while the shown wallet's addresses are tracked; otherwise it refreshes per block only. */
+  liveUpdates: 'on' | 'off' | 'refused';
 }
 
 const INITIAL_STATE: WalletPageState = {
@@ -50,6 +57,7 @@ const INITIAL_STATE: WalletPageState = {
   progress: null,
   error: null,
   notice: null,
+  liveUpdates: 'off',
 };
 
 function errorMessage(e: unknown): string {
@@ -83,7 +91,11 @@ function validGapLimit(value: number): number {
  * State and actions for the /wallet page, provided by WatchComponent. One scan runs at a
  * time; `generation` discards the result of a scan overtaken by a network change. A wallet is
  * scanned in full when it is shown and on Refresh; on a new block or reconnect, only what changed
- * since its cached history is read, and a hidden tab waits until it is shown again.
+ * since its cached history is read, and a hidden tab waits until it is shown again. Between
+ * blocks a wallet of up to ten addresses is updated from the websocket. Each burst of updates
+ * also queues the incremental refresh, no sooner than LIVE_REFRESH_INTERVAL_MS after the last
+ * scan ended, as the websocket does not report every removal; updates that arrive during a
+ * refresh are applied again to its result.
  */
 @Injectable()
 export class WalletSessionService implements OnDestroy {
@@ -95,6 +107,16 @@ export class WalletSessionService implements OnDestroy {
   private generation = 0;
   private mempoolNetwork: string | null = null;
   private refreshQueued = false;
+  /** Queued only by the live refresh timer, which a newly imported wallet does not need. */
+  private refreshQueuedByLive = false;
+  private updatesDuringScan: LiveUpdate[] = [];
+  private liveRefreshTimer: ReturnType<typeof setTimeout> | null = null;
+  /** Date.now() when the last scan finished. */
+  private lastScanEnd = 0;
+  /** A live update arrived during a scan; its refresh is scheduled once the scan ends. */
+  private liveRefreshWanted = false;
+  /** Wallet ids the server refused to track. */
+  private refused = new Set<string>();
   private visibilitySubscription: Subscription;
 
   constructor(
@@ -118,11 +140,15 @@ export class WalletSessionService implements OnDestroy {
   /** '' is mainnet. */
   setNetwork(mempoolNetwork: string): void {
     this.generation++;
+    this.tracker.stop();
+    this.cancelLiveRefresh();
+    this.refused.clear();
     if (this.mempoolNetwork !== null && this.mempoolNetwork !== mempoolNetwork) {
       this.tracker.resetChain();
     }
     this.mempoolNetwork = mempoolNetwork;
     this.refreshQueued = false;
+    this.refreshQueuedByLive = false;
     this.views.clear();
     this.scannedAt.clear();
     this.caches.clear();
@@ -139,6 +165,7 @@ export class WalletSessionService implements OnDestroy {
     if (this.state.scanning) {
       return;
     }
+    // The shown wallet stays tracked while the form is open.
     this.patch({ adding: true, error: null, notice: null });
   }
 
@@ -177,6 +204,11 @@ export class WalletSessionService implements OnDestroy {
       });
       if (generation !== this.generation) {
         return;
+      }
+      this.cancelLiveRefresh();
+      if (this.refreshQueuedByLive) {
+        this.refreshQueued = false;
+        this.refreshQueuedByLive = false;
       }
       this.storeView(buildWalletView(wallet, txs, truncated));
       this.storeCache(wallet.id, truncated ? undefined : tip, txs);
@@ -245,6 +277,7 @@ export class WalletSessionService implements OnDestroy {
     if (!wallet || this.state.scanning) {
       return;
     }
+    this.tracker.stop();
     this.storage.remove(wallet.id);
     this.dropSessionState(wallet.id);
     const wallets = this.state.wallets.filter((w) => w.id !== wallet.id);
@@ -256,6 +289,7 @@ export class WalletSessionService implements OnDestroy {
 
   ngOnDestroy(): void {
     this.generation++;
+    this.cancelLiveRefresh();
     this.visibilitySubscription.unsubscribe();
   }
 
@@ -306,7 +340,14 @@ export class WalletSessionService implements OnDestroy {
       }
     } finally {
       if (generation === this.generation) {
+        this.updatesDuringScan = [];
+        this.lastScanEnd = Date.now();
         this.patch({ scanning: false, progress: null });
+        this.startTracking();
+        if (this.liveRefreshWanted) {
+          this.liveRefreshWanted = false;
+          this.scheduleLiveRefresh();
+        }
         this.runQueuedRefresh();
       }
     }
@@ -316,16 +357,20 @@ export class WalletSessionService implements OnDestroy {
     if (this.state.scanning || !this.state.wallets.some((w) => w.id === id)) {
       return;
     }
+    this.tracker.stop();
+    this.cancelLiveRefresh();
     const view = this.views.get(id) ?? null;
-    this.patch({ activeId: id, view, updatedAt: this.scannedAt.get(id) ?? null, adding: false, error: null, notice });
+    this.patch({ activeId: id, view, updatedAt: this.scannedAt.get(id) ?? null, adding: false, error: null, notice, liveUpdates: 'off' });
+    this.startTracking();
     if (this.state.network) {
       this.storage.saveActiveId(this.state.network, id);
     }
     await this.refresh();
   }
 
-  private onChainChange(): void {
+  private onChainChange(live = false): void {
     if (this.state.scanning || this.state.adding || document.hidden) {
+      this.refreshQueuedByLive = live && (this.refreshQueuedByLive || !this.refreshQueued);
       this.refreshQueued = true;
     } else {
       void this.refreshActive(true);
@@ -344,9 +389,13 @@ export class WalletSessionService implements OnDestroy {
       return;
     }
     this.refreshQueued = false;
+    this.refreshQueuedByLive = false;
     const tip = this.tracker.tip;
     const cache = incremental ? this.caches.get(wallet.id) : undefined;
     this.caches.delete(wallet.id);
+    // This refresh starts after any update still waiting for one.
+    this.cancelLiveRefresh();
+    this.updatesDuringScan = [];
     await this.runScan(async (generation) => {
       const request = {
         definition: wallet,
@@ -373,11 +422,86 @@ export class WalletSessionService implements OnDestroy {
         gapLimitChanged = current.gapLimit !== scanned.gapLimit;
         if (gapLimitChanged) {
           this.refreshQueued = true;
+          this.refreshQueuedByLive = false;
         }
       }
-      this.storeView(buildWalletView(merged, txs, truncated));
+      let history = txs;
+      for (const update of this.updatesDuringScan) {
+        const replayed = applyLiveUpdate(history, update.added, update.removed);
+        if (!replayed) {
+          this.refreshQueued = true;
+          this.refreshQueuedByLive = false;
+          break;
+        }
+        history = replayed;
+      }
+      this.storeView(buildWalletView(merged, history, truncated));
       this.storeCache(merged.id, truncated || gapLimitChanged ? undefined : tip, txs);
     });
+  }
+
+  /** Again after each scan, as a scan can derive more addresses than can be tracked. */
+  private startTracking(): void {
+    const view = this.state.view;
+    // While the add-wallet form is open, the wallet behind it stays tracked.
+    if (!view || view.wallet.id !== this.state.activeId) {
+      return;
+    }
+    const id = view.wallet.id;
+    const addresses = trackedAddresses(view.wallet);
+    const refused = addresses.length > 0 && this.refused.has(id);
+    this.tracker.track(refused ? [] : addresses, {
+      onUpdate: (update) => this.onLiveUpdate(id, update),
+      onRefused: () => {
+        this.refused.add(id);
+        this.startTracking();
+      },
+    });
+    const liveUpdates = refused ? 'refused' : addresses.length ? 'on' : 'off';
+    if (this.state.liveUpdates !== liveUpdates) {
+      this.patch({ liveUpdates });
+    }
+  }
+
+  private onLiveUpdate(id: string, update: LiveUpdate): void {
+    const view = this.state.view;
+    if (!view || view.wallet.id !== id) {
+      return;
+    }
+    if (this.state.scanning) {
+      this.updatesDuringScan.push(update);
+      this.liveRefreshWanted = true;
+    } else {
+      this.scheduleLiveRefresh();
+    }
+    const transactions = applyLiveUpdate(view.transactions, update.added, update.removed);
+    if (!transactions) {
+      this.onChainChange();
+      return;
+    }
+    const updated = buildWalletView(view.wallet, transactions, view.truncated);
+    this.views.set(id, updated);
+    this.patch({ view: updated });
+  }
+
+  /** Leaves the page idle for LIVE_REFRESH_INTERVAL_MS after a scan, however long the scan took. */
+  private scheduleLiveRefresh(): void {
+    this.liveRefreshTimer ??= setTimeout(() => {
+      this.liveRefreshTimer = null;
+      if (this.state.scanning) {
+        this.liveRefreshWanted = true;
+      } else {
+        this.onChainChange(true);
+      }
+    }, Math.max(LIVE_REFRESH_DELAY_MS, this.lastScanEnd + LIVE_REFRESH_INTERVAL_MS - Date.now()));
+  }
+
+  private cancelLiveRefresh(): void {
+    this.liveRefreshWanted = false;
+    if (this.liveRefreshTimer) {
+      clearTimeout(this.liveRefreshTimer);
+      this.liveRefreshTimer = null;
+    }
   }
 
   private storeCache(id: string, tip: BlockExtended | undefined, txs: Transaction[]): void {

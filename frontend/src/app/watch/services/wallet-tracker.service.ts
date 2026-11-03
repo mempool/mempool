@@ -1,21 +1,96 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { StateService } from '@app/services/state.service';
+import { WebsocketService } from '@app/services/websocket.service';
+import { Transaction } from '@interfaces/electrs.interface';
 import { BlockExtended } from '@interfaces/node-api.interface';
+import { WatchWallet } from '@app/watch/watch.types';
+
+/** The server tracks this many addresses per connection. */
+const MAX_TRACKED = 10;
+
+export interface LiveUpdate {
+  added: Transaction[];
+  /** Replaced, evicted or expired. */
+  removed: Transaction[];
+}
+
+export interface TrackingCallbacks {
+  onUpdate: (update: LiveUpdate) => void;
+  onRefused: () => void;
+}
+
+/** Every address or none: tracking only some would miss payments to the rest without saying so. */
+export function trackedAddresses(wallet: WatchWallet): string[] {
+  return wallet.addresses.length <= MAX_TRACKED ? wallet.addresses.map((a) => a.address) : [];
+}
 
 /**
- * Chain watching. It runs for the whole page, scans included, so a block found during a scan
- * is not missed.
+ * Address tracking over the websocket, and chain watching. Chain watching runs for the whole
+ * page, scans included, so a block found during a scan is not missed.
  */
 @Injectable()
 export class WalletTrackerService implements OnDestroy {
   private chainSubscription = new Subscription();
+  private trackingSubscription = new Subscription();
+  /** Sorted, to tell a changed selection from a repeat. */
+  private tracked: string | null = null;
+  private callbacks: TrackingCallbacks | null = null;
   /** Newest first. */
   private blocks: BlockExtended[] = [];
 
   constructor(
     private stateService: StateService,
+    private websocketService: WebsocketService,
   ) {}
+
+  /**
+   * A repeat of the current selection is not sent again, but takes the new callbacks: another
+   * wallet can have the same addresses. No addresses stops tracking.
+   */
+  track(addresses: string[], callbacks: TrackingCallbacks): void {
+    const key = [...addresses].sort().join(',');
+    if (key === this.tracked) {
+      this.callbacks = callbacks;
+      return;
+    }
+    this.stop();
+    if (!addresses.length) {
+      return;
+    }
+    this.tracked = key;
+    this.callbacks = callbacks;
+    this.websocketService.startTrackAddresses(addresses);
+    const mine = new Set(addresses);
+    this.trackingSubscription.add(this.stateService.trackAddressesError$.subscribe(() => {
+      const refused = this.callbacks;
+      this.stop();
+      refused?.onRefused();
+    }));
+    this.trackingSubscription.add(this.stateService.multiAddressTransactions$.subscribe((message) => {
+      const added = new Map<string, Transaction>();
+      const removed = new Map<string, Transaction>();
+      for (const address of Object.keys(message).filter((a) => mine.has(a))) {
+        const { mempool, confirmed, removed: gone } = message[address];
+        [...(mempool || []), ...(confirmed || [])].forEach((tx) => added.set(tx.txid, tx));
+        (gone || []).forEach((tx) => removed.set(tx.txid, tx));
+      }
+      if (added.size || removed.size) {
+        this.callbacks?.onUpdate({ added: [...added.values()], removed: [...removed.values()] });
+      }
+    }));
+  }
+
+  /** Chain watching carries on. */
+  stop(): void {
+    if (this.tracked !== null) {
+      this.websocketService.stopTrackingAddresses();
+    }
+    this.tracked = null;
+    this.callbacks = null;
+    this.trackingSubscription.unsubscribe();
+    this.trackingSubscription = new Subscription();
+  }
 
   get tip(): BlockExtended | undefined {
     return this.blocks[0];
@@ -51,6 +126,7 @@ export class WalletTrackerService implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.stop();
     this.chainSubscription.unsubscribe();
   }
 }
