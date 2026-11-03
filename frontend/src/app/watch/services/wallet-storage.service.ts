@@ -20,6 +20,20 @@ function isAddress(address: unknown): boolean {
     && isOptional(address.scriptPubKey, isString);
 }
 
+function isKeyInfo(key: unknown): boolean {
+  return isObject(key)
+    && isString(key.fingerprint)
+    && typeof key.fingerprintIsMaster === 'boolean'
+    && isOptional(key.originPath, isString);
+}
+
+function isMultisig(multisig: unknown): boolean {
+  return isObject(multisig)
+    && Array.isArray(multisig.keys) && multisig.keys.length > 0 && multisig.keys.every(isKeyInfo)
+    && Number.isInteger(multisig.threshold) && (multisig.threshold as number) >= 1
+    && (multisig.threshold as number) <= multisig.keys.length;
+}
+
 function hasWalletFields(record: Record<string, unknown>): boolean {
   return isString(record.id) && record.id !== ''
     && isString(record.label)
@@ -47,6 +61,7 @@ function readRecord(record: unknown): WatchWallet | null {
     && isOptional(record.fingerprint, isString)
     && isOptional(record.originPath, isString)
     && isOptional(record.fingerprintIsMaster, (v) => typeof v === 'boolean')
+    && isOptional(record.multisig, isMultisig)
   ) {
     return record as unknown as WatchWallet;
   }

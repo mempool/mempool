@@ -70,9 +70,19 @@ export function describeInputError(code: InputErrorCode, params: InputErrorParam
     case 'descriptor-taproot-script':
       return $localize`:@@watch.error.descriptor-taproot-script:Taproot script paths are not supported. Use tr(KEY) for a key-path wallet.`;
     case 'descriptor-sh-inner':
-      return $localize`:@@watch.error.descriptor-sh-inner:sh() is supported only around wpkh().`;
+      return $localize`:@@watch.error.descriptor-sh-inner:sh() is supported only around wpkh(), wsh(), multi() or sortedmulti().`;
+    case 'descriptor-wsh-inner':
+      return $localize`:@@watch.error.descriptor-wsh-inner:Only multi() and sortedmulti() multisig scripts are supported here.`;
+    case 'descriptor-multisig-keys':
+      return $localize`:@@watch.error.descriptor-multisig-keys:This multisig has ${p.count}:count: keys; at most ${p.max}:max: are supported here.`;
+    case 'descriptor-multisig-threshold':
+      return $localize`:@@watch.error.descriptor-multisig-threshold:The multisig threshold must be a number from 1 to ${p.count}:count:, not "${p.threshold}:threshold:".`;
+    case 'descriptor-multisig-duplicate':
+      return $localize`:@@watch.error.descriptor-multisig-duplicate:The same key appears more than once in this multisig.`;
+    case 'descriptor-multipath-mixed':
+      return $localize`:@@watch.error.descriptor-multipath-mixed:All keys must use the same path ending: …/<0;1>/*, or all …/0/* or all …/1/*.`;
     case 'descriptor-function':
-      return $localize`:@@watch.error.descriptor-function:"${p.fn}:fn:()" descriptors are not supported. Use pkh, sh(wpkh), wpkh or tr.`;
+      return $localize`:@@watch.error.descriptor-function:"${p.fn}:fn:()" descriptors are not supported. Use pkh, sh(wpkh), wpkh, tr, or multi/sortedmulti inside wsh, sh(wsh) or sh.`;
     case 'descriptor-no-multipath':
       return $localize`:@@watch.error.descriptor-no-multipath:This descriptor has no change path. Use …/<0;1>/* or a plain extended public key.`;
     case 'descriptor-chain':

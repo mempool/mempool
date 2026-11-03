@@ -10,4 +10,8 @@ export function scriptTypeName(scriptType: string): string {
   }
 }
 
+export function multisigName(threshold: number, keys: number): string {
+  return $localize`:@@watch.script-type.multisig:Multisig ${threshold}:threshold:-of-${keys}:keys:`;
+}
+
 export const BARE_KEY_SCRIPT_OPTIONS = BARE_KEY_SCRIPT_TYPES.map((value) => ({ value, label: scriptTypeName(value), path: describeScriptType(value).path }));

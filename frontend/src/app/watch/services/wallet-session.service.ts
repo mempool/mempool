@@ -277,6 +277,7 @@ export class WalletSessionService implements OnDestroy {
       fingerprint: prepared.fingerprint,
       fingerprintIsMaster: prepared.fingerprintIsMaster,
       originPath: prepared.originPath,
+      multisig: prepared.multisig,
       network,
       gapLimit,
     };

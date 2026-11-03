@@ -1,20 +1,25 @@
 /**
  * BIP-380 descriptor parsing and derivation for public keys only, on @scure/bip32 and
- * @scure/btc-signer: pkh, sh(wpkh), wpkh and tr(KEY), each with one key of the form KEY/<0;1>/*.
+ * @scure/btc-signer: pkh, sh(wpkh), wpkh and tr(KEY), and multi/sortedmulti inside wsh, sh(wsh)
+ * or sh, each key of the form KEY/<0;1>/*.
  * Whitespace is rejected, not stripped: `/1 0/` would become `/10/`, and the stored text
  * must be exactly what was derived.
  */
 
 import { HDKey } from '@scure/bip32';
 import { hex } from '@scure/base';
-import { NETWORK, TEST_NETWORK, p2pkh, p2sh, p2tr, p2wpkh } from '@scure/btc-signer';
+import { NETWORK, TEST_NETWORK, p2ms, p2pkh, p2sh, p2tr, p2wpkh, p2wsh } from '@scure/btc-signer';
 import { InputError, InputErrorCode, InputErrorParams } from '@app/watch/input-error';
 import { WatchNetwork } from '@app/watch/watch.types';
 
-export type DescType = 'Pkh' | 'ShWpkh' | 'Wpkh' | 'Tr';
+export type SingleKeyDescType = 'Pkh' | 'ShWpkh' | 'Wpkh' | 'Tr';
+export type MultisigDescType = 'Wsh' | 'ShWsh' | 'Sh';
+export type DescType = SingleKeyDescType | MultisigDescType;
 
 const HARDENED = 0x80000000;
 const TPUB_VERSIONS = { private: 0x04358394, public: 0x043587cf };
+const MAX_SH_MULTISIG_KEYS = 15;
+const MAX_WSH_MULTISIG_KEYS = 16;
 
 export interface DescriptorKey {
   originFingerprint?: string;
@@ -25,10 +30,19 @@ export interface DescriptorKey {
   multipath: number[];
 }
 
-export interface ParsedDescriptor {
-  descType: DescType;
-  key: DescriptorKey;
+export interface SingleKeyDescriptor {
+  descType: SingleKeyDescType;
+  keys: DescriptorKey[];
 }
+
+export interface MultisigDescriptor {
+  descType: MultisigDescType;
+  keys: DescriptorKey[];
+  threshold: number;
+  sorted: boolean;
+}
+
+export type ParsedDescriptor = SingleKeyDescriptor | MultisigDescriptor;
 
 export interface DerivedAddress {
   address: string;
@@ -161,24 +175,56 @@ export function parseDescriptor(descriptor: string): ParsedDescriptor {
 
   switch (fn) {
     case 'pkh':
-      return { descType: 'Pkh', key: parseKey(inner) };
+      return { descType: 'Pkh', keys: [parseKey(inner)] };
     case 'wpkh':
-      return { descType: 'Wpkh', key: parseKey(inner) };
+      return { descType: 'Wpkh', keys: [parseKey(inner)] };
     case 'tr':
       if (inner.includes(',')) {
         fail('descriptor-taproot-script');
       }
-      return { descType: 'Tr', key: parseKey(inner) };
-    case 'sh': {
-      const nested = unwrap(inner);
-      if (nested?.[0] !== 'wpkh') {
-        fail('descriptor-sh-inner');
-      }
-      return { descType: 'ShWpkh', key: parseKey(nested[1]) };
-    }
+      return { descType: 'Tr', keys: [parseKey(inner)] };
+    case 'wsh':
+      return parseMultisig('Wsh', inner, MAX_WSH_MULTISIG_KEYS);
+    case 'sh':
+      return parseSh(inner);
     default:
       fail('descriptor-function', { fn });
   }
+}
+
+function parseSh(inner: string): ParsedDescriptor {
+  const [fn, nested] = unwrap(inner) ?? ['', ''];
+  switch (fn) {
+    case 'wpkh':
+      return { descType: 'ShWpkh', keys: [parseKey(nested)] };
+    case 'wsh':
+      return parseMultisig('ShWsh', nested, MAX_WSH_MULTISIG_KEYS);
+    case 'multi':
+    case 'sortedmulti':
+      return parseMultisig('Sh', inner, MAX_SH_MULTISIG_KEYS);
+    default:
+      fail('descriptor-sh-inner');
+  }
+}
+
+function parseMultisig(descType: MultisigDescType, text: string, maxKeys: number): MultisigDescriptor {
+  const multi = unwrap(text);
+  if (multi?.[0] !== 'multi' && multi?.[0] !== 'sortedmulti') {
+    fail('descriptor-wsh-inner');
+  }
+  const [thresholdText, ...keyTexts] = multi[1].split(',');
+  const threshold = /^\d+$/.test(thresholdText) ? Number(thresholdText) : NaN;
+  if (keyTexts.length > maxKeys) {
+    fail('descriptor-multisig-keys', { max: maxKeys, count: keyTexts.length });
+  }
+  if (!(threshold >= 1 && threshold <= keyTexts.length)) {
+    fail('descriptor-multisig-threshold', { threshold: thresholdText, count: keyTexts.length });
+  }
+  const keys = keyTexts.map(parseKey);
+  if (new Set(keys.map((k) => k.xpub)).size !== keys.length) {
+    fail('descriptor-multisig-duplicate');
+  }
+  return { descType, keys, threshold, sorted: multi[0] === 'sortedmulti' };
 }
 
 function btcNetwork(network: WatchNetwork): typeof NETWORK {
@@ -186,47 +232,52 @@ function btcNetwork(network: WatchNetwork): typeof NETWORK {
 }
 
 export function descriptorMatchesNetwork(desc: ParsedDescriptor, network: WatchNetwork): boolean {
-  return desc.key.xpub.startsWith(network === 'mainnet' ? 'xpub' : 'tpub');
+  return desc.keys.every((key) => key.xpub.startsWith(network === 'mainnet' ? 'xpub' : 'tpub'));
+}
+
+function multisigScript(desc: MultisigDescriptor, pubkeys: Uint8Array[]): ReturnType<typeof p2ms> {
+  const ordered = desc.sorted ? [...pubkeys].sort((a, b) => (hex.encode(a) < hex.encode(b) ? -1 : 1)) : pubkeys;
+  return p2ms(desc.threshold, ordered);
 }
 
 /** Caches each chain's node, so an address costs one child derivation. */
 export class DescriptorDeriver {
-  private chainKeys = new Map<number, HDKey>();
+  private chainKeys = new Map<number, HDKey[]>();
 
   constructor(readonly desc: ParsedDescriptor) {}
 
-  private chainKey(chain: number): HDKey {
-    let node = this.chainKeys.get(chain);
-    if (!node) {
-      node = this.desc.key.key.deriveChild(this.desc.key.multipath[chain]);
-      this.chainKeys.set(chain, node);
+  private chainNodes(chain: number): HDKey[] {
+    let nodes = this.chainKeys.get(chain);
+    if (!nodes) {
+      nodes = this.desc.keys.map((key) => key.key.deriveChild(key.multipath[chain]));
+      this.chainKeys.set(chain, nodes);
     }
-    return node;
+    return nodes;
   }
 
-  publicKeyAt(chain: number, index: number): Uint8Array {
-    if (!Number.isInteger(chain) || chain < 0 || chain >= this.desc.key.multipath.length) {
+  publicKeysAt(chain: number, index: number): Uint8Array[] {
+    if (!Number.isInteger(chain) || chain < 0 || chain >= this.desc.keys[0].multipath.length) {
       fail('descriptor-chain', { chain });
     }
     if (!Number.isInteger(index) || index < 0 || index >= HARDENED) {
       fail('descriptor-index', { index });
     }
-    const pub = this.chainKey(chain).deriveChild(index).publicKey;
-    if (!pub) {
-      fail('derivation-no-public-key');
-    }
-    return pub;
+    return this.chainNodes(chain).map((node) => node.deriveChild(index).publicKey ?? fail('derivation-no-public-key'));
   }
 
   addressAt(network: WatchNetwork, chain: number, index: number): DerivedAddress {
     const net = btcNetwork(network);
-    const pubkey = this.publicKeyAt(chain, index);
+    const pubkeys = this.publicKeysAt(chain, index);
+    const desc = this.desc;
     let payment: { address?: string; script: Uint8Array };
-    switch (this.desc.descType) {
-      case 'Pkh': payment = p2pkh(pubkey, net); break;
-      case 'Wpkh': payment = p2wpkh(pubkey, net); break;
-      case 'ShWpkh': payment = p2sh(p2wpkh(pubkey, net), net); break;
-      case 'Tr': payment = p2tr(pubkey.subarray(1), undefined, net); break;
+    switch (desc.descType) {
+      case 'Pkh': payment = p2pkh(pubkeys[0], net); break;
+      case 'Wpkh': payment = p2wpkh(pubkeys[0], net); break;
+      case 'ShWpkh': payment = p2sh(p2wpkh(pubkeys[0], net), net); break;
+      case 'Tr': payment = p2tr(pubkeys[0].subarray(1), undefined, net); break;
+      case 'Wsh': payment = p2wsh(multisigScript(desc, pubkeys), net); break;
+      case 'ShWsh': payment = p2sh(p2wsh(multisigScript(desc, pubkeys), net), net); break;
+      case 'Sh': payment = p2sh(multisigScript(desc, pubkeys), net); break;
     }
     if (!payment.address) {
       fail('derivation-no-address');

@@ -34,6 +34,14 @@
           </td>
           <td class="mono">{{ dw.fingerprint | uppercase }}</td>
         </tr>
+        <tr *ngFor="let key of dw.multisig?.keys; let i = index; trackBy: trackByIndex">
+          <td i18n="watch.detail.multisig-key">Key {{ i + 1 }}</td>
+          <td>
+            <span class="mono">{{ key.fingerprint | uppercase }}</span>
+            <span class="mono text-muted" *ngIf="key.originPath"> · {{ key.originPath }}</span>
+            <span class="text-muted" *ngIf="!key.fingerprintIsMaster" i18n="watch.detail.multisig-key-fingerprint"> (key fingerprint, no key origin)</span>
+          </td>
+        </tr>
         <tr>
           <td i18n="watch.detail.address-type">Address type</td>
           <td>{{ scriptType.name }}<span class="text-muted" *ngIf="scriptType.code !== scriptType.name"> · {{ scriptType.code }}</span></td>

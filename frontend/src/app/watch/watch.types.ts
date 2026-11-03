@@ -28,6 +28,17 @@ export interface WalletBalance {
   total: number;
 }
 
+export interface KeyInfo {
+  fingerprint: string;
+  fingerprintIsMaster: boolean;
+  originPath?: string;
+}
+
+export interface MultisigInfo {
+  threshold: number;
+  keys: KeyInfo[];
+}
+
 interface WalletDefinitionBase {
   label: string;
   network: WatchNetwork;
@@ -48,6 +59,7 @@ export interface DescriptorWalletDefinition extends WalletDefinitionBase {
   fingerprintIsMaster: boolean;
   /** From the descriptor's key origin, when it has one. */
   originPath?: string;
+  multisig?: MultisigInfo;
   gapLimit: number;
   receiveIndex?: number;
 }
