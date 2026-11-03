@@ -344,7 +344,8 @@ export class WalletSessionService implements OnDestroy {
   }
 
   private runQueuedRefresh(): void {
-    if (this.refreshQueued && this.queuedForChain && this.state.view?.truncated) {
+    // Only once the scan is over: until then the view shown may be about to be replaced.
+    if (this.refreshQueued && this.queuedForChain && !this.state.scanning && this.state.view?.truncated) {
       this.refreshQueued = false;
       this.queuedForChain = false;
       return;
