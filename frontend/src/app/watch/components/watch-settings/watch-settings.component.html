@@ -40,7 +40,7 @@
         </tr>
         <tr *ngIf="path">
           <td i18n="watch.detail.path">Derivation path</td>
-          <td class="mono">{{ path }}<span class="text-muted" *ngIf="!dw.originPath" i18n="watch.detail.path-assumed"> (standard path, assumed)</span></td>
+          <td class="mono">{{ path }}<span class="text-muted" *ngIf="!dw.originPath && !dw.fingerprintIsMaster" i18n="watch.detail.path-assumed"> (standard path, assumed)</span></td>
         </tr>
         <tr>
           <td i18n="watch.detail.addresses">Addresses derived</td>

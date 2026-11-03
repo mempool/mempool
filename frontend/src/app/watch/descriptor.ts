@@ -238,3 +238,10 @@ export class DescriptorDeriver {
 export function keyFingerprint(key: HDKey): string {
   return key.fingerprint.toString(16).padStart(8, '0');
 }
+
+export function formatOriginPath(path: number[]): string | undefined {
+  if (!path.length) {
+    return undefined;
+  }
+  return ['m', ...path.map((step) => (step >= HARDENED ? `${step - HARDENED}'` : `${step}`))].join('/');
+}

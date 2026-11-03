@@ -31,7 +31,7 @@ export class DerivationService implements OnDestroy {
   constructor(private zone: NgZone) {}
 
   prepare(input: string, network: WatchNetwork, scriptTypeHint?: ScriptType): Promise<PreparedInput> {
-    return this.run(() => prepareInput(input, network, scriptTypeHint, () => this.destroyed));
+    return this.run(async () => prepareInput(input, network, scriptTypeHint));
   }
 
   async derive(

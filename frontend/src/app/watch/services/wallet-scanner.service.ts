@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { Transaction } from '@interfaces/electrs.interface';
 import { firstValueFrom } from 'rxjs';
+import { hash as sha256 } from '@app/shared/sha256';
 import { RetryOptions, RetryWait, withRetry } from '@app/watch/api-retry';
 import { sortNewestFirst } from '@app/watch/wallet-math';
 import {
@@ -28,13 +29,13 @@ const MAX_ADDRESSES_PER_REQUEST = 100;
 /** Restarts of one chunk's paging after its cursor moves between mempool and chain (see continuesFrom). */
 const MAX_RESTARTS = 3;
 
-export async function walletId(definition: WalletDefinition): Promise<string> {
+export function walletId(definition: WalletDefinition): string {
   const { network } = definition;
   const what = definition.kind === 'address-list'
     ? `addresses:${definition.addresses.map((a) => a.address).join(',')}`
     : definition.descriptor;
   const bytes = new TextEncoder().encode(`${network}\n${what}`);
-  const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
+  const digest = sha256(bytes);
   const hex = Array.from(digest, (byte) => byte.toString(16).padStart(2, '0')).join('');
   return `${network}-${hex}`;
 }
@@ -226,7 +227,7 @@ export class WalletScannerService {
       onWait: (wait) => request.onProgress?.({ ...last, retry: wait ?? undefined }),
     };
     const addressRequestOptions = this.queued(retryOptions);
-    const id = existingWalletId ?? await walletId(definition);
+    const id = existingWalletId ?? walletId(definition);
     let requests = 0;
 
     if (extend && definition.kind === 'descriptor' && 'derivedCount' in definition) {

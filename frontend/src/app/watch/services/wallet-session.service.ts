@@ -155,7 +155,7 @@ export class WalletSessionService implements OnDestroy {
     let duplicate: WatchWallet | undefined;
     await this.runScan(async (generation) => {
       const definition = await this.toDefinition(form, network);
-      const id = await walletId(definition);
+      const id = walletId(definition);
       if (generation !== this.generation) {
         return;
       }

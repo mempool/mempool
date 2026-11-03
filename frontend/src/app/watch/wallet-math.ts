@@ -156,13 +156,16 @@ export function buildWalletView(wallet: WatchWallet, transactions: Transaction[]
   };
 }
 
-/** The key origin's path, else the standard one for single-key script types. */
+/** The key origin's path, `m` for a master key, else the standard one for single-key script types. */
 export function accountPath(wallet: WatchWallet): string | undefined {
   if (wallet.kind === 'address-list') {
     return undefined;
   }
   if (wallet.originPath) {
     return wallet.originPath;
+  }
+  if (wallet.fingerprintIsMaster) {
+    return 'm';
   }
   const standard = describeScriptType(wallet.scriptType).path;
   // The standard paths are written for mainnet; test networks use coin type 1 (SLIP-44).

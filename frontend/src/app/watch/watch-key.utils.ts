@@ -1,14 +1,13 @@
-// No Bitcoin library here: derivation.ts injects base58 and SHA-256.
+// No Bitcoin library here: derivation.ts injects base58check.
 
 import { InputError } from '@app/watch/input-error';
 import { ScriptType, WatchNetwork } from '@app/watch/watch.types';
 
-export interface Base58Codec {
+/** Base58 with the 4-byte double-SHA-256 checksum; decode throws on a bad checksum. */
+export interface Base58CheckCodec {
   decode(str: string): Uint8Array;
   encode(bytes: Uint8Array): string;
 }
-
-export type Sha256 = (data: Uint8Array) => Promise<Uint8Array>;
 
 // SLIP-132 prefixes. Descriptors accept only xpub/tpub, so keys are rewritten and the
 // script type the prefix encodes is carried separately.
@@ -22,6 +21,13 @@ const SLIP132: Record<string, { version: number; script: ScriptType; network: 'm
 };
 
 const CANONICAL_VERSION = { mainnet: 0x0488b21e, testnet: 0x043587cf };
+
+// xprv, yprv, zprv, tprv, uprv, vprv (BIP-32, SLIP-132).
+const PRIVATE_KEY_VERSIONS = [0x0488ade4, 0x049d7878, 0x04b2430c, 0x04358394, 0x044a4e28, 0x045f18bc];
+const WIF_VERSIONS = [0x80, 0xef];
+const INPUT_SEPARATORS = /[\s,;()[\]/]+/;
+// Long enough for a WIF (51-52 characters), short enough for an extended key (111-112).
+const KEY_TOKEN_RE = /^[1-9A-HJ-NP-Za-km-z]{51,112}$/;
 
 const EXTENDED_KEY_RE = /^(xpub|ypub|zpub|tpub|upub|vpub)[1-9A-HJ-NP-Za-km-z]{100,112}$/;
 
@@ -54,7 +60,7 @@ export interface NormalizedKey {
 }
 
 /** A bare xpub/tpub yields 'pkh', but is ambiguous; the import form asks for the type. */
-export async function normalizeExtendedKey(key: string, b58: Base58Codec, sha256: Sha256): Promise<NormalizedKey> {
+export function normalizeExtendedKey(key: string, b58check: Base58CheckCodec): NormalizedKey {
   const trimmed = key.trim();
   const prefix = trimmed.slice(0, 4);
   const meta = SLIP132[prefix];
@@ -62,19 +68,15 @@ export async function normalizeExtendedKey(key: string, b58: Base58Codec, sha256
     throw new InputError('xpub-prefix', { prefix, expected: Object.keys(SLIP132).join(', ') });
   }
 
-  const raw = b58.decode(trimmed);
-  if (raw.length !== 82) {
-    throw new InputError('xpub-length');
-  }
-  const payload = raw.subarray(0, 78);
-  const checksum = raw.subarray(78);
-
   // A mistyped key must fail here, not derive an empty wallet that belongs to nobody.
-  const expected = (await sha256(await sha256(payload))).subarray(0, 4);
-  for (let i = 0; i < 4; i++) {
-    if (checksum[i] !== expected[i]) {
-      throw new InputError('xpub-checksum');
-    }
+  let payload: Uint8Array;
+  try {
+    payload = b58check.decode(trimmed);
+  } catch {
+    throw new InputError('xpub-checksum');
+  }
+  if (payload.length !== 78) {
+    throw new InputError('xpub-length');
   }
 
   if (readUInt32BE(payload, 0) !== meta.version) {
@@ -84,12 +86,34 @@ export async function normalizeExtendedKey(key: string, b58: Base58Codec, sha256
   const swapped = new Uint8Array(payload);
   writeUInt32BE(swapped, CANONICAL_VERSION[meta.network], 0);
 
-  const newChecksum = (await sha256(await sha256(swapped))).subarray(0, 4);
-  const out = new Uint8Array(82);
-  out.set(swapped, 0);
-  out.set(newChecksum, 78);
+  return { xpub: b58check.encode(swapped), scriptType: meta.script, keyNetwork: meta.network };
+}
 
-  return { xpub: b58.encode(out), scriptType: meta.script, keyNetwork: meta.network };
+function isPrivateKey(token: string, b58check: Base58CheckCodec): boolean {
+  if (!KEY_TOKEN_RE.test(token)) {
+    return false;
+  }
+  let payload: Uint8Array;
+  try {
+    payload = b58check.decode(token);
+  } catch {
+    return false;
+  }
+  if (payload.length === 78) {
+    return PRIVATE_KEY_VERSIONS.includes(readUInt32BE(payload, 0));
+  }
+  return (payload.length === 33 || payload.length === 34) && WIF_VERSIONS.includes(payload[0]);
+}
+
+// Each token is decoded whole: a key-shaped run inside an address or xpub would also need a
+// valid checksum, a 1-in-2^32 chance.
+export function containsPrivateKey(input: string, b58check: Base58CheckCodec): boolean {
+  for (const token of input.split(INPUT_SEPARATORS)) {
+    if (isPrivateKey(token, b58check)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 export function buildDescriptor(xpub: string, scriptType: ScriptType): string {
@@ -193,20 +217,11 @@ export function describeScriptType(scriptType: string): { code: string; path?: s
   }
 }
 
-export interface KeyOrigin {
-  masterFingerprint: string;
-  path?: string;
-}
+const KEY_ORIGIN_RE = /\[[0-9a-fA-F]{8}(?:\/\d+['hH]?)*\]/;
 
-// Only a descriptor's key origin carries the master fingerprint; a bare xpub's
-// parentFingerprint is that of its parent (e.g. m/84'/0').
-export function parseKeyOrigin(descriptor: string): KeyOrigin | null {
-  const match = descriptor.match(/\[\s*([0-9a-fA-F]{8})((?:\/\d+['h]?)*)\s*\]/);
-  if (!match) {
-    return null;
-  }
-  const path = match[2] ? `m${match[2].replace(/h/g, '\'')}` : undefined;
-  return { masterFingerprint: match[1].toLowerCase(), path };
+/** BIP-380 writes hardened steps as ' or h; an accepted H is stored as '. */
+export function normalizeOriginMarkers(descriptor: string): string {
+  return descriptor.replace(KEY_ORIGIN_RE, (origin) => origin.replace(/H/g, '\''));
 }
 
 export function fromMempoolNetwork(network: string): WatchNetwork | null {
