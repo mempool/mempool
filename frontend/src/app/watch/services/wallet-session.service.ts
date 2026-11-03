@@ -328,17 +328,19 @@ export class WalletSessionService implements OnDestroy {
   }
 
   private onChainChange(): void {
+    // Queued during a scan, the block is weighed against the scan's result (runQueuedRefresh):
+    // the view shown now may be about to be replaced by a complete one.
+    if (this.state.scanning || this.state.adding || document.hidden) {
+      this.queuedForChain = this.queuedForChain || !this.refreshQueued;
+      this.refreshQueued = true;
+      return;
+    }
     // A truncated history is already incomplete, and rescanning it takes longer than a block
     // interval: refreshing on every block would keep the wallet scanning without pause.
     if (this.state.view?.truncated) {
       return;
     }
-    if (this.state.scanning || this.state.adding || document.hidden) {
-      this.queuedForChain = this.queuedForChain || !this.refreshQueued;
-      this.refreshQueued = true;
-    } else {
-      void this.refreshActive(true);
-    }
+    void this.refreshActive(true);
   }
 
   private runQueuedRefresh(): void {
