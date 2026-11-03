@@ -5,6 +5,8 @@
 .mono, .descriptor { font-family: monospace; }
 .gap-limit-control { display: flex; align-items: center; gap: .5rem; }
 .gap-limit-control .form-control { width: 6rem; }
+.script-type-control { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+.script-type-control .form-select { width: auto; max-width: 14rem; }
 .settings-name { padding: 0; color: var(--fg); background: transparent; border: 0; border-bottom: 1px dashed var(--transparent-fg); text-align: left; }
 .settings-name:hover, .settings-name:focus-visible { border-bottom-color: var(--fg); }
 // The global stylesheet removes outlines, so keyboard focus gets a ring of its own.

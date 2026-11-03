@@ -101,6 +101,21 @@ export class WalletStorageService {
     this.persist(records);
   }
 
+  /** Put `wallet` where the wallet `oldId` was, e.g. after re-importing it under another script type. */
+  replace(oldId: string, wallet: WatchWallet): void {
+    const records = this.readRecords()?.filter((r) => readRecord(r)?.id !== wallet.id);
+    if (!records) {
+      return;
+    }
+    const index = records.findIndex((r) => readRecord(r)?.id === oldId);
+    if (index >= 0) {
+      records[index] = wallet;
+    } else {
+      records.push(wallet);
+    }
+    this.persist(records);
+  }
+
   remove(id: string): void {
     const records = this.readRecords();
     if (records) {

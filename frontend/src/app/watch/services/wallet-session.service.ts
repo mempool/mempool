@@ -4,8 +4,8 @@ import { BehaviorSubject, fromEvent, Subscription } from 'rxjs';
 import { Transaction } from '@interfaces/electrs.interface';
 import { looksLikeAddressList } from '@app/watch/address-list';
 import { buildWalletView, currentReceiveIndex, WalletView } from '@app/watch/wallet-math';
-import { fromMempoolNetwork } from '@app/watch/watch-key.utils';
-import { ScriptType, WalletDefinition, WatchNetwork, WatchWallet } from '@app/watch/watch.types';
+import { BARE_KEY_SCRIPT_TYPES, fromMempoolNetwork, isBareExtendedKey } from '@app/watch/watch-key.utils';
+import { DescriptorWalletDefinition, ScriptType, WalletDefinition, WatchNetwork, WatchWallet } from '@app/watch/watch.types';
 import { DerivationService } from '@app/watch/services/derivation.service';
 import { HistoryCache, ScanIncompleteError, ScanProgress, walletId, WalletScannerService } from '@app/watch/services/wallet-scanner.service';
 import { BlockExtended } from '@interfaces/node-api.interface';
@@ -22,6 +22,23 @@ export interface WalletImportForm {
   gapLimit: number;
   /** For a bare xpub/tpub, which does not say which script type it is. */
   scriptTypeHint?: ScriptType;
+  /** Use the type that has history, if exactly one has, instead of `scriptTypeHint`. */
+  detectScriptType?: boolean;
+}
+
+/** Which script types of a bare xpub/tpub have history at receive address 0; null while checking. */
+export interface ScriptTypeCheck {
+  input: string;
+  withHistory: ScriptType[] | null;
+}
+
+export const SCRIPT_TYPE_CHECK_DELAY_MS = 400;
+
+interface ScriptTypeCheckRun {
+  input: string;
+  network: WatchNetwork;
+  settled: boolean;
+  result: Promise<ScriptType[] | null>;
 }
 
 export interface WalletPageState {
@@ -37,6 +54,7 @@ export interface WalletPageState {
   progress: ScanProgress | null;
   error: string | null;
   notice: string | null;
+  scriptTypeCheck: ScriptTypeCheck | null;
 }
 
 const INITIAL_STATE: WalletPageState = {
@@ -50,6 +68,7 @@ const INITIAL_STATE: WalletPageState = {
   progress: null,
   error: null,
   notice: null,
+  scriptTypeCheck: null,
 };
 
 function errorMessage(e: unknown): string {
@@ -96,6 +115,9 @@ export class WalletSessionService implements OnDestroy {
   private mempoolNetwork: string | null = null;
   private refreshQueued = false;
   private visibilitySubscription: Subscription;
+  private checkRun: ScriptTypeCheckRun | null = null;
+  private checkTimer: ReturnType<typeof setTimeout> | undefined;
+  private checkTimerInput: string | null = null;
 
   constructor(
     private derivation: DerivationService,
@@ -123,6 +145,7 @@ export class WalletSessionService implements OnDestroy {
     }
     this.mempoolNetwork = mempoolNetwork;
     this.refreshQueued = false;
+    this.clearScriptTypeCheck();
     this.views.clear();
     this.scannedAt.clear();
     this.caches.clear();
@@ -143,6 +166,7 @@ export class WalletSessionService implements OnDestroy {
   }
 
   cancelAdding(): void {
+    this.clearScriptTypeCheck();
     this.patch({ adding: false, error: null });
     this.runQueuedRefresh();
   }
@@ -151,14 +175,58 @@ export class WalletSessionService implements OnDestroy {
     return this.show(id, null);
   }
 
-  async importWallet(form: WalletImportForm): Promise<void> {
+  /** Called as the import field changes; checks a bare xpub/tpub once the input settles. */
+  checkScriptType(rawInput: string): void {
+    const input = rawInput.trim();
     const network = this.state.network;
-    if (this.state.scanning || !network) {
+    if ((this.checkRun?.input === input && this.checkRun.network === network) || this.checkTimerInput === input) {
       return;
     }
+    this.clearScriptTypeCheck();
+    if (network && isBareExtendedKey(input)) {
+      this.checkTimerInput = input;
+      this.checkTimer = setTimeout(() => this.startScriptTypeCheck(input, network), SCRIPT_TYPE_CHECK_DELAY_MS);
+    }
+  }
+
+  /** False if the form should stay as it is. */
+  async importWallet(form: WalletImportForm): Promise<boolean> {
+    const network = this.state.network;
+    if (this.state.scanning || !network) {
+      return false;
+    }
     let duplicate: WatchWallet | undefined;
+    let imported = false;
     await this.runScan(async (generation) => {
-      const definition = await this.toDefinition(form, network);
+      let withHistory: ScriptType[] | null = null;
+      let scriptTypeHint = form.scriptTypeHint;
+      if (form.detectScriptType && isBareExtendedKey(form.input)) {
+        const input = form.input.trim();
+        const run = this.checkRun?.input === input && this.checkRun.network === network ? this.checkRun : this.startScriptTypeCheck(input, network);
+        const shown = run.settled;
+        if (!shown) {
+          this.progressReporter(generation)({ phase: 'fetching', addressesDerived: BARE_KEY_SCRIPT_TYPES.length, txsFound: 0, apiRequests: 1 });
+        }
+        withHistory = await run.result;
+        if (generation !== this.generation) {
+          return;
+        }
+        // The dropdown now marks them; the user picks one.
+        if (withHistory && withHistory.length > 1 && !shown) {
+          return;
+        }
+        if (withHistory?.length === 1) {
+          scriptTypeHint = withHistory[0];
+        }
+      } else if (isBareExtendedKey(form.input)) {
+        // The user chose the type; a finished check still decides the empty-wallet notice.
+        const input = form.input.trim();
+        const run = this.checkRun?.input === input && this.checkRun.network === network ? this.checkRun : null;
+        if (run?.settled) {
+          withHistory = await run.result;
+        }
+      }
+      const definition = await this.toDefinition({ ...form, scriptTypeHint }, network);
       const id = walletId(definition);
       if (generation !== this.generation) {
         return;
@@ -180,12 +248,18 @@ export class WalletSessionService implements OnDestroy {
       }
       this.storeView(buildWalletView(wallet, txs, truncated));
       this.storeCache(wallet.id, truncated ? undefined : tip, txs);
-      this.patch({ activeId: wallet.id, adding: false, notice: null });
+      const notice = withHistory?.length === 0 && !txs.length
+        ? $localize`:@@watch.script-type-not-detected:No history found at m/…/0/0. If this key is from a Legacy, Nested SegWit or Taproot wallet, change the address type in Settings.`
+        : null;
+      this.patch({ activeId: wallet.id, adding: false, notice });
       this.storage.saveActiveId(network, wallet.id);
+      imported = true;
     });
     if (duplicate) {
       await this.show(duplicate.id, $localize`:@@watch.already-saved:This wallet is already saved as “${duplicate.label}:label:”. Showing it with its saved settings.`);
+      return true;
     }
+    return imported;
   }
 
   clearError(): void {
@@ -229,6 +303,51 @@ export class WalletSessionService implements OnDestroy {
     await this.refreshActive();
   }
 
+  /** A different script type is a different wallet; it replaces the old one once scanned. */
+  async changeScriptType(scriptType: ScriptType): Promise<void> {
+    const old = this.activeWallet;
+    const network = this.state.network;
+    if (old?.kind !== 'descriptor' || this.state.scanning || !network || !isBareExtendedKey(old.source) || old.scriptType === scriptType) {
+      return;
+    }
+    let existing: WatchWallet | undefined;
+    await this.runScan(async (generation) => {
+      const definition = await this.toDefinition(
+        { input: old.source, label: old.label, gapLimit: old.gapLimit, scriptTypeHint: scriptType },
+        network,
+      ) as DescriptorWalletDefinition;
+      const id = walletId(definition);
+      if (generation !== this.generation) {
+        return;
+      }
+      existing = this.state.wallets.find((w) => w.id === id);
+      if (existing) {
+        return;
+      }
+      const tip = this.tracker.tip;
+      const { wallet, txs, truncated } = await this.scanner.scan({
+        definition,
+        existingWalletId: id,
+        onProgress: this.progressReporter(generation),
+        isCancelled: () => generation !== this.generation,
+      });
+      if (generation !== this.generation || this.state.activeId !== old.id) {
+        return;
+      }
+      // Keep a rename made during the scan.
+      const renamed = { ...wallet, label: this.activeWallet?.label ?? wallet.label };
+      this.storage.replace(old.id, renamed);
+      this.dropSessionState(old.id);
+      this.patch({ wallets: this.state.wallets.map((w) => (w.id === old.id ? renamed : w)), activeId: renamed.id, notice: null });
+      this.storeView(buildWalletView(renamed, txs, truncated));
+      this.storeCache(wallet.id, truncated ? undefined : tip, txs);
+      this.storage.saveActiveId(network, wallet.id);
+    });
+    if (existing) {
+      await this.show(existing.id, $localize`:@@watch.script-type-already-saved:This key is already saved with that address type as “${existing.label}:label:”. Showing it.`);
+    }
+  }
+
   useNextReceiveAddress(): void {
     const wallet = this.state.view?.wallet;
     if (wallet?.kind !== 'descriptor') {
@@ -257,6 +376,51 @@ export class WalletSessionService implements OnDestroy {
   ngOnDestroy(): void {
     this.generation++;
     this.visibilitySubscription.unsubscribe();
+    this.clearScriptTypeCheck();
+  }
+
+  private clearScriptTypeCheck(): void {
+    clearTimeout(this.checkTimer);
+    this.checkTimerInput = null;
+    this.checkRun = null;
+    if (this.state.scriptTypeCheck) {
+      this.patch({ scriptTypeCheck: null });
+    }
+  }
+
+  private startScriptTypeCheck(input: string, network: WatchNetwork): ScriptTypeCheckRun {
+    clearTimeout(this.checkTimer);
+    this.checkTimerInput = null;
+    const run: ScriptTypeCheckRun = { input, network, settled: false, result: Promise.resolve(null) };
+    this.checkRun = run;
+    run.result = this.runScriptTypeCheck(run).finally(() => {
+      run.settled = true;
+    });
+    return run;
+  }
+
+  /** Null if the check failed or was overtaken by a different input. */
+  private async runScriptTypeCheck(run: ScriptTypeCheckRun): Promise<ScriptType[] | null> {
+    const stale = (): boolean => this.checkRun !== run;
+    try {
+      const candidates = await this.derivation.scriptCandidates(run.input, run.network);
+      if (stale() || !candidates.length) {
+        return null;
+      }
+      this.patch({ scriptTypeCheck: { input: run.input, withHistory: null } });
+      const used = await this.scanner.addressesWithHistory(candidates.map((c) => c.address), { isCancelled: stale });
+      if (stale()) {
+        return null;
+      }
+      const withHistory = candidates.filter((c) => used.has(c.address)).map((c) => c.scriptType);
+      this.patch({ scriptTypeCheck: { input: run.input, withHistory } });
+      return withHistory;
+    } catch {
+      if (!stale()) {
+        this.patch({ scriptTypeCheck: null });
+      }
+      return null;
+    }
   }
 
   private async toDefinition(form: WalletImportForm, network: WatchNetwork): Promise<WalletDefinition> {
@@ -317,6 +481,7 @@ export class WalletSessionService implements OnDestroy {
       return;
     }
     const view = this.views.get(id) ?? null;
+    this.clearScriptTypeCheck();
     this.patch({ activeId: id, view, updatedAt: this.scannedAt.get(id) ?? null, adding: false, error: null, notice });
     if (this.state.network) {
       this.storage.saveActiveId(this.state.network, id);

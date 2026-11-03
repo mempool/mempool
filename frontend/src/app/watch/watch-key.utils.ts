@@ -55,6 +55,15 @@ export function looksLikeExtendedKey(input: string): boolean {
 
 export const BARE_KEY_SCRIPT_TYPES: readonly ScriptType[] = ['wpkh', 'sh_wpkh', 'pkh', 'tr'];
 
+export function isBareKeyScriptType(value: string): value is ScriptType {
+  return (BARE_KEY_SCRIPT_TYPES as readonly string[]).includes(value);
+}
+
+/** A plain xpub/tpub, which, unlike a zpub or a descriptor, does not say its script type. */
+export function isBareExtendedKey(input: string): boolean {
+  return looksLikeExtendedKey(input) && /^(xpub|tpub)/.test(input.trim());
+}
+
 function readUInt32BE(b: Uint8Array, offset: number): number {
   return ((b[offset] << 24) | (b[offset + 1] << 16) | (b[offset + 2] << 8) | b[offset + 3]) >>> 0;
 }

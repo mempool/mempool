@@ -1,5 +1,5 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
-import { clearDerivers, deriveAddresses, prepareInput, PreparedInput, validateAddressList } from '@app/watch/derivation';
+import { clearDerivers, deriveAddresses, prepareInput, PreparedInput, scriptCandidates, ScriptCandidate, validateAddressList } from '@app/watch/derivation';
 import { InputError } from '@app/watch/input-error';
 import { RequestCancelledError } from '@app/watch/api-retry';
 import { describeInputError } from '@app/watch/input-errors';
@@ -32,6 +32,10 @@ export class DerivationService implements OnDestroy {
 
   prepare(input: string, network: WatchNetwork, scriptTypeHint?: ScriptType): Promise<PreparedInput> {
     return this.run(async () => prepareInput(input, network, scriptTypeHint));
+  }
+
+  scriptCandidates(input: string, network: WatchNetwork): Promise<ScriptCandidate[]> {
+    return this.run(async () => scriptCandidates(input, network));
   }
 
   async derive(
