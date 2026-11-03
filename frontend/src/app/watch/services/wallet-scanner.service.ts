@@ -94,6 +94,41 @@ function continuesFrom(previous: Transaction[], page: Transaction[]): boolean {
   return !!page[0].status?.confirmed === cursorConfirmed;
 }
 
+function outpointsOf(tx: Transaction): string[] {
+  return (tx.vin || []).filter((vin) => !vin.is_coinbase).map((vin) => `${vin.txid}:${vin.vout}`);
+}
+
+function confirmedSpenders(txs: Transaction[]): Map<string, string> | null {
+  const spenders = new Map<string, string>();
+  for (const tx of txs.filter((t) => t.status?.confirmed)) {
+    for (const outpoint of outpointsOf(tx)) {
+      if ((spenders.get(outpoint) ?? tx.txid) !== tx.txid) {
+        return null;
+      }
+      spenders.set(outpoint, tx.txid);
+    }
+  }
+  return spenders;
+}
+
+function newerReplacement(a: Transaction, b: Transaction): Transaction {
+  if (a.fee !== b.fee) {
+    return a.fee > b.fee ? a : b;
+  }
+  return a.txid < b.txid ? a : b;
+}
+
+function replacedTxids(unconfirmed: Transaction[]): Set<string> {
+  const winners = new Map<string, Transaction>();
+  for (const tx of unconfirmed) {
+    for (const outpoint of outpointsOf(tx)) {
+      const other = winners.get(outpoint);
+      winners.set(outpoint, other ? newerReplacement(other, tx) : tx);
+    }
+  }
+  return new Set(unconfirmed.filter((tx) => outpointsOf(tx).some((o) => winners.get(o) !== tx)).map((tx) => tx.txid));
+}
+
 function withoutUiState(tx: Transaction): Transaction {
   const copy = { ...tx };
   for (const key of Object.keys(copy).filter((k) => k.startsWith('_'))) {
@@ -218,32 +253,28 @@ class HistoryCollector {
     }
   }
 
-  dropConflicts(): void {
-    const spenders = new Map<string, Transaction>();
-    const dropped = new Set<string>();
-    for (const tx of this.txsById.values()) {
-      for (const vin of (tx.vin || []).filter((v) => !v.is_coinbase)) {
-        const outpoint = `${vin.txid}:${vin.vout}`;
-        const other = spenders.get(outpoint);
-        if (!other || other.txid === tx.txid) {
-          spenders.set(outpoint, tx);
-        } else if (!!other.status?.confirmed === !!tx.status?.confirmed) {
-          throw new ScanIncompleteError();
-        } else {
-          const [kept, stale] = tx.status?.confirmed ? [tx, other] : [other, tx];
-          spenders.set(outpoint, kept);
-          dropped.add(stale.txid);
-        }
-      }
+  resolveConflicts(): boolean {
+    const confirmed = confirmedSpenders([...this.txsById.values()]);
+    if (!confirmed) {
+      return false;
     }
+    const doubleSpends = this.unconfirmed().filter((tx) => outpointsOf(tx).some((outpoint) => confirmed.has(outpoint)));
+    this.dropWithDescendants(new Set(doubleSpends.map((tx) => tx.txid)));
+    this.dropWithDescendants(replacedTxids(this.unconfirmed()));
+    return true;
+  }
+
+  private unconfirmed(): Transaction[] {
+    return [...this.txsById.values()].filter((tx) => !tx.status?.confirmed);
+  }
+
+  private dropWithDescendants(dropped: Set<string>): void {
     let grew = dropped.size > 0;
     while (grew) {
       grew = false;
-      for (const tx of this.txsById.values()) {
-        if (!dropped.has(tx.txid) && !tx.status?.confirmed && tx.vin?.some((v) => dropped.has(v.txid))) {
-          dropped.add(tx.txid);
-          grew = true;
-        }
+      for (const tx of this.unconfirmed().filter((t) => !dropped.has(t.txid) && t.vin?.some((v) => dropped.has(v.txid)))) {
+        dropped.add(tx.txid);
+        grew = true;
       }
     }
     for (const txid of dropped) {
@@ -283,6 +314,18 @@ export class WalletScannerService {
   }
 
   async scan(request: WalletScanRequest): Promise<WalletScanResult> {
+    return await this.scanOnce(request) ?? this.rescan(request);
+  }
+
+  private async rescan(request: WalletScanRequest): Promise<WalletScanResult> {
+    const result = await this.scanOnce(request);
+    if (!result) {
+      throw new ScanIncompleteError();
+    }
+    return result;
+  }
+
+  private async scanOnce(request: WalletScanRequest): Promise<WalletScanResult | null> {
     const { definition, existingWalletId } = request;
     const { history, onProgress } = this.startScan(request);
     const id = existingWalletId ?? walletId(definition);
@@ -320,7 +363,7 @@ export class WalletScannerService {
     const scanned = wallet.kind === 'address-list'
       ? wallet
       : await this.scanDescriptor(wallet, wallet.id, history, { ...request, onProgress }, wallet);
-    return this.finish(scanned, history, onProgress);
+    return this.finish(scanned, history, onProgress) ?? this.rescan(request);
   }
 
   private startScan(request: WalletScanRequest): { history: HistoryCollector; onProgress: (p: ScanProgress) => void } {
@@ -348,8 +391,10 @@ export class WalletScannerService {
     }
   }
 
-  private finish(wallet: WatchWallet, history: HistoryCollector, onProgress: (p: ScanProgress) => void): WalletScanResult {
-    history.dropConflicts();
+  private finish(wallet: WatchWallet, history: HistoryCollector, onProgress: (p: ScanProgress) => void): WalletScanResult | null {
+    if (!history.resolveConflicts()) {
+      return null;
+    }
     const txs = sortNewestFirst([...history.txsById.values()]);
     onProgress({ phase: 'done', addressesDerived: wallet.addresses.length, txsFound: txs.length, apiRequests: history.requests });
     return { wallet, txs, truncated: history.truncated };
