@@ -1,12 +1,14 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, fromEvent, Subscription } from 'rxjs';
+import { Transaction } from '@interfaces/electrs.interface';
 import { looksLikeAddressList } from '@app/watch/address-list';
 import { buildWalletView, currentReceiveIndex, WalletView } from '@app/watch/wallet-math';
 import { fromMempoolNetwork } from '@app/watch/watch-key.utils';
 import { ScriptType, WalletDefinition, WatchNetwork, WatchWallet } from '@app/watch/watch.types';
 import { DerivationService } from '@app/watch/services/derivation.service';
-import { ScanIncompleteError, ScanProgress, walletId, WalletScannerService } from '@app/watch/services/wallet-scanner.service';
+import { HistoryCache, ScanIncompleteError, ScanProgress, walletId, WalletScannerService } from '@app/watch/services/wallet-scanner.service';
+import { BlockExtended } from '@interfaces/node-api.interface';
 import { WalletStorageService } from '@app/watch/services/wallet-storage.service';
 import { WalletTrackerService } from '@app/watch/services/wallet-tracker.service';
 
@@ -80,7 +82,8 @@ function validGapLimit(value: number): number {
 /**
  * State and actions for the /wallet page, provided by WatchComponent. One scan runs at a
  * time; `generation` discards the result of a scan overtaken by a network change. A wallet is
- * scanned in full when it is shown, on Refresh and on each new block.
+ * scanned in full when it is shown and on Refresh; on a new block or reconnect, only what changed
+ * since its cached history is read, and a hidden tab waits until it is shown again.
  */
 @Injectable()
 export class WalletSessionService implements OnDestroy {
@@ -88,9 +91,12 @@ export class WalletSessionService implements OnDestroy {
 
   private views = new Map<string, WalletView>();
   private scannedAt = new Map<string, number>();
+  /** In memory only: a reload starts with a full scan. */
+  private caches = new Map<string, HistoryCache>();
   private generation = 0;
   private mempoolNetwork: string | null = null;
   private refreshQueued = false;
+  private visibilitySubscription: Subscription;
 
   constructor(
     private derivation: DerivationService,
@@ -99,6 +105,7 @@ export class WalletSessionService implements OnDestroy {
     private tracker: WalletTrackerService,
   ) {
     this.tracker.watchChain(() => this.onChainChange());
+    this.visibilitySubscription = fromEvent(document, 'visibilitychange').subscribe(() => this.runQueuedRefresh());
   }
 
   get state(): WalletPageState {
@@ -119,6 +126,7 @@ export class WalletSessionService implements OnDestroy {
     this.refreshQueued = false;
     this.views.clear();
     this.scannedAt.clear();
+    this.caches.clear();
     const network = fromMempoolNetwork(mempoolNetwork);
     const wallets = network ? this.storage.load(network) : [];
     this.state$.next({ ...INITIAL_STATE, network, wallets });
@@ -161,6 +169,7 @@ export class WalletSessionService implements OnDestroy {
       if (duplicate) {
         return;
       }
+      const tip = this.tracker.tip;
       const { wallet, txs, truncated } = await this.scanner.scan({
         definition,
         existingWalletId: id,
@@ -171,6 +180,7 @@ export class WalletSessionService implements OnDestroy {
         return;
       }
       this.storeView(buildWalletView(wallet, txs, truncated));
+      this.storeCache(wallet.id, truncated ? undefined : tip, txs);
       this.patch({ activeId: wallet.id, adding: false, notice: null });
       this.storage.saveActiveId(network, wallet.id);
     });
@@ -247,6 +257,7 @@ export class WalletSessionService implements OnDestroy {
 
   ngOnDestroy(): void {
     this.generation++;
+    this.visibilitySubscription.unsubscribe();
   }
 
   private async toDefinition(form: WalletImportForm, network: WatchNetwork): Promise<WalletDefinition> {
@@ -314,27 +325,30 @@ export class WalletSessionService implements OnDestroy {
   }
 
   private onChainChange(): void {
-    if (this.state.scanning || this.state.adding) {
+    if (this.state.scanning || this.state.adding || document.hidden) {
       this.refreshQueued = true;
     } else {
-      void this.refreshActive();
+      void this.refreshActive(true);
     }
   }
 
   private runQueuedRefresh(): void {
-    if (this.refreshQueued && !this.state.adding && !this.state.scanning && this.activeWallet) {
-      void this.refreshActive();
+    if (this.refreshQueued && !this.state.adding && !this.state.scanning && !document.hidden && this.activeWallet) {
+      void this.refreshActive(true);
     }
   }
 
-  private async refreshActive(): Promise<void> {
+  /** `incremental` reads only what changed since the cached history, when there is one. */
+  private async refreshActive(incremental = false): Promise<void> {
     const wallet = this.activeWallet;
     if (!wallet || this.state.scanning) {
       return;
     }
     this.refreshQueued = false;
+    const tip = this.tracker.tip;
+    const cache = incremental ? this.caches.get(wallet.id) : undefined;
     await this.runScan(async (generation) => {
-      const { wallet: scanned, txs, truncated } = await this.scanner.scan({
+      const request = {
         definition: wallet,
         existingWalletId: wallet.id,
         minimumDerived: wallet.kind === 'descriptor' ? {
@@ -343,26 +357,42 @@ export class WalletSessionService implements OnDestroy {
         } : undefined,
         onProgress: this.progressReporter(generation),
         isCancelled: () => generation !== this.generation,
-      });
+      };
+      const { wallet: scanned, txs, truncated } = cache
+        ? await this.scanner.refresh({ ...request, cache })
+        : await this.scanner.scan(request);
       if (generation !== this.generation || this.state.activeId !== scanned.id) {
         return;
       }
-      // Keep settings changed during the scan; a changed gap limit needs another scan.
+      // Keep settings changed during the scan; a changed gap limit needs another, full, scan.
       const current = this.activeWallet ?? wallet;
       let merged: WatchWallet = { ...scanned, label: current.label };
+      let gapLimitChanged = false;
       if (scanned.kind === 'descriptor' && current.kind === 'descriptor') {
         merged = { ...scanned, label: current.label, receiveIndex: current.receiveIndex, gapLimit: current.gapLimit };
-        if (current.gapLimit !== scanned.gapLimit) {
+        gapLimitChanged = current.gapLimit !== scanned.gapLimit;
+        if (gapLimitChanged) {
           this.refreshQueued = true;
         }
       }
       this.storeView(buildWalletView(merged, txs, truncated));
+      this.storeCache(merged.id, truncated || gapLimitChanged ? undefined : tip, txs);
     });
+  }
+
+  /** A truncated history is incomplete, and one without a known tip cannot be refreshed from. */
+  private storeCache(id: string, tip: BlockExtended | undefined, txs: Transaction[]): void {
+    if (tip) {
+      this.caches.set(id, { tipHash: tip.id, tipHeight: tip.height, confirmed: txs.filter((tx) => tx.status?.confirmed) });
+    } else {
+      this.caches.delete(id);
+    }
   }
 
   private dropSessionState(id: string): void {
     this.views.delete(id);
     this.scannedAt.delete(id);
+    this.caches.delete(id);
   }
 
   private storeView(view: WalletView): void {

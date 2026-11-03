@@ -17,6 +17,10 @@ export class WalletTrackerService implements OnDestroy {
     private stateService: StateService,
   ) {}
 
+  get tip(): BlockExtended | undefined {
+    return this.blocks[0];
+  }
+
   /** Calls `onChange` on a new tip (block or reorg) and on reconnect, since anything could have happened meanwhile. */
   watchChain(onChange: () => void): void {
     this.chainSubscription.unsubscribe();

@@ -4,7 +4,7 @@ import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { Transaction } from '@interfaces/electrs.interface';
 import { firstValueFrom } from 'rxjs';
 import { hash as sha256 } from '@app/shared/sha256';
-import { RetryOptions, RetryWait, withRetry } from '@app/watch/api-retry';
+import { RequestCancelledError, RetryOptions, RetryWait, withRetry } from '@app/watch/api-retry';
 import { sortNewestFirst } from '@app/watch/wallet-math';
 import {
   AddressListWallet,
@@ -28,6 +28,12 @@ const MAX_ADDRESSES_PER_REQUEST = 100;
 
 /** Restarts of one chunk's paging after its cursor moves between mempool and chain (see continuesFrom). */
 const MAX_RESTARTS = 3;
+
+/**
+ * A refresh reads this many blocks below the cached tip again, so a shallow reorg, or an
+ * electrs that lagged the tip at the last scan, cannot leave the cache stale.
+ */
+const REFETCH_DEPTH = 6;
 
 export function walletId(definition: WalletDefinition): string {
   const { network } = definition;
@@ -58,6 +64,18 @@ export interface WalletScanRequest {
   isCancelled?: () => boolean;
 }
 
+/** The confirmed history of a complete scan, and the tip it was taken at. */
+export interface HistoryCache {
+  tipHash: string;
+  tipHeight: number;
+  confirmed: Transaction[];
+}
+
+export interface WalletRefreshRequest extends WalletScanRequest {
+  definition: WatchWallet;
+  cache: HistoryCache;
+}
+
 export interface WalletScanResult {
   wallet: WatchWallet;
   txs: Transaction[];
@@ -86,6 +104,8 @@ class HistoryCollector {
   readonly txsById = new Map<string, Transaction>();
   pages = 0;
   truncated = false;
+  /** Set for a refresh: a chunk is read only down to this height, which the cache already holds. */
+  stopAtHeight: number | null = null;
   /** The chunk being read; stored only once read in full. */
   private reading = new Map<string, Transaction>();
 
@@ -181,7 +201,13 @@ class HistoryCollector {
         found.set(tx.txid, tx);
       }
 
-      const next = page[page.length - 1].txid;
+      // Pages run from the mempool down the chain, so the last transaction is the oldest.
+      const oldest = page[page.length - 1];
+      if (this.stopAtHeight !== null && oldest.status?.confirmed && oldest.status.block_height <= this.stopAtHeight) {
+        return [...found.values()];
+      }
+
+      const next = oldest.txid;
       // A cursor that stops advancing would spin forever.
       if (next === afterTxid) {
         return [...found.values()];
@@ -224,24 +250,76 @@ export class WalletScannerService {
   }
 
   async scan(request: WalletScanRequest): Promise<WalletScanResult> {
-    const { definition, existingWalletId, isCancelled } = request;
+    const { definition, existingWalletId } = request;
+    const { history, onProgress } = this.startScan(request);
+    const id = existingWalletId ?? walletId(definition);
+
+    const wallet = definition.kind === 'address-list'
+      ? await this.scanAddressList(definition, id, history, onProgress)
+      : await this.scanDescriptor(definition, id, history, { ...request, onProgress });
+    return this.finish(wallet, history, onProgress);
+  }
+
+  /**
+   * Reads only what changed since `cache` was taken: the mempool and the newest blocks, then in
+   * full any addresses the gap limit now needs. Falls back to a full scan when the cached tip
+   * left the best chain or the refresh would be truncated.
+   */
+  async refresh(request: WalletRefreshRequest): Promise<WalletScanResult> {
+    const { definition: wallet, cache } = request;
+    if (!await this.inBestChain(cache.tipHash, request.isCancelled)) {
+      return this.scan(request);
+    }
+    const { history, onProgress } = this.startScan(request);
+    const sinceHeight = cache.tipHeight - REFETCH_DEPTH;
+    history.stopAtHeight = sinceHeight;
+    await history.fetch(wallet.addresses.map((a) => a.address), () => onProgress({
+      phase: 'fetching',
+      addressesDerived: wallet.addresses.length,
+      txsFound: history.found(),
+      apiRequests: history.requests + 1,
+    }));
+    if (history.truncated) {
+      return this.scan(request);
+    }
+    // Unconfirmed transactions are not cached: the fresh mempool replaces them, replacements included.
+    for (const tx of cache.confirmed) {
+      if (tx.status.block_height <= sinceHeight && !history.txsById.has(tx.txid)) {
+        history.txsById.set(tx.txid, tx);
+      }
+    }
+    history.stopAtHeight = null;
+
+    const scanned = wallet.kind === 'address-list'
+      ? wallet
+      : await this.scanDescriptor(wallet, wallet.id, history, { ...request, onProgress }, wallet);
+    return this.finish(scanned, history, onProgress);
+  }
+
+  private startScan(request: WalletScanRequest): { history: HistoryCollector; onProgress: (p: ScanProgress) => void } {
     let last: ScanProgress = { phase: 'deriving', addressesDerived: 0, txsFound: 0, apiRequests: 0 };
     const onProgress = (p: ScanProgress): void => {
       last = p;
       request.onProgress?.(p);
     };
     const retryOptions: RetryOptions = {
-      isCancelled,
+      isCancelled: request.isCancelled,
       onWait: (wait) => request.onProgress?.({ ...last, retry: wait ?? undefined }),
     };
-    const addressRequestOptions = this.queued(retryOptions);
-    const id = existingWalletId ?? walletId(definition);
+    return { history: new HistoryCollector(this.electrsApiService, this.queued(retryOptions)), onProgress };
+  }
 
-    const history = new HistoryCollector(this.electrsApiService, addressRequestOptions);
-    const wallet = definition.kind === 'address-list'
-      ? await this.scanAddressList(definition, id, history, onProgress)
-      : await this.scanDescriptor(definition, id, history, { ...request, onProgress });
-    return this.finish(wallet, history, onProgress);
+  /** Unknown, orphaned or unreachable all count as not: a full scan is always safe. */
+  private async inBestChain(hash: string, isCancelled?: () => boolean): Promise<boolean> {
+    try {
+      const status = await withRetry(() => firstValueFrom(this.electrsApiService.getBlockStatus$(hash)), { isCancelled });
+      return !!status?.in_best_chain;
+    } catch (e) {
+      if (e instanceof RequestCancelledError) {
+        throw e;
+      }
+      return false;
+    }
   }
 
   private finish(wallet: WatchWallet, history: HistoryCollector, onProgress: (p: ScanProgress) => void): WalletScanResult {
@@ -266,16 +344,18 @@ export class WalletScannerService {
     return { ...definition, id, derivedCount: { 0: addresses.length, 1: 0 } };
   }
 
+  /** `scanned` is a wallet whose addresses `history` already covers; the window grows from its edge. */
   private async scanDescriptor(
     definition: DescriptorWalletDefinition,
     id: string,
     history: HistoryCollector,
     { onProgress, minimumDerived, isCancelled }: WalletScanRequest,
+    scanned?: DescriptorWallet,
   ): Promise<DescriptorWallet> {
     const { descriptor, network, gapLimit } = definition;
-    const derivedCount: Record<Chain, number> = { 0: 0, 1: 0 };
-    const addresses: DerivedAddress[] = [];
-    const byAddress = new Map<string, DerivedAddress>();
+    const derivedCount: Record<Chain, number> = scanned ? { ...scanned.derivedCount } : { 0: 0, 1: 0 };
+    const addresses: DerivedAddress[] = scanned ? [...scanned.addresses] : [];
+    const byAddress = new Map(addresses.map((a) => [a.address, a]));
 
     const report = (phase: ScanProgress['phase'], chain: Chain, apiRequests: number): void => onProgress?.({
       phase,
@@ -321,8 +401,10 @@ export class WalletScannerService {
       return last;
     };
 
-    await fetchFor(await extend(0, gapLimit));
-    await fetchFor(await extend(1, gapLimit));
+    if (!scanned) {
+      const receive = await extend(0, gapLimit);
+      await fetchFor([...receive, ...await extend(1, gapLimit)]);
+    }
 
     // A receive address already handed out may be paid later, so never shrink the window, even
     // when a truncated history skips fetching it.
