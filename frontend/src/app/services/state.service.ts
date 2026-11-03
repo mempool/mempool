@@ -86,6 +86,7 @@ export interface Env {
   PUBLIC_ACCELERATIONS: boolean;
   ADDITIONAL_CURRENCIES: boolean;
   WALLET_ENABLED: boolean;
+  WALLET_NAV_ENABLED: boolean;
   WALLET_REQUIRES_INVITE: boolean;
   GIT_COMMIT_HASH_MEMPOOL_SPACE?: string;
   PACKAGE_JSON_VERSION_MEMPOOL_SPACE?: string;
@@ -137,6 +138,7 @@ const defaultEnv: Env = {
   'PUBLIC_ACCELERATIONS': false,
   'ADDITIONAL_CURRENCIES': false,
   'WALLET_ENABLED': false,
+  'WALLET_NAV_ENABLED': false,
   'WALLET_REQUIRES_INVITE': false,
   'STRATUM_ENABLED': false,
   'SERVICES_API': 'https://mempool.space/api/v1/services',
