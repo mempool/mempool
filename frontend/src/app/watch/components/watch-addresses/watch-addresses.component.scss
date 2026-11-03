@@ -17,6 +17,7 @@
   border-radius: 50%;
   vertical-align: middle;
   &.used { border-color: var(--transparent-fg); background: var(--transparent-fg); }
+  &.unknown { border-style: dashed; border-color: var(--transparent-fg); }
 }
 @media (max-width: 767.98px) {
   .address-title { align-items: flex-start; flex-direction: column; }

@@ -29,10 +29,6 @@ const MAX_ADDRESSES_PER_REQUEST = 100;
 /** Restarts of one chunk's paging after its cursor moves between mempool and chain (see continuesFrom). */
 const MAX_RESTARTS = 3;
 
-/**
- * A refresh reads this many blocks below the cached tip again, so a shallow reorg, or an
- * electrs that lagged the tip at the last scan, cannot leave the cache stale.
- */
 const REFETCH_DEPTH = 6;
 
 export function walletId(definition: WalletDefinition): string {
@@ -64,7 +60,6 @@ export interface WalletScanRequest {
   isCancelled?: () => boolean;
 }
 
-/** The confirmed history of a complete scan, and the tip it was taken at. */
 export interface HistoryCache {
   tipHash: string;
   tipHeight: number;
@@ -99,12 +94,19 @@ function continuesFrom(previous: Transaction[], page: Transaction[]): boolean {
   return !!page[0].status?.confirmed === cursorConfirmed;
 }
 
+function withoutUiState(tx: Transaction): Transaction {
+  const copy = { ...tx };
+  for (const key of Object.keys(copy).filter((k) => k.startsWith('_'))) {
+    delete copy[key];
+  }
+  return copy;
+}
+
 /** One collector per scan, so MAX_PAGES bounds the whole scan. Each chunk is paged on its own. */
 class HistoryCollector {
   readonly txsById = new Map<string, Transaction>();
   pages = 0;
   truncated = false;
-  /** Set for a refresh: a chunk is read only down to this height, which the cache already holds. */
   stopAtHeight: number | null = null;
   /** The chunk being read; stored only once read in full. */
   private reading = new Map<string, Transaction>();
@@ -201,7 +203,6 @@ class HistoryCollector {
         found.set(tx.txid, tx);
       }
 
-      // Pages run from the mempool down the chain, so the last transaction is the oldest.
       const oldest = page[page.length - 1];
       if (this.stopAtHeight !== null && oldest.status?.confirmed && oldest.status.block_height <= this.stopAtHeight) {
         return [...found.values()];
@@ -217,7 +218,39 @@ class HistoryCollector {
     }
   }
 
-  /** Null when the cursor left both the mempool and the chain, e.g. evicted or replaced. */
+  dropConflicts(): void {
+    const spenders = new Map<string, Transaction>();
+    const dropped = new Set<string>();
+    for (const tx of this.txsById.values()) {
+      for (const vin of (tx.vin || []).filter((v) => !v.is_coinbase)) {
+        const outpoint = `${vin.txid}:${vin.vout}`;
+        const other = spenders.get(outpoint);
+        if (!other || other.txid === tx.txid) {
+          spenders.set(outpoint, tx);
+        } else if (!!other.status?.confirmed === !!tx.status?.confirmed) {
+          throw new ScanIncompleteError();
+        } else {
+          const [kept, stale] = tx.status?.confirmed ? [tx, other] : [other, tx];
+          spenders.set(outpoint, kept);
+          dropped.add(stale.txid);
+        }
+      }
+    }
+    let grew = dropped.size > 0;
+    while (grew) {
+      grew = false;
+      for (const tx of this.txsById.values()) {
+        if (!dropped.has(tx.txid) && !tx.status?.confirmed && tx.vin?.some((v) => dropped.has(v.txid))) {
+          dropped.add(tx.txid);
+          grew = true;
+        }
+      }
+    }
+    for (const txid of dropped) {
+      this.txsById.delete(txid);
+    }
+  }
+
   private async fetchPage(addresses: string[], cursor: string | undefined): Promise<Transaction[] | null> {
     try {
       return await withRetry(
@@ -260,14 +293,9 @@ export class WalletScannerService {
     return this.finish(wallet, history, onProgress);
   }
 
-  /**
-   * Reads only what changed since `cache` was taken: the mempool and the newest blocks, then in
-   * full any addresses the gap limit now needs. Falls back to a full scan when the cached tip
-   * left the best chain or the refresh would be truncated.
-   */
   async refresh(request: WalletRefreshRequest): Promise<WalletScanResult> {
     const { definition: wallet, cache } = request;
-    if (!await this.inBestChain(cache.tipHash, request.isCancelled)) {
+    if (!await this.tipStillBest(cache, request.isCancelled)) {
       return this.scan(request);
     }
     const { history, onProgress } = this.startScan(request);
@@ -282,10 +310,9 @@ export class WalletScannerService {
     if (history.truncated) {
       return this.scan(request);
     }
-    // Unconfirmed transactions are not cached: the fresh mempool replaces them, replacements included.
     for (const tx of cache.confirmed) {
       if (tx.status.block_height <= sinceHeight && !history.txsById.has(tx.txid)) {
-        history.txsById.set(tx.txid, tx);
+        history.txsById.set(tx.txid, withoutUiState(tx));
       }
     }
     history.stopAtHeight = null;
@@ -309,11 +336,10 @@ export class WalletScannerService {
     return { history: new HistoryCollector(this.electrsApiService, this.queued(retryOptions)), onProgress };
   }
 
-  /** Unknown, orphaned or unreachable all count as not: a full scan is always safe. */
-  private async inBestChain(hash: string, isCancelled?: () => boolean): Promise<boolean> {
+  private async tipStillBest(cache: HistoryCache, isCancelled?: () => boolean): Promise<boolean> {
     try {
-      const status = await withRetry(() => firstValueFrom(this.electrsApiService.getBlockStatus$(hash)), { isCancelled });
-      return !!status?.in_best_chain;
+      const hash = await withRetry(() => firstValueFrom(this.electrsApiService.getBlockHashFromHeight$(cache.tipHeight)), { isCancelled });
+      return hash?.trim() === cache.tipHash;
     } catch (e) {
       if (e instanceof RequestCancelledError) {
         throw e;
@@ -323,6 +349,7 @@ export class WalletScannerService {
   }
 
   private finish(wallet: WatchWallet, history: HistoryCollector, onProgress: (p: ScanProgress) => void): WalletScanResult {
+    history.dropConflicts();
     const txs = sortNewestFirst([...history.txsById.values()]);
     onProgress({ phase: 'done', addressesDerived: wallet.addresses.length, txsFound: txs.length, apiRequests: history.requests });
     return { wallet, txs, truncated: history.truncated };
@@ -344,7 +371,6 @@ export class WalletScannerService {
     return { ...definition, id, derivedCount: { 0: addresses.length, 1: 0 } };
   }
 
-  /** `scanned` is a wallet whose addresses `history` already covers; the window grows from its edge. */
   private async scanDescriptor(
     definition: DescriptorWalletDefinition,
     id: string,
@@ -406,8 +432,7 @@ export class WalletScannerService {
       await fetchFor([...receive, ...await extend(1, gapLimit)]);
     }
 
-    // A receive address already handed out may be paid later, so never shrink the window, even
-    // when a truncated history skips fetching it.
+    // A receive address already handed out may be paid later, so never shrink the window.
     for (const chain of [0, 1] as Chain[]) {
       const missing = (minimumDerived?.[chain] ?? 0) - derivedCount[chain];
       if (missing > 0) {
