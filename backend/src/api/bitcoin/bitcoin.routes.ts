@@ -30,6 +30,7 @@ const BLOCK_HASH_REGEX = /^[a-f0-9]{64}$/i;
 const ADDRESS_REGEX = /^[a-z0-9]{2,120}$/i;
 const SCRIPT_HASH_REGEX = /^([a-f0-9]{2})+$/i;
 const MAX_TRANSACTION_TIMES = 100;
+const MAX_PSBT_INPUTS = 100;
 const JUST_NUMBERS_REGEX = /^[1-9]\d*$/;
 
 class BitcoinRoutes {
@@ -375,6 +376,10 @@ class BitcoinRoutes {
         } catch (e2) {
           throw new Error(`Unable to parse PSBT`);
         }
+      }
+      if (psbt.data.inputs.length > MAX_PSBT_INPUTS) {
+        handleError(req, res, 400, 'Too many inputs');
+        return;
       }
       for (const [index, input] of psbt.data.inputs.entries()) {
         if (!input.nonWitnessUtxo) {
