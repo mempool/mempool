@@ -3,7 +3,6 @@
 import { InputError } from '@app/watch/input-error';
 import { ScriptType, WatchNetwork } from '@app/watch/watch.types';
 
-/** Base58 with the 4-byte double-SHA-256 checksum; decode throws on a bad checksum. */
 export interface Base58CheckCodec {
   decode(str: string): Uint8Array;
   encode(bytes: Uint8Array): string;
@@ -22,11 +21,16 @@ const SLIP132: Record<string, { version: number; script: ScriptType; network: 'm
 
 const CANONICAL_VERSION = { mainnet: 0x0488b21e, testnet: 0x043587cf };
 
-// xprv, yprv, zprv, tprv, uprv, vprv (BIP-32, SLIP-132).
-const PRIVATE_KEY_VERSIONS = [0x0488ade4, 0x049d7878, 0x04b2430c, 0x04358394, 0x044a4e28, 0x045f18bc];
+const PRIVATE_KEY_VERSIONS: Record<string, number> = {
+  xprv: 0x0488ade4,
+  yprv: 0x049d7878,
+  zprv: 0x04b2430c,
+  tprv: 0x04358394,
+  uprv: 0x044a4e28,
+  vprv: 0x045f18bc,
+};
 const WIF_VERSIONS = [0x80, 0xef];
 const INPUT_SEPARATORS = /[\s,;()[\]/]+/;
-// Long enough for a WIF (51-52 characters), short enough for an extended key (111-112).
 const KEY_TOKEN_RE = /^[1-9A-HJ-NP-Za-km-z]{51,112}$/;
 
 const EXTENDED_KEY_RE = /^(xpub|ypub|zpub|tpub|upub|vpub)[1-9A-HJ-NP-Za-km-z]{100,112}$/;
@@ -100,13 +104,11 @@ function isPrivateKey(token: string, b58check: Base58CheckCodec): boolean {
     return false;
   }
   if (payload.length === 78) {
-    return PRIVATE_KEY_VERSIONS.includes(readUInt32BE(payload, 0));
+    return Object.values(PRIVATE_KEY_VERSIONS).includes(readUInt32BE(payload, 0));
   }
   return (payload.length === 33 || payload.length === 34) && WIF_VERSIONS.includes(payload[0]);
 }
 
-// Each token is decoded whole: a key-shaped run inside an address or xpub would also need a
-// valid checksum, a 1-in-2^32 chance.
 export function containsPrivateKey(input: string, b58check: Base58CheckCodec): boolean {
   for (const token of input.split(INPUT_SEPARATORS)) {
     if (isPrivateKey(token, b58check)) {
@@ -219,7 +221,6 @@ export function describeScriptType(scriptType: string): { code: string; path?: s
 
 const KEY_ORIGIN_RE = /\[[0-9a-fA-F]{8}(?:\/\d+['hH]?)*\]/;
 
-/** BIP-380 writes hardened steps as ' or h; an accepted H is stored as '. */
 export function normalizeOriginMarkers(descriptor: string): string {
   return descriptor.replace(KEY_ORIGIN_RE, (origin) => origin.replace(/H/g, '\''));
 }

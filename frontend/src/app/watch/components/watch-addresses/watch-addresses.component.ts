@@ -2,11 +2,13 @@ import { ChangeDetectionStrategy, Component, Input, OnChanges } from '@angular/c
 import { derivationPath, WalletView } from '@app/watch/wallet-math';
 import { DerivedAddress } from '@app/watch/watch.types';
 
+type AddressUsage = 'used' | 'unused' | 'unknown';
+
 export interface AddressRow {
   derived: DerivedAddress;
   path: string;
   balance: number;
-  used: boolean;
+  usage: AddressUsage;
 }
 
 type ChainFilter = 'all' | 'receive' | 'change';
@@ -22,8 +24,11 @@ type UsageFilter = 'all' | 'unused' | 'used';
 export class WatchAddressesComponent implements OnChanges {
   @Input({ required: true }) view!: WalletView;
 
-  readonly usedLabel = $localize`:@@watch.address-used:Used`;
-  readonly unusedLabel = $localize`:@@watch.address-unused:Unused`;
+  readonly usageLabels: Record<AddressUsage, string> = {
+    used: $localize`:@@watch.address-used:Used`,
+    unused: $localize`:@@watch.address-unused:Unused`,
+    unknown: $localize`:@@watch.address-usage-unknown:Unknown: the history is incomplete`,
+  };
 
   chainFilter: ChainFilter = 'all';
   usageFilter: UsageFilter = 'all';
@@ -42,7 +47,7 @@ export class WatchAddressesComponent implements OnChanges {
     this.rows = this.buildRows(this.view);
     this.stats = {
       total: this.rows.length,
-      used: this.rows.filter((r) => r.used).length,
+      used: this.rows.filter((r) => r.usage === 'used').length,
       funded: this.rows.filter((r) => r.balance > 0).length,
     };
     this.applyFilters();
@@ -51,7 +56,7 @@ export class WatchAddressesComponent implements OnChanges {
   applyFilters(): void {
     this.visible = this.rows.filter((row) =>
       (this.chainFilter === 'all' || row.derived.chain === (this.chainFilter === 'receive' ? 0 : 1))
-      && (this.usageFilter === 'all' || row.used === (this.usageFilter === 'used'))
+      && (this.usageFilter === 'all' || row.usage === this.usageFilter)
       && (!this.fundedOnly || row.balance > 0));
   }
 
@@ -70,7 +75,7 @@ export class WatchAddressesComponent implements OnChanges {
         derived,
         path: derivationPath(view.wallet, derived),
         balance: balances.get(derived.address) ?? 0,
-        used: view.used.has(derived.address),
+        usage: view.used.has(derived.address) ? 'used' : view.truncated ? 'unknown' : 'unused',
       }));
   }
 }

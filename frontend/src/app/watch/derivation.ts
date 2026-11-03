@@ -115,8 +115,6 @@ export function prepareInput(rawInput: string, network: WatchNetwork, scriptType
   if (!descriptorMatchesNetwork(desc, network)) {
     throw new InputError('descriptor-network', { network: network });
   }
-  // Only a key origin names the master; otherwise show the key's own fingerprint, which is
-  // the master's only at depth 0.
   const { originFingerprint, originPath, key } = desc.key;
   return {
     descriptor,
