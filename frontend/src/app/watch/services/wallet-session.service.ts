@@ -3,7 +3,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, fromEvent, Subscription } from 'rxjs';
 import { Transaction } from '@interfaces/electrs.interface';
 import { looksLikeAddressList } from '@app/watch/address-list';
-import { buildWalletView, currentReceiveIndex, WalletView } from '@app/watch/wallet-math';
+import { addressMapOf, buildWalletView, currentReceiveIndex, WalletView } from '@app/watch/wallet-math';
 import { fromMempoolNetwork } from '@app/watch/watch-key.utils';
 import { ScriptType, WalletDefinition, WatchNetwork, WatchWallet } from '@app/watch/watch.types';
 import { DerivationService } from '@app/watch/services/derivation.service';
@@ -205,12 +205,21 @@ export class WalletSessionService implements OnDestroy {
       if (generation !== this.generation) {
         return;
       }
+      // Updates that reached the wallet behind the form during the import, for addresses the
+      // imported wallet shares with it.
+      const updates = this.updatesFor(wallet);
+      const replayed = this.replay(txs, updates);
       this.cancelLiveRefresh();
       if (this.refreshQueuedByLive) {
         this.refreshQueued = false;
         this.refreshQueuedByLive = false;
       }
-      this.storeView(buildWalletView(wallet, txs, truncated));
+      if (!replayed) {
+        this.refreshQueued = true;
+      }
+      // Their follow-up refresh is still due, as after any refresh.
+      this.liveRefreshWanted = updates.length > 0;
+      this.storeView(buildWalletView(wallet, replayed ?? txs, truncated));
       this.storeCache(wallet.id, truncated ? undefined : tip, txs);
       this.patch({ activeId: wallet.id, adding: false, notice: null });
       this.storage.saveActiveId(network, wallet.id);
@@ -425,19 +434,36 @@ export class WalletSessionService implements OnDestroy {
           this.refreshQueuedByLive = false;
         }
       }
-      let history = txs;
-      for (const update of this.updatesDuringScan) {
-        const replayed = applyLiveUpdate(history, update.added, update.removed);
-        if (!replayed) {
-          this.refreshQueued = true;
-          this.refreshQueuedByLive = false;
-          break;
-        }
-        history = replayed;
+      const replayed = this.replay(txs, this.updatesFor(merged));
+      if (!replayed) {
+        this.refreshQueued = true;
+        this.refreshQueuedByLive = false;
       }
-      this.storeView(buildWalletView(merged, history, truncated));
+      this.storeView(buildWalletView(merged, replayed ?? txs, truncated));
       this.storeCache(merged.id, truncated || gapLimitChanged ? undefined : tip, txs);
     });
+  }
+
+  /** Live updates buffered during the current scan, cut down to the transactions that touch `wallet`. */
+  private updatesFor(wallet: WatchWallet): LiveUpdate[] {
+    const mine = addressMapOf(wallet);
+    const touches = (tx: Transaction): boolean => (tx.vout || []).some((vout) => mine.has(vout.scriptpubkey_address))
+      || (tx.vin || []).some((vin) => mine.has(vin.prevout?.scriptpubkey_address));
+    return this.updatesDuringScan
+      .map((update) => ({ added: update.added.filter(touches), removed: update.removed.filter(touches) }))
+      .filter((update) => update.added.length || update.removed.length);
+  }
+
+  /** Applies buffered updates to a scan's result; null if they leave a conflict only a rescan settles. */
+  private replay(txs: Transaction[], updates: LiveUpdate[]): Transaction[] | null {
+    let history = txs;
+    for (const update of updates) {
+      history = applyLiveUpdate(history, update.added, update.removed);
+      if (!history) {
+        return null;
+      }
+    }
+    return history;
   }
 
   /** Again after each scan, as a scan can derive more addresses than can be tracked. */
