@@ -28,8 +28,8 @@ export interface AbstractBitcoinApi {
   $testMempoolAccept(rawTransactions: string[], maxfeerate?: number): Promise<TestMempoolAcceptResult[]>;
   $submitPackage(rawTransactions: string[], maxfeerate?: number, maxburnamount?: number): Promise<SubmitPackageResult>;
   $getOutspend(txId: string, vout: number): Promise<IEsploraApi.Outspend>;
-  $getOutspends(txId: string): Promise<IEsploraApi.Outspend[]>;
-  $getBatchedOutspends(txId: string[]): Promise<IEsploraApi.Outspend[][]>;
+  $getOutspends(txId: string, maxOutputs?: number): Promise<IEsploraApi.Outspend[]>;
+  $getBatchedOutspends(txId: string[], maxOutputs?: number): Promise<IEsploraApi.Outspend[][]>;
   $getBatchedOutspendsInternal(txId: string[]): Promise<IEsploraApi.Outspend[][]>;
   $getOutSpendsByOutpoint(outpoints: { txid: string, vout: number }[]): Promise<IEsploraApi.Outspend[]>;
   $getCoinbaseTx(blockhash: string): Promise<IEsploraApi.Transaction>;

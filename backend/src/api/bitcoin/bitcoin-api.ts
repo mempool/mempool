@@ -233,7 +233,7 @@ class BitcoinApi implements AbstractBitcoinApi {
   }
 
   /** @asyncUnsafe */
-  async $getOutspends(txId: string): Promise<IEsploraApi.Outspend[]> {
+  async $getOutspends(txId: string, maxOutputs = Infinity): Promise<IEsploraApi.Outspend[]> {
     const tx = await this.$getRawTransaction(txId, true, false);
     if (indexer.isCoreIndexReady('txospenderindex')) {
       const outputs = tx.vout.map((_, vout) => ({ txid: txId, vout }));
@@ -263,6 +263,10 @@ class BitcoinApi implements AbstractBitcoinApi {
       }
     }
 
+    if (tx.vout.length > maxOutputs) {
+      throw new Error('Too many outputs requested');
+    }
+
     const outSpends: IEsploraApi.Outspend[] = [];
     for (let i = 0; i < tx.vout.length; i++) {
       if (tx.status && tx.status.block_height === 0) {
@@ -280,10 +284,12 @@ class BitcoinApi implements AbstractBitcoinApi {
   }
 
   /** @asyncUnsafe */
-  async $getBatchedOutspends(txId: string[]): Promise<IEsploraApi.Outspend[][]> {
+  async $getBatchedOutspends(txId: string[], maxOutputs = Infinity): Promise<IEsploraApi.Outspend[][]> {
     const outspends: IEsploraApi.Outspend[][] = [];
+    let remainingOutputs = maxOutputs;
     for (const tx of txId) {
-      const outspend = await this.$getOutspends(tx);
+      const outspend = await this.$getOutspends(tx, remainingOutputs);
+      remainingOutputs -= outspend.length;
       outspends.push(outspend);
     }
     return outspends;
