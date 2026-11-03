@@ -1,12 +1,12 @@
 <div class="fee-estimation-container">
   <div class="item">
     <ng-container *ngIf="(reserveBalance$ | async) as reserveBalance; else loadingSolvency">
-      <h5 *ngIf="reserveBalance.amount >= 0; else insolventTitle" class="card-title" i18n="liquid.solvent">Solvent</h5>
+      <h5 *ngIf="reserveBalance.amount > -0.01; else insolventTitle" class="card-title" i18n="liquid.solvent">Solvent</h5>
       <ng-template #insolventTitle>
         <h5 class="card-title" i18n="liquid.insolvent">Insolvent</h5>
       </ng-template>
       <div class="card-text">
-        <div *ngIf="reserveBalance.amount >= 0; else insolvent" class="fee-text" role="img" aria-label="Solvent" i18n-aria-label="liquid.solvent-status">✅</div>
+        <div *ngIf="reserveBalance.amount > -0.01; else insolvent" class="fee-text" role="img" aria-label="Solvent" i18n-aria-label="liquid.solvent-status">✅</div>
         <ng-template #insolvent>
           <div class="fee-text" role="img" tabindex="0" aria-label="Insolvent" i18n-aria-label="liquid.insolvent-status" ngbTooltip="Federation reserves are below LBTC circulation." i18n-ngbTooltip="liquid.insolvent-tooltip">🚨</div>
         </ng-template>
