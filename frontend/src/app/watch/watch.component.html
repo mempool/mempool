@@ -24,7 +24,10 @@
           </ng-container>
           <ng-template #idle>
             <small *ngIf="showUpdatedAt(state, clock$ | async); else automatic" i18n="watch.updated-at">Updated <app-time kind="since" [time]="state.updatedAt" [lowercaseStart]="true" [showTooltip]="true"></app-time></small>
-            <ng-template #automatic><small *ngIf="!state.error" i18n="watch.updates-automatically">Updates automatically with each new block</small></ng-template>
+            <ng-template #automatic>
+              <small *ngIf="!state.error && !state.view?.truncated" i18n="watch.updates-automatically">Updates automatically with each new block</small>
+              <small *ngIf="!state.error && state.view?.truncated" i18n="watch.updates-manual-truncated">Not updated automatically while the history is incomplete</small>
+            </ng-template>
           </ng-template>
         </span>
         <button type="button" class="btn btn-sm btn-outline-info" (click)="session.refresh()" [disabled]="state.scanning">
