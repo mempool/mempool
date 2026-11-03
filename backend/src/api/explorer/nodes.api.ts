@@ -1,3 +1,4 @@
+import config from '../../config';
 import logger from '../../logger';
 import DB from '../../database';
 import { ResultSetHeader } from 'mysql2';
@@ -6,6 +7,9 @@ import { ITopNodesPerCapacity, ITopNodesPerChannels } from '../../mempool.interf
 import { bin2hex } from '../../utils/format';
 
 class NodesApi {
+  private ispRankingCache: { data: any, expiresAt: number } | null = null;
+  private ispRankingQuery: Promise<any> | null = null;
+
   public async $getWorldNodes(): Promise<any> {
     try {
       let query = `
@@ -410,7 +414,24 @@ class NodesApi {
     }
   }
 
-  public async $getNodesISPRanking() {
+  public async $getNodesISPRanking(): Promise<any> {
+    if (this.ispRankingCache && Date.now() < this.ispRankingCache.expiresAt) {
+      return this.ispRankingCache.data;
+    }
+    if (!this.ispRankingQuery) {
+      this.ispRankingQuery = this.$queryNodesISPRanking()
+        .then((data) => {
+          this.ispRankingCache = { data, expiresAt: Date.now() + 1000 * config.LIGHTNING.GRAPH_REFRESH_INTERVAL };
+          return data;
+        })
+        .finally(() => {
+          this.ispRankingQuery = null;
+        });
+    }
+    return this.ispRankingQuery;
+  }
+
+  private async $queryNodesISPRanking() {
     try {
       let query = '';
 
