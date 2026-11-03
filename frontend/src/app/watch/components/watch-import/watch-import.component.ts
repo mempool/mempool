@@ -62,10 +62,6 @@ export class WatchImportComponent {
     return !!this.scriptTypeCheck?.withHistory?.includes(type);
   }
 
-  get severalWithHistory(): boolean {
-    return (this.scriptTypeCheck?.withHistory?.length ?? 0) > 1;
-  }
-
   /** The check finished and found no history on any address type. */
   get noneWithHistory(): boolean {
     return this.scriptTypeCheck?.withHistory?.length === 0;

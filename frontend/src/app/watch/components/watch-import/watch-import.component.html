@@ -42,7 +42,7 @@
         <span class="script-type-path">{{ t.path }}</span>
         <span class="badge rounded-pill history-badge" *ngIf="hasHistory(t.value)" i18n="watch.script-type-history-detected">History detected</span>
       </ng-template>
-      <small class="form-text text-warning script-type-note" *ngIf="severalWithHistory" i18n="watch.script-type-several-paths">Multiple derivation paths have history - choose which you want to use</small>
+      <small class="form-text text-warning script-type-note" *ngIf="needsScriptTypeChoice" i18n="watch.script-type-several-paths">Multiple derivation paths have history - choose which you want to use</small>
       <small class="form-text text-muted script-type-note" *ngIf="noneWithHistory" i18n="watch.script-type-none">Choose which address type to use</small>
     </div>
 

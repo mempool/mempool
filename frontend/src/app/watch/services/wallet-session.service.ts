@@ -423,9 +423,23 @@ export class WalletSessionService implements OnDestroy {
     }
   }
 
+  /** "My Wallet", then "My Wallet 2", "My Wallet 3"…: the first not already used on this network. */
+  private defaultLabel(): string {
+    const base = $localize`:@@watch.default-wallet-name:My Wallet`;
+    const taken = new Set(this.state.wallets.map((w) => w.label));
+    if (!taken.has(base)) {
+      return base;
+    }
+    let n = 2;
+    while (taken.has(`${base} ${n}`)) {
+      n++;
+    }
+    return `${base} ${n}`;
+  }
+
   private async toDefinition(form: WalletImportForm, network: WatchNetwork): Promise<WalletDefinition> {
     const input = form.input.trim();
-    const label = form.label.trim() || $localize`:@@watch.default-wallet-name:My Wallet`;
+    const label = form.label.trim() || this.defaultLabel();
     if (looksLikeAddressList(input)) {
       const addresses = await this.derivation.parseAddressList(input, network);
       return { kind: 'address-list', label, network, addresses };
