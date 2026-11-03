@@ -39,6 +39,7 @@
           <td>
             <span class="mono">{{ key.fingerprint | uppercase }}</span>
             <span class="mono text-muted" *ngIf="key.originPath"> · {{ key.originPath }}</span>
+            <span class="text-muted" *ngIf="key.fixedStep !== undefined" i18n="watch.detail.multisig-key-fixed-step"> · fixed path …/{{ key.fixedStep }}/* on both chains</span>
             <span class="text-muted" *ngIf="!key.fingerprintIsMaster" i18n="watch.detail.multisig-key-fingerprint"> (key fingerprint, no key origin)</span>
           </td>
         </tr>

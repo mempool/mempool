@@ -32,12 +32,18 @@ const PRIVATE_KEY_VERSIONS: Record<string, number> = {
   tprv: 0x04358394,
   uprv: 0x044a4e28,
   vprv: 0x045f18bc,
+  // SLIP-132 multisig keys.
+  Yprv: 0x0295b005,
+  Zprv: 0x02aa7a99,
+  Uprv: 0x024285b5,
+  Vprv: 0x02575048,
 };
 const WIF_VERSIONS = [0x80, 0xef];
 const INPUT_SEPARATORS = /[\s,;()[\]/]+/;
 const KEY_TOKEN_RE = /^[1-9A-HJ-NP-Za-km-z]{51,112}$/;
 
-const EXTENDED_KEY_RE = /^(xpub|ypub|zpub|tpub|upub|vpub)[1-9A-HJ-NP-Za-km-z]{100,112}$/;
+// Ypub/Zpub/Upub/Vpub are multisig cosigner keys: matched so they get a clear error.
+const EXTENDED_KEY_RE = /^(xpub|ypub|zpub|Ypub|Zpub|tpub|upub|vpub|Upub|Vpub)[1-9A-HJ-NP-Za-km-z]{100,112}$/;
 
 export function looksLikeDescriptor(input: string): boolean {
   return /^(pkh|wpkh|sh|wsh|tr|combo|addr|raw|multi|sortedmulti)\s*\(/.test(input.trim());
@@ -189,17 +195,27 @@ export function validateDescriptorChecksum(descriptor: string): void {
   }
 }
 
-/** Rewrite a single-path `/0/*` or `/1/*` to `/<0;1>/*`, so both chains are covered. */
+/**
+ * Rewrite single-path `/0/*` or `/1/*` keys to `/<0;1>/*`, so both chains are covered. Only when
+ * every key ends in the same one: with any other ending, which chain is receive is a guess, so the
+ * text is left for the parser to refuse. A descriptor that already has a multipath element is left
+ * alone: its single-path keys are cosigners that use the same path on both chains (BIP-389).
+ */
 export function toMultipathDescriptor(descriptor: string): string {
   const trimmed = descriptor.trim();
   validateDescriptorChecksum(trimmed);
   const d = trimmed.replace(/#[a-z0-9]{8}$/i, '');
-  const singles = new Set(d.match(/\/[01]\/\*/g));
-  const hasMultipath = /<[^<>]*;[^<>]*>/.test(d);
-  if (singles.size > 1 || (singles.size && hasMultipath)) {
+  if (/<[^<>]*;[^<>]*>/.test(d)) {
+    return d;
+  }
+  const endings = new Set(d.match(/\/[01]\/\*/g));
+  if (endings.size > 1) {
     throw new InputError('descriptor-multipath-mixed');
   }
-  return hasMultipath ? d : d.replace(/\/[01]\/\*/g, '/<0;1>/*');
+  // Every `*` must be preceded by that same /0/ or /1/ step.
+  const ranged = d.match(/\*/g)?.length ?? 0;
+  const rewritable = (d.match(/\/[01]\/\*/g)?.length ?? 0) === ranged;
+  return rewritable ? d.replace(/\/[01]\/\*/g, '/<0;1>/*') : d;
 }
 
 export type ScriptKind = 'wpkh' | 'shwpkh' | 'pkh' | 'tr' | 'wsh' | 'shwsh' | 'sh';
