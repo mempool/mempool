@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable, catchError, filter, from, of, shareReplay, switchMap, take, tap } from 'rxjs';
-import { Transaction, Address, Outspend, Recent, Asset, ScriptHash, AddressTxSummary, Utxo, AssetRegistryItem } from '@interfaces/electrs.interface';
+import { Transaction, Address, Outspend, Recent, Asset, ScriptHash, AddressTxSummary, Utxo, AssetRegistryItem, BlockStatus } from '@interfaces/electrs.interface';
 import { StateService } from '@app/services/state.service';
 import { BlockExtended } from '@interfaces/node-api.interface';
 import { calcScriptHash$ } from '@app/bitcoin.utils';
@@ -71,6 +71,10 @@ export class ElectrsApiService {
 
   getBlock$(hash: string): Observable<BlockExtended> {
     return this.httpClient.get<BlockExtended>(this.apiBaseUrl + this.apiBasePath + '/api/block/' + hash);
+  }
+
+  getBlockStatus$(hash: string): Observable<BlockStatus> {
+    return this.httpClient.get<BlockStatus>(this.apiBaseUrl + this.apiBasePath + '/api/block/' + hash + '/status');
   }
 
   listBlocks$(height?: number): Observable<BlockExtended[]> {
@@ -146,10 +150,13 @@ export class ElectrsApiService {
     return this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/address/' + address + '/txs', { params });
   }
 
-  getAddressesTransactions$(addresses: string[], txid?: string): Observable<Transaction[]> {
+  getAddressesTransactions$(addresses: string[], txid?: string, maxTxs?: number): Observable<Transaction[]> {
     let params = new HttpParams();
     if (txid) {
       params = params.append('after_txid', txid);
+    }
+    if (maxTxs) {
+      params = params.append('max_txs', maxTxs);
     }
     return this.httpClient.post<Transaction[]>(
       this.apiBaseUrl + this.apiBasePath + '/api/addresses/txs',

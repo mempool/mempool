@@ -1,0 +1,5 @@
+.value-cell { min-width: 9rem; white-space: nowrap; }
+.address-cell { min-width: 16rem; font-family: monospace; overflow-wrap: anywhere; }
+.output-cell { min-width: 8rem; font-family: monospace; white-space: nowrap; }
+// The global stylesheet removes outlines, so keyboard focus gets a ring of its own.
+a:focus-visible { border-radius: .2rem; box-shadow: 0 0 0 2px var(--info); }

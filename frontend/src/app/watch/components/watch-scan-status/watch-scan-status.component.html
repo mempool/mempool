@@ -1,0 +1,11 @@
+<small role="status" aria-live="polite">
+  <ng-container *ngIf="progress.retry as retry; else totals" [ngSwitch]="retry.status">
+    <ng-container *ngSwitchCase="429" i18n="watch.retry-rate-limited">Rate limited, retrying in {{ retry.seconds }} s…</ng-container>
+    <ng-container *ngSwitchCase="503" i18n="watch.retry-busy">Server busy, retrying in {{ retry.seconds }} s…</ng-container>
+    <ng-container *ngSwitchDefault i18n="watch.retry-no-response">No response from the server, retrying in {{ retry.seconds }} s…</ng-container>
+  </ng-container>
+  <ng-template #totals>
+    <ng-container *ngIf="!showCounts" i18n="watch.updating">Updating…</ng-container>
+    <ng-container *ngIf="showCounts" i18n="watch.scan-progress">{{ progress.addressesDerived }} addresses, {{ progress.txsFound }} transactions, {{ progress.apiRequests }} requests</ng-container>
+  </ng-template>
+</small>

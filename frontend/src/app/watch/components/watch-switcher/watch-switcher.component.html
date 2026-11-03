@@ -1,0 +1,27 @@
+<div class="wallet-switcher" ngbDropdown #dropdown="ngbDropdown">
+  <button ngbDropdownToggle type="button" class="btn btn-secondary dropdown-toggle wallet-switcher-toggle" [disabled]="state.scanning">
+    <span class="wallet-switcher-label" *ngIf="!state.adding">{{ activeLabel }}</span>
+    <span class="wallet-switcher-label" *ngIf="state.adding" i18n="watch.adding-wallet">Adding a wallet</span>
+    <span class="wallet-switcher-fingerprint" *ngIf="!state.adding && fingerprintOf(session.activeWallet)">{{ fingerprintOf(session.activeWallet) | uppercase }}</span>
+  </button>
+  <div ngbDropdownMenu class="wallet-switcher-menu">
+    <!-- Items stay direct children of the menu so the arrow keys reach them. -->
+    <ng-container *ngFor="let w of state.wallets">
+      <button ngbDropdownItem type="button" class="wallet-switcher-item" [class.active]="isActive(w)" (click)="session.activate(w.id)">
+        <span class="check">
+          <fa-icon *ngIf="isActive(w)" [icon]="['fas', 'check']" [fixedWidth]="true"></fa-icon>
+        </span>
+        <span class="wallet-switcher-label">{{ w.label }}</span>
+        <span class="wallet-switcher-fingerprint" *ngIf="fingerprintOf(w)">{{ fingerprintOf(w) | uppercase }}</span>
+      </button>
+      <button ngbDropdownItem type="button" class="wallet-settings-button" [class.active]="isActive(w)" (click)="dropdown.close(); showSettings(w.id)"
+              title="Wallet settings" i18n-title="watch.wallet-settings" [attr.aria-label]="settingsLabel(w)">
+        <fa-icon [icon]="['fas', 'cogs']" [fixedWidth]="true"></fa-icon>
+      </button>
+    </ng-container>
+    <div class="dropdown-divider"></div>
+    <button ngbDropdownItem type="button" class="wallet-switcher-add" [class.active]="state.adding" (click)="session.startAdding()">
+      + <ng-container i18n="watch.add-wallet">Add wallet</ng-container>
+    </button>
+  </div>
+</div>
