@@ -91,7 +91,6 @@ export class WalletSessionService implements OnDestroy {
 
   private views = new Map<string, WalletView>();
   private scannedAt = new Map<string, number>();
-  /** In memory only: a reload starts with a full scan. */
   private caches = new Map<string, HistoryCache>();
   private generation = 0;
   private mempoolNetwork: string | null = null;
@@ -278,6 +277,7 @@ export class WalletSessionService implements OnDestroy {
       fingerprint: prepared.fingerprint,
       fingerprintIsMaster: prepared.fingerprintIsMaster,
       originPath: prepared.originPath,
+      multisig: prepared.multisig,
       network,
       gapLimit,
     };
@@ -338,7 +338,6 @@ export class WalletSessionService implements OnDestroy {
     }
   }
 
-  /** `incremental` reads only what changed since the cached history, when there is one. */
   private async refreshActive(incremental = false): Promise<void> {
     const wallet = this.activeWallet;
     if (!wallet || this.state.scanning) {
@@ -347,6 +346,7 @@ export class WalletSessionService implements OnDestroy {
     this.refreshQueued = false;
     const tip = this.tracker.tip;
     const cache = incremental ? this.caches.get(wallet.id) : undefined;
+    this.caches.delete(wallet.id);
     await this.runScan(async (generation) => {
       const request = {
         definition: wallet,
@@ -364,7 +364,7 @@ export class WalletSessionService implements OnDestroy {
       if (generation !== this.generation || this.state.activeId !== scanned.id) {
         return;
       }
-      // Keep settings changed during the scan; a changed gap limit needs another, full, scan.
+      // Keep settings changed during the scan; a changed gap limit needs another scan.
       const current = this.activeWallet ?? wallet;
       let merged: WatchWallet = { ...scanned, label: current.label };
       let gapLimitChanged = false;
@@ -380,7 +380,6 @@ export class WalletSessionService implements OnDestroy {
     });
   }
 
-  /** A truncated history is incomplete, and one without a known tip cannot be refreshed from. */
   private storeCache(id: string, tip: BlockExtended | undefined, txs: Transaction[]): void {
     if (tip) {
       this.caches.set(id, { tipHash: tip.id, tipHeight: tip.height, confirmed: txs.filter((tx) => tx.status?.confirmed) });

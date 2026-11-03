@@ -4,7 +4,7 @@ import { createBase58check, hex } from '@scure/base';
 import { Address, NETWORK, OutScript, TEST_NETWORK } from '@scure/btc-signer';
 import { hash as sha256 } from '@app/shared/sha256';
 import { AddressDecoder, parseAddressList } from '@app/watch/address-list';
-import { DescriptorDeriver, descriptorMatchesNetwork, formatOriginPath, keyFingerprint, parseDescriptor } from '@app/watch/descriptor';
+import { DescriptorDeriver, DescriptorKey, descriptorMatchesNetwork, formatOriginPath, keyFingerprint, parseDescriptor } from '@app/watch/descriptor';
 import {
   Base58CheckCodec,
   buildDescriptor,
@@ -19,7 +19,7 @@ import {
 } from '@app/watch/watch-key.utils';
 import { InputError } from '@app/watch/input-error';
 import { RequestCancelledError } from '@app/watch/api-retry';
-import { Chain, ScriptType, WatchNetwork } from '@app/watch/watch.types';
+import { Chain, KeyInfo, MultisigInfo, ScriptType, WatchNetwork } from '@app/watch/watch.types';
 
 export interface PreparedInput {
   descriptor: string;
@@ -27,6 +27,7 @@ export interface PreparedInput {
   fingerprint?: string;
   fingerprintIsMaster: boolean;
   originPath?: string;
+  multisig?: MultisigInfo;
 }
 
 export interface AddressScript {
@@ -50,7 +51,7 @@ function throwIfCancelled(isCancelled: () => boolean): void {
 
 const b58check: Base58CheckCodec = createBase58check(sha256);
 
-const DESCRIPTOR_XPUB_RE = /(xpub|ypub|zpub|tpub|upub|vpub)[1-9A-HJ-NP-Za-km-z]{100,112}/g;
+const DESCRIPTOR_XPUB_RE = /(xpub|ypub|zpub|Ypub|Zpub|tpub|upub|vpub|Upub|Vpub)[1-9A-HJ-NP-Za-km-z]{100,112}/g;
 
 function normalizeDescriptorKeys(descriptor: string, network: WatchNetwork): string {
   const keys = descriptor.match(DESCRIPTOR_XPUB_RE) ?? [];
@@ -105,8 +106,12 @@ export function prepareInput(rawInput: string, network: WatchNetwork, scriptType
     if (!keyMatchesNetwork(norm.keyNetwork, network)) {
       throw new InputError('key-network', { keyNetwork: norm.keyNetwork, network: network });
     }
-    scriptType = scriptTypeHint ?? norm.scriptType;
-    descriptor = buildDescriptor(norm.xpub, scriptType as ScriptType);
+    const bareType = scriptTypeHint ?? norm.scriptType;
+    if (!bareType) {
+      throw new InputError('unrecognized-input');
+    }
+    scriptType = bareType;
+    descriptor = buildDescriptor(norm.xpub, bareType);
   } else {
     throw new InputError('unrecognized-input');
   }
@@ -115,15 +120,22 @@ export function prepareInput(rawInput: string, network: WatchNetwork, scriptType
   if (!descriptorMatchesNetwork(desc, network)) {
     throw new InputError('descriptor-network', { network: network });
   }
-  // Only a key origin names the master; otherwise show the key's own fingerprint, which is
-  // the master's only at depth 0.
-  const { originFingerprint, originPath, key } = desc.key;
+  if ('threshold' in desc) {
+    return {
+      descriptor,
+      scriptType,
+      fingerprintIsMaster: false,
+      multisig: { threshold: desc.threshold, keys: desc.keys.map(keyInfo) },
+    };
+  }
+  return { descriptor, scriptType, ...keyInfo(desc.keys[0]) };
+}
+
+function keyInfo(key: DescriptorKey): KeyInfo {
   return {
-    descriptor,
-    scriptType,
-    fingerprint: originFingerprint ?? keyFingerprint(key),
-    fingerprintIsMaster: !!originFingerprint || key.depth === 0,
-    originPath: formatOriginPath(originPath),
+    fingerprint: key.originFingerprint ?? keyFingerprint(key.key),
+    fingerprintIsMaster: !!key.originFingerprint || key.key.depth === 0,
+    originPath: formatOriginPath(key.originPath),
   };
 }
 

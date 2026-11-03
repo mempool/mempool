@@ -3,7 +3,7 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { StateService } from '@app/services/state.service';
 import { DEFAULT_GAP_LIMIT, MAX_GAP_LIMIT, MIN_GAP_LIMIT, WalletSessionService } from '@app/watch/services/wallet-session.service';
 import { accountPath } from '@app/watch/wallet-math';
-import { scriptTypeName } from '@app/watch/script-type-name';
+import { multisigName, scriptTypeName } from '@app/watch/script-type-name';
 import { describeScriptType } from '@app/watch/watch-key.utils';
 import { DescriptorWallet, WatchWallet } from '@app/watch/watch.types';
 
@@ -47,8 +47,11 @@ export class WatchSettingsComponent implements OnChanges, OnDestroy {
       this.descriptorWallet = wallet.kind === 'descriptor' ? wallet : null;
       if (this.descriptorWallet) {
         this.gapLimit = this.descriptorWallet.gapLimit;
-        const type = this.descriptorWallet.scriptType;
-        this.scriptType = { name: scriptTypeName(type), code: describeScriptType(type).code };
+        const { scriptType: type, multisig } = this.descriptorWallet;
+        this.scriptType = {
+          name: multisig ? multisigName(multisig.threshold, multisig.keys.length) : scriptTypeName(type),
+          code: describeScriptType(type).code,
+        };
       }
       this.addressListText = wallet.kind === 'address-list' ? wallet.addresses.map((a) => a.address).join('\n') : '';
       this.path = accountPath(wallet);
@@ -58,6 +61,10 @@ export class WatchSettingsComponent implements OnChanges, OnDestroy {
         this.forgetModal?.dismiss();
       }
     }
+  }
+
+  trackByIndex(index: number): number {
+    return index;
   }
 
   startRename(): void {

@@ -125,12 +125,6 @@ export interface Status {
   block_time?: number;
 }
 
-export interface BlockStatus {
-  in_best_chain: boolean;
-  height?: number;
-  next_best?: string;
-}
-
 export interface Block {
   id: string;
   height: number;

@@ -158,7 +158,7 @@ export function buildWalletView(wallet: WatchWallet, transactions: Transaction[]
 
 /** The key origin's path, `m` for a master key, else the standard one for single-key script types. */
 export function accountPath(wallet: WatchWallet): string | undefined {
-  if (wallet.kind === 'address-list') {
+  if (wallet.kind === 'address-list' || wallet.multisig) {
     return undefined;
   }
   if (wallet.originPath) {
