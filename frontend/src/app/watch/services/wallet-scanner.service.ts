@@ -56,11 +56,6 @@ export interface WalletScanRequest {
   minimumDerived?: Record<Chain, number>;
   onProgress?: (p: ScanProgress) => void;
   isCancelled?: () => boolean;
-  /**
-   * The history of an earlier complete scan of this wallet: only what a larger gap limit needs
-   * is derived and fetched. Anything unexpected falls back to a full scan.
-   */
-  extend?: Transaction[];
 }
 
 export interface WalletScanResult {
@@ -71,8 +66,8 @@ export interface WalletScanResult {
 
 /** The caller keeps what it showed before. */
 export class ScanIncompleteError extends Error {
-  constructor(readonly reason: 'history-moved' | 'too-many-transactions') {
-    super(`Scan incomplete: ${reason}`);
+  constructor() {
+    super('Scan incomplete: history moved');
   }
 }
 
@@ -88,7 +83,7 @@ function continuesFrom(previous: Transaction[], page: Transaction[]): boolean {
 
 /** One collector per scan, so MAX_PAGES bounds the whole scan. Each chunk is paged on its own. */
 class HistoryCollector {
-  readonly txsById: Map<string, Transaction>;
+  readonly txsById = new Map<string, Transaction>();
   pages = 0;
   truncated = false;
   /** The chunk being read; stored only once read in full. */
@@ -97,14 +92,10 @@ class HistoryCollector {
   constructor(
     private electrsApiService: ElectrsApiService,
     private retryOptions: RetryOptions,
-    known: Transaction[] = [],
-    private requestsBefore = 0,
-  ) {
-    this.txsById = new Map(known.map((tx) => [tx.txid, tx]));
-  }
+  ) {}
 
   get requests(): number {
-    return this.requestsBefore + this.pages;
+    return this.pages;
   }
 
   found(): number {
@@ -135,10 +126,12 @@ class HistoryCollector {
     let checking: { cursor: string; answer: string } | null = null;
     /** The same answer at the same cursor after a restart is taken as it is. */
     const restartedOn = new Set<string>();
+    let restarts = 0;
     const restart = (answer: string): void => {
-      if (restartedOn.size >= MAX_RESTARTS) {
-        throw new ScanIncompleteError('history-moved');
+      if (restarts >= MAX_RESTARTS) {
+        throw new ScanIncompleteError();
       }
+      restarts++;
       restartedOn.add(answer);
       found.clear();
       afterTxid = undefined;
@@ -153,12 +146,14 @@ class HistoryCollector {
       beforeRequest();
 
       const cursor = afterTxid;
-      const page = await withRetry(
-        () => firstValueFrom(this.electrsApiService.getAddressesTransactions$(addresses, cursor)),
-        this.retryOptions,
-      ) || [];
+      const page = await this.fetchPage(addresses, cursor);
       this.pages++;
 
+      if (!page) {
+        checking = null;
+        restart(`${cursor} gone`);
+        continue;
+      }
       if (checking) {
         const { cursor: moved, answer } = checking;
         checking = null;
@@ -195,9 +190,22 @@ class HistoryCollector {
       previous = page;
     }
   }
-}
 
-const isUnexpectedAnswer = (e: unknown): boolean => e instanceof HttpErrorResponse && e.status === 422;
+  /** Null when the cursor left both the mempool and the chain, e.g. evicted or replaced. */
+  private async fetchPage(addresses: string[], cursor: string | undefined): Promise<Transaction[] | null> {
+    try {
+      return await withRetry(
+        () => firstValueFrom(this.electrsApiService.getAddressesTransactions$(addresses, cursor, PAGE_SIZE)),
+        this.retryOptions,
+      ) || [];
+    } catch (e) {
+      if (cursor && e instanceof HttpErrorResponse && e.status === 422 && e.error === 'after_txid not found') {
+        return null;
+      }
+      throw e;
+    }
+  }
+}
 
 /**
  * Used addresses are read from the transactions themselves, so one paginated sweep gives both
@@ -216,7 +224,7 @@ export class WalletScannerService {
   }
 
   async scan(request: WalletScanRequest): Promise<WalletScanResult> {
-    const { definition, existingWalletId, isCancelled, extend } = request;
+    const { definition, existingWalletId, isCancelled } = request;
     let last: ScanProgress = { phase: 'deriving', addressesDerived: 0, txsFound: 0, apiRequests: 0 };
     const onProgress = (p: ScanProgress): void => {
       last = p;
@@ -228,32 +236,11 @@ export class WalletScannerService {
     };
     const addressRequestOptions = this.queued(retryOptions);
     const id = existingWalletId ?? walletId(definition);
-    let requests = 0;
 
-    if (extend && definition.kind === 'descriptor' && 'derivedCount' in definition) {
-      const scanned = definition as DescriptorWallet;
-      const history = new HistoryCollector(this.electrsApiService, addressRequestOptions, extend);
-      try {
-        const wallet = await this.scanDescriptor(scanned, id, history, { ...request, onProgress }, scanned);
-        if (!history.truncated) {
-          return this.finish(wallet, history, onProgress);
-        }
-      } catch (e) {
-        if (!(e instanceof ScanIncompleteError) && !isUnexpectedAnswer(e)) {
-          throw e;
-        }
-      }
-      requests = history.requests;
-    }
-
-    const history = new HistoryCollector(this.electrsApiService, addressRequestOptions, [], requests);
+    const history = new HistoryCollector(this.electrsApiService, addressRequestOptions);
     const wallet = definition.kind === 'address-list'
       ? await this.scanAddressList(definition, id, history, onProgress)
       : await this.scanDescriptor(definition, id, history, { ...request, onProgress });
-    if (history.truncated && extend) {
-      // The extension started from a complete history; a truncated one must not replace it.
-      throw new ScanIncompleteError('too-many-transactions');
-    }
     return this.finish(wallet, history, onProgress);
   }
 
@@ -279,18 +266,16 @@ export class WalletScannerService {
     return { ...definition, id, derivedCount: { 0: addresses.length, 1: 0 } };
   }
 
-  /** `from` is an earlier scan `history` already covers; the window grows from its edge. */
   private async scanDescriptor(
     definition: DescriptorWalletDefinition,
     id: string,
     history: HistoryCollector,
     { onProgress, minimumDerived, isCancelled }: WalletScanRequest,
-    from?: DescriptorWallet,
   ): Promise<DescriptorWallet> {
     const { descriptor, network, gapLimit } = definition;
-    const derivedCount: Record<Chain, number> = from ? { ...from.derivedCount } : { 0: 0, 1: 0 };
-    const addresses: DerivedAddress[] = from ? [...from.addresses] : [];
-    const byAddress = new Map(addresses.map((a) => [a.address, a]));
+    const derivedCount: Record<Chain, number> = { 0: 0, 1: 0 };
+    const addresses: DerivedAddress[] = [];
+    const byAddress = new Map<string, DerivedAddress>();
 
     const report = (phase: ScanProgress['phase'], chain: Chain, apiRequests: number): void => onProgress?.({
       phase,
@@ -336,15 +321,14 @@ export class WalletScannerService {
       return last;
     };
 
-    if (!from) {
-      await fetchFor(await extend(0, gapLimit));
-      await fetchFor(await extend(1, gapLimit));
-    }
+    await fetchFor(await extend(0, gapLimit));
+    await fetchFor(await extend(1, gapLimit));
 
-    // A receive address already handed out may be paid later, so never shrink the window.
+    // A receive address already handed out may be paid later, so never shrink the window, even
+    // when a truncated history skips fetching it.
     for (const chain of [0, 1] as Chain[]) {
       const missing = (minimumDerived?.[chain] ?? 0) - derivedCount[chain];
-      if (missing > 0 && !history.truncated) {
+      if (missing > 0) {
         await fetchFor(await extend(chain, missing));
       }
     }

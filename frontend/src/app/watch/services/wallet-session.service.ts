@@ -1,7 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Transaction } from '@interfaces/electrs.interface';
 import { looksLikeAddressList } from '@app/watch/address-list';
 import { buildWalletView, currentReceiveIndex, WalletView } from '@app/watch/wallet-math';
 import { fromMempoolNetwork } from '@app/watch/watch-key.utils';
@@ -53,9 +52,7 @@ const INITIAL_STATE: WalletPageState = {
 
 function errorMessage(e: unknown): string {
   if (e instanceof ScanIncompleteError) {
-    return e.reason === 'history-moved'
-      ? $localize`:@@watch.scan-history-moved:The wallet's history kept changing on the server while it was being read, so it could not be read completely. Nothing was changed; try again in a moment.`
-      : $localize`:@@watch.scan-reconcile-truncated:This wallet's new transactions could not all be read: there are more than a scan can page through in the browser. Nothing was changed.`;
+    return $localize`:@@watch.scan-history-moved:The wallet's history kept changing on the server while it was being read, so it could not be read completely. Nothing was changed; try again in a moment.`;
   }
   if (e instanceof HttpErrorResponse) {
     switch (e.status) {
@@ -220,8 +217,7 @@ export class WalletSessionService implements OnDestroy {
     if (gapLimit < wallet.gapLimit) {
       return;
     }
-    const view = this.views.get(wallet.id);
-    await this.refreshActive(view && !view.truncated ? view.transactions : undefined);
+    await this.refreshActive();
   }
 
   useNextReceiveAddress(): void {
@@ -331,8 +327,7 @@ export class WalletSessionService implements OnDestroy {
     }
   }
 
-  /** `extend` builds on a complete history after the gap limit grew. */
-  private async refreshActive(extend?: Transaction[]): Promise<void> {
+  private async refreshActive(): Promise<void> {
     const wallet = this.activeWallet;
     if (!wallet || this.state.scanning) {
       return;
@@ -346,7 +341,6 @@ export class WalletSessionService implements OnDestroy {
           0: Math.max(wallet.derivedCount[0], (wallet.receiveIndex ?? 0) + 1),
           1: wallet.derivedCount[1],
         } : undefined,
-        extend,
         onProgress: this.progressReporter(generation),
         isCancelled: () => generation !== this.generation,
       });

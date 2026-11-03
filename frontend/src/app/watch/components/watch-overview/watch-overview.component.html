@@ -62,6 +62,7 @@
         </div>
         <div class="receive-qr"><app-qrcode [size]="170" [data]="receive.address"></app-qrcode></div>
       </div>
+      <p class="text-muted mb-0" *ngIf="view.truncated" i18n="watch.receive.unavailable-truncated">Receive address unavailable: this wallet's history is incomplete, so the next unused address is not known.</p>
     </div>
   </section>
 

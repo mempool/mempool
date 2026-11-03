@@ -49,7 +49,8 @@ export class WatchOverviewComponent implements OnChanges {
     if (view.history !== this.history$.value) {
       this.history$.next(view.history);
     }
-    const [receive, next] = upcomingReceiveAddresses(view, 2);
+    // Usage past the truncation point is unknown, so the next "unused" address may be used.
+    const [receive, next] = view.truncated ? [] : upcomingReceiveAddresses(view, 2);
     this.receive = receive ?? null;
     this.receivePath = receive ? derivationPath(view.wallet, receive) : '';
     this.isAddressList = view.wallet.kind === 'address-list';
