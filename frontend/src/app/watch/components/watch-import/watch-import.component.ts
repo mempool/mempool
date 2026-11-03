@@ -25,8 +25,9 @@ export class WatchImportComponent {
 
   constructor(public session: WalletSessionService) {}
 
+  // The name is optional; an empty one is saved as "My Wallet".
   get canLoad(): boolean {
-    return !!this.label.trim() && !!this.keyInput.trim();
+    return !!this.keyInput.trim();
   }
 
   get needsScriptTypeHint(): boolean {

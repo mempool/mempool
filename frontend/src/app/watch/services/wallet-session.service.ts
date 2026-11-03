@@ -425,7 +425,7 @@ export class WalletSessionService implements OnDestroy {
 
   private async toDefinition(form: WalletImportForm, network: WatchNetwork): Promise<WalletDefinition> {
     const input = form.input.trim();
-    const label = form.label.trim() || $localize`:@@watch.default-wallet-name:My wallet`;
+    const label = form.label.trim() || $localize`:@@watch.default-wallet-name:My Wallet`;
     if (looksLikeAddressList(input)) {
       const addresses = await this.derivation.parseAddressList(input, network);
       return { kind: 'address-list', label, network, addresses };

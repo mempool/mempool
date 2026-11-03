@@ -7,7 +7,8 @@
     <div class="mb-3">
       <label for="watch-label" i18n="watch.wallet-name">Wallet name</label>
       <input id="watch-label" name="label" type="text" class="form-control" [attr.maxlength]="60" autocomplete="off"
-             [(ngModel)]="label" (ngModelChange)="session.clearError()" [disabled]="state.scanning">
+             [(ngModel)]="label" (ngModelChange)="session.clearError()" [disabled]="state.scanning"
+             placeholder="Enter wallet name" i18n-placeholder="watch.wallet-name-placeholder">
     </div>
 
     <div class="mb-3">
