@@ -2,6 +2,7 @@
 
   <h1 class="wallet-brand">
     <img [src]="(isLightMode$ | async) ? '/resources/mempool-wallet-logo-light.svg' : '/resources/mempool-wallet-logo.svg'" alt="mempool wallet" class="wallet-logo">
+    <span class="badge rounded-pill bg-warning preview" i18n="watch.preview">preview</span>
   </h1>
 
   <!-- Liquid's confidential transactions need blinding keys, not just an xpub. -->
