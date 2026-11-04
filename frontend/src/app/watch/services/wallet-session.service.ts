@@ -280,7 +280,8 @@ export class WalletSessionService implements OnDestroy {
       }
       // Updates that reached the wallet behind the form during the import, for addresses the
       // imported wallet shares with it.
-      const updates = this.updatesFor(wallet);
+      // Not onto a truncated history: it isn't tracked or refreshed automatically, so nothing would correct them.
+      const updates = truncated ? [] : this.updatesFor(wallet);
       const replayed = this.replay(txs, updates);
       this.cancelLiveRefresh();
       if (this.refreshQueuedByLive) {
@@ -642,7 +643,8 @@ export class WalletSessionService implements OnDestroy {
           this.queueRefresh('settings');
         }
       }
-      const replayed = this.replay(txs, this.updatesFor(merged));
+      // Not onto a truncated history: it isn't tracked or refreshed automatically, so nothing would correct them.
+      const replayed = truncated ? txs : this.replay(txs, this.updatesFor(merged));
       if (!replayed) {
         // Reconciled by the live refresh, no sooner than LIVE_REFRESH_INTERVAL_MS after this scan.
         this.liveRefreshWanted = true;
