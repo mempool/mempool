@@ -3,15 +3,12 @@ import { SeoService } from '@app/services/seo.service';
 import { StateService } from '@app/services/state.service';
 import { ThemeService } from '@app/services/theme.service';
 import { WebsocketService } from '@app/services/websocket.service';
-import { merge, Observable, of, Subscription, timer } from 'rxjs';
+import { merge, Observable, of, Subscription } from 'rxjs';
 import { distinctUntilChanged, filter, map, pairwise } from 'rxjs/operators';
-import { WalletPageState, WalletSessionService } from '@app/watch/services/wallet-session.service';
+import { WalletSessionService } from '@app/watch/services/wallet-session.service';
 import { WalletTrackerService } from '@app/watch/services/wallet-tracker.service';
 
 export type WatchTab = 'overview' | 'transactions' | 'utxos' | 'addresses' | 'settings';
-
-/** The wallet refreshes on every block, so its update time is only shown once it may be stale. */
-const STALE_AFTER_MS = 30 * 60 * 1000;
 
 @Component({
   selector: 'app-watch',
@@ -25,7 +22,6 @@ const STALE_AFTER_MS = 30 * 60 * 1000;
 export class WatchComponent implements OnInit, OnDestroy {
   activeTab: WatchTab = 'overview';
   readonly isLightMode$: Observable<boolean>;
-  readonly clock$ = timer(0, 60_000).pipe(map(() => Date.now()));
   private subscription: Subscription;
 
   constructor(
@@ -63,10 +59,6 @@ export class WatchComponent implements OnInit, OnDestroy {
         this.activeTab = 'overview';
       }
     }));
-  }
-
-  showUpdatedAt(state: WalletPageState, now: number | null): boolean {
-    return !!state.updatedAt && (!!state.error || (now ?? Date.now()) - state.updatedAt * 1000 > STALE_AFTER_MS);
   }
 
   ngOnDestroy(): void {
