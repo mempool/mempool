@@ -90,12 +90,13 @@ function validGapLimit(value: number): number {
 /**
  * State and actions for the /wallet page, provided by WatchComponent. One scan runs at a
  * time; `generation` discards the result of a scan overtaken by a network change. A wallet is
- * scanned in full when it is shown and on Refresh; on a new block or reconnect, only what changed
+ * scanned in full when it is shown; on Check Mempool, a new block or a reconnect, only what changed
  * since its cached history is read, and a hidden tab waits until it is shown again. Between
  * blocks a wallet of up to ten addresses is updated from the websocket. Each burst of updates
  * also queues the incremental refresh, no sooner than LIVE_REFRESH_INTERVAL_MS after the last
  * scan ended, as the websocket does not report every removal; updates that arrive during a
- * refresh are applied again to its result.
+ * refresh are applied again to its result. A wallet whose history is truncated gets neither
+ * automatic refresh, as each would be a full rescan.
  */
 @Injectable()
 export class WalletSessionService implements OnDestroy {
@@ -107,6 +108,8 @@ export class WalletSessionService implements OnDestroy {
   private generation = 0;
   private mempoolNetwork: string | null = null;
   private refreshQueued = false;
+  /** The queued refresh only answers new blocks or live updates, so a truncated wallet can skip it. */
+  private queuedForChain = false;
   /** Queued only by the live refresh timer, which a newly imported wallet does not need. */
   private refreshQueuedByLive = false;
   private updatesDuringScan: LiveUpdate[] = [];
@@ -148,6 +151,7 @@ export class WalletSessionService implements OnDestroy {
     }
     this.mempoolNetwork = mempoolNetwork;
     this.refreshQueued = false;
+    this.queuedForChain = false;
     this.refreshQueuedByLive = false;
     this.views.clear();
     this.scannedAt.clear();
@@ -212,10 +216,11 @@ export class WalletSessionService implements OnDestroy {
       this.cancelLiveRefresh();
       if (this.refreshQueuedByLive) {
         this.refreshQueued = false;
+        this.queuedForChain = false;
         this.refreshQueuedByLive = false;
       }
       if (!replayed) {
-        this.refreshQueued = true;
+        this.queueRefresh('chain');
       }
       // Their follow-up refresh is still due, as after any refresh.
       this.liveRefreshWanted = updates.length > 0;
@@ -237,6 +242,14 @@ export class WalletSessionService implements OnDestroy {
 
   refresh(): Promise<void> {
     return this.refreshActive();
+  }
+
+  /**
+   * Reads only what changed since the cached history, as on a new block. Without a usable cache
+   * (first scan failed, truncated, or the cached tip left the best chain) this is a full scan.
+   */
+  checkMempool(): Promise<void> {
+    return this.refreshActive(true);
   }
 
   rename(label: string): void {
@@ -378,15 +391,39 @@ export class WalletSessionService implements OnDestroy {
   }
 
   private onChainChange(live = false): void {
+    // Queued during a scan, the block is weighed against the scan's result (runQueuedRefresh):
+    // the view shown now may be about to be replaced by a complete one.
     if (this.state.scanning || this.state.adding || document.hidden) {
-      this.refreshQueuedByLive = live && (this.refreshQueuedByLive || !this.refreshQueued);
-      this.refreshQueued = true;
-    } else {
-      void this.refreshActive(true);
+      this.queueRefresh(live ? 'live' : 'chain');
+      return;
     }
+    // A truncated history is already incomplete, and rescanning it takes longer than a block
+    // interval: refreshing on every block would keep the wallet scanning without pause.
+    if (this.state.view?.truncated) {
+      return;
+    }
+    void this.refreshActive(true);
+  }
+
+  /**
+   * 'chain' (a block, or live updates that need reconciling) and 'live' (the live refresh timer)
+   * are dropped for a truncated wallet; 'live' alone is also dropped by an import.
+   */
+  private queueRefresh(source: 'chain' | 'live' | 'settings'): void {
+    const fresh = !this.refreshQueued;
+    this.queuedForChain = source !== 'settings' && (this.queuedForChain || fresh);
+    this.refreshQueuedByLive = source === 'live' && (this.refreshQueuedByLive || fresh);
+    this.refreshQueued = true;
   }
 
   private runQueuedRefresh(): void {
+    // Only once the scan is over: until then the view shown may be about to be replaced.
+    if (this.refreshQueued && this.queuedForChain && !this.state.scanning && this.state.view?.truncated) {
+      this.refreshQueued = false;
+      this.queuedForChain = false;
+      this.refreshQueuedByLive = false;
+      return;
+    }
     if (this.refreshQueued && !this.state.adding && !this.state.scanning && !document.hidden && this.activeWallet) {
       void this.refreshActive(true);
     }
@@ -398,6 +435,7 @@ export class WalletSessionService implements OnDestroy {
       return;
     }
     this.refreshQueued = false;
+    this.queuedForChain = false;
     this.refreshQueuedByLive = false;
     const tip = this.tracker.tip;
     const cache = incremental ? this.caches.get(wallet.id) : undefined;
@@ -430,14 +468,12 @@ export class WalletSessionService implements OnDestroy {
         merged = { ...scanned, label: current.label, receiveIndex: current.receiveIndex, gapLimit: current.gapLimit };
         gapLimitChanged = current.gapLimit !== scanned.gapLimit;
         if (gapLimitChanged) {
-          this.refreshQueued = true;
-          this.refreshQueuedByLive = false;
+          this.queueRefresh('settings');
         }
       }
       const replayed = this.replay(txs, this.updatesFor(merged));
       if (!replayed) {
-        this.refreshQueued = true;
-        this.refreshQueuedByLive = false;
+        this.queueRefresh('chain');
       }
       this.storeView(buildWalletView(merged, replayed ?? txs, truncated));
       this.storeCache(merged.id, truncated || gapLimitChanged ? undefined : tip, txs);
