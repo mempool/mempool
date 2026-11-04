@@ -24,7 +24,9 @@ export class WatchSettingsComponent implements OnChanges, OnDestroy {
   readonly minGapLimit = MIN_GAP_LIMIT;
   readonly maxGapLimit = MAX_GAP_LIMIT;
   readonly scriptTypes = BARE_KEY_SCRIPT_OPTIONS;
-  private forgetModal: NgbModalRef | null = null;
+  private modal: NgbModalRef | null = null;
+  /** Fixed when the popup opens: a refresh can reset the field while it is open. */
+  confirming = { title: '', body: '' };
 
   descriptorWallet: DescriptorWallet | null = null;
   addressListText = '';
@@ -44,8 +46,9 @@ export class WatchSettingsComponent implements OnChanges, OnDestroy {
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    const previous = changes.wallet?.previousValue as WatchWallet | undefined;
-    if (previous !== this.wallet) {
+    // Only a new wallet resets the drafts: `scanning` changes on its own when a scan starts or ends.
+    if (changes.wallet) {
+      const previous = changes.wallet.previousValue as WatchWallet | undefined;
       const wallet = this.wallet;
       this.descriptorWallet = wallet.kind === 'descriptor' ? wallet : null;
       if (this.descriptorWallet) {
@@ -56,14 +59,14 @@ export class WatchSettingsComponent implements OnChanges, OnDestroy {
           code: describeScriptType(type).code,
         };
         this.scriptTypeChangeable = isBareExtendedKey(this.descriptorWallet.source);
-        this.scriptTypeDraft = isBareKeyScriptType(type) ? type : null;
+        this.resetScriptType();
       }
       this.addressListText = wallet.kind === 'address-list' ? wallet.addresses.map((a) => a.address).join('\n') : '';
       this.path = accountPath(wallet);
       this.networkName = this.stateService.networkDisplayName;
       if (previous?.id !== wallet.id) {
         this.editingLabel = false;
-        this.forgetModal?.dismiss();
+        this.modal?.dismiss();
       }
     }
   }
@@ -93,19 +96,52 @@ export class WatchSettingsComponent implements OnChanges, OnDestroy {
     return !this.gapLimitInvalid && Number(this.gapLimit) !== this.descriptorWallet?.gapLimit;
   }
 
-  applyGapLimit(): void {
-    this.session.setGapLimit(this.gapLimit);
+  confirmGapLimit(dialog: TemplateRef<unknown>): void {
+    const wallet = this.descriptorWallet;
+    if (this.modal || !wallet || !this.gapLimitChanged) {
+      return;
+    }
+    const gapLimit = Number(this.gapLimit);
+    this.confirm(dialog, {
+      title: $localize`:@@watch.gap-limit-dialog-title:Change the gap limit to ${gapLimit}:limit:?`,
+      body: gapLimit > wallet.gapLimit
+        ? $localize`:@@watch.gap-limit-dialog-body-up:The wallet is rescanned to look for addresses within the new limit.`
+        : $localize`:@@watch.gap-limit-dialog-body-down:Addresses already found are kept, so no rescan is needed.`,
+    }, () => this.session.setGapLimit(gapLimit), () => (this.gapLimit = this.descriptorWallet?.gapLimit ?? DEFAULT_GAP_LIMIT));
   }
 
-  applyScriptType(): void {
-    if (this.scriptTypeDraft) {
-      this.session.changeScriptType(this.scriptTypeDraft);
+  confirmScriptType(dialog: TemplateRef<unknown>): void {
+    const type = this.scriptTypeDraft;
+    if (this.modal || !type || type === this.descriptorWallet?.scriptType) {
+      return;
     }
+    const label = this.scriptTypes.find((t) => t.value === type)?.label ?? type;
+    this.confirm(dialog, {
+      title: $localize`:@@watch.script-type-dialog-title:Change the address type to ${label}:type:?`,
+      body: $localize`:@@watch.script-type-dialog-body:The wallet is rescanned with the new address type.`,
+    }, () => this.session.changeScriptType(type), () => this.resetScriptType());
+  }
+
+  /** The field only proposes a value: it applies once confirmed. Reset after a failed change too, so it never shows a value the wallet doesn't have. */
+  private confirm(dialog: TemplateRef<unknown>, text: { title: string; body: string }, apply: () => Promise<void>, reset: () => void): void {
+    this.confirming = text;
+    this.modal = this.modalService.open(dialog, { centered: true, ariaLabelledBy: 'watch-confirm-title', windowClass: 'watch-dialog' });
+    this.modal.result
+      .then(apply, () => null)
+      .finally(() => {
+        this.modal = null;
+        reset();
+      });
+  }
+
+  private resetScriptType(): void {
+    const type = this.descriptorWallet?.scriptType;
+    this.scriptTypeDraft = type && isBareKeyScriptType(type) ? type : null;
   }
 
   confirmForget(dialog: TemplateRef<unknown>): void {
-    this.forgetModal = this.modalService.open(dialog, { centered: true, ariaLabelledBy: 'watch-forget-title', windowClass: 'watch-forget-dialog' });
-    this.forgetModal.result.then(() => this.forget(), () => null).finally(() => (this.forgetModal = null));
+    this.modal = this.modalService.open(dialog, { centered: true, ariaLabelledBy: 'watch-forget-title', windowClass: 'watch-dialog' });
+    this.modal.result.then(() => this.forget(), () => null).finally(() => (this.modal = null));
   }
 
   forget(): void {
@@ -114,6 +150,6 @@ export class WatchSettingsComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.forgetModal?.dismiss();
+    this.modal?.dismiss();
   }
 }
