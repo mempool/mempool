@@ -6,6 +6,6 @@
   </ng-container>
   <ng-template #totals>
     <ng-container *ngIf="!showCounts" i18n="watch.updating">Updating…</ng-container>
-    <ng-container *ngIf="showCounts" i18n="watch.scan-progress">{{ progress.addressesDerived }} addresses, {{ progress.txsFound }} transactions, {{ progress.apiRequests }} requests</ng-container>
+    <ng-container *ngIf="showCounts" i18n="watch.scan-progress">{{ progress.addressesDerived }} addresses, {{ progress.txsFound }} transactions</ng-container>
   </ng-template>
 </small>
