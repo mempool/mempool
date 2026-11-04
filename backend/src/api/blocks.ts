@@ -404,9 +404,9 @@ class Blocks {
     const totalFee = transactions.reduce((acc, tx) => acc + tx.fee, 0);
     const totalVsize = transactions.reduce((acc, tx) => acc + tx.vsize, 0);
     const totalReward = transactions[0].vout.reduce((acc, vout) => acc + vout.value, 0);
-    const sortedByFee = transactions.sort((a, b) => a.fee - b.fee);
-    const sortedByVsize = transactions.sort((a, b) => a.vsize - b.vsize);
-    const sortedByFeerate = transactions.sort((a, b) => (a.fee / a.weight) - (b.fee / b.weight));
+    const sortedByFee = [...transactions].sort((a, b) => a.fee - b.fee);
+    const sortedByVsize = [...transactions].sort((a, b) => a.vsize - b.vsize);
+    const sortedByFeerate = [...transactions].sort((a, b) => (a.fee / a.weight) - (b.fee / b.weight));
     const sortedFeerates = sortedByFeerate.map(tx => (tx.fee / (tx.weight / 4)));
     const avgfee = totalFee / transactions.length;
     const avgfeerate = totalFee / (block.weight / 4);
