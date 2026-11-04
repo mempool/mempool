@@ -41,17 +41,23 @@ export class WatchImportComponent {
   }
 
   get checkingScriptType(): boolean {
-    return !!this.scriptTypeCheck && !this.scriptTypeCheck.withHistory;
+    return this.scriptTypeCheck?.status === 'checking';
+  }
+
+  /** The types with history, once the check is done. */
+  get withHistory(): ScriptType[] | null {
+    const check = this.scriptTypeCheck;
+    return check?.status === 'done' ? check.withHistory : null;
   }
 
   get selectedScriptType(): ScriptType {
-    const withHistory = this.scriptTypeCheck?.withHistory;
+    const withHistory = this.withHistory;
     return !this.scriptTypeChosen && withHistory?.length === 1 ? withHistory[0] : this.scriptTypeHint;
   }
 
   /** Several types have history and the user hasn't picked one for this key yet. */
   get needsScriptTypeChoice(): boolean {
-    return !this.scriptTypeChosen && (this.scriptTypeCheck?.withHistory?.length ?? 0) > 1;
+    return !this.scriptTypeChosen && (this.withHistory?.length ?? 0) > 1;
   }
 
   get selectedOption(): (typeof BARE_KEY_SCRIPT_OPTIONS)[number] {
@@ -59,12 +65,12 @@ export class WatchImportComponent {
   }
 
   hasHistory(type: ScriptType): boolean {
-    return !!this.scriptTypeCheck?.withHistory?.includes(type);
+    return !!this.withHistory?.includes(type);
   }
 
   /** The check finished and found no history on any address type. */
   get noneWithHistory(): boolean {
-    return this.scriptTypeCheck?.withHistory?.length === 0;
+    return this.withHistory?.length === 0;
   }
 
   onKeyInput(value: string): void {

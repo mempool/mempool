@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, fromEvent, Subscription } from 'rxjs';
+import { BehaviorSubject, catchError, defer, distinctUntilChanged, filter, finalize, firstValueFrom, from, fromEvent, map, Observable, of, startWith, Subject, Subscription, switchMap, timer } from 'rxjs';
 import { Transaction } from '@interfaces/electrs.interface';
 import { looksLikeAddressList } from '@app/watch/address-list';
 import { buildWalletView, currentReceiveIndex, WalletView } from '@app/watch/wallet-math';
@@ -26,19 +26,19 @@ export interface WalletImportForm {
   detectScriptType?: boolean;
 }
 
-/** Which script types of a bare xpub/tpub have history at receive address 0; null while checking. */
-export interface ScriptTypeCheck {
-  input: string;
-  withHistory: ScriptType[] | null;
-}
+/** Which script types of a bare xpub/tpub have history at receive address 0. */
+export type ScriptTypeCheck =
+  | { input: string; status: 'checking' }
+  | { input: string; status: 'done'; withHistory: ScriptType[] }
+  | { input: string; status: 'failed' };
 
 export const SCRIPT_TYPE_CHECK_DELAY_MS = 400;
 
-interface ScriptTypeCheckRun {
+/** `now` skips the typing delay, for an import that needs the answer. */
+interface ScriptTypeCheckRequest {
   input: string;
-  network: WatchNetwork;
-  settled: boolean;
-  result: Promise<ScriptType[] | null>;
+  network: WatchNetwork | null;
+  now: boolean;
 }
 
 export interface WalletPageState {
@@ -117,9 +117,9 @@ export class WalletSessionService implements OnDestroy {
   /** The queued refresh only answers new blocks, so a truncated wallet can skip it. */
   private queuedForChain = false;
   private visibilitySubscription: Subscription;
-  private checkRun: ScriptTypeCheckRun | null = null;
-  private checkTimer: ReturnType<typeof setTimeout> | undefined;
-  private checkTimerInput: string | null = null;
+  /** null clears the check. Each request replaces the one before, cancelling its check. */
+  private checkRequests = new Subject<ScriptTypeCheckRequest | null>();
+  private checkSubscription: Subscription;
 
   constructor(
     private derivation: DerivationService,
@@ -129,6 +129,18 @@ export class WalletSessionService implements OnDestroy {
   ) {
     this.tracker.watchChain(() => this.onChainChange());
     this.visibilitySubscription = fromEvent(document, 'visibilitychange').subscribe(() => this.runQueuedRefresh());
+    this.checkSubscription = this.checkRequests.pipe(
+      // Typing that doesn't change the trimmed input keeps the current check.
+      distinctUntilChanged((a, b) => !b?.now && a?.input === b?.input && a?.network === b?.network),
+      switchMap((request) => {
+        if (!request?.network || !isBareExtendedKey(request.input)) {
+          return of(null);
+        }
+        const check = this.checkHistory(request.input, request.network);
+        return request.now ? check : timer(SCRIPT_TYPE_CHECK_DELAY_MS).pipe(switchMap(() => check));
+      }),
+      distinctUntilChanged(),
+    ).subscribe((scriptTypeCheck) => this.patch({ scriptTypeCheck }));
   }
 
   get state(): WalletPageState {
@@ -180,16 +192,7 @@ export class WalletSessionService implements OnDestroy {
 
   /** Called as the import field changes; checks a bare xpub/tpub once the input settles. */
   checkScriptType(rawInput: string): void {
-    const input = rawInput.trim();
-    const network = this.state.network;
-    if ((this.checkRun?.input === input && this.checkRun.network === network) || this.checkTimerInput === input) {
-      return;
-    }
-    this.clearScriptTypeCheck();
-    if (network && isBareExtendedKey(input)) {
-      this.checkTimerInput = input;
-      this.checkTimer = setTimeout(() => this.startScriptTypeCheck(input, network), SCRIPT_TYPE_CHECK_DELAY_MS);
-    }
+    this.checkRequests.next({ input: rawInput.trim(), network: this.state.network, now: false });
   }
 
   /** False if the form should stay as it is. */
@@ -203,30 +206,27 @@ export class WalletSessionService implements OnDestroy {
     await this.runScan(async (generation) => {
       let withHistory: ScriptType[] | null = null;
       let scriptTypeHint = form.scriptTypeHint;
-      if (form.detectScriptType && isBareExtendedKey(form.input)) {
+      if (isBareExtendedKey(form.input)) {
         const input = form.input.trim();
-        const run = this.checkRun?.input === input && this.checkRun.network === network ? this.checkRun : this.startScriptTypeCheck(input, network);
-        const shown = run.settled;
-        if (!shown) {
+        let check = this.state.scriptTypeCheck?.input === input ? this.state.scriptTypeCheck : null;
+        const shown = check?.status === 'done';
+        if (form.detectScriptType && !shown) {
           this.progressReporter(generation)({ phase: 'fetching', addressesDerived: BARE_KEY_SCRIPT_TYPES.length, txsFound: 0, apiRequests: 1 });
+          check = await this.checkNow(input, network);
+          if (generation !== this.generation) {
+            return;
+          }
         }
-        withHistory = await run.result;
-        if (generation !== this.generation) {
-          return;
-        }
-        // The dropdown now marks them; the user picks one.
-        if (withHistory && withHistory.length > 1 && !shown) {
-          return;
-        }
-        if (withHistory?.length === 1) {
-          scriptTypeHint = withHistory[0];
-        }
-      } else if (isBareExtendedKey(form.input)) {
-        // The user chose the type; a finished check still decides the empty-wallet notice.
-        const input = form.input.trim();
-        const run = this.checkRun?.input === input && this.checkRun.network === network ? this.checkRun : null;
-        if (run?.settled) {
-          withHistory = await run.result;
+        // Without detection the user chose the type; a finished check still decides the empty-wallet notice.
+        withHistory = check?.status === 'done' ? check.withHistory : null;
+        if (form.detectScriptType) {
+          // The dropdown now marks them; the user picks one.
+          if (withHistory && withHistory.length > 1 && !shown) {
+            return;
+          }
+          if (withHistory?.length === 1) {
+            scriptTypeHint = withHistory[0];
+          }
         }
       }
       const definition = await this.toDefinition({ ...form, scriptTypeHint }, network);
@@ -387,51 +387,42 @@ export class WalletSessionService implements OnDestroy {
   ngOnDestroy(): void {
     this.generation++;
     this.visibilitySubscription.unsubscribe();
-    this.clearScriptTypeCheck();
+    this.checkSubscription.unsubscribe();
   }
 
   private clearScriptTypeCheck(): void {
-    clearTimeout(this.checkTimer);
-    this.checkTimerInput = null;
-    this.checkRun = null;
-    if (this.state.scriptTypeCheck) {
-      this.patch({ scriptTypeCheck: null });
-    }
+    this.checkRequests.next(null);
   }
 
-  private startScriptTypeCheck(input: string, network: WatchNetwork): ScriptTypeCheckRun {
-    clearTimeout(this.checkTimer);
-    this.checkTimerInput = null;
-    const run: ScriptTypeCheckRun = { input, network, settled: false, result: Promise.resolve(null) };
-    this.checkRun = run;
-    run.result = this.runScriptTypeCheck(run).finally(() => {
-      run.settled = true;
+  /** Starts the check without the typing delay, unless it is already running; resolves when it ends or is replaced. */
+  private checkNow(input: string, network: WatchNetwork): Promise<ScriptTypeCheck | null> {
+    const current = this.state.scriptTypeCheck;
+    if (current?.input !== input || current.status !== 'checking') {
+      this.checkRequests.next({ input, network, now: true });
+    }
+    return firstValueFrom(this.state$.pipe(
+      map((state) => state.scriptTypeCheck),
+      filter((check) => check?.input !== input || check.status !== 'checking'),
+    ));
+  }
+
+  /** 'checking', then 'done' or 'failed'; null for a key with no candidates. Unsubscribing cancels its requests. */
+  private checkHistory(input: string, network: WatchNetwork): Observable<ScriptTypeCheck | null> {
+    return defer(() => {
+      let cancelled = false;
+      return from(this.derivation.scriptCandidates(input, network)).pipe(
+        switchMap((candidates) => !candidates.length ? of(null) : from(
+          this.scanner.addressesWithHistory(candidates.map((c) => c.address), { isCancelled: () => cancelled }),
+        ).pipe(
+          map((used): ScriptTypeCheck => ({ input, status: 'done', withHistory: candidates.filter((c) => used.has(c.address)).map((c) => c.scriptType) })),
+        )),
+        catchError(() => of<ScriptTypeCheck>({ input, status: 'failed' })),
+        startWith<ScriptTypeCheck | null>({ input, status: 'checking' }),
+        finalize(() => {
+          cancelled = true;
+        }),
+      );
     });
-    return run;
-  }
-
-  /** Null if the check failed or was overtaken by a different input. */
-  private async runScriptTypeCheck(run: ScriptTypeCheckRun): Promise<ScriptType[] | null> {
-    const stale = (): boolean => this.checkRun !== run;
-    try {
-      const candidates = await this.derivation.scriptCandidates(run.input, run.network);
-      if (stale() || !candidates.length) {
-        return null;
-      }
-      this.patch({ scriptTypeCheck: { input: run.input, withHistory: null } });
-      const used = await this.scanner.addressesWithHistory(candidates.map((c) => c.address), { isCancelled: stale });
-      if (stale()) {
-        return null;
-      }
-      const withHistory = candidates.filter((c) => used.has(c.address)).map((c) => c.scriptType);
-      this.patch({ scriptTypeCheck: { input: run.input, withHistory } });
-      return withHistory;
-    } catch {
-      if (!stale()) {
-        this.patch({ scriptTypeCheck: null });
-      }
-      return null;
-    }
   }
 
   /** "My Wallet", then "My Wallet 2", "My Wallet 3"…: the first not already used on this network. */
