@@ -25,7 +25,10 @@
           <ng-template #idle>
             <small *ngIf="showUpdatedAt(state, clock$ | async); else automatic" i18n="watch.updated-at">Updated <app-time kind="since" [time]="state.updatedAt" [lowercaseStart]="true" [showTooltip]="true"></app-time></small>
             <ng-template #automatic>
-              <small *ngIf="!state.error && !state.view?.truncated" i18n="watch.updates-automatically">Updates automatically with each new block</small>
+              <small *ngIf="!state.error && !state.view?.truncated">
+                <ng-container *ngIf="state.liveUpdates === 'on'; else perBlock" i18n="watch.updates-live">Updates live as transactions arrive</ng-container>
+                <ng-template #perBlock><ng-container i18n="watch.updates-automatically">Updates automatically with each new block</ng-container></ng-template>
+              </small>
             </ng-template>
             <!-- Kept beside the age too: an incomplete wallet only updates when asked. -->
             <small class="d-block" *ngIf="!state.error && state.view?.truncated" i18n="watch.updates-manual-truncated">Not updated automatically while the history is incomplete</small>
@@ -41,6 +44,9 @@
       <div class="alert alert-danger mt-3 mb-0" *ngIf="state.error">
         {{ state.error }}
         <ng-container *ngIf="state.view && state.updatedAt" i18n="watch.showing-previous">The figures shown are from the last successful update.</ng-container>
+      </div>
+      <div class="alert alert-info mt-3 mb-0" *ngIf="state.liveUpdates === 'refused'" i18n="watch.live-updates-unavailable">
+        Live updates aren't available for this wallet. It will refresh on each new block instead.
       </div>
       <div class="alert alert-warning mt-3 mb-0" *ngIf="state.view?.truncated" i18n="watch.truncated">
         This wallet has too much history to load completely in the browser. The balance and transactions are incomplete.

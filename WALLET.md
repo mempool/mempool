@@ -76,7 +76,7 @@ The genesis address has more history than the wallet loads in the browser, so it
 
 - Watch-only: no sending, signing or PSBT support.
 - Wallets with more than about 10,000 transactions load incompletely and show a warning that the balance and history are incomplete.
-- Unconfirmed transactions appear on the next block or after **Check Mempool**, not live.
+- Unconfirmed transactions appear live only for wallets of up to 10 addresses, the server's limit per connection, and whose history loaded completely. Other wallets show them on the next block or after **Check Mempool**; a wallet with incomplete history only after **Check Mempool**.
 - Taproot script paths and descriptors beyond those listed above are not supported.
 
 The screenshots use the public BIP84 test descriptor (the `abandon … about` test mnemonic, fingerprint `73c5da0a`) and the genesis address. Don't send funds to test wallets.

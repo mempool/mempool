@@ -129,6 +129,63 @@ function replacedTxids(unconfirmed: Transaction[]): Set<string> {
   return new Set(unconfirmed.filter((tx) => outpointsOf(tx).some((o) => winners.get(o) !== tx)).map((tx) => tx.txid));
 }
 
+function unconfirmedOf(txsById: Map<string, Transaction>): Transaction[] {
+  return [...txsById.values()].filter((tx) => !tx.status?.confirmed);
+}
+
+function dropWithDescendants(txsById: Map<string, Transaction>, dropped: Set<string>): void {
+  let grew = dropped.size > 0;
+  while (grew) {
+    grew = false;
+    for (const tx of unconfirmedOf(txsById).filter((t) => !dropped.has(t.txid) && t.vin?.some((v) => dropped.has(v.txid)))) {
+      dropped.add(tx.txid);
+      grew = true;
+    }
+  }
+  for (const txid of dropped) {
+    txsById.delete(txid);
+  }
+}
+
+/** False if two confirmed transactions spend one outpoint, which only a rescan can settle. */
+function resolveConflicts(txsById: Map<string, Transaction>): boolean {
+  const confirmed = confirmedSpenders([...txsById.values()]);
+  if (!confirmed) {
+    return false;
+  }
+  const doubleSpends = unconfirmedOf(txsById).filter((tx) => outpointsOf(tx).some((outpoint) => confirmed.has(outpoint)));
+  dropWithDescendants(txsById, new Set(doubleSpends.map((tx) => tx.txid)));
+  dropWithDescendants(txsById, replacedTxids(unconfirmedOf(txsById)));
+  return true;
+}
+
+/**
+ * Applies transactions seen on the websocket to a history. Removed ones (replaced, evicted or
+ * expired) go with their unconfirmed descendants, and conflicts are settled as a scan settles
+ * them. Null if the result needs a rescan.
+ */
+export function applyLiveUpdate(txs: Transaction[], added: Transaction[], removed: Transaction[]): Transaction[] | null {
+  const txsById = new Map(txs.map((tx) => [tx.txid, tx]));
+  const arriving = new Set(added.map((tx) => tx.txid));
+  // New arrivals go first among the unconfirmed, newest first where firstSeen is known.
+  const fresh = added.filter((tx) => !txsById.has(tx.txid)).sort((a, b) => (b.firstSeen ?? 0) - (a.firstSeen ?? 0));
+  dropWithDescendants(txsById, new Set(removed
+    .filter((tx) => !arriving.has(tx.txid) && txsById.has(tx.txid) && !txsById.get(tx.txid).status?.confirmed)
+    .map((tx) => tx.txid)));
+  for (const tx of added) {
+    // A mempool copy of a transaction already confirmed is stale.
+    if (!txsById.get(tx.txid)?.status?.confirmed || tx.status?.confirmed) {
+      txsById.set(tx.txid, tx);
+    }
+  }
+  if (!resolveConflicts(txsById)) {
+    return null;
+  }
+  const freshIds = new Set(fresh.map((tx) => tx.txid));
+  const kept = fresh.filter((tx) => txsById.has(tx.txid)).map((tx) => txsById.get(tx.txid));
+  return sortNewestFirst([...kept, ...[...txsById.values()].filter((tx) => !freshIds.has(tx.txid))]);
+}
+
 function withoutUiState(tx: Transaction): Transaction {
   const copy = { ...tx };
   for (const key of Object.keys(copy).filter((k) => k.startsWith('_'))) {
@@ -250,35 +307,6 @@ class HistoryCollector {
       }
       afterTxid = next;
       previous = page;
-    }
-  }
-
-  resolveConflicts(): boolean {
-    const confirmed = confirmedSpenders([...this.txsById.values()]);
-    if (!confirmed) {
-      return false;
-    }
-    const doubleSpends = this.unconfirmed().filter((tx) => outpointsOf(tx).some((outpoint) => confirmed.has(outpoint)));
-    this.dropWithDescendants(new Set(doubleSpends.map((tx) => tx.txid)));
-    this.dropWithDescendants(replacedTxids(this.unconfirmed()));
-    return true;
-  }
-
-  private unconfirmed(): Transaction[] {
-    return [...this.txsById.values()].filter((tx) => !tx.status?.confirmed);
-  }
-
-  private dropWithDescendants(dropped: Set<string>): void {
-    let grew = dropped.size > 0;
-    while (grew) {
-      grew = false;
-      for (const tx of this.unconfirmed().filter((t) => !dropped.has(t.txid) && t.vin?.some((v) => dropped.has(v.txid)))) {
-        dropped.add(tx.txid);
-        grew = true;
-      }
-    }
-    for (const txid of dropped) {
-      this.txsById.delete(txid);
     }
   }
 
@@ -415,7 +443,7 @@ export class WalletScannerService {
   }
 
   private finish(wallet: WatchWallet, history: HistoryCollector, onProgress: (p: ScanProgress) => void): WalletScanResult | null {
-    if (!history.resolveConflicts()) {
+    if (!resolveConflicts(history.txsById)) {
       return null;
     }
     const txs = sortNewestFirst([...history.txsById.values()]);
