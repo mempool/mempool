@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
-import { combineLatest, interval, merge, Observable, of, Subject, Subscription, timer } from 'rxjs';
+import { combineLatest, EMPTY, interval, merge, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { catchError, filter, map, retry, scan, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { BlockExtended, OptimizedMempoolStats, TransactionStripped, WalletAddress } from '@interfaces/node-api.interface';
 import { MempoolInfo, ReplacementInfo } from '@interfaces/websocket.interface';
@@ -310,7 +310,8 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
       interval(60 * 60 * 1000)
     ).pipe(
       switchMap(() => apiCall.pipe(
-        retry({ delay: (_, n) => timer(Math.min(60000, n * 5000)) })
+        retry({ count: 3, delay: (_, n) => timer(Math.min(60000, n * 5000)) }),
+        catchError(() => EMPTY)
       ))
     );
   }

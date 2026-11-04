@@ -36,6 +36,11 @@ export class BalanceWidgetComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (this.subscription && this.addressInfo && !changes.addressSummary$ && !changes.address && !changes.isPubkey) {
+      this.total = this.addressInfo.chain_stats.funded_txo_sum - this.addressInfo.chain_stats.spent_txo_sum;
+      this.cd.markForCheck();
+      return;
+    }
     this.isLoading = true;
     if (!this.addressSummary$ && (!this.address || !this.addressInfo)) {
       return;
