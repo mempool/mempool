@@ -248,21 +248,51 @@ class MempoolBlocks {
     }
 
     const transactions = txids.map(txid => newMempool[txid]).filter(tx => tx != null);
+
+    // Don't use shared uid and txid maps on dry runs
+    const uidMap = saveResults ? this.uidMap : new Map<number, string>();
+    const txidMap = saveResults ? this.txidMap : new Map<string, number>();
+    let nextUid = 1;
+    const setUid = (tx: MempoolTransactionExtended): number => {
+      if (saveResults) {
+        return this.setUid(tx, true);
+      }
+      let uid = txidMap.get(tx.txid);
+      if (uid === undefined) {
+        uid = nextUid++;
+        uidMap.set(uid, tx.txid);
+        txidMap.set(tx.txid, uid);
+      }
+      return uid;
+    };
+
     // set missing short ids
     for (const tx of transactions) {
-      this.setUid(tx, !saveResults);
+      setUid(tx);
     }
     // set short ids for transaction inputs
-    for (const tx of transactions) {
-      tx.inputs = tx.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => (uid !== null && uid !== undefined)) as number[];
-    }
+    const rustTransactions: RustThreadTransaction[] = transactions.map(tx => {
+      const inputs = tx.vin.map(v => txidMap.get(v.txid)).filter(uid => uid !== undefined) as number[];
+      if (saveResults) {
+        tx.inputs = inputs;
+        return tx as RustThreadTransaction;
+      }
+      return {
+        uid: setUid(tx),
+        order: tx.order,
+        fee: tx.fee,
+        weight: tx.weight,
+        sigops: tx.sigops,
+        effectiveFeePerVsize: tx.effectiveFeePerVsize,
+        inputs,
+      };
+    });
 
     const accelerations = useAccelerations ? mempool.getAccelerations() : {};
     const acceleratedList = accelerationPool ? Object.values(accelerations).filter(acc => newMempool[acc.txid] && acc.pools.includes(accelerationPool)) : Object.values(accelerations).filter(acc => newMempool[acc.txid]);
     const convertedAccelerations = acceleratedList.map(acc => {
-      this.setUid(newMempool[acc.txid], true);
       return {
-        uid: this.getUid(newMempool[acc.txid]),
+        uid: setUid(newMempool[acc.txid]),
         delta: acc.feeDelta,
       };
     });
@@ -271,7 +301,8 @@ class MempoolBlocks {
     const rustGbt = saveResults ? this.rustGbtGenerator : new GbtGenerator(config.MEMPOOL.BLOCK_WEIGHT_UNITS, config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT);
     try {
       const { blocks, blockWeights, rates, clusters, overflow } = this.convertNapiResultTxids(
-        await rustGbt.make(transactions as RustThreadTransaction[], convertedAccelerations as RustThreadAcceleration[], this.nextUid),
+        await rustGbt.make(rustTransactions, convertedAccelerations, saveResults ? this.nextUid : nextUid),
+        uidMap,
       );
       if (saveResults) {
         this.rustInitialized = true;
@@ -742,10 +773,10 @@ class MempoolBlocks {
     return { blocks: convertedBlocks, rates: convertedRates, clusters: convertedClusters } as { blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }};
   }
 
-  private convertNapiResultTxids({ blocks, blockWeights, rates, clusters, overflow }: GbtResult)
+  private convertNapiResultTxids({ blocks, blockWeights, rates, clusters, overflow }: GbtResult, uidMap: Map<number, string> = this.uidMap)
     : { blocks: string[][], blockWeights: number[], rates: [string, number][], clusters: string[][], overflow: string[] } {
     const convertedBlocks: string[][] = blocks.map(block => block.map(uid => {
-      const txid = this.uidMap.get(uid);
+      const txid = uidMap.get(uid);
       if (txid !== undefined) {
         return txid;
       } else {
@@ -754,15 +785,15 @@ class MempoolBlocks {
     }));
     const convertedRates: [string, number][] = [];
     for (const [rateUid, rate] of rates) {
-      const rateTxid = this.uidMap.get(rateUid) as string;
+      const rateTxid = uidMap.get(rateUid) as string;
       convertedRates.push([rateTxid, rate]);
     }
     const convertedClusters: string[][] = [];
     for (const cluster of clusters) {
-      convertedClusters.push(cluster.map(uid => this.uidMap.get(uid)) as string[]);
+      convertedClusters.push(cluster.map(uid => uidMap.get(uid)) as string[]);
     }
     const convertedOverflow: string[] = overflow.map(uid => {
-      const txid = this.uidMap.get(uid);
+      const txid = uidMap.get(uid);
       if (txid !== undefined) {
         return txid;
       } else {
