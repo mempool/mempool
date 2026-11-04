@@ -219,10 +219,8 @@ export class WalletSessionService implements OnDestroy {
         this.queuedForChain = false;
         this.refreshQueuedByLive = false;
       }
-      if (!replayed) {
-        this.queueRefresh('chain');
-      }
-      // Their follow-up refresh is still due, as after any refresh.
+      // Their follow-up refresh is still due, as after any refresh; it also reconciles updates
+      // that could not be replayed.
       this.liveRefreshWanted = updates.length > 0;
       this.storeView(buildWalletView(wallet, replayed ?? txs, truncated));
       this.storeCache(wallet.id, truncated ? undefined : tip, txs);
@@ -473,7 +471,8 @@ export class WalletSessionService implements OnDestroy {
       }
       const replayed = this.replay(txs, this.updatesFor(merged));
       if (!replayed) {
-        this.queueRefresh('chain');
+        // Reconciled by the live refresh, no sooner than LIVE_REFRESH_INTERVAL_MS after this scan.
+        this.liveRefreshWanted = true;
       }
       this.storeView(buildWalletView(merged, replayed ?? txs, truncated));
       this.storeCache(merged.id, truncated || gapLimitChanged ? undefined : tip, txs);
@@ -510,7 +509,9 @@ export class WalletSessionService implements OnDestroy {
       return;
     }
     const id = view.wallet.id;
-    const addresses = trackedAddresses(view.wallet);
+    // A truncated history isn't refreshed automatically, so it couldn't reconcile live updates
+    // the server doesn't report, such as evictions.
+    const addresses = view.truncated ? [] : trackedAddresses(view.wallet);
     const refused = addresses.length > 0 && this.refused.has(id);
     this.tracker.track(refused ? [] : addresses, {
       onUpdate: (update) => this.onLiveUpdate(id, update),
@@ -537,8 +538,8 @@ export class WalletSessionService implements OnDestroy {
       this.scheduleLiveRefresh();
     }
     const transactions = applyLiveUpdate(view.transactions, update.added, update.removed);
+    // A conflict it can't resolve waits for the live refresh scheduled above.
     if (!transactions) {
-      this.onChainChange();
       return;
     }
     const updated = buildWalletView(view.wallet, transactions, view.truncated);

@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { filter, Subscription } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 import { WebsocketService } from '@app/services/websocket.service';
 import { Transaction } from '@interfaces/electrs.interface';
@@ -60,9 +60,10 @@ export class WalletTrackerService implements OnDestroy {
     }
     this.tracked = key;
     this.callbacks = callbacks;
-    this.websocketService.startTrackAddresses(addresses);
+    const request = this.websocketService.startTrackAddresses(addresses);
     const mine = new Set(addresses);
-    this.trackingSubscription.add(this.stateService.trackAddressesError$.subscribe(() => {
+    // Only this request's refusal: one for an earlier selection can arrive after a switch.
+    this.trackingSubscription.add(this.stateService.trackAddressesError$.pipe(filter((refused) => refused === request)).subscribe(() => {
       const refused = this.callbacks;
       // Also keeps the websocket service from replaying the refused request on reconnect.
       this.stop();
