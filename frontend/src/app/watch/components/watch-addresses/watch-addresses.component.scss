@@ -1,0 +1,27 @@
+.address-title { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.address-summary { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .45rem 1rem; color: var(--transparent-fg); font-size: .8rem; }
+.address-summary strong { color: var(--fg); font-variant-numeric: tabular-nums; }
+.explorer-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; margin-bottom: .75rem; }
+.explorer-controls .form-select { width: auto; }
+.address-cell { font-family: monospace; overflow-wrap: anywhere; }
+.used-address .address-cell > a { color: var(--transparent-fg); }
+.path-cell { color: var(--transparent-fg); font-family: monospace; white-space: nowrap; }
+.balance-cell { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.zero-balance { color: var(--transparent-fg); }
+.status-dot {
+  display: inline-block;
+  width: .6rem;
+  height: .6rem;
+  margin-right: .4rem;
+  border: 1px solid var(--fg);
+  border-radius: 50%;
+  vertical-align: middle;
+  &.used { border-color: var(--transparent-fg); background: var(--transparent-fg); }
+  &.unknown { border-style: dashed; border-color: var(--transparent-fg); }
+}
+@media (max-width: 767.98px) {
+  .address-title { align-items: flex-start; flex-direction: column; }
+  .address-summary { justify-content: flex-start; }
+}
+// The global stylesheet removes outlines, so keyboard focus gets a ring of its own.
+a:focus-visible { border-radius: .2rem; box-shadow: 0 0 0 2px var(--info); }

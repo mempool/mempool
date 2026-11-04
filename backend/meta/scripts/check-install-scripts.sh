@@ -11,8 +11,7 @@ set -euo pipefail
 
 BACKEND_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 LOCKFILE="${BACKEND_DIR}/package-lock.json"
-RUST_GBT_DIR="${BACKEND_DIR}/../rust/gbt"
-TMP_AUDIT_DIR=""
+RUST_GBT_LOCKFILE="${BACKEND_DIR}/../rust/gbt/napi-cli/package-lock.json"
 
 BACKEND_ALLOWED=(
   "mempool-backend"
@@ -33,14 +32,6 @@ is_allowed() {
   done
   return 1
 }
-
-cleanup() {
-  if [[ -n "${TMP_AUDIT_DIR}" && -d "${TMP_AUDIT_DIR}" ]]; then
-    rm -rf "${TMP_AUDIT_DIR}"
-  fi
-}
-
-trap cleanup EXIT
 
 collect_has_install_script_packages() {
   local lockfile="$1"
@@ -89,61 +80,11 @@ audit_lockfile() {
   echo "OK: All ${label} install scripts are from whitelisted packages."
 }
 
-get_rust_gbt_napi_cli_version() {
-  local rust_gbt_package_json="${RUST_GBT_DIR}/package.json"
-  if [[ ! -f "$rust_gbt_package_json" ]]; then
-    echo "No rust/gbt package.json found at ${rust_gbt_package_json}"
-    return 1
-  fi
-
-  RUST_GBT_PACKAGE_JSON="$rust_gbt_package_json" node - <<'NODE'
-const fs = require('fs');
-
-const pkg = JSON.parse(fs.readFileSync(process.env.RUST_GBT_PACKAGE_JSON, 'utf8'));
-const buildScript = (pkg.scripts && pkg.scripts.build) || '';
-const match = buildScript.match(/npm install --no-save @napi-rs\/cli@([^\s]+)/);
-
-if (!match) {
-  console.error('Could not determine the @napi-rs/cli version from rust/gbt/package.json.');
-  process.exit(1);
-}
-
-process.stdout.write(match[1]);
-NODE
-}
-
-generate_rust_gbt_audit_lockfile() {
-  local napi_cli_version="$1"
-
-  TMP_AUDIT_DIR="$(mktemp -d "${TMPDIR:-/tmp}/backend-rust-gbt-audit.XXXXXX")"
-  cat > "${TMP_AUDIT_DIR}/package.json" <<EOF
-{
-  "name": "rust-gbt-install-audit",
-  "private": true,
-  "dependencies": {
-    "@napi-rs/cli": "${napi_cli_version}"
-  }
-}
-EOF
-
-  (
-    cd "${TMP_AUDIT_DIR}"
-    npm install --package-lock-only --ignore-scripts --no-audit --no-fund >/dev/null
-  )
-
-  printf '%s\n' "${TMP_AUDIT_DIR}/package-lock.json"
-}
-
 audit_rust_gbt_preinstall_chain() {
-  local napi_cli_version
-  local rust_gbt_lockfile
-
-  napi_cli_version="$(get_rust_gbt_napi_cli_version)"
-  rust_gbt_lockfile="$(generate_rust_gbt_audit_lockfile "${napi_cli_version}")"
   if [[ "${#RUST_GBT_ALLOWED[@]}" -gt 0 ]]; then
-    audit_lockfile "${rust_gbt_lockfile}" "backend preinstall toolchain" "${RUST_GBT_ALLOWED[@]}"
+    audit_lockfile "${RUST_GBT_LOCKFILE}" "backend preinstall toolchain" "${RUST_GBT_ALLOWED[@]}"
   else
-    audit_lockfile "${rust_gbt_lockfile}" "backend preinstall toolchain"
+    audit_lockfile "${RUST_GBT_LOCKFILE}" "backend preinstall toolchain"
   fi
 }
 

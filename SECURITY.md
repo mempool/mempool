@@ -5,6 +5,7 @@
 If you find a security vulnerability, report it privately through one of the following channels:
 
 - [GitHub private vulnerability reporting](https://github.com/mempool/mempool/security/advisories/new)
+- Email: security@mempool.space
 
 Do not report vulnerabilities through public GitHub issues, discussions, or pull requests.
 

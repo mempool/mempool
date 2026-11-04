@@ -1,0 +1,50 @@
+.overview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+.overview-grid.single { grid-template-columns: minmax(0, 1fr); }
+.overview-widget { display: flex; min-width: 0; flex-direction: column; }
+.widget-heading { display: flex; min-height: 2.5rem; align-items: center; justify-content: space-between; }
+.widget-heading h2 { margin: 0; font-size: 1.2rem; }
+.widget-box { flex: 1; min-width: 0; }
+.stat-label { color: var(--transparent-fg); font-size: .78rem; letter-spacing: .03em; text-transform: uppercase; }
+
+.balance-values {
+  display: grid;
+  grid-template-columns: 8rem max-content max-content;
+  align-items: baseline;
+  gap: .7rem 1rem;
+  margin-bottom: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+.balance-value-row { display: contents; }
+.balance-value-row.zero-balance { color: var(--transparent-fg); }
+.balance-btc, .balance-fiat { padding-left: .7em; text-align: right; white-space: nowrap; }
+.balance-btc { font-size: 1.65rem; font-weight: 600; line-height: 1.15; }
+.balance-fiat { color: var(--transparent-fg); font-size: .9rem; }
+.signed { position: relative; display: inline-block; }
+.sign { position: absolute; right: 100%; padding-right: .05em; }
+.balance-history { min-height: 18rem; padding-top: .75rem; border-top: 1px solid var(--stat-box-bg); }
+.wallet-state-loading { display: flex; min-height: 12rem; flex-direction: column; align-items: center; justify-content: center; gap: .5rem; color: var(--transparent-fg); }
+
+.receive-section { display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
+.receive-copy { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: .8rem; }
+.address-line { display: flex; align-items: center; gap: .35rem; min-width: 0; }
+.next-address, .receive-path { font-family: monospace; }
+.next-address { overflow-wrap: anywhere; }
+.receive-path { color: var(--transparent-fg); font-size: .78rem; }
+.receive-qr { flex: 0 0 auto; padding: .5rem; border-radius: .35rem; background: #fff; line-height: 0; }
+
+.recent-table td { vertical-align: middle; }
+.recent-table .txid { font-family: monospace; }
+.recent-table .when { color: var(--transparent-fg); white-space: nowrap; }
+.recent-table .value { white-space: nowrap; }
+
+@media (max-width: 991.98px) { .overview-grid { grid-template-columns: 1fr; } }
+@media (max-width: 767.98px) {
+  .receive-section { align-items: flex-start; flex-direction: column; }
+  .receive-qr { align-self: center; }
+  .balance-values { grid-template-columns: max-content max-content; row-gap: .15rem; }
+  .balance-values .stat-label { grid-column: 1 / -1; }
+  .balance-value-row + .balance-value-row .stat-label { margin-top: .55rem; }
+  .balance-btc { font-size: 1.3rem; }
+}
+// The global stylesheet removes outlines, so keyboard focus gets a ring of its own.
+a:focus-visible { border-radius: .2rem; box-shadow: 0 0 0 2px var(--info); }

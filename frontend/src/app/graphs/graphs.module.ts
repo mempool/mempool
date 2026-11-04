@@ -38,12 +38,12 @@ import { BlockHealthGraphComponent } from '@components/block-health-graph/block-
 import { AddressComponent } from '@components/address/address.component';
 import { WalletComponent } from '@components/wallet/wallet.component';
 import { WalletPreviewComponent } from '@components/wallet/wallet-preview.component';
-import { AddressGraphComponent } from '@components/address-graph/address-graph.component';
+import { AddressGraphModule } from '@components/address-graph/address-graph.module';
 import { TreasuriesGraphComponent } from '@components/treasuries/treasuries-graph/treasuries-graph.component';
 import { TreasuriesPieComponent } from '@components/treasuries/treasuries-pie/treasuries-pie.component';
 import { TreasuriesSupplyComponent } from '@components/treasuries/supply/treasuries-supply.component';
 import { TreasuriesVerifyProgressComponent } from '@components/treasuries/verify/treasuries-verify.component';
-import { UtxoGraphComponent } from '@components/utxo-graph/utxo-graph.component';
+import { UtxoGraphModule } from '@components/utxo-graph/utxo-graph.module';
 import { ActiveAccelerationBox } from '@components/acceleration/active-acceleration-box/active-acceleration-box.component';
 import { AddressesTreemap } from '@components/addresses-treemap/addresses-treemap.component';
 import { TaprootAddressScriptsModule } from '@components/taproot-address-scripts/taproot-address-scripts.module';
@@ -87,12 +87,10 @@ import { CommonModule } from '@angular/common';
     HashrateChartComponent,
     HashrateChartPoolsComponent,
     BlockHealthGraphComponent,
-    AddressGraphComponent,
     TreasuriesGraphComponent,
     TreasuriesPieComponent,
     TreasuriesSupplyComponent,
     TreasuriesVerifyProgressComponent,
-    UtxoGraphComponent,
     ActiveAccelerationBox,
     AddressesTreemap,
   ],
@@ -100,6 +98,8 @@ import { CommonModule } from '@angular/common';
     CommonModule,
     SharedModule,
     TaprootAddressScriptsModule,
+    AddressGraphModule,
+    UtxoGraphModule,
     GraphsRoutingModule,
     NgxEchartsModule.forRoot({
       echarts: () => import('@app/graphs/echarts').then(m => m.echarts),

@@ -1,0 +1,92 @@
+<section class="overview-widget">
+  <div class="widget-heading">
+    <h2 i18n="watch.balance">Balance</h2>
+  </div>
+  <div class="box widget-box">
+    <ng-container *ngIf="view; else loading">
+      <!-- One grid for both rows so the digits line up; the sign hangs left of its number. -->
+      <div class="balance-values">
+        <div class="balance-value-row">
+          <span class="stat-label" i18n="watch.confirmed">Confirmed</span>
+          <span class="balance-btc"><span class="signed">
+            <app-amount [satoshis]="view.balance.confirmed" [forceBtc]="true" [ignoreViewMode]="true" [noFiat]="true"></app-amount>
+          </span></span>
+          <span class="balance-fiat"><span class="signed"><app-fiat [value]="view.balance.confirmed"></app-fiat></span></span>
+        </div>
+        <div class="balance-value-row" [class.text-success]="view.balance.pending > 0" [class.text-danger]="view.balance.pending < 0" [class.zero-balance]="view.balance.pending === 0">
+          <span class="stat-label" i18n="watch.in-mempool">In mempool</span>
+          <span class="balance-btc"><span class="signed">
+            <span class="sign">{{ pendingSign }}</span>
+            <app-amount [satoshis]="pendingMagnitude" [forceBtc]="true" [ignoreViewMode]="true" [noFiat]="true"></app-amount>
+          </span></span>
+          <span class="balance-fiat"><span class="signed">
+            <span class="sign">{{ pendingSign }}</span>
+            <app-fiat [value]="pendingMagnitude"></app-fiat>
+          </span></span>
+        </div>
+      </div>
+      <div class="balance-history">
+        <app-address-graph *ngIf="view.history.length; else noHistory" [addressSummary$]="history$" period="all" left="80"></app-address-graph>
+        <ng-template #noHistory><p class="text-muted mb-0" i18n="watch.no-history">No balance history yet.</p></ng-template>
+      </div>
+    </ng-container>
+    <ng-template #loading>
+      <p class="text-muted mb-0" *ngIf="!state.scanning && state.error; else scanning" i18n="watch.load-failed-try-again">The wallet could not be loaded. Try again, or change or forget it in Settings.</p>
+    </ng-template>
+    <ng-template #scanning>
+      <div class="wallet-state-loading">
+        <div role="status" aria-live="polite"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>{{ loadingTitle }}</div>
+        <app-watch-scan-status *ngIf="state.progress as progress" [progress]="progress"></app-watch-scan-status>
+      </div>
+    </ng-template>
+  </div>
+</section>
+
+<div class="overview-grid" [class.single]="isAddressList" *ngIf="view">
+  <section class="overview-widget" *ngIf="!isAddressList">
+    <div class="widget-heading">
+      <h2 i18n="watch.receive">Receive</h2>
+      <button class="btn btn-sm btn-link" type="button" (click)="openTab.emit('addresses')" i18n="watch.all-addresses">All addresses</button>
+    </div>
+    <div class="box widget-box">
+      <div class="receive-section" *ngIf="receive">
+        <div class="receive-copy">
+          <div class="stat-label" i18n="watch.next-address">Next unused receive address</div>
+          <div class="address-line">
+            <a [routerLink]="['/address/' | relativeUrl, receive.address]" class="next-address">{{ receive.address }}</a>
+            <app-clipboard [text]="receive.address" [leftPadding]="false"></app-clipboard>
+          </div>
+          <div class="receive-path" *ngIf="receivePath">{{ receivePath }}</div>
+          <button class="btn btn-sm btn-secondary" type="button" (click)="session.useNextReceiveAddress()"
+                  [disabled]="!hasNextReceive" i18n="watch.receive.advance">Use next address</button>
+        </div>
+        <div class="receive-qr"><app-qrcode [size]="170" [data]="receive.address"></app-qrcode></div>
+      </div>
+      <p class="text-muted mb-0" *ngIf="view.truncated" i18n="watch.receive.unavailable-truncated">Receive address unavailable: this wallet's history is incomplete, so the next unused address is not known.</p>
+    </div>
+  </section>
+
+  <section class="overview-widget">
+    <div class="widget-heading">
+      <h2 i18n="watch.recent-transactions">Recent transactions</h2>
+      <button class="btn btn-sm btn-link" type="button" (click)="openTab.emit('transactions')" i18n="watch.all-transactions">All transactions</button>
+    </div>
+    <div class="box widget-box">
+      <p class="text-muted mb-0" *ngIf="!recent.length" i18n="watch.no-transactions">No transactions yet.</p>
+      <table class="table table-borderless table-sm recent-table mb-0" *ngIf="recent.length">
+        <tbody>
+          <tr *ngFor="let item of recent; trackBy: trackByTxid">
+            <td class="txid"><a [routerLink]="['/tx/' | relativeUrl, item.tx.txid]">{{ item.tx.txid | shortenString : 16 }}</a></td>
+            <td class="when">
+              <app-time *ngIf="item.tx.status?.confirmed" kind="since" [time]="item.tx.status.block_time" [fastRender]="true"></app-time>
+              <span *ngIf="!item.tx.status?.confirmed" class="badge bg-warning" i18n="watch.unconfirmed">Unconfirmed</span>
+            </td>
+            <td class="text-end value" [class.text-success]="item.value > 0" [class.text-danger]="item.value < 0">
+              <app-amount [satoshis]="item.value" [addPlus]="true" [noFiat]="true"></app-amount>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

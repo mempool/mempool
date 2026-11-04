@@ -1,0 +1,53 @@
+<div class="import">
+  <div class="import-cancel" *ngIf="state.adding">
+    <button type="button" class="btn btn-sm btn-secondary" (click)="session.cancelAdding()" [disabled]="state.scanning" i18n="watch.cancel">Cancel</button>
+  </div>
+
+  <form (ngSubmit)="import()">
+    <div class="mb-3">
+      <label for="watch-label" i18n="watch.wallet-name">Wallet name</label>
+      <input id="watch-label" name="label" type="text" class="form-control" [attr.maxlength]="60" autocomplete="off"
+             [(ngModel)]="label" (ngModelChange)="session.clearError()" [disabled]="state.scanning">
+    </div>
+
+    <div class="mb-3">
+      <label for="watch-key" i18n="watch.wallet-source">Wallet descriptor, address list or extended public key</label>
+      <textarea id="watch-key" name="key" class="form-control" rows="4" spellcheck="false" autocomplete="off"
+                [(ngModel)]="keyInput" (ngModelChange)="session.clearError()" [disabled]="state.scanning"
+                placeholder="wpkh([…]xpub…/<0;1>/*), one address per line, or zpub…" i18n-placeholder="watch.source-placeholder"></textarea>
+      <small class="form-text detected-hint" *ngIf="detectedInput">
+        <ng-container i18n="watch.detected">Detected:</ng-container>&nbsp;<strong>{{ detectedInput }}</strong>
+      </small>
+    </div>
+
+    <div class="mb-3" *ngIf="needsScriptTypeHint">
+      <label for="watch-script" i18n="watch.script-type">Address type</label>
+      <select id="watch-script" name="scriptType" class="form-select" [(ngModel)]="scriptTypeHint" [disabled]="state.scanning">
+        <option *ngFor="let t of scriptTypes" [value]="t.value">{{ t.label }} ({{ t.path }})</option>
+      </select>
+      <small class="form-text text-muted" i18n="watch.script-type-help">An xpub does not say which address type it uses.</small>
+    </div>
+
+    <button type="submit" class="btn btn-primary" *ngIf="canLoad || state.scanning" [disabled]="state.scanning">
+      <ng-container *ngIf="!state.scanning" i18n="watch.load-button">Load wallet</ng-container>
+      <ng-container *ngIf="state.scanning">
+        <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+        <ng-container [ngSwitch]="state.progress?.phase">
+          <ng-container *ngSwitchCase="'deriving'" i18n="watch.deriving">Deriving addresses…</ng-container>
+          <ng-container *ngSwitchCase="'fetching'" i18n="watch.fetching">Loading history…</ng-container>
+          <ng-container *ngSwitchDefault i18n="watch.starting">Starting…</ng-container>
+        </ng-container>
+      </ng-container>
+    </button>
+
+    <p class="text-muted mt-2 mb-0" *ngIf="state.scanning && state.progress as progress">
+      <app-watch-scan-status [progress]="progress"></app-watch-scan-status>
+    </p>
+  </form>
+
+  <div class="alert alert-danger mt-3 mb-0" *ngIf="state.error">{{ state.error }}</div>
+
+  <p class="privacy-note" i18n="watch.privacy-note">
+    Addresses are derived in your browser and your key is never sent. Balances are requested in batches, so the server can tell the addresses belong to one wallet.
+  </p>
+</div>

@@ -64,7 +64,6 @@ interface IConfig {
   LIGHTNING: {
     ENABLED: boolean;
     BACKEND: 'lnd' | 'cln' | 'ldk';
-    TOPOLOGY_FOLDER: string;
     STATS_REFRESH_INTERVAL: number;
     GRAPH_REFRESH_INTERVAL: number;
     LOGGER_UPDATE_INTERVAL: number;
@@ -289,7 +288,6 @@ const defaults: IConfig = {
   'LIGHTNING': {
     'ENABLED': false,
     'BACKEND': 'lnd',
-    'TOPOLOGY_FOLDER': '',
     'STATS_REFRESH_INTERVAL': 600,
     'GRAPH_REFRESH_INTERVAL': 600,
     'LOGGER_UPDATE_INTERVAL': 30,

@@ -103,6 +103,11 @@
           <div class="svg-wrapper"><app-svg-images name="nav-chart-area" width="21.59" height="100%"></app-svg-images></div>
         </a>
       </li>
+      <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" id="btn-wallet" *ngIf="stateService.env.WALLET_NAV_ENABLED && (walletAvailable$ | async) && walletRunsOn(stateService.network)">
+        <a class="nav-link" [routerLink]="['/wallet' | relativeUrl]" (click)="collapse()" aria-label="Wallet" i18n-aria-label="master-page.wallet">
+          <div class="svg-wrapper"><app-svg-images name="nav-wallet" width="21.59" height="100%"></app-svg-images></div>
+        </a>
+      </li>
       <li class="nav-item" routerLinkActive="active" id="btn-faucet" *ngIf="stateService.isMempoolSpaceBuild && stateService.env.OFFICIAL_MEMPOOL_SPACE && stateService.network === 'testnet4'">
         <a class="nav-link" [routerLink]="['/faucet' | relativeUrl]" (click)="collapse()">
           <div class="svg-wrapper"><app-svg-images name="nav-faucet-drip" width="21.59" height="100%"></app-svg-images></div>
