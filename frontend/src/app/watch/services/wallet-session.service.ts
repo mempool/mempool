@@ -95,6 +95,8 @@ export class WalletSessionService implements OnDestroy {
   private generation = 0;
   private mempoolNetwork: string | null = null;
   private refreshQueued = false;
+  /** The queued refresh only answers new blocks, so a truncated wallet can skip it. */
+  private queuedForChain = false;
   private visibilitySubscription: Subscription;
 
   constructor(
@@ -123,6 +125,7 @@ export class WalletSessionService implements OnDestroy {
     }
     this.mempoolNetwork = mempoolNetwork;
     this.refreshQueued = false;
+    this.queuedForChain = false;
     this.views.clear();
     this.scannedAt.clear();
     this.caches.clear();
@@ -333,14 +336,28 @@ export class WalletSessionService implements OnDestroy {
   }
 
   private onChainChange(): void {
+    // Queued during a scan, the block is weighed against the scan's result (runQueuedRefresh):
+    // the view shown now may be about to be replaced by a complete one.
     if (this.state.scanning || this.state.adding || document.hidden) {
+      this.queuedForChain = this.queuedForChain || !this.refreshQueued;
       this.refreshQueued = true;
-    } else {
-      void this.refreshActive(true);
+      return;
     }
+    // A truncated history is already incomplete, and rescanning it takes longer than a block
+    // interval: refreshing on every block would keep the wallet scanning without pause.
+    if (this.state.view?.truncated) {
+      return;
+    }
+    void this.refreshActive(true);
   }
 
   private runQueuedRefresh(): void {
+    // Only once the scan is over: until then the view shown may be about to be replaced.
+    if (this.refreshQueued && this.queuedForChain && !this.state.scanning && this.state.view?.truncated) {
+      this.refreshQueued = false;
+      this.queuedForChain = false;
+      return;
+    }
     if (this.refreshQueued && !this.state.adding && !this.state.scanning && !document.hidden && this.activeWallet) {
       void this.refreshActive(true);
     }
@@ -352,6 +369,7 @@ export class WalletSessionService implements OnDestroy {
       return;
     }
     this.refreshQueued = false;
+    this.queuedForChain = false;
     const tip = this.tracker.tip;
     const cache = incremental ? this.caches.get(wallet.id) : undefined;
     this.caches.delete(wallet.id);
@@ -381,6 +399,7 @@ export class WalletSessionService implements OnDestroy {
         gapLimitChanged = current.gapLimit !== scanned.gapLimit;
         if (gapLimitChanged) {
           this.refreshQueued = true;
+          this.queuedForChain = false;
         }
       }
       this.storeView(buildWalletView(merged, txs, truncated));
