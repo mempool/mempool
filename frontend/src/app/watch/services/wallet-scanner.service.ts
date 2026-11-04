@@ -341,6 +341,29 @@ export class WalletScannerService {
     return { ...options, queue: this.addressRequestQueue.queue };
   }
 
+  /** One request; a full page can hide an address's history, so the others are then asked for one tx each. */
+  async addressesWithHistory(addresses: string[], options: RetryOptions = {}): Promise<Set<string>> {
+    const wanted = new Set(addresses);
+    const used = new Set<string>();
+    const read = async (batch: string[], maxTxs: number): Promise<number> => {
+      const page = await withRetry(() => firstValueFrom(this.electrsApiService.getAddressesTransactions$(batch, undefined, maxTxs)), this.queued(options)) || [];
+      for (const tx of page) {
+        for (const address of [...(tx.vin || []).map((vin) => vin.prevout?.scriptpubkey_address), ...(tx.vout || []).map((vout) => vout.scriptpubkey_address)]) {
+          if (address && wanted.has(address)) {
+            used.add(address);
+          }
+        }
+      }
+      return page.length;
+    };
+    if (await read(addresses, PAGE_SIZE) >= PAGE_SIZE) {
+      for (const address of addresses.filter((a) => !used.has(a))) {
+        await read([address], 1);
+      }
+    }
+    return used;
+  }
+
   async scan(request: WalletScanRequest): Promise<WalletScanResult> {
     return await this.scanOnce(request) ?? this.rescan(request);
   }

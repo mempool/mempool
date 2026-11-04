@@ -6,9 +6,11 @@ import { hash as sha256 } from '@app/shared/sha256';
 import { AddressDecoder, parseAddressList } from '@app/watch/address-list';
 import { DescriptorDeriver, DescriptorKey, descriptorMatchesNetwork, formatOriginPath, keyFingerprint, parseDescriptor } from '@app/watch/descriptor';
 import {
+  BARE_KEY_SCRIPT_TYPES,
   Base58CheckCodec,
   buildDescriptor,
   containsPrivateKey,
+  isBareExtendedKey,
   keyMatchesNetwork,
   looksLikeDescriptor,
   looksLikeExtendedKey,
@@ -33,6 +35,11 @@ export interface PreparedInput {
 export interface AddressScript {
   address: string;
   scriptPubKey: string;
+}
+
+export interface ScriptCandidate {
+  scriptType: ScriptType;
+  address: string;
 }
 
 // Yield to the page after this many ms of derivation.
@@ -174,4 +181,20 @@ export function validateAddressList(input: string, network: WatchNetwork): Addre
   // Checked first because a bad entry is quoted back in the error message.
   rejectPrivateKeys(input);
   return parseAddressList(input, network, decodeAddress);
+}
+
+/** Receive address 0 of a bare xpub/tpub under each script type it may use; empty for other input. */
+export function scriptCandidates(rawInput: string, network: WatchNetwork): ScriptCandidate[] {
+  const input = rawInput.trim();
+  if (!isBareExtendedKey(input)) {
+    return [];
+  }
+  const norm = normalizeExtendedKey(input, b58check);
+  if (!keyMatchesNetwork(norm.keyNetwork, network)) {
+    throw new InputError('key-network', { keyNetwork: norm.keyNetwork, network: network });
+  }
+  return BARE_KEY_SCRIPT_TYPES.map((scriptType) => ({
+    scriptType,
+    address: getDeriver(buildDescriptor(norm.xpub, scriptType)).addressAt(network, 0, 0).address,
+  }));
 }

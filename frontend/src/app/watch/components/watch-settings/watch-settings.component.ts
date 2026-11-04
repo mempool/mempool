@@ -3,9 +3,9 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { StateService } from '@app/services/state.service';
 import { DEFAULT_GAP_LIMIT, MAX_GAP_LIMIT, MIN_GAP_LIMIT, WalletSessionService } from '@app/watch/services/wallet-session.service';
 import { accountPath } from '@app/watch/wallet-math';
-import { multisigName, scriptTypeName } from '@app/watch/script-type-name';
-import { describeScriptType } from '@app/watch/watch-key.utils';
-import { DescriptorWallet, WatchWallet } from '@app/watch/watch.types';
+import { BARE_KEY_SCRIPT_OPTIONS, multisigName, scriptTypeName } from '@app/watch/script-type-name';
+import { describeScriptType, isBareExtendedKey, isBareKeyScriptType } from '@app/watch/watch-key.utils';
+import { DescriptorWallet, ScriptType, WatchWallet } from '@app/watch/watch.types';
 
 @Component({
   selector: 'app-watch-settings',
@@ -23,6 +23,7 @@ export class WatchSettingsComponent implements OnChanges, OnDestroy {
 
   readonly minGapLimit = MIN_GAP_LIMIT;
   readonly maxGapLimit = MAX_GAP_LIMIT;
+  readonly scriptTypes = BARE_KEY_SCRIPT_OPTIONS;
   private forgetModal: NgbModalRef | null = null;
 
   descriptorWallet: DescriptorWallet | null = null;
@@ -32,6 +33,8 @@ export class WatchSettingsComponent implements OnChanges, OnDestroy {
   gapLimit = DEFAULT_GAP_LIMIT;
   scriptType = { name: '', code: '' };
   path: string | undefined;
+  scriptTypeChangeable = false;
+  scriptTypeDraft: ScriptType | null = null;
   networkName = '';
 
   constructor(
@@ -52,6 +55,8 @@ export class WatchSettingsComponent implements OnChanges, OnDestroy {
           name: multisig ? multisigName(multisig.threshold, multisig.keys.length) : scriptTypeName(type),
           code: describeScriptType(type).code,
         };
+        this.scriptTypeChangeable = isBareExtendedKey(this.descriptorWallet.source);
+        this.scriptTypeDraft = isBareKeyScriptType(type) ? type : null;
       }
       this.addressListText = wallet.kind === 'address-list' ? wallet.addresses.map((a) => a.address).join('\n') : '';
       this.path = accountPath(wallet);
@@ -90,6 +95,12 @@ export class WatchSettingsComponent implements OnChanges, OnDestroy {
 
   applyGapLimit(): void {
     this.session.setGapLimit(this.gapLimit);
+  }
+
+  applyScriptType(): void {
+    if (this.scriptTypeDraft) {
+      this.session.changeScriptType(this.scriptTypeDraft);
+    }
   }
 
   confirmForget(dialog: TemplateRef<unknown>): void {
