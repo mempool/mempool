@@ -781,8 +781,8 @@ class WebsocketHandler {
 
     const cpfpUpdatesSent = new Set<string>();
 
-    for (const server of this.webSocketServers) {
-      server.clients.forEach(async (client) => {
+    const clientResults = await Promise.allSettled(this.webSocketServers.flatMap((server) =>
+      Array.from(server.clients, async (client: WebSocket.WebSocket) => {
         if (client.readyState !== WebSocket.OPEN) {
           return;
         }
@@ -1065,7 +1065,13 @@ class WebsocketHandler {
         if (Object.keys(response).length) {
           this.send(client, this.serializeResponse(response));
         }
-      });
+      })
+    ));
+
+    for (const result of clientResults) {
+      if (result.status === 'rejected') {
+        logger.err(`Error sending mempool update to websocket client: ${result.reason instanceof Error ? result.reason.message : result.reason}`);
+      }
     }
 
     for (const txid of cpfpUpdatesSent) {
