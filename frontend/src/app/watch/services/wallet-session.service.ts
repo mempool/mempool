@@ -98,14 +98,6 @@ function errorMessage(e: unknown): string {
   return e instanceof Error ? e.message : String(e);
 }
 
-function validGapLimit(value: number): number {
-  const gapLimit = Number(value);
-  if (!Number.isInteger(gapLimit) || gapLimit < MIN_GAP_LIMIT || gapLimit > MAX_GAP_LIMIT) {
-    throw new Error($localize`:@@watch.gap-limit-invalid:Gap limit must be a whole number from ${MIN_GAP_LIMIT}:min: to ${MAX_GAP_LIMIT}:max:.`);
-  }
-  return gapLimit;
-}
-
 /**
  * State and actions for the /wallet page, provided by WatchComponent. One scan runs at a
  * time; `generation` discards the result of a scan overtaken by a network change. A wallet is
@@ -334,16 +326,10 @@ export class WalletSessionService implements OnDestroy {
     }
   }
 
-  async setGapLimit(value: number): Promise<void> {
+  /** `gapLimit` is validated by Settings, the only caller. */
+  async setGapLimit(gapLimit: number): Promise<void> {
     const wallet = this.activeWallet;
     if (wallet?.kind !== 'descriptor' || this.state.scanning) {
-      return;
-    }
-    let gapLimit: number;
-    try {
-      gapLimit = validGapLimit(value);
-    } catch (e) {
-      this.patch({ error: errorMessage(e) });
       return;
     }
     if (gapLimit === wallet.gapLimit) {
@@ -493,7 +479,6 @@ export class WalletSessionService implements OnDestroy {
       const addresses = await this.derivation.parseAddressList(input, network);
       return { kind: 'address-list', label, network, addresses };
     }
-    const gapLimit = validGapLimit(form.gapLimit);
     const prepared = await this.derivation.prepare(input, network, form.scriptTypeHint);
     return {
       kind: 'descriptor',
@@ -506,7 +491,7 @@ export class WalletSessionService implements OnDestroy {
       originPath: prepared.originPath,
       multisig: prepared.multisig,
       network,
-      gapLimit,
+      gapLimit: form.gapLimit,
     };
   }
 

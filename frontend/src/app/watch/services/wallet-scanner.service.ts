@@ -5,7 +5,7 @@ import { Transaction } from '@interfaces/electrs.interface';
 import { firstValueFrom } from 'rxjs';
 import { hash as sha256 } from '@app/shared/sha256';
 import { RequestCancelledError, RetryOptions, RetryWait, withRetry } from '@app/watch/api-retry';
-import { sortNewestFirst } from '@app/watch/wallet-math';
+import { computeUsage, sortNewestFirst, txAddresses } from '@app/watch/wallet-math';
 import {
   AddressListWallet,
   AddressListWalletDefinition,
@@ -47,7 +47,6 @@ export interface ScanProgress {
   addressesDerived: number;
   txsFound: number;
   apiRequests: number;
-  chain?: Chain;
   retry?: RetryWait;
 }
 
@@ -348,8 +347,8 @@ export class WalletScannerService {
     const read = async (batch: string[], maxTxs: number): Promise<number> => {
       const page = await withRetry(() => firstValueFrom(this.electrsApiService.getAddressesTransactions$(batch, undefined, maxTxs)), this.queued(options)) || [];
       for (const tx of page) {
-        for (const address of [...(tx.vin || []).map((vin) => vin.prevout?.scriptpubkey_address), ...(tx.vout || []).map((vout) => vout.scriptpubkey_address)]) {
-          if (address && wanted.has(address)) {
+        for (const address of txAddresses(tx)) {
+          if (wanted.has(address)) {
             used.add(address);
           }
         }
@@ -479,16 +478,15 @@ export class WalletScannerService {
     const addresses: DerivedAddress[] = scanned ? [...scanned.addresses] : [];
     const byAddress = new Map(addresses.map((a) => [a.address, a]));
 
-    const report = (phase: ScanProgress['phase'], chain: Chain, apiRequests: number): void => onProgress?.({
+    const report = (phase: ScanProgress['phase'], apiRequests: number): void => onProgress?.({
       phase,
       addressesDerived: addresses.length,
       txsFound: history.found(),
-      chain,
       apiRequests,
     });
 
     const extend = async (chain: Chain, count: number): Promise<DerivedAddress[]> => {
-      report('deriving', chain, history.requests);
+      report('deriving', history.requests);
       const from = derivedCount[chain];
       const fresh = await this.derivationService.derive(descriptor, network, chain, from, count, isCancelled);
       derivedCount[chain] = from + count;
@@ -501,27 +499,10 @@ export class WalletScannerService {
 
     const fetchFor = (targets: DerivedAddress[]): Promise<void> => history.fetch(
       targets.map((a) => a.address),
-      () => report('fetching', targets[0].chain, history.requests + 1),
+      () => report('fetching', history.requests + 1),
     );
 
-    const lastUsedOn = (chain: Chain): number => {
-      let last = -1;
-      const touch = (address?: string): void => {
-        const d = address ? byAddress.get(address) : undefined;
-        if (d && d.chain === chain && d.index > last) {
-          last = d.index;
-        }
-      };
-      for (const tx of history.txsById.values()) {
-        for (const vin of tx.vin || []) {
-          touch(vin.prevout?.scriptpubkey_address);
-        }
-        for (const vout of tx.vout || []) {
-          touch(vout.scriptpubkey_address);
-        }
-      }
-      return last;
-    };
+    const lastUsedOn = (chain: Chain): number => computeUsage([...history.txsById.values()], byAddress).lastUsed[chain];
 
     if (!scanned) {
       const receive = await extend(0, gapLimit);
