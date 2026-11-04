@@ -419,16 +419,26 @@ class NodesApi {
       return this.ispRankingCache.data;
     }
     if (!this.ispRankingQuery) {
-      this.ispRankingQuery = this.$queryNodesISPRanking()
+      const query: Promise<unknown> = this.$queryNodesISPRanking()
         .then((data) => {
-          this.ispRankingCache = { data, expiresAt: Date.now() + 1000 * config.LIGHTNING.GRAPH_REFRESH_INTERVAL };
+          if (this.ispRankingQuery === query) {
+            this.ispRankingCache = { data, expiresAt: Date.now() + 1000 * config.LIGHTNING.GRAPH_REFRESH_INTERVAL };
+          }
           return data;
         })
         .finally(() => {
-          this.ispRankingQuery = null;
+          if (this.ispRankingQuery === query) {
+            this.ispRankingQuery = null;
+          }
         });
+      this.ispRankingQuery = query;
     }
     return this.ispRankingQuery;
+  }
+
+  public invalidateNodesISPRanking(): void {
+    this.ispRankingCache = null;
+    this.ispRankingQuery = null;
   }
 
   private async $queryNodesISPRanking() {
