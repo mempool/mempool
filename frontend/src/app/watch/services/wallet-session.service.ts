@@ -137,7 +137,8 @@ export class WalletSessionService implements OnDestroy {
           return of(null);
         }
         const check = this.checkHistory(request.input, request.network);
-        return request.now ? check : timer(SCRIPT_TYPE_CHECK_DELAY_MS).pipe(switchMap(() => check));
+        // During the delay the previous input's state is cleared, so it can't be mistaken for this one's.
+        return request.now ? check : timer(SCRIPT_TYPE_CHECK_DELAY_MS).pipe(switchMap(() => check), startWith(null));
       }),
       distinctUntilChanged(),
     ).subscribe((scriptTypeCheck) => this.patch({ scriptTypeCheck }));
@@ -387,6 +388,8 @@ export class WalletSessionService implements OnDestroy {
   ngOnDestroy(): void {
     this.generation++;
     this.visibilitySubscription.unsubscribe();
+    // Cleared first, so an import waiting in checkNow() is released.
+    this.clearScriptTypeCheck();
     this.checkSubscription.unsubscribe();
   }
 
