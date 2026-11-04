@@ -8,7 +8,8 @@
           <button *ngIf="!editingLabel" type="button" class="settings-name" (click)="startRename()" title="Rename" i18n-title="watch.rename">{{ wallet.label }}</button>
           <form class="wallet-rename" *ngIf="editingLabel" (ngSubmit)="saveRename()">
             <input #renameInput name="label" type="text" class="form-control form-control-sm" [(ngModel)]="labelDraft"
-                   (keyup.escape)="editingLabel = false" [attr.maxlength]="60" autocomplete="off">
+                   (keyup.escape)="editingLabel = false" [attr.maxlength]="60" autocomplete="off"
+                   aria-label="Wallet name" i18n-aria-label="watch.wallet-name">
             <button type="submit" class="btn btn-sm btn-primary" i18n="watch.save">Save</button>
             <button type="button" class="btn btn-sm btn-secondary" (click)="editingLabel = false" i18n="watch.cancel">Cancel</button>
           </form>

@@ -101,7 +101,7 @@ function validGapLimit(value: number): number {
 /**
  * State and actions for the /wallet page, provided by WatchComponent. One scan runs at a
  * time; `generation` discards the result of a scan overtaken by a network change. A wallet is
- * scanned in full when it is shown and on Refresh; on a new block or reconnect, only what changed
+ * scanned in full when it is shown; on Check Mempool, a new block or a reconnect, only what changed
  * since its cached history is read, and a hidden tab waits until it is shown again.
  */
 @Injectable()
@@ -114,6 +114,8 @@ export class WalletSessionService implements OnDestroy {
   private generation = 0;
   private mempoolNetwork: string | null = null;
   private refreshQueued = false;
+  /** The queued refresh only answers new blocks, so a truncated wallet can skip it. */
+  private queuedForChain = false;
   private visibilitySubscription: Subscription;
   private checkRun: ScriptTypeCheckRun | null = null;
   private checkTimer: ReturnType<typeof setTimeout> | undefined;
@@ -145,6 +147,7 @@ export class WalletSessionService implements OnDestroy {
     }
     this.mempoolNetwork = mempoolNetwork;
     this.refreshQueued = false;
+    this.queuedForChain = false;
     this.clearScriptTypeCheck();
     this.views.clear();
     this.scannedAt.clear();
@@ -270,6 +273,14 @@ export class WalletSessionService implements OnDestroy {
 
   refresh(): Promise<void> {
     return this.refreshActive();
+  }
+
+  /**
+   * Reads only what changed since the cached history, as on a new block. Without a usable cache
+   * (first scan failed, truncated, or the cached tip left the best chain) this is a full scan.
+   */
+  checkMempool(): Promise<void> {
+    return this.refreshActive(true);
   }
 
   rename(label: string): void {
@@ -504,14 +515,28 @@ export class WalletSessionService implements OnDestroy {
   }
 
   private onChainChange(): void {
+    // Queued during a scan, the block is weighed against the scan's result (runQueuedRefresh):
+    // the view shown now may be about to be replaced by a complete one.
     if (this.state.scanning || this.state.adding || document.hidden) {
+      this.queuedForChain = this.queuedForChain || !this.refreshQueued;
       this.refreshQueued = true;
-    } else {
-      void this.refreshActive(true);
+      return;
     }
+    // A truncated history is already incomplete, and rescanning it takes longer than a block
+    // interval: refreshing on every block would keep the wallet scanning without pause.
+    if (this.state.view?.truncated) {
+      return;
+    }
+    void this.refreshActive(true);
   }
 
   private runQueuedRefresh(): void {
+    // Only once the scan is over: until then the view shown may be about to be replaced.
+    if (this.refreshQueued && this.queuedForChain && !this.state.scanning && this.state.view?.truncated) {
+      this.refreshQueued = false;
+      this.queuedForChain = false;
+      return;
+    }
     if (this.refreshQueued && !this.state.adding && !this.state.scanning && !document.hidden && this.activeWallet) {
       void this.refreshActive(true);
     }
@@ -523,6 +548,7 @@ export class WalletSessionService implements OnDestroy {
       return;
     }
     this.refreshQueued = false;
+    this.queuedForChain = false;
     const tip = this.tracker.tip;
     const cache = incremental ? this.caches.get(wallet.id) : undefined;
     this.caches.delete(wallet.id);
@@ -552,6 +578,7 @@ export class WalletSessionService implements OnDestroy {
         gapLimitChanged = current.gapLimit !== scanned.gapLimit;
         if (gapLimitChanged) {
           this.refreshQueued = true;
+          this.queuedForChain = false;
         }
       }
       this.storeView(buildWalletView(merged, txs, truncated));
