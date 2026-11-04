@@ -1,3 +1,26 @@
+<ng-container *ngIf="!isAddressList">
+  <h2 class="receive-title" i18n="watch.receive">Receive</h2>
+  <div class="box receive-box">
+    <div class="receive-section" *ngIf="receive">
+      <div class="receive-copy">
+        <div class="stat-label" i18n="watch.next-address">Next unused receive address</div>
+        <div class="address-line">
+          <a [routerLink]="['/address/' | relativeUrl, receive.address]" class="next-address">{{ receive.address }}</a>
+          <app-clipboard [text]="receive.address" [leftPadding]="false"></app-clipboard>
+        </div>
+        <div class="receive-path">{{ receivePath }}</div>
+        <div class="receive-actions">
+          <button class="btn btn-sm btn-secondary" type="button" (click)="session.stepReceiveAddress(-1)"
+                  [disabled]="!hasPreviousReceive" i18n="watch.receive.back">Previous address</button>
+          <button class="btn btn-sm btn-secondary" type="button" (click)="session.stepReceiveAddress(1)"
+                  [disabled]="!hasNextReceive" i18n="watch.receive.advance">Use next address</button>
+        </div>
+      </div>
+      <div class="receive-qr"><app-qrcode [size]="170" [data]="receive.address"></app-qrcode></div>
+    </div>
+    <p class="text-muted mb-0" *ngIf="view.truncated" i18n="watch.receive.unavailable-truncated">Receive address unavailable: this wallet's history is incomplete, so the next unused address is not known.</p>
+  </div>
+</ng-container>
 <div class="title-tx address-title">
   <h2 class="text-start" i18n="watch.addresses">Addresses</h2>
   <div class="address-summary" i18n="watch.address-summary">

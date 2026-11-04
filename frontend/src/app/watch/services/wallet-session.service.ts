@@ -402,14 +402,16 @@ export class WalletSessionService implements OnDestroy {
     }
   }
 
-  useNextReceiveAddress(): void {
-    const wallet = this.state.view?.wallet;
+  /** Moves the receive address one step, never back past the first unused address after the last used one. */
+  stepReceiveAddress(step: 1 | -1): void {
+    const view = this.state.view;
+    const wallet = view?.wallet;
     if (wallet?.kind !== 'descriptor') {
       return;
     }
-    const next = currentReceiveIndex(wallet, this.state.view.lastUsed) + 1;
-    if (wallet.addresses.some((a) => a.chain === 0 && a.index === next)) {
-      this.updateWallet({ ...wallet, receiveIndex: next });
+    const index = currentReceiveIndex(wallet, view.lastUsed) + step;
+    if (index > view.lastUsed[0] && wallet.addresses.some((a) => a.chain === 0 && a.index === index)) {
+      this.updateWallet({ ...wallet, receiveIndex: index });
     }
   }
 
