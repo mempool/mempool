@@ -102,6 +102,27 @@
     margin: 0;
   }
 
+  .payjoin-disclaimer {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--info) 35%, transparent);
+    border-radius: 0.25rem;
+    background: color-mix(in srgb, var(--info) 10%, transparent);
+    font-size: 0.875rem;
+
+    fa-icon {
+      flex: none;
+      color: var(--info);
+    }
+
+    strong {
+      font-weight: 600;
+    }
+  }
+
   app-amount {
     display: inline-block;
   }

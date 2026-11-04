@@ -221,6 +221,10 @@
         <p i18n="transaction.payjoin-actual-amount|Payjoin identification and actual amount received">
           This transaction is claimed as a Payjoin. Actual amount received: <strong class="payjoin-amount"><app-amount [satoshis]="calculation.actualAmount" [noFiat]="true"></app-amount></strong>
         </p>
+        <p class="payjoin-disclaimer">
+          <fa-icon [icon]="['fas', 'info-circle']" [fixedWidth]="true"></fa-icon>
+          <span i18n="transaction.payjoin-disclaimer|Payjoin calculation is not proof of payment"><strong>Do not trust this Payjoin calculation as proof of payment.</strong> Use it only to visualize which inputs and outputs were used by your wallet. Always check your wallet directly to determine what amount you received.</span>
+        </p>
 
         <details class="payjoin-calculations">
           <summary class="btn btn-outline-info btn-sm payjoin-calculation-toggle">
