@@ -82,7 +82,7 @@ function validGapLimit(value: number): number {
 /**
  * State and actions for the /wallet page, provided by WatchComponent. One scan runs at a
  * time; `generation` discards the result of a scan overtaken by a network change. A wallet is
- * scanned in full when it is shown and on Refresh; on a new block or reconnect, only what changed
+ * scanned in full when it is shown; on Check Mempool, a new block or a reconnect, only what changed
  * since its cached history is read, and a hidden tab waits until it is shown again.
  */
 @Injectable()
@@ -196,6 +196,14 @@ export class WalletSessionService implements OnDestroy {
 
   refresh(): Promise<void> {
     return this.refreshActive();
+  }
+
+  /**
+   * Reads only what changed since the cached history, as on a new block. Without a usable cache
+   * (first scan failed, truncated, or the cached tip left the best chain) this is a full scan.
+   */
+  checkMempool(): Promise<void> {
+    return this.refreshActive(true);
   }
 
   rename(label: string): void {
