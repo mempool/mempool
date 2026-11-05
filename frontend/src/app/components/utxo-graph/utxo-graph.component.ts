@@ -405,8 +405,4 @@ export class UtxoGraphComponent implements OnChanges, OnDestroy {
     this.websocketService.stopTrackAccelerations();
     this.accelerationsSubscription.unsubscribe();
   }
-
-  isMobile(): boolean {
-    return (window.innerWidth <= 767.98);
-  }
 }

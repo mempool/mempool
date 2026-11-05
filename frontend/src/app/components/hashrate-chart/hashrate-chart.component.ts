@@ -12,7 +12,7 @@ import { MiningService } from '@app/services/mining.service';
 import { download } from '@app/shared/graphs.utils';
 import { ActivatedRoute } from '@angular/router';
 import { StateService } from '@app/services/state.service';
-import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { seoDescriptionNetwork, isMobile } from '@app/shared/common.utils';
 import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 
 @Component({
@@ -236,7 +236,7 @@ export class HashrateChartComponent implements OnInit {
         left: this.left,
       },
       tooltip: {
-        show: !this.isMobile() || !this.widget,
+        show: !isMobile() || !this.widget,
         trigger: 'axis',
         axisPointer: {
           type: 'line'
@@ -281,7 +281,7 @@ export class HashrateChartComponent implements OnInit {
       },
       xAxis: data.hashrates.length === 0 ? undefined : {
         type: 'time',
-        splitNumber: (this.isMobile() || this.widget) ? 5 : 10,
+        splitNumber: (isMobile() || this.widget) ? 5 : 10,
         axisLabel: {
           hideOverlap: true,
         }
@@ -458,10 +458,6 @@ export class HashrateChartComponent implements OnInit {
     this.chartInstance.on('legendselectchanged', (e) => {
       this.storageService.setValue('hashrate_difficulty_legend', JSON.stringify(e.selected));
     });
-  }
-
-  isMobile() {
-    return (window.innerWidth <= 767.98);
   }
 
   onSaveChart() {
