@@ -23,11 +23,6 @@ export class RequestQueue {
     this.updatedAt = now();
   }
 
-  get available(): number {
-    this.refill();
-    return this.tokens;
-  }
-
   async take(options: QueueOptions = {}): Promise<void> {
     const { isCancelled } = options;
     for (;;) {
