@@ -109,8 +109,9 @@ function validGapLimit(value: number): number {
 /**
  * State and actions for the /wallet page, provided by WatchComponent. One scan runs at a
  * time; `generation` discards the result of a scan overtaken by a network change. A wallet is
- * scanned in full when it is shown; on Check Mempool, a new block or a reconnect, only what changed
- * since its cached history is read, and a hidden tab waits until it is shown again. Between
+ * scanned in full when it is shown, except by switching to an already-saved address type; then,
+ * as on Check Mempool, a new block or a reconnect, only what changed since its cached history is
+ * read, and a hidden tab waits until it is shown again. Between
  * blocks a wallet of up to ten addresses is updated from the websocket. Each burst of updates
  * also queues the incremental refresh, no sooner than LIVE_REFRESH_INTERVAL_MS after the last
  * scan ended, as the websocket does not report every removal; updates that arrive during a
@@ -364,7 +365,6 @@ export class WalletSessionService implements OnDestroy {
     if (old?.kind !== 'descriptor' || this.state.scanning || !network || !isBareExtendedKey(old.source) || old.scriptType === scriptType) {
       return;
     }
-    let existing: WatchWallet | undefined;
     await this.runScan(async (generation) => {
       const definition = await this.toDefinition(
         { input: old.source, label: old.label, gapLimit: old.gapLimit, scriptTypeHint: scriptType },
@@ -374,8 +374,11 @@ export class WalletSessionService implements OnDestroy {
       if (generation !== this.generation) {
         return;
       }
-      existing = this.state.wallets.find((w) => w.id === id);
+      const existing = this.state.wallets.find((w) => w.id === id);
       if (existing) {
+        // Select before this scan ends, so a refresh queued by a block during it runs for this wallet.
+        this.select(existing.id, $localize`:@@watch.script-type-already-saved:This key is already saved with that address type as “${existing.label}:label:”. Showing it.`);
+        this.queueRefresh('settings');
         return;
       }
       const tip = this.tracker.tip;
@@ -397,9 +400,6 @@ export class WalletSessionService implements OnDestroy {
       this.storeCache(wallet.id, truncated ? undefined : tip, txs);
       this.storage.saveActiveId(network, wallet.id);
     });
-    if (existing) {
-      await this.show(existing.id, $localize`:@@watch.script-type-already-saved:This key is already saved with that address type as “${existing.label}:label:”. Showing it.`);
-    }
   }
 
   useNextReceiveAddress(): void {
@@ -547,8 +547,15 @@ export class WalletSessionService implements OnDestroy {
   }
 
   private async show(id: string, notice: string | null): Promise<void> {
-    if (this.state.scanning || !this.state.wallets.some((w) => w.id === id)) {
-      return;
+    if (!this.state.scanning && this.select(id, notice)) {
+      await this.refresh();
+    }
+  }
+
+  /** Activates a saved wallet without refreshing it. Returns false if `id` isn't saved. */
+  private select(id: string, notice: string | null): boolean {
+    if (!this.state.wallets.some((w) => w.id === id)) {
+      return false;
     }
     this.tracker.stop();
     this.cancelLiveRefresh();
@@ -559,7 +566,7 @@ export class WalletSessionService implements OnDestroy {
     if (this.state.network) {
       this.storage.saveActiveId(this.state.network, id);
     }
-    await this.refresh();
+    return true;
   }
 
   private onChainChange(live = false): void {
