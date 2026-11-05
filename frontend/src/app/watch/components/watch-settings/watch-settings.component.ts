@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, TemplateRef, ViewChild } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { StateService } from '@app/services/state.service';
 import { DEFAULT_GAP_LIMIT, MAX_GAP_LIMIT, MIN_GAP_LIMIT, WalletSessionService } from '@app/watch/services/wallet-session.service';
@@ -43,6 +43,7 @@ export class WatchSettingsComponent implements OnChanges, OnDestroy {
     private session: WalletSessionService,
     private stateService: StateService,
     private modalService: NgbModal,
+    private cd: ChangeDetectorRef,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -122,7 +123,10 @@ export class WatchSettingsComponent implements OnChanges, OnDestroy {
     }, () => this.session.changeScriptType(type), () => this.resetScriptType());
   }
 
-  /** The field only proposes a value: it applies once confirmed. Reset after a failed change too, so it never shows a value the wallet doesn't have. */
+  /**
+   * The field only proposes a value: it applies once confirmed. Reset after a failed change too, so it never shows a value the wallet doesn't have.
+   * markForCheck: a dismissal changes no input, so this OnPush view would otherwise keep showing the rejected value.
+   */
   private confirm(dialog: TemplateRef<unknown>, text: { title: string; body: string }, apply: () => Promise<void>, reset: () => void): void {
     this.confirming = text;
     this.modal = this.modalService.open(dialog, { centered: true, ariaLabelledBy: 'watch-confirm-title', windowClass: 'watch-dialog' });
@@ -131,6 +135,7 @@ export class WatchSettingsComponent implements OnChanges, OnDestroy {
       .finally(() => {
         this.modal = null;
         reset();
+        this.cd.markForCheck();
       });
   }
 
