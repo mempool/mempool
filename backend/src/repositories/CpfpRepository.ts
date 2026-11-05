@@ -157,12 +157,11 @@ class CpfpRepository {
         [height]
       ) as RowDataPacket[][];
       if (rows?.length) {
+        const txids: string[] = [];
         for (const clusterToDelete of rows) {
-          const txids = this.extractTxids(clusterToDelete);
-          for (const txid of txids) {
-            await transactionRepository.$removeTransaction(txid);
-          }
+          txids.push(...this.extractTxids(clusterToDelete));
         }
+        await transactionRepository.$removeTransactions(txids);
       }
       await DB.query(
         `
@@ -188,12 +187,11 @@ class CpfpRepository {
         [height]
       ) as RowDataPacket[][];
       if (rows?.length) {
+        const txids: string[] = [];
         for (const clusterToDelete of rows) {
-          const txids = this.extractTxids(clusterToDelete);
-          for (const txid of txids) {
-            await transactionRepository.$removeTransaction(txid);
-          }
+          txids.push(...this.extractTxids(clusterToDelete));
         }
+        await transactionRepository.$removeTransactions(txids);
       }
       await DB.query(
         `
