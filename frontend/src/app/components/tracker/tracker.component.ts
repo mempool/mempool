@@ -86,6 +86,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
   currencyChangeSubscription: Subscription;
   urlFragmentSubscription: Subscription;
   partnerCodeSubscription: Subscription;
+  txConfirmedSubscription: Subscription;
   rbfTransaction: undefined | Transaction;
   replaced: boolean = false;
   latestReplacement: string;
@@ -556,7 +557,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
         }
       );
 
-    this.stateService.txConfirmed$.subscribe(([txConfirmed, block]) => {
+    this.txConfirmedSubscription = this.stateService.txConfirmed$.subscribe(([txConfirmed, block]) => {
       if (txConfirmed && this.tx && !this.tx.status.confirmed && txConfirmed === this.tx.txid) {
         this.tx.status = {
           confirmed: true,
@@ -859,9 +860,9 @@ export class TrackerComponent implements OnInit, OnDestroy {
     this.txReplacedSubscription.unsubscribe();
     this.mempoolBlocksSubscription.unsubscribe();
     this.mempoolPositionSubscription.unsubscribe();
-    this.mempoolBlocksSubscription.unsubscribe();
     this.blocksSubscription.unsubscribe();
     this.miningSubscription?.unsubscribe();
+    this.txConfirmedSubscription?.unsubscribe();
     this.currencyChangeSubscription?.unsubscribe();
     this.enterpriseInfo$?.unsubscribe();
     this.urlFragmentSubscription?.unsubscribe();
