@@ -5,9 +5,9 @@
   </div>
 
   <form [formGroup]="testTxsForm" (submit)="testTxsForm.valid && testTxs()" novalidate>
-    <label for="maxfeerate" i18n="test.tx.raw-hex">Raw hex</label>
+    <label for="rawtxs" i18n="test.tx.raw-hex">Raw hex</label>
     <div class="mb-3">
-      <textarea formControlName="txs" class="form-control" rows="5" i18n-placeholder="transaction.test-transactions" placeholder="Comma-separated list of raw transactions"></textarea>
+      <textarea formControlName="txs" id="rawtxs" class="form-control" rows="5" i18n-placeholder="transaction.test-transactions" placeholder="Comma-separated list of raw transactions"></textarea>
     </div>
     <label for="maxfeerate" i18n="test.tx.max-fee-rate">Maximum fee rate (sat/vB)</label>
     <input type="number" class="form-control input-dark" formControlName="maxfeerate" id="maxfeerate"
