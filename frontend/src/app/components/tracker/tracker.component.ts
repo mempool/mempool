@@ -74,6 +74,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
   latestBlock: BlockExtended;
   transactionTime = -1;
   subscription: Subscription;
+  networkChangedSubscription: Subscription;
   fetchCpfpSubscription: Subscription;
   fetchRbfSubscription: Subscription;
   fetchCachedTxSubscription: Subscription;
@@ -173,7 +174,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
     });
 
     this.websocketService.want(['blocks', 'mempool-blocks']);
-    this.stateService.networkChanged$.subscribe(
+    this.networkChangedSubscription = this.stateService.networkChanged$.subscribe(
       (network) => {
         this.network = network;
         this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
@@ -852,6 +853,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.networkChangedSubscription?.unsubscribe();
     this.subscription.unsubscribe();
     this.fetchCpfpSubscription.unsubscribe();
     this.fetchRbfSubscription.unsubscribe();

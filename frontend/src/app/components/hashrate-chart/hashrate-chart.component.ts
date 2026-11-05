@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, OnDestroy, HostBinding } from '@angular/core';
 import { echarts, EChartsOption } from '@app/graphs/echarts';
-import { combineLatest, fromEvent, merge, Observable, of } from 'rxjs';
+import { combineLatest, fromEvent, merge, Observable, of, Subscription } from 'rxjs';
 import { map, mergeMap, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '@app/services/api.service';
 import { SeoService } from '@app/services/seo.service';
@@ -30,7 +30,7 @@ import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HashrateChartComponent implements OnInit {
+export class HashrateChartComponent implements OnInit, OnDestroy {
   @Input() tableOnly = false;
   @Input() widget = false;
   @Input() height: number = 300;
@@ -53,6 +53,7 @@ export class HashrateChartComponent implements OnInit {
   timespan = '';
   chartInstance: any = undefined;
   network = '';
+  networkChangedSubscription: Subscription;
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -68,7 +69,7 @@ export class HashrateChartComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.networkChangedSubscription = this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     let firstRun = true;
 
@@ -480,5 +481,9 @@ export class HashrateChartComponent implements OnInit {
     this.chartOptions.grid.bottom = prevBottom;
     this.chartOptions.backgroundColor = 'none';
     this.chartInstance.setOption(this.chartOptions);
+  }
+
+  ngOnDestroy(): void {
+    this.networkChangedSubscription?.unsubscribe();
   }
 }
