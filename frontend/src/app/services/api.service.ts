@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { CpfpInfo, OptimizedMempoolStats, AddressInformation, LiquidPegs, ITranslators, PoolStat, BlockExtended, TransactionStripped, RewardStats, AuditScore, BlockSizesAndWeights,
-  RbfTree, BlockAudit, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo, TestMempoolAcceptResult, WalletAddress, Treasury, SubmitPackageResult, ChainTip, StaleTip } from '@interfaces/node-api.interface';
+  RbfTree, BlockAudit, CurrentPegs, AuditStatus, FederationAddress, FederationUtxo, RecentPeg, PegsVolume, AccelerationInfo, TestMempoolAcceptResult, WalletAddress, Treasury, SubmitPackageResult, ChainTip, StaleTip, ScriptTypeTxCounts } from '@interfaces/node-api.interface';
 import { BehaviorSubject, Observable, catchError, filter, map, of, shareReplay, switchMap, take, tap } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 import { Transaction } from '@interfaces/electrs.interface';
@@ -411,6 +411,12 @@ export class ApiService {
     return this.httpClient.get<any[]>(
       this.apiBaseUrl + this.apiBasePath + `/api/v1/goggles/${interval}/${bucketSize}` +
       (op !== undefined && mask !== undefined ? `/${op}/${mask}` : ''), { observe: 'response' }
+    );
+  }
+
+  getHistoricalScriptTypeTxCounts$(interval: string, bucketSize: string): Observable<HttpResponse<ScriptTypeTxCounts[]>> {
+    return this.httpClient.get<ScriptTypeTxCounts[]>(
+      this.apiBaseUrl + this.apiBasePath + `/api/v1/goggles/${interval}/${bucketSize}/script-types`, { observe: 'response' }
     );
   }
 

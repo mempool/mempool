@@ -314,6 +314,16 @@ export interface BlockSizesAndWeights {
   }[];
 }
 
+export type ScriptType = 'p2tr' | 'p2wpkh' | 'p2pkh' | 'p2sh' | 'p2wsh' | 'p2ms' | 'p2pk';
+
+export interface ScriptTypeTxCounts {
+  startHeight: number;
+  avgTimestamp: number;
+  txCount: number;
+  vSizeTotal: number;
+  scriptTypes: Record<ScriptType, { txCount: number; vSizeTotal: number }>;
+}
+
 export interface AuditScore {
   hash: string;
   matchRate?: number;
