@@ -16,6 +16,7 @@ class MempoolBlocks {
   private mempoolBlocks: MempoolBlockWithTransactions[] = [];
   private mempoolBlockDeltas: MempoolBlockDelta[] = [];
   private txSelectionWorker: Worker | null = null;
+  private txSelectionWorkerInitialized: boolean = false;
   private rustInitialized: boolean = false;
   private rustGbtGenerator: GbtGenerator = new GbtGenerator(config.MEMPOOL.BLOCK_WEIGHT_UNITS, config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT);
 
@@ -108,10 +109,15 @@ class MempoolBlocks {
     if (saveResults) {
       this.resetUids();
     }
+    const uidMap = saveResults ? this.uidMap : new Map<number, string>();
+    const txidMap = saveResults ? this.txidMap : new Map<string, number>();
     // set missing short ids
     for (const txid of transactions) {
-      const tx = newMempool[txid];
-      this.setUid(tx, !saveResults);
+      if (saveResults) {
+        this.setUid(newMempool[txid]);
+      } else {
+        this.setTempUid(txid, uidMap, txidMap);
+      }
     }
 
     const accelerations = useAccelerations ? mempool.getAccelerations() : {};
@@ -121,17 +127,18 @@ class MempoolBlocks {
     const strippedMempool: Map<number, CompactThreadTransaction> = new Map();
     for (const txid of transactions) {
       const entry = newMempool[txid];
-      if (entry.uid !== null && entry.uid !== undefined) {
+      const uid = txidMap.get(txid);
+      if (uid !== undefined) {
         const stripped = {
-          uid: entry.uid,
+          uid,
           fee: entry.fee + (useAccelerations && (!accelerationPool || accelerations[entry.txid]?.pools?.includes(accelerationPool)) ? (accelerations[entry.txid]?.feeDelta || 0) : 0),
           weight: (entry.adjustedVsize * 4),
           sigops: entry.sigops,
           feePerVsize: entry.adjustedFeePerVsize || entry.feePerVsize,
           effectiveFeePerVsize: entry.effectiveFeePerVsize || entry.adjustedFeePerVsize || entry.feePerVsize,
-          inputs: entry.vin.map(v => this.getUid(newMempool[v.txid])).filter(uid => (uid !== null && uid !== undefined)) as number[],
+          inputs: entry.vin.map(v => txidMap.get(v.txid)).filter(uid => uid !== undefined) as number[],
         };
-        strippedMempool.set(entry.uid, stripped);
+        strippedMempool.set(uid, stripped);
       }
     }
 
@@ -158,8 +165,9 @@ class MempoolBlocks {
         });
         this.txSelectionWorker?.once('error', reject);
       });
+      this.txSelectionWorkerInitialized = saveResults;
       this.txSelectionWorker.postMessage({ type: 'set', mempool: strippedMempool });
-      const { blocks, rates, clusters } = this.convertResultTxids(await workerResultPromise);
+      const { blocks, rates, clusters } = this.convertResultTxids(await workerResultPromise, uidMap);
 
       // clean up thread error listener
       this.txSelectionWorker?.removeListener('error', threadErrorListener);
@@ -177,7 +185,7 @@ class MempoolBlocks {
 
   /** @asyncSafe */
   public async $updateBlockTemplates(transactions: string[], newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], candidates: GbtCandidates | undefined, accelerationDelta: string[] = [], saveResults: boolean = false, useAccelerations: boolean = false): Promise<void> {
-    if (!this.txSelectionWorker) {
+    if (!this.txSelectionWorker || !this.txSelectionWorkerInitialized) {
       // need to reset the worker
       await this.$makeBlockTemplates(transactions, newMempool, candidates, saveResults, useAccelerations);
       return;
@@ -249,26 +257,16 @@ class MempoolBlocks {
 
     const transactions = txids.map(txid => newMempool[txid]).filter(tx => tx != null);
 
-    // Don't use shared uid and txid maps on dry runs
     const uidMap = saveResults ? this.uidMap : new Map<number, string>();
     const txidMap = saveResults ? this.txidMap : new Map<string, number>();
-    let nextUid = 1;
-    const setUid = (tx: MempoolTransactionExtended): number => {
-      if (saveResults) {
-        return this.setUid(tx, true);
-      }
-      let uid = txidMap.get(tx.txid);
-      if (uid === undefined) {
-        uid = nextUid++;
-        uidMap.set(uid, tx.txid);
-        txidMap.set(tx.txid, uid);
-      }
-      return uid;
-    };
 
     // set missing short ids
     for (const tx of transactions) {
-      setUid(tx);
+      if (saveResults) {
+        this.setUid(tx, true);
+      } else {
+        this.setTempUid(tx.txid, uidMap, txidMap);
+      }
     }
     // set short ids for transaction inputs
     const rustTransactions: RustThreadTransaction[] = transactions.map(tx => {
@@ -278,7 +276,7 @@ class MempoolBlocks {
         return tx as RustThreadTransaction;
       }
       return {
-        uid: setUid(tx),
+        uid: txidMap.get(tx.txid) as number,
         order: tx.order,
         fee: tx.fee,
         weight: tx.weight,
@@ -292,7 +290,7 @@ class MempoolBlocks {
     const acceleratedList = accelerationPool ? Object.values(accelerations).filter(acc => newMempool[acc.txid] && acc.pools.includes(accelerationPool)) : Object.values(accelerations).filter(acc => newMempool[acc.txid]);
     const convertedAccelerations = acceleratedList.map(acc => {
       return {
-        uid: setUid(newMempool[acc.txid]),
+        uid: saveResults ? this.setUid(newMempool[acc.txid], true) : this.setTempUid(acc.txid, uidMap, txidMap),
         delta: acc.feeDelta,
       };
     });
@@ -301,7 +299,7 @@ class MempoolBlocks {
     const rustGbt = saveResults ? this.rustGbtGenerator : new GbtGenerator(config.MEMPOOL.BLOCK_WEIGHT_UNITS, config.MEMPOOL.MEMPOOL_BLOCKS_AMOUNT);
     try {
       const { blocks, blockWeights, rates, clusters, overflow } = this.convertNapiResultTxids(
-        await rustGbt.make(rustTransactions, convertedAccelerations, saveResults ? this.nextUid : nextUid),
+        await rustGbt.make(rustTransactions, convertedAccelerations, saveResults ? this.nextUid : uidMap.size + 1),
         uidMap,
       );
       if (saveResults) {
@@ -731,6 +729,16 @@ class MempoolBlocks {
     }
   }
 
+  private setTempUid(txid: string, uidMap: Map<number, string>, txidMap: Map<string, number>): number {
+    let uid = txidMap.get(txid);
+    if (uid === undefined) {
+      uid = uidMap.size + 1;
+      uidMap.set(uid, txid);
+      txidMap.set(txid, uid);
+    }
+    return uid;
+  }
+
   private getUid(tx: MempoolTransactionExtended): number | void {
     if (tx) {
       return this.txidMap.get(tx.txid);
@@ -748,24 +756,24 @@ class MempoolBlocks {
     }
   }
 
-  private convertResultTxids({ blocks, rates, clusters }: { blocks: number[][], rates: Map<number, number>, clusters: Map<number, number[]>})
+  private convertResultTxids({ blocks, rates, clusters }: { blocks: number[][], rates: Map<number, number>, clusters: Map<number, number[]>}, uidMap: Map<number, string> = this.uidMap)
     : { blocks: string[][], rates: { [root: string]: number }, clusters: { [root: string]: string[] }} {
     const convertedBlocks: string[][] = blocks.map(block => block.map(uid => {
-      return this.uidMap.get(uid) || '';
+      return uidMap.get(uid) || '';
     }));
     const convertedRates = {};
     for (const rateUid of rates.keys()) {
-      const rateTxid = this.uidMap.get(rateUid);
+      const rateTxid = uidMap.get(rateUid);
       if (rateTxid) {
         convertedRates[rateTxid] = rates.get(rateUid);
       }
     }
     const convertedClusters = {};
     for (const rootUid of clusters.keys()) {
-      const rootTxid = this.uidMap.get(rootUid);
+      const rootTxid = uidMap.get(rootUid);
       if (rootTxid) {
         const members = clusters.get(rootUid)?.map(uid => {
-          return this.uidMap.get(uid);
+          return uidMap.get(uid);
         });
         convertedClusters[rootTxid] = members;
       }
