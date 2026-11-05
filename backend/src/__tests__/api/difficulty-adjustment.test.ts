@@ -122,6 +122,52 @@ describe('Mempool Difficulty Adjustment', () => {
     }
   });
 
+  test('should not produce negative estimates from a stale last-retarget time', () => {
+    // last-retarget time one epoch behind, so the window start is newer than it
+    const DATime = 1786219932;
+    const quarterEpochTime = 1788276827;
+    const nowSeconds = 1788286900;
+    const blockHeight = 963648 + 436;
+    const result = calcDifficultyAdjustment(DATime, quarterEpochTime, nowSeconds, blockHeight, 0.99, 'mainnet', nowSeconds - 20);
+
+    // plain per-epoch average, not the window
+    expect(result.timeAvg).toEqual(4740752); // (nowSeconds - DATime) / 436 blocks
+    expect(result.adjustedTimeAvg).toEqual(4740752);
+    expect(result.remainingTime).toEqual(7490388160); // 1580 remaining blocks
+    expect(result.estimatedRetargetDate).toEqual(1795777288160);
+    expect(result.difficultyChange).toEqual(-75);
+  });
+
+  test('should keep the sliding window across a legitimate timestamp inversion', () => {
+    // mainnet epoch 812448: the window start (block 812447) is 43 s newer than the retarget block
+    const DATime = 1697455965; // block 812448
+    const quarterEpochTime = 1697456008; // block 812447
+    const latestBlockTimestamp = 1697743189; // block 812950
+    const nowSeconds = latestBlockTimestamp + 120;
+    const previousRetarget = calcBitsDifference(0x1704e90f, 0x17049ca9); // blocks 810432 -> 812448
+    expect(previousRetarget).toBeCloseTo(6.4708237, 6);
+    const result = calcDifficultyAdjustment(DATime, quarterEpochTime, nowSeconds, 812950, previousRetarget, 'mainnet', latestBlockTimestamp);
+
+    expect(result.timeAvg).toEqual(572398);
+    expect(result.adjustedTimeAvg).toEqual(571169); // the window, not the plain average
+    expect(result.remainingTime).toEqual(864749866);
+    expect(result.estimatedRetargetDate).toEqual(1698608058866);
+    expect(result.difficultyChange).toBeCloseTo(5.2564832, 6);
+  });
+
+  test('should not use the sliding window when the previous retarget is unknown', () => {
+    const DATime = 1660820820;
+    const quarterEpochTime = 1660619814;
+    const nowSeconds = 1660917833;
+    const result = calcDifficultyAdjustment(DATime, quarterEpochTime, nowSeconds, 750134, NaN, 'mainnet', 0);
+
+    expect(result.previousRetarget).toBeNaN();
+    for (const key of ['difficultyChange', 'estimatedRetargetDate', 'remainingTime', 'timeAvg', 'adjustedTimeAvg']) {
+      expect(Number.isFinite(result[key])).toBe(true);
+    }
+    expect(result.adjustedTimeAvg).toEqual(result.timeAvg);
+  });
+
   test('should calculate Difficulty change from bits fields of two blocks', () => {
     // Check same exponent + check min max for output
     expect(calcBitsDifference(0x1d000200, 0x1d000100)).toEqual(100);
