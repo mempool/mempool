@@ -422,6 +422,10 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     return block.height;
   }
 
+  trackByTxid(index: number, tx: { txid: string }): string {
+    return tx.txid;
+  }
+
   getArrayFromNumber(num: number): number[] {
     return Array.from({ length: num }, (_, i) => i + 1);
   }
