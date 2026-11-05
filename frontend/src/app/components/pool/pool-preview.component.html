@@ -4,8 +4,8 @@
   </app-preview-title>
   <div class="row d-flex justify-content-between full-width-row">
     <div class="logo-wrapper">
-      <img width="62" height="62" src="/resources/mining-pools/default.svg">
-      <img [class.noimg]="!imageLoaded" width="62" height="62" src="{{ poolStats['logo'] }}"
+      <img width="62" height="62" src="/resources/mining-pools/default.svg" alt="">
+      <img [class.noimg]="!imageLoaded" width="62" height="62" src="{{ poolStats['logo'] }}" alt=""
         (load)="onImageLoad()" (error)="onImageFail()">
     </div>
     <div class="title-wrapper">
