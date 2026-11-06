@@ -1442,7 +1442,6 @@ class BlocksRepository {
 
   /** @asyncSafe */
   public async $getBlocksMissingBip54Tag(): Promise<{id: string, height: number, timestamp: number}[]> {
-    const timeFirstMainnetBip54Coinbase = 1771507776;
     const query = `SELECT 
     hash as id, 
     height,
@@ -1451,7 +1450,7 @@ class BlocksRepository {
     where coinbase_bip_54 IS NULL AND
     stale = 0 AND
     height > 0 AND
-    blockTimestamp >= FROM_UNIXTIME(${timeFirstMainnetBip54Coinbase})
+    blockTimestamp >= FROM_UNIXTIME(${Common.timeFirstMainnetBip54Coinbase})
     ORDER BY height DESC`;
 
     try {

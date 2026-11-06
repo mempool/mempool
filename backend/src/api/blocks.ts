@@ -1180,6 +1180,10 @@ class Blocks {
 
       await Common.sleep$(250); //Don't DoS the DB
     }
+    if (updatedInTotal > 0) {
+      // the pools stats report windows with untagged blocks as pending until rebuilt
+      void mining.$rebuildPoolsStatsCache();
+    }
     logger.debug(`Update of blocks missing bip54 tag completed`, logger.tags.mining);
 
     this.updatingBlocksMissingBip54Tag = false;

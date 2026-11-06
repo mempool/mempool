@@ -1,4 +1,4 @@
-import { BlockPrice, PoolInfo, PoolStats, RewardStats } from '../../mempool.interfaces';
+import { BlockPrice, PoolIntervalInfo, PoolStats, RewardStats } from '../../mempool.interfaces';
 import BlocksRepository from '../../repositories/BlocksRepository';
 import PoolsRepository, { POOLS_STATS_INTERVALS } from '../../repositories/PoolsRepository';
 import HashratesRepository from '../../repositories/HashratesRepository';
@@ -26,6 +26,7 @@ interface DifficultyBlock {
 interface PoolsStats {
   pools: PoolStats[],
   blockCount: number,
+  bip54Pending: boolean,
   lastEstimatedHashrate: number,
   lastEstimatedHashrate3d: number,
   lastEstimatedHashrate1w: number,
@@ -122,8 +123,13 @@ class Mining {
 
   /** @asyncUnsafe */
   private async $queryAllPoolsStats(): Promise<Record<string, PoolsStats>> {
-    const poolsInfoPerInterval: Record<string, PoolInfo[]> = await PoolsRepository.$getPoolsInfoPerInterval();
+    const poolsInfoPerInterval: Record<string, PoolIntervalInfo[]> = await PoolsRepository.$getPoolsInfoPerInterval();
     const estimatedHashrates = await this.$getEstimatedHashrates();
+
+    const bip54Recent = this.bip54AdoptionByPool(poolsInfoPerInterval);
+    // adoption is read from the last week, so untagged blocks there leave every window unknown
+    const hasPendingBip54 = (pools: PoolIntervalInfo[] = []): boolean => pools.some(poolInfo => poolInfo.bip54PendingCount > 0);
+    const bip54RecentPending = hasPendingBip54(poolsInfoPerInterval['1w']);
 
     const statsByInterval: Record<string, PoolsStats> = {};
     for (const interval of POOLS_STATS_INTERVALS) {
@@ -139,6 +145,8 @@ class Mining {
           blockCount: poolInfo.blockCount,
           rank: rank++,
           emptyBlocks: poolInfo.emptyBlocks,
+          bip54BlockCount: poolInfo.bip54BlockCount,
+          bip54Recent: bip54Recent.get(poolInfo.poolUniqueId) ?? null,
           slug: poolInfo.slug,
           avgMatchRate: poolInfo.avgMatchRate !== null ? Math.round(100 * poolInfo.avgMatchRate) / 100 : null,
           avgFeeDelta: poolInfo.avgFeeDelta,
@@ -147,10 +155,31 @@ class Mining {
         blockCount += poolInfo.blockCount;
       });
 
-      statsByInterval[interval] = { pools: poolStats, blockCount: blockCount, ...estimatedHashrates };
+      statsByInterval[interval] = {
+        pools: poolStats,
+        blockCount: blockCount,
+        bip54Pending: bip54RecentPending || hasPendingBip54(poolsInfoPerInterval[interval]),
+        ...estimatedHashrates,
+      };
     }
 
     return statsByInterval;
+  }
+
+  /**
+   * Whether each pool currently mines BIP-54 forward-compatible coinbases, keyed by pool
+   * unique id. Read from a fixed recent window rather than the requested one
+   */
+  private bip54AdoptionByPool(poolsInfoPerInterval: Record<string, PoolIntervalInfo[]>): Map<number, boolean> {
+    const adoption = new Map<number, boolean>();
+    // a week is long enough to cover all but the smallest pools, and short enough that a
+    // pool turning BIP-54 back off shows up quickly.
+    for (const poolInfo of poolsInfoPerInterval['1w'] ?? []) {
+      if (poolInfo.blockCount > 0) {
+        adoption.set(poolInfo.poolUniqueId, poolInfo.bip54BlockCount / poolInfo.blockCount >= 0.5);
+      }
+    }
+    return adoption;
   }
 
   public async $getPoolsStats(interval: string | null): Promise<PoolsStats> {
