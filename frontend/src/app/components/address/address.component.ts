@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ElementRef, NgZone } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
@@ -135,6 +135,13 @@ export class AddressComponent implements OnInit, OnDestroy {
   blockGroupStarts = new Map<string, AddressBlockGroup>();
   selectedBlockGroup: string | null = null;
   showBlockGroups = false;
+  private scrollSpyFrame = 0;
+  private readonly onPageScroll = (): void => {
+    this.scrollSpyFrame ||= requestAnimationFrame(() => {
+      this.scrollSpyFrame = 0;
+      this.selectBlockGroupInView();
+    });
+  };
   chainStats: AddressStats;
   mempoolStats: AddressStats;
 
@@ -157,9 +164,11 @@ export class AddressComponent implements OnInit, OnDestroy {
     private seoService: SeoService,
     private formBuilder: UntypedFormBuilder,
     private elementRef: ElementRef<HTMLElement>,
+    private zone: NgZone,
   ) { }
 
   ngOnInit(): void {
+    this.zone.runOutsideAngular(() => window.addEventListener('scroll', this.onPageScroll, { passive: true }));
     this.network = this.stateService.network;
     this.networkChangeSubscription = this.stateService.networkChanged$.subscribe((network) => {
       this.network = network;
@@ -511,9 +520,43 @@ export class AddressComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Bottom edge of the block strip once it sticks below the site header, or null when it doesn't stick.
+  private stickyStripBottom(): number | null {
+    const strip = this.elementRef.nativeElement.querySelector<HTMLElement>('app-address-blocks');
+    if (!strip) {
+      return null;
+    }
+    const style = getComputedStyle(strip);
+    return style.position === 'sticky' ? parseFloat(style.top) + strip.offsetHeight : null;
+  }
+
+  // While scrolling through the transactions, select the block of the group shown below the strip.
+  private selectBlockGroupInView(): void {
+    const stripBottom = this.stickyStripBottom();
+    if (!this.showBlockGroups || stripBottom === null) {
+      return;
+    }
+    const headers = this.elementRef.nativeElement.querySelectorAll<HTMLElement>('app-address-block-group-header');
+    let current = headers[0]?.dataset.blockGroup ?? null;
+    for (const header of headers) {
+      if (header.getBoundingClientRect().top > stripBottom + 16) {
+        break;
+      }
+      current = header.dataset.blockGroup;
+    }
+    if (current && current !== this.selectedBlockGroup) {
+      this.zone.run(() => this.selectedBlockGroup = current);
+    }
+  }
+
   selectBlockGroup(id: string): void {
     this.selectedBlockGroup = id;
     const header = this.elementRef.nativeElement.querySelector<HTMLElement>(`app-address-block-group-header[data-block-group="${CSS.escape(id)}"]`);
+    const stripBottom = this.stickyStripBottom();
+    if (header && stripBottom !== null) {
+      // Land the header right below the sticky strip instead of behind it.
+      header.style.scrollMarginTop = `${stripBottom + 8}px`;
+    }
     header?.scrollIntoView({ block: 'start' });
     header?.focus({ preventScroll: true });
   }
@@ -699,6 +742,8 @@ export class AddressComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    window.removeEventListener('scroll', this.onPageScroll);
+    cancelAnimationFrame(this.scrollSpyFrame);
     this.mainSubscription.unsubscribe();
     this.mempoolTxSubscription.unsubscribe();
     this.mempoolRemovedTxSubscription.unsubscribe();

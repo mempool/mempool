@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostBinding, Input, NgZone, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { AddressBlockGroup } from '@components/address-blocks/address-blocks.utils';
 import { feeLevels } from '@app/app.constants';
 import { ThemeService } from '@app/services/theme.service';
@@ -20,6 +20,7 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Output() selectGroup = new EventEmitter<string>();
   @Output() loadMore = new EventEmitter<void>();
 
+  @HostBinding('style.--sticky-top') stickyTop = '0px';
   pendingBackground: string;
   blockBackground: string;
   gradientColors = {
@@ -38,14 +39,25 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
   private startX = 0;
   private startScrollLeft = 0;
   private suppressClick = false;
+  private headerObserver: ResizeObserver;
 
   constructor(
     private themeService: ThemeService,
     private stateService: StateService,
     private cd: ChangeDetectorRef,
+    private zone: NgZone,
   ) {}
 
   ngOnInit(): void {
+    // Stick below the site header, whose height changes with the screen size.
+    const header = document.querySelector<HTMLElement>('header.sticky-header');
+    if (header) {
+      this.headerObserver = new ResizeObserver(() => {
+        this.stickyTop = `${header.offsetHeight}px`;
+        this.cd.markForCheck();
+      });
+      this.headerObserver.observe(header);
+    }
     // networkChanged$ only emits on changes, so start from the current network.
     this.updateBlockBackground(this.stateService.network);
     this.subscriptions.add(this.stateService.networkChanged$.subscribe(network => {
@@ -58,6 +70,16 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
         this.cd.markForCheck();
       }
     }));
+    // Load older activity when the strip is scrolled close to its end, like the transaction list does.
+    this.zone.runOutsideAngular(() => {
+      this.subscriptions.add(fromEvent(this.strip.nativeElement, 'scroll', { passive: true }).subscribe(() => {
+        const strip = this.strip.nativeElement;
+        const remaining = strip.scrollWidth - strip.scrollLeft - strip.clientWidth;
+        if (!this.loading && !this.fullyLoaded && remaining < 2 * strip.querySelector<HTMLElement>('.activity-block').offsetWidth) {
+          this.zone.run(() => this.loadMore.emit());
+        }
+      }));
+    });
     // Cancel the click before it reaches a block button or router link after dragging.
     this.subscriptions.add(fromEvent<MouseEvent>(this.strip.nativeElement, 'click', { capture: true }).subscribe(event => {
       if (this.suppressClick && event.detail > 0) {
@@ -67,13 +89,35 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
     }));
   }
 
-
-  ngOnChanges(): void {
+  ngOnChanges(changes: SimpleChanges): void {
     this.updatePendingBackground();
+    if (changes.selectedGroup && !changes.selectedGroup.firstChange) {
+      // Wait for the view to render the selection before revealing it.
+      requestAnimationFrame(() => this.revealSelectedBlock());
+    }
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.headerObserver?.disconnect();
+  }
+
+  // Scrolls the strip, not the page, so the selected block is fully visible.
+  private revealSelectedBlock(): void {
+    const strip = this.strip.nativeElement;
+    const block = [...strip.querySelectorAll<HTMLElement>('.activity-block')]
+      .find(element => element.dataset.blockGroup === this.selectedGroup);
+    if (!block || this.dragging) {
+      return;
+    }
+    // The strip is the offset parent, so offsetLeft is the block's position within it.
+    const left = block.offsetLeft;
+    const right = left + block.offsetWidth;
+    if (left < strip.scrollLeft) {
+      strip.scrollTo({ left, behavior: 'smooth' });
+    } else if (right > strip.scrollLeft + strip.clientWidth) {
+      strip.scrollTo({ left: right - strip.clientWidth, behavior: 'smooth' });
+    }
   }
 
   onPointerDown(event: PointerEvent): void {

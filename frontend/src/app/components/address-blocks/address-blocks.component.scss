@@ -6,6 +6,16 @@
   scroll-margin-top: 90px;
 }
 
+// Keep the strip visible while scrolling through the transactions, below the site header,
+// on screens with room for it.
+@media (min-width: 768px) and (min-height: 700px) {
+  :host {
+    position: sticky;
+    top: var(--sticky-top, 0px);
+    z-index: 99;
+  }
+}
+
 .address-blocks {
   padding: 1.25rem 1.25rem 0;
   background: var(--box-bg);
@@ -14,6 +24,7 @@
 }
 
 .activity-strip {
+  position: relative; // offset parent for revealing the selected block
   --block-size: 125px;
   display: flex;
   align-items: center;
@@ -126,7 +137,7 @@
 }
 .selected .selection-marker { border-bottom-color: var(--info); }
 .block-gap { flex: 0 0 6px; color: var(--transparent-fg); }
-.load-older { flex: 0 0 130px; font-size: 0.85rem; margin: 50px 0 0; }
+.strip-loading { flex: 0 0 130px; display: flex; justify-content: center; margin-top: 30px; }
 
 @media (max-width: 575px) {
   :host { scroll-margin-top: 120px; }
@@ -135,5 +146,4 @@
     padding-top: 0.75rem;
   }
   .pending-divider { margin-left: 0; margin-right: 0; }
-  .load-older { flex-basis: 130px; }
 }
