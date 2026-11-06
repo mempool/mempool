@@ -11,6 +11,7 @@ RUN apt-get update && \
     apt-get install -y nodejs=26.12.1-1nodesource1 build-essential python3 pkg-config && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+RUN npm install -g npm@11.20.0
 
 COPY . .
 
@@ -32,6 +33,7 @@ RUN apt-get update && \
     apt-get install -y nodejs=26.12.1-1nodesource1 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+RUN npm install -g npm@11.20.0
 
 WORKDIR /backend
 
