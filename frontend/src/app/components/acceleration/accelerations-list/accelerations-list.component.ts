@@ -7,6 +7,7 @@ import { ServicesApiServices } from '@app/services/services-api.service';
 import { SeoService } from '@app/services/seo.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MiningService } from '@app/services/mining.service';
+import { isMobile } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-accelerations-list',
@@ -26,7 +27,7 @@ export class AccelerationsListComponent implements OnInit, OnDestroy {
   paginationMaxSize: number;
   page = 1;
   accelerationCount: number;
-  maxSize = window.innerWidth <= 767.98 ? 3 : 5;
+  maxSize = isMobile() ? 3 : 5;
   skeletonLines: number[] = [];
   pageSubject: BehaviorSubject<number> = new BehaviorSubject(this.page);
   keyNavigationSubscription: Subscription;
