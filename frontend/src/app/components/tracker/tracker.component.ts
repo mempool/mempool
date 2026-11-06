@@ -839,10 +839,6 @@ export class TrackerComponent implements OnInit, OnDestroy {
     this.stateService.markBlock$.next({});
   }
 
-  roundToOneDecimal(cpfpTx: any): number {
-    return +(cpfpTx.fee / (cpfpTx.weight / 4)).toFixed(1);
-  }
-
   @HostListener('window:resize', ['$event'])
   onResize(): void {
     this.isMobile = window.innerWidth < 850;
