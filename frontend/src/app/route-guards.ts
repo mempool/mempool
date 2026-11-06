@@ -12,9 +12,14 @@ class GuardService {
   ) {}
 
   trackerGuard(route: Route, segments: UrlSegment[]): boolean {
-    const preferredRoute = this.router.getCurrentNavigation()?.extractedUrl.queryParams?.mode;
-    const path = this.router.getCurrentNavigation()?.extractedUrl.root.children.primary.segments;
-    return (preferredRoute === 'status' || (preferredRoute !== 'details' && this.navigationService.isInitialLoad())) && window.innerWidth <= 767.98 && !(path.length === 2 && ['push', 'test', 'preview'].includes(path[1].path));
+    const currentUrl = this.router.getCurrentNavigation()?.extractedUrl;
+    if (!currentUrl) {
+      return false;
+    }
+    const preferredRoute = currentUrl.queryParams?.mode;
+    const path = currentUrl.root.children.primary.segments;
+    const hasPayjoinFragment = new URLSearchParams(currentUrl.fragment || '').has('pj');
+    return !hasPayjoinFragment && (preferredRoute === 'status' || (preferredRoute !== 'details' && this.navigationService.isInitialLoad())) && window.innerWidth <= 767.98 && !(path.length === 2 && ['push', 'test', 'preview'].includes(path[1].path));
   }
 }
 
