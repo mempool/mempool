@@ -43,9 +43,10 @@ export class MenuComponent implements OnInit, OnDestroy {
       });
     }
 
-    this.isServicesPage = this.router.url.includes('/services/');
+    this.isServicesPage = this.router.url.includes('/services/') && !this.router.url.includes('/services/admin/serverstats');
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
+        this.isServicesPage = event.url.includes('/services/') && !event.url.includes('/services/admin/serverstats');
         if (!this.isServicesPage) {
           this.toggleMenu(false);
         }
@@ -88,7 +89,6 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   hamburgerClick() {
     this.toggleMenu(!this.navOpen);
-    this.stateService.menuOpen$.next(this.navOpen);
   }
 
   @HostListener('window:resize', ['$event'])

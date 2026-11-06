@@ -89,8 +89,9 @@ export class MasterPageComponent implements OnInit, OnDestroy {
       this.user = auth?.user ?? null;
     });
 
-    const isServicesPage = this.router.url.includes('/services/');
+    const isServicesPage = this.router.url.includes('/services/') && !this.router.url.includes('/services/admin/serverstats');
     this.menuOpen = isServicesPage && !isMobile();
+    this.stateService.menuOpen$.next(this.menuOpen);
     this.setDropdownVisibility();
   }
 
@@ -142,6 +143,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
 
   menuToggled(isOpen: boolean): void {
     this.menuOpen = isOpen;
+    this.stateService.menuOpen$.next(isOpen);
   }
 
   ngOnDestroy(): void {
