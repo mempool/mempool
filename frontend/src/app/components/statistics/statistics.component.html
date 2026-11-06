@@ -60,7 +60,7 @@
                     </li>
                     <hr style="margin: 4px;">
                     <ng-template ngFor let-feeData let-i="index" [ngForOf]="feeLevelDropdownData">
-                      <ng-template [ngIf]="feeData.fee <= (feeLevels[maxFeeIndex])">
+                      <ng-template [ngIf]="feeData.index <= maxFeeIndex">
                         <li (click)="filterFeeIndex = feeData.fee"
                           [class]="filterFeeIndex > feeData.fee ? 'inactive' : ''">
                           <span class="square" [ngStyle]="{'backgroundColor': feeData.color}"></span>

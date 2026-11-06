@@ -438,6 +438,16 @@ export interface Statistic {
   min_fee: number;
 
   vsize_0: number;
+  vsize_0_0: number;
+  vsize_0_1: number;
+  vsize_0_2: number;
+  vsize_0_3: number;
+  vsize_0_4: number;
+  vsize_0_5: number;
+  vsize_0_6: number;
+  vsize_0_7: number;
+  vsize_0_8: number;
+  vsize_0_9: number;
   vsize_1: number;
   vsize_2: number;
   vsize_3: number;
@@ -486,6 +496,7 @@ export interface OptimizedStatistic {
   mempool_byte_weight: number;
   min_fee: number;
   vsizes: number[];
+  vsizes_sub1?: number[];
 }
 
 export interface TxTrackingInfo {
