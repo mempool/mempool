@@ -17,6 +17,7 @@ import BlocksAuditsRepository from './BlocksAuditsRepository';
 import transactionUtils from '../api/transaction-utils';
 import { parseDATUMTemplateCreator, parseDMNDTemplateCreator } from '../utils/bitcoin-script';
 import poolsUpdater from '../tasks/pools-updater';
+import miningApiCache from '../api/mining/mining-api-cache';
 
 interface DatabaseBlock {
   index_version: number;
@@ -202,6 +203,7 @@ class BlocksRepository {
       ];
 
       await DB.query(query, params);
+      miningApiCache.invalidate();
     } catch (e: any) {
       if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart or if a stale block is reconnected
         if (!block.stale) {
@@ -1033,6 +1035,7 @@ class BlocksRepository {
       query = query.slice(0, -1);
       query += ` ON DUPLICATE KEY UPDATE price_id = VALUES(price_id)`;
       await DB.query(query);
+      miningApiCache.invalidate();
     } catch (e: any) {
       if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
         logger.debug(`Cannot save blocks prices for blocks [${blockPrices[0].height} to ${blockPrices[blockPrices.length - 1].height}] because it has already been indexed, ignoring`);
@@ -1116,6 +1119,7 @@ class BlocksRepository {
         WHERE hash = ?`,
         [feeStats.medianFee, JSON.stringify(feeStats.feeRange), id]
       );
+      miningApiCache.invalidate();
     } catch (e) {
       logger.err(`Cannot update block fee stats. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
@@ -1238,6 +1242,7 @@ class BlocksRepository {
         WHERE height = ? AND hash != ?`,
         [height, hash ?? '']
       );
+      miningApiCache.invalidate();
     } catch (e) {
       logger.err(`Cannot set canonical block at height. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
@@ -1420,6 +1425,7 @@ class BlocksRepository {
           WHERE hash = ?`,
           [feeStats.medianFee, JSON.stringify(feeStats.feeRange), row.hash]
         );
+        miningApiCache.invalidate();
 
         const elapsedSeconds = (Date.now() / 1000) - timer;
         if (elapsedSeconds > 5) {

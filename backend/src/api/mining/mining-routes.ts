@@ -11,6 +11,8 @@ import PricesRepository from '../../repositories/PricesRepository';
 import AccelerationRepository from '../../repositories/AccelerationRepository';
 import accelerationApi from '../services/acceleration';
 import { handleError } from '../../utils/api';
+import { POOLS_STATS_INTERVALS } from '../../repositories/PoolsRepository';
+import miningApiCache from './mining-api-cache';
 
 class MiningRoutes {
   public initRoutes(app: Application) {
@@ -210,9 +212,12 @@ class MiningRoutes {
   }
 
   private async $getHistoricalBlockFees(req: Request, res: Response) {
+    const interval = POOLS_STATS_INTERVALS.includes(req.params.interval) ? req.params.interval : 'all';
     try {
-      const blockFees = await mining.$getHistoricalBlockFees(req.params.interval);
-      const blockCount = await BlocksRepository.$blockCount(null, null);
+      const { blockFees, blockCount } = await miningApiCache.$get(`blocks/fees/${interval}`, async () => ({
+        blockFees: await mining.$getHistoricalBlockFees(interval),
+        blockCount: await BlocksRepository.$blockCount(null, null),
+      }));
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.header('X-total-count', blockCount.toString());
@@ -242,9 +247,12 @@ class MiningRoutes {
   }
 
   private async $getHistoricalBlockRewards(req: Request, res: Response) {
+    const interval = POOLS_STATS_INTERVALS.includes(req.params.interval) ? req.params.interval : 'all';
     try {
-      const blockRewards = await mining.$getHistoricalBlockRewards(req.params.interval);
-      const blockCount = await BlocksRepository.$blockCount(null, null);
+      const { blockRewards, blockCount } = await miningApiCache.$get(`blocks/rewards/${interval}`, async () => ({
+        blockRewards: await mining.$getHistoricalBlockRewards(interval),
+        blockCount: await BlocksRepository.$blockCount(null, null),
+      }));
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.header('X-total-count', blockCount.toString());
@@ -256,9 +264,12 @@ class MiningRoutes {
   }
 
   private async $getHistoricalBlockFeeRates(req: Request, res: Response) {
+    const interval = POOLS_STATS_INTERVALS.includes(req.params.interval) ? req.params.interval : 'all';
     try {
-      const blockFeeRates = await mining.$getHistoricalBlockFeeRates(req.params.interval);
-      const blockCount = await BlocksRepository.$blockCount(null, null);
+      const { blockFeeRates, blockCount } = await miningApiCache.$get(`blocks/fee-rates/${interval}`, async () => ({
+        blockFeeRates: await mining.$getHistoricalBlockFeeRates(interval),
+        blockCount: await BlocksRepository.$blockCount(null, null),
+      }));
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.header('X-total-count', blockCount.toString());
@@ -270,9 +281,12 @@ class MiningRoutes {
   }
 
   private async $getHistoricalBlockFeeRatesPrecise(req: Request, res: Response) {
+    const interval = POOLS_STATS_INTERVALS.includes(req.params.interval) ? req.params.interval : 'all';
     try {
-      const blockFeeRates = await mining.$getHistoricalBlockFeeRates(req.params.interval, true);
-      const blockCount = await BlocksRepository.$blockCount(null, null);
+      const { blockFeeRates, blockCount } = await miningApiCache.$get(`blocks/fee-rates/${interval}/precise`, async () => ({
+        blockFeeRates: await mining.$getHistoricalBlockFeeRates(interval, true),
+        blockCount: await BlocksRepository.$blockCount(null, null),
+      }));
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.header('X-total-count', blockCount.toString());
@@ -284,10 +298,13 @@ class MiningRoutes {
   }
 
   private async $getHistoricalBlockSizeAndWeight(req: Request, res: Response) {
+    const interval = POOLS_STATS_INTERVALS.includes(req.params.interval) ? req.params.interval : 'all';
     try {
-      const blockSizes = await mining.$getHistoricalBlockSizes(req.params.interval);
-      const blockWeights = await mining.$getHistoricalBlockWeights(req.params.interval);
-      const blockCount = await BlocksRepository.$blockCount(null, null);
+      const { blockSizes, blockWeights, blockCount } = await miningApiCache.$get(`blocks/sizes-weights/${interval}`, async () => ({
+        blockSizes: await mining.$getHistoricalBlockSizes(interval),
+        blockWeights: await mining.$getHistoricalBlockWeights(interval),
+        blockCount: await BlocksRepository.$blockCount(null, null),
+      }));
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.header('X-total-count', blockCount.toString());
@@ -324,9 +341,12 @@ class MiningRoutes {
   }
 
   private async $getHistoricalBlocksHealth(req: Request, res: Response) {
+    const interval = POOLS_STATS_INTERVALS.includes(req.params.interval) ? req.params.interval : 'all';
     try {
-      const blocksHealth = await mining.$getBlocksHealthHistory(req.params.interval);
-      const blockCount = await BlocksAuditsRepository.$getBlocksHealthCount();
+      const { blocksHealth, blockCount } = await miningApiCache.$get(`blocks/predictions/${interval}`, async () => ({
+        blocksHealth: await mining.$getBlocksHealthHistory(interval),
+        blockCount: await BlocksAuditsRepository.$getBlocksHealthCount(),
+      }));
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.header('X-total-count', blockCount.toString());

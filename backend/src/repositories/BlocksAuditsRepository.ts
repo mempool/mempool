@@ -1,4 +1,5 @@
 import DB from '../database';
+import miningApiCache from '../api/mining/mining-api-cache';
 import logger from '../logger';
 import bitcoinApi from '../api/bitcoin/bitcoin-api-factory';
 import { BlockAudit, AuditScore, TransactionAudit, TransactionStripped, TemplateAlgorithm } from '../mempool.interfaces';
@@ -21,6 +22,7 @@ class BlocksAuditRepositories {
       await DB.query(`INSERT INTO blocks_audits(version, template_algo, time, height, hash, unseen_txs, missing_txs, added_txs, prioritized_txs, fresh_txs, sigop_txs, fullrbf_txs, accelerated_txs, match_rate, expected_fees, expected_weight)
         VALUE (?, ?, FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [audit.version, audit.templateAlgorithm ?? 0, audit.time, audit.height, audit.hash, JSON.stringify(audit.unseenTxs), JSON.stringify(audit.missingTxs),
           JSON.stringify(audit.addedTxs), JSON.stringify(audit.prioritizedTxs), JSON.stringify(audit.freshTxs), JSON.stringify(audit.sigopTxs), JSON.stringify(audit.fullrbfTxs), JSON.stringify(audit.acceleratedTxs), audit.matchRate, audit.expectedFees, audit.expectedWeight]);
+      miningApiCache.invalidate();
     } catch (e: any) {
       if (e.errno === 1062) { // ER_DUP_ENTRY - This scenario is possible upon node backend restart
         logger.debug(`Cannot save block audit for block ${audit.hash} because it has already been indexed, ignoring`);

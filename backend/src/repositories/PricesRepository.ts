@@ -2,6 +2,7 @@ import DB from '../database';
 import logger from '../logger';
 import config from '../config';
 import priceUpdater from '../tasks/price-updater';
+import miningApiCache from '../api/mining/mining-api-cache';
 
 export interface ApiPrice {
   time?: number,
@@ -196,6 +197,7 @@ class PricesRepository {
                 prices.PHP, prices.PLN, prices.RON, prices.RUB, prices.SEK, prices.SGD, prices.THB, prices.TRY, prices.ZAR]
         );
       }
+      miningApiCache.invalidate();
     } catch (e) {
       logger.err(`Cannot save exchange rate into db. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
@@ -218,6 +220,7 @@ class PricesRepository {
           [prices[currency], time]
         );
       }
+      miningApiCache.invalidate();
     } catch (e) {
       logger.err(`Cannot update exchange rate into db. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
@@ -439,15 +442,18 @@ class PricesRepository {
   /** @asyncSafe */
   public async $getHistoricalPrices(currency?: string): Promise<Conversion | null> {
     try {
-      const [rates] = await DB.query(`
-        SELECT ${ApiPriceFields}
-        FROM prices
-        WHERE USD >= 0
-        ORDER BY time DESC
-      `);
-      if (!Array.isArray(rates)) {
-        throw Error(`Cannot get average historical price from the database`);
-      }
+      const rates = await miningApiCache.$get('historical-price', async () => {
+        const [rows] = await DB.query(`
+          SELECT ${ApiPriceFields}
+          FROM prices
+          WHERE USD >= 0
+          ORDER BY time DESC
+        `);
+        if (!Array.isArray(rows)) {
+          throw Error(`Cannot get average historical price from the database`);
+        }
+        return rows;
+      });
 
       // Compute fiat exchange rates
       let latestPrice = rates[0] as ApiPrice;
