@@ -720,5 +720,6 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
     this.currencyChangeSubscription?.unsubscribe();
     this.networkSubscription.unsubscribe();
     this.signaturesSubscription.unsubscribe();
+    this.queryParamsSubscription?.unsubscribe();
   }
 }
