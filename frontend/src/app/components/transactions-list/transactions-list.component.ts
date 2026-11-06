@@ -1,9 +1,9 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ElementRef, QueryList, ViewChildren } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter, ChangeDetectorRef, OnDestroy, TemplateRef } from '@angular/core';
 import { StateService, SignaturesMode } from '@app/services/state.service';
 import { CacheService } from '@app/services/cache.service';
 import { Observable, ReplaySubject, BehaviorSubject, merge, Subscription, of, forkJoin } from 'rxjs';
 import { Outspend, Transaction, Vin, Vout } from '@interfaces/electrs.interface';
-import { AddressBlockGroup } from '@components/address-blocks/address-blocks.component';
+import { getAddressActivity } from '@app/shared/address-activity.utils';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { environment } from '@environments/environment';
 import { AssetsService } from '@app/services/assets.service';
@@ -34,9 +34,6 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   showMoreIncrement = 1000;
 
   @Input() transactions: Transaction[];
-  @Input() groupByBlock = false;
-  @Input() fullyLoaded = false;
-  @Input() loading = false;
   @Input() cached: boolean = false;
   @Input() showConfirmations = false;
   @Input() transactionPage = false;
@@ -45,6 +42,8 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   @Input() inputIndex: number;
   @Input() outputIndex: number;
   @Input() addresses: string[] = [];
+  // Optional content rendered before each transaction, with the transaction and its index as context.
+  @Input() txHeaderTemplate: TemplateRef<{ $implicit: Transaction, index: number }> | null = null;
   @Input() acceleratedTxids: Set<string> | null = null;
   @Input() rowLimit = 12;
   @Input() blockTime: number = 0; // Used for price calculation if all the transactions are in the same block
@@ -65,10 +64,6 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   showDetails$ = new BehaviorSubject<boolean>(false);
   assetsMinimal: any = {};
   transactionsLength: number = 0;
-  blockGroups: AddressBlockGroup[] = [];
-  groupStarts: Record<number, AddressBlockGroup> = {};
-  selectedGroup: string | null = null;
-  @ViewChildren('groupHeader') groupHeaders: QueryList<ElementRef<HTMLElement>>;
   inputRowLimit: number = 12;
   outputRowLimit: number = 12;
   showFullScript: { [vinIndex: number]: boolean } = {};
@@ -245,7 +240,6 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
       this.similarityMatches.clear();
       this.updateAddressSimilarities();
       if (!this.transactions || !this.transactions.length) {
-        this.updateBlockGroups();
         return;
       }
 
@@ -265,51 +259,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
         tx['_interestingSignatures'] = false;
 
         if (this.addresses?.length) {
-          const addressIn = tx.vout.map(v => {
-            for (const address of this.addresses) {
-              switch (address.length) {
-                case 130: {
-                  if (v.scriptpubkey === '41' + address + 'ac') {
-                    return v.value;
-                  }
-                } break;
-                case 66: {
-                  if (v.scriptpubkey === '21' + address + 'ac') {
-                    return v.value;
-                  }
-                } break;
-                default:{
-                  if (v.scriptpubkey_address === address) {
-                    return v.value;
-                  }
-                } break;
-              }
-            }
-            return 0;
-          }).reduce((acc, v) => acc + v, 0);
-          const addressOut = tx.vin.map(v => {
-            for (const address of this.addresses) {
-              switch (address.length) {
-                case 130: {
-                  if (v.prevout?.scriptpubkey === '41' + address + 'ac') {
-                    return v.prevout?.value;
-                  }
-                } break;
-                case 66: {
-                  if (v.prevout?.scriptpubkey === '21' + address + 'ac') {
-                    return v.prevout?.value;
-                  }
-                } break;
-                default:{
-                  if (v.prevout?.scriptpubkey_address === address) {
-                    return v.prevout?.value;
-                  }
-                } break;
-              }
-            }
-            return 0;
-          }).reduce((acc, v) => acc + v, 0);
-          tx['addressValue'] = addressIn - addressOut;
+          tx['addressValue'] = getAddressActivity(tx, this.addresses).value;
         }
 
         if (!this.blockTime && tx.status.block_time && this.currency) {
@@ -380,9 +330,6 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
           this.refreshChannels$.next(txIds);
         }
       }
-    }
-    if (changes.transactions || changes.addresses || changes.groupByBlock || changes.fullyLoaded) {
-      this.updateBlockGroups();
     }
   }
 
@@ -501,61 +448,6 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   fakeScriptHashRegex = new RegExp(/(.+?)\1{11,}/);
   isFakeScripthash(vout: Vout): boolean {
     return this.fakeScriptHashRegex.test(vout.scriptpubkey_address);
-  }
-
-  private updateBlockGroups(): void {
-    this.blockGroups = [];
-    this.groupStarts = {};
-    if (this.groupByBlock) {
-      let group: AddressBlockGroup;
-      this.transactions?.forEach((tx, index) => {
-        const id = tx.status.confirmed ? tx.status.block_hash || tx.txid : 'unconfirmed';
-        if (group?.id !== id) {
-          const previousHeight = group?.status.block_height;
-          group = {
-            id, status: tx.status, count: 0, net: 0, received: false, sent: false, partial: false, feeRates: [],
-            skippedBlocks: Number.isFinite(previousHeight) && Number.isFinite(tx.status.block_height)
-              ? Math.max(0, previousHeight - tx.status.block_height - 1) : 0,
-          };
-          this.blockGroups.push(group);
-          this.groupStarts[index] = group;
-        }
-        group.count++;
-        group.received ||= tx.vout.some(output => this.isAddressOutput(output));
-        group.sent ||= tx.vin.some(input => this.isAddressOutput(input.prevout));
-        if (!tx.status.confirmed) {
-          group.feeRates.push(tx.fee / (tx.weight / 4));
-        }
-        // Reuse the address delta calculated for each transaction, including P2PK scripts.
-        // Liquid can contain multiple assets and confidential values, so omit its aggregate.
-        group.net = !this.isLiquid && group.net !== null && Number.isFinite(tx['addressValue'])
-          ? group.net + tx['addressValue'] : null;
-      });
-      const lastGroup = this.blockGroups[this.blockGroups.length - 1];
-      if (lastGroup && !this.fullyLoaded) {
-        lastGroup.partial = true;
-      }
-    }
-    const ids = new Set(this.blockGroups.map(group => group.id));
-    if (!ids.has(this.selectedGroup)) {
-      this.selectedGroup = this.blockGroups[0]?.id ?? null;
-    }
-  }
-
-  private isAddressOutput(output: Vout): boolean {
-    return !!output && this.addresses.some(address => {
-      if (address.length === 66 || address.length === 130) {
-        return output.scriptpubkey === (address.length === 66 ? '21' : '41') + address + 'ac';
-      }
-      return output.scriptpubkey_address === address;
-    });
-  }
-
-  selectBlockGroup(id: string): void {
-    this.selectedGroup = id;
-    const header = this.groupHeaders.find(element => element.nativeElement.dataset.blockGroup === id)?.nativeElement;
-    header?.scrollIntoView({ block: 'start' });
-    header?.focus({ preventScroll: true });
   }
 
   onScroll(): void {

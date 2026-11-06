@@ -22,12 +22,10 @@
   padding: 1.25rem 0.5rem 0.5rem 0;
   scrollbar-width: thin;
   scrollbar-color: var(--secondary) transparent;
-  scroll-snap-type: x proximity;
   cursor: grab;
   user-select: none;
 
   &.dragging {
-    scroll-snap-type: none;
     cursor: grabbing;
 
     * { cursor: grabbing; }
@@ -44,7 +42,6 @@
 .activity-block {
   flex: 0 0 calc(1.16 * var(--block-size));
   padding-left: calc(0.16 * var(--block-size));
-  scroll-snap-align: center;
   text-align: center;
 }
 
@@ -75,7 +72,6 @@
   border-radius: 0;
   // Theme text color, like the regular blocks, so light themes keep enough contrast.
   color: var(--fg);
-  background: linear-gradient(var(--mainnet-alt), var(--primary));
   cursor: pointer;
 
   &::before {

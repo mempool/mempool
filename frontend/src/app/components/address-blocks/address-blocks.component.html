@@ -30,7 +30,7 @@
             <span i18n="dashboard.unconfirmed|Unconfirmed count">Unconfirmed</span>
           }
         </div>
-        <button type="button" class="block-face" [class.partial]="group.partial" [style.background]="!group.status.confirmed ? pendingBackground : null"
+        <button type="button" class="block-face" [class.partial]="group.partial" [style.background]="group.status.confirmed ? blockBackground : pendingBackground"
           [attr.aria-pressed]="selectedGroup === group.id" (click)="selectGroup.emit(group.id)">
           <span class="activity-direction">
             @if (group.sent && group.received) {

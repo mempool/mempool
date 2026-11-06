@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ElementRef } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
@@ -13,6 +13,7 @@ import { SeoService } from '@app/services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { AddressInformation } from '@interfaces/node-api.interface';
 import { AddressTypeInfo } from '@app/shared/address-utils';
+import { AddressBlockGroup, buildAddressBlockGroups } from '@components/address-blocks/address-blocks.utils';
 import { extractTapLeaves, fillTapTree, convertTextToBuffer, PsbtKeyValue } from '@app/shared/transaction.utils';
 
 class AddressStats implements ChainStats {
@@ -130,6 +131,10 @@ export class AddressComponent implements OnInit, OnDestroy {
   acceleratedTxids: Set<string> | null = null;
 
   fullyLoaded = false;
+  blockGroups: AddressBlockGroup[] = [];
+  blockGroupStarts = new Map<string, AddressBlockGroup>();
+  selectedBlockGroup: string | null = null;
+  showBlockGroups = false;
   chainStats: AddressStats;
   mempoolStats: AddressStats;
 
@@ -151,6 +156,7 @@ export class AddressComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private seoService: SeoService,
     private formBuilder: UntypedFormBuilder,
+    private elementRef: ElementRef<HTMLElement>,
   ) { }
 
   ngOnInit(): void {
@@ -189,6 +195,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.address = null;
           this.isLoadingTransactions = true;
           this.transactions = null;
+          this.updateBlockGroups();
           this.utxos = null;
           this.addressInfo = null;
           this.exampleChannel = null;
@@ -304,6 +311,7 @@ export class AddressComponent implements OnInit, OnDestroy {
         if (this.transactions.length === (this.mempoolStats.tx_count + this.chainStats.tx_count)) {
           this.fullyLoaded = true;
         }
+        this.updateBlockGroups();
         this.isLoadingTransactions = false;
 
         const addressVin: Vin[] = [];
@@ -418,6 +426,7 @@ export class AddressComponent implements OnInit, OnDestroy {
 
     this.transactions.splice(index, 1);
     this.transactions = this.transactions.slice();
+    this.updateBlockGroups();
 
     // update utxos in-place
     if (this.utxos != null) {
@@ -488,6 +497,25 @@ export class AddressComponent implements OnInit, OnDestroy {
       }
       return (b.status.block_height ?? -1) - (a.status.block_height ?? -1);
     });
+    this.updateBlockGroups();
+  }
+
+  private updateBlockGroups(): void {
+    const isLiquid = this.network === 'liquid' || this.network === 'liquidtestnet';
+    this.blockGroups = this.address ? buildAddressBlockGroups(this.transactions, [this.address.address], this.fullyLoaded, isLiquid) : [];
+    this.blockGroupStarts = new Map(this.blockGroups.map(group => [group.firstTxid, group]));
+    // Grouping adds little for addresses active in only a few blocks.
+    this.showBlockGroups = this.blockGroups.length >= 5 || (!this.fullyLoaded && this.blockGroups.length > 0);
+    if (!this.blockGroups.some(group => group.id === this.selectedBlockGroup)) {
+      this.selectedBlockGroup = this.blockGroups[0]?.id ?? null;
+    }
+  }
+
+  selectBlockGroup(id: string): void {
+    this.selectedBlockGroup = id;
+    const header = this.elementRef.nativeElement.querySelector<HTMLElement>(`app-address-block-group-header[data-block-group="${CSS.escape(id)}"]`);
+    header?.scrollIntoView({ block: 'start' });
+    header?.focus({ preventScroll: true });
   }
 
   loadMore(): void {
@@ -520,6 +548,7 @@ export class AddressComponent implements OnInit, OnDestroy {
         } else {
           this.fullyLoaded = true;
         }
+        this.updateBlockGroups();
         this.isLoadingTransactions = false;
       },
       (error) => {

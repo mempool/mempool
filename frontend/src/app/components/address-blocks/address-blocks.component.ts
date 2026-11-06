@@ -1,20 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { Status } from '@interfaces/electrs.interface';
+import { AddressBlockGroup } from '@components/address-blocks/address-blocks.utils';
 import { feeLevels } from '@app/app.constants';
 import { ThemeService } from '@app/services/theme.service';
+import { StateService } from '@app/services/state.service';
 import { fromEvent, Subscription } from 'rxjs';
-
-export interface AddressBlockGroup {
-  id: string;
-  status: Status;
-  count: number;
-  net: number | null;
-  received: boolean;
-  sent: boolean;
-  partial: boolean;
-  skippedBlocks: number;
-  feeRates: number[];
-}
 
 @Component({
   selector: 'app-address-blocks',
@@ -32,6 +21,16 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Output() loadMore = new EventEmitter<void>();
 
   pendingBackground: string;
+  blockBackground: string;
+  gradientColors = {
+    '': ['var(--mainnet-alt)', 'var(--primary)'],
+    liquid: ['var(--liquid)', 'var(--testnet-alt)'],
+    'liquidtestnet': ['var(--liquidtestnet)', 'var(--liquidtestnet-alt)'],
+    testnet: ['var(--testnet)', 'var(--testnet-alt)'],
+    testnet4: ['var(--testnet)', 'var(--testnet-alt)'],
+    signet: ['var(--signet)', 'var(--signet-alt)'],
+    regtest: ['var(--regtest)', 'var(--regtest-alt)'],
+  };
   dragging = false;
   @ViewChild('strip', { static: true }) strip: ElementRef<HTMLElement>;
   private subscriptions = new Subscription();
@@ -40,9 +39,19 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
   private startScrollLeft = 0;
   private suppressClick = false;
 
-  constructor(private themeService: ThemeService, private cd: ChangeDetectorRef) {}
+  constructor(
+    private themeService: ThemeService,
+    private stateService: StateService,
+    private cd: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
+    // networkChanged$ only emits on changes, so start from the current network.
+    this.updateBlockBackground(this.stateService.network);
+    this.subscriptions.add(this.stateService.networkChanged$.subscribe(network => {
+      this.updateBlockBackground(network);
+      this.cd.markForCheck();
+    }));
     this.subscriptions.add(this.themeService.themeState$.subscribe(({ loading }) => {
       if (!loading) {
         this.updatePendingBackground();
@@ -57,6 +66,7 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
       }
     }));
   }
+
 
   ngOnChanges(): void {
     this.updatePendingBackground();
@@ -122,6 +132,11 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
       return '1.2-3';
     }
     return btc < 999.995 ? '1.2-2' : '1.0-0';
+  }
+
+  private updateBlockBackground(network: string): void {
+    const [top, bottom] = this.gradientColors[network] ?? this.gradientColors[''];
+    this.blockBackground = `linear-gradient(${top}, ${bottom})`;
   }
 
   private updatePendingBackground(): void {
