@@ -33,6 +33,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   isNativeAsset = false;
   error: any;
   mainSubscription: Subscription;
+  networkChangedSubscription: Subscription;
   imageError = false;
 
   totalConfirmedTxCount = 0;
@@ -58,7 +59,7 @@ export class AssetComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.websocketService.want(['blocks', 'mempool-blocks']);
-    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.networkChangedSubscription = this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     this.mainSubscription = this.route.paramMap
       .pipe(
@@ -208,6 +209,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.networkChangedSubscription?.unsubscribe();
     this.mainSubscription.unsubscribe();
     this.websocketService.stopTrackingAsset();
   }

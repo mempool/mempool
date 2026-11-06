@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ApiService } from '@app/services/api.service';
 import { StateService } from '@app/services/state.service';
@@ -8,6 +8,7 @@ import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { TxResult } from '@interfaces/node-api.interface';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-push-transaction',
@@ -15,7 +16,7 @@ import { TxResult } from '@interfaces/node-api.interface';
   styleUrls: ['./push-transaction.component.scss'],
   standalone: false,
 })
-export class PushTransactionComponent implements OnInit {
+export class PushTransactionComponent implements OnInit, OnDestroy {
   pushTxForm: UntypedFormGroup;
   error: string = '';
   txId: string = '';
@@ -30,6 +31,7 @@ export class PushTransactionComponent implements OnInit {
   isLoadingPackage = false;
 
   network = this.stateService.network;
+  networkChangedSubscription: Subscription;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -53,7 +55,7 @@ export class PushTransactionComponent implements OnInit {
       maxburnamount: ['', Validators.min(0)],
     });
 
-    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.networkChangedSubscription = this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     this.seoService.setTitle($localize`:@@f13cbfe8cfc955918e9f64466d2cafddb4760d9a:Broadcast Transaction`);
     this.seoService.setDescription($localize`:@@meta.description.push-tx:Broadcast a transaction to the ${this.stateService.network==='liquid'||this.stateService.network==='liquidtestnet'?'Liquid':'Bitcoin'}${seoDescriptionNetwork(this.stateService.network)} network using the transaction's hash.`);
@@ -214,5 +216,9 @@ export class PushTransactionComponent implements OnInit {
 
   private u8ArrayToHex(arr: Uint8Array): string {
     return Array.from(arr).map(byte => byte.toString(16).padStart(2, '0')).join('');
+  }
+
+  ngOnDestroy(): void {
+    this.networkChangedSubscription?.unsubscribe();
   }
 }
