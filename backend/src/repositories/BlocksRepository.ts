@@ -395,6 +395,57 @@ class BlocksRepository {
   }
 
   /**
+   * Count blocks, including stale blocks, per week ending at weekEndOffset modulo one week.
+   * Only reads the blockTimestamp index unless counting per pool.
+   * @asyncUnsafe
+   */
+  public async $getBlockCountPerWeek(weekEndOffset: number, poolIds: number[] | null): Promise<{ poolId: number | null, timestamp: number, blockCount: number }[]> {
+    const query = `SELECT ${poolIds ? 'pool_id' : 'NULL'} AS poolId, CAST(? + 604800 * CEIL((UNIX_TIMESTAMP(blockTimestamp) - ?) / 604800) AS SIGNED) AS timestamp, COUNT(*) AS blockCount
+      FROM blocks
+      ${poolIds ? 'WHERE pool_id IN (?)' : ''}
+      GROUP BY poolId, timestamp`;
+
+    try {
+      const [rows]: any[] = await DB.query(query, [weekEndOffset, weekEndOffset, poolIds]);
+      return rows;
+    } catch (e) {
+      logger.err(`Cannot count blocks per week. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Count blocks, including stale blocks, per pool. Only reads the pool_id index.
+   * @asyncUnsafe
+   */
+  public async $getBlockCountPerPool(): Promise<{ poolId: number, blockCount: number }[]> {
+    try {
+      const [rows]: any[] = await DB.query(`SELECT pool_id AS poolId, COUNT(*) AS blockCount FROM blocks GROUP BY pool_id`);
+      return rows;
+    } catch (e) {
+      logger.err(`Cannot count blocks per pool. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * @asyncUnsafe
+   */
+  public async $getStaleBlocksAndBlocksAt(timestamps: number[]): Promise<{ poolId: number, timestamp: number, stale: number }[]> {
+    const query = `SELECT pool_id AS poolId, UNIX_TIMESTAMP(blockTimestamp) AS timestamp, stale
+      FROM blocks
+      WHERE stale = 1 OR blockTimestamp IN (${timestamps.map(() => 'FROM_UNIXTIME(?)').join(', ')})`;
+
+    try {
+      const [rows]: any[] = await DB.query(query, timestamps);
+      return rows;
+    } catch (e) {
+      logger.err(`Cannot get stale blocks and blocks at timestamps. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
    * Get blocks count for a period
    * @asyncSafe
    */

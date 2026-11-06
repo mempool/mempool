@@ -83,17 +83,26 @@ class HashratesRepository {
     }
   }
 
-  public async $getWeeklyHashrateTimestamps(): Promise<number[]> {
-    const query = `SELECT UNIX_TIMESTAMP(hashrate_timestamp) as timestamp
+  public async $getWeeklyHashrates(): Promise<{ timestamp: number, poolId: number, share: number }[]> {
+    const query = `SELECT UNIX_TIMESTAMP(hashrate_timestamp) as timestamp, pool_id as poolId, share
       FROM hashrates
       WHERE type = 'weekly'
-      GROUP BY hashrate_timestamp`;
+      ORDER BY hashrate_timestamp`;
 
     try {
       const [rows]: any[] = await DB.query(query);
-      return rows.map(row => row.timestamp);
+      return rows;
     } catch (e) {
-      logger.err('Cannot retrieve indexed weekly hashrate timestamps. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
+      logger.err('Cannot retrieve indexed weekly hashrates. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
+      throw e;
+    }
+  }
+
+  public async $deleteWeeklyHashrates(timestamps: number[]): Promise<void> {
+    try {
+      await DB.query(`DELETE FROM hashrates WHERE type = 'weekly' AND hashrate_timestamp IN (${timestamps.map(() => 'FROM_UNIXTIME(?)').join(', ')})`, timestamps);
+    } catch (e) {
+      logger.err('Cannot delete weekly hashrates. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
       throw e;
     }
   }
