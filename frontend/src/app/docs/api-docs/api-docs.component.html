@@ -74,6 +74,7 @@
                     </ng-container>
                   </ng-template>
                   <div *ngIf="item.httpRequestMethod === 'POST'">{{ item.httpRequestMethod }} {{ item.urlString }}</div>
+                  <div *ngIf="item.httpRequestMethod === 'DELETE'">{{ item.httpRequestMethod }} {{ baseNetworkUrl }}/api{{ item.urlString }}</div>
                 </div>
                 <div class="description">
                   <div class="subtitle" i18n>Description</div>
