@@ -160,7 +160,7 @@ class WalletApi {
       try {
         // update list of active wallets
         this.lastSync = Date.now();
-        const response = await axios.get(config.MEMPOOL_SERVICES.API + `/wallets`);
+        const response = await axios.get(config.MEMPOOL_SERVICES.API + `/wallets`, { timeout: 10000 });
         const walletList: string[] = response.data;
         if (walletList) {
           // create a quick lookup dictionary of active wallets
@@ -180,10 +180,6 @@ class WalletApi {
             }
           }
         }
-
-        // update list of treasuries
-        const treasuriesResponse = await axios.get(config.MEMPOOL_SERVICES.API + `/treasuries`);
-        this.treasuries = treasuriesResponse.data || [];
       } catch (e) {
         logger.err(`Error updating active wallets: ${(e instanceof Error ? e.message : e)}`);
       }
@@ -191,7 +187,7 @@ class WalletApi {
       try {
         // update list of active treasuries
         this.lastSync = Date.now();
-        const response = await axios.get(config.MEMPOOL_SERVICES.API + `/treasuries`);
+        const response = await axios.get(config.MEMPOOL_SERVICES.API + `/treasuries`, { timeout: 10000 });
         const treasuries: Treasury[] = response.data;
         if (treasuries) {
           this.treasuries = treasuries;
@@ -214,7 +210,7 @@ class WalletApi {
       const wallet = this.wallets[walletKey];
       if (wallet.lastPoll < (Date.now() - POLL_FREQUENCY)) {
         try {
-          const response = await axios.get(config.MEMPOOL_SERVICES.API + `/wallets/${wallet.name}`);
+          const response = await axios.get(config.MEMPOOL_SERVICES.API + `/wallets/${wallet.name}`, { timeout: 10000 });
           const addresses: Record<string, WalletAddress> = response.data;
           const addressList: WalletAddress[] = Object.values(addresses);
           // sync all current addresses
