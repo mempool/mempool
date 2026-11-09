@@ -697,8 +697,8 @@ class MempoolBlocks {
       blockVSize: (totalWeight / 4), // fractional vsize to avoid rounding errors
       nTx: transactionIds.length,
       totalFees: totalFees,
-      medianFee: feeStats.medianFee, // Common.percentile(transactions.map((tx) => tx.effectiveFeePerVsize), config.MEMPOOL.RECOMMENDED_FEE_PERCENTILE),
-      feeRange: feeStats.feeRange, //Common.getFeesInRange(transactions, rangeLength),
+      medianFee: feeStats.medianFee,
+      feeRange: feeStats.feeRange,
       transactionIds: transactionIds,
       transactions: transactions.map((tx) => Common.classifyTransaction(tx)),
     };
