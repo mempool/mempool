@@ -1011,7 +1011,7 @@ export class Common {
           url: addr,
         };
       }
-    } else if (addr.indexOf('ipv6') !== -1 || (config.LIGHTNING.BACKEND === 'lnd' && url.indexOf(']:'))) {
+    } else if (addr.indexOf('ipv6') !== -1 || (config.LIGHTNING.BACKEND === 'lnd' && url.indexOf(']:') !== -1)) {
       const parts = url.split('[');
       if (parts.length < 2) {
         return {
