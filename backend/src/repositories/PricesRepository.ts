@@ -225,17 +225,6 @@ class PricesRepository {
   }
 
   /** @asyncUnsafe */
-  public async $getOldestPriceTime(): Promise<number> {
-    const [oldestRow] = await DB.query(`
-      SELECT UNIX_TIMESTAMP(time) AS time
-      FROM prices
-      ORDER BY time
-      LIMIT 1
-    `);
-    return oldestRow[0] ? oldestRow[0].time : 0;
-  }
-
-  /** @asyncUnsafe */
   public async $getLatestPriceId(): Promise<number | null> {
     const [oldestRow] = await DB.query(`
       SELECT id
