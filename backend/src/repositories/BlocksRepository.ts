@@ -465,31 +465,6 @@ class BlocksRepository {
   }
 
   /**
-   * Get the oldest indexed block
-   * @asyncSafe
-   */
-  public async $oldestBlockTimestamp(): Promise<number> {
-    const query = `SELECT UNIX_TIMESTAMP(blockTimestamp) as blockTimestamp
-      FROM blocks
-      WHERE stale = 0
-      ORDER BY height
-      LIMIT 1;`;
-
-    try {
-      const [rows]: any[] = await DB.query(query);
-
-      if (rows.length <= 0) {
-        return -1;
-      }
-
-      return <number>rows[0].blockTimestamp;
-    } catch (e) {
-      logger.err('Cannot get oldest indexed block timestamp. Reason: ' + (e instanceof Error ? e.message : e));
-      throw e;
-    }
-  }
-
-  /**
    * Get blocks mined by a specific mining pool
    * @asyncSafe
    */
@@ -1079,26 +1054,6 @@ class BlocksRepository {
     } catch (e) {
       logger.err(`Cannot get blocks with missing coinbase addresses. Reason: ` + (e instanceof Error ? e.message : e));
       return [];
-    }
-  }
-
-  /**
-   * Save indexed median fee to avoid recomputing it later
-   *
-   * @param id
-   * @param feePercentiles
-   * @asyncSafe
-   */
-  public async $saveFeePercentilesForBlockId(id: string, feePercentiles: number[]): Promise<void> {
-    try {
-      await DB.query(`
-        UPDATE blocks SET fee_percentiles = ?, median_fee_amt = ?
-        WHERE hash = ?`,
-        [JSON.stringify(feePercentiles), feePercentiles[3], id]
-      );
-    } catch (e) {
-      logger.err(`Cannot update block fee_percentiles. Reason: ` + (e instanceof Error ? e.message : e));
-      throw e;
     }
   }
 
