@@ -596,12 +596,12 @@ class BitcoinRoutes {
       }
 
       const from = parseInt(req.params.from, 10);
-      if (!req.params.from || from < 0) {
+      if (!req.params.from || isNaN(from) ||  from < 0) {
         handleError(req, res, 400, `Parameter 'from' must be a block height (integer)`);
         return;
       }
       const to = req.params.to === undefined ? await bitcoinApi.$getBlockHeightTip() : parseInt(req.params.to, 10);
-      if (to < 0) {
+      if (isNaN(to) || to < 0) {
         handleError(req, res, 400, `Parameter 'to' must be a block height (integer)`);
         return;
       }
@@ -1250,7 +1250,7 @@ class BitcoinRoutes {
       const rawTxs = Common.getTransactionsFromRequest(req);
       const maxfeerate = parseFloat(req.query.maxfeerate as string);
       const maxburnamount = parseFloat(req.query.maxburnamount as string);
-      const result = await bitcoinClient.submitPackage(rawTxs, maxfeerate ?? undefined, maxburnamount ?? undefined);
+      const result = await bitcoinClient.submitPackage(rawTxs, Number.isFinite(maxfeerate) ? maxfeerate : undefined, Number.isFinite(maxburnamount) ? maxburnamount : undefined);
       res.send(result);
     } catch (e: any) {
       handleError(req, res, 400, (e.message && e.code) ? 'submitpackage RPC error: ' + JSON.stringify({ code: e.code })

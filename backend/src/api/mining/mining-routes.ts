@@ -225,11 +225,15 @@ class MiningRoutes {
 
   private async $getBlockFeesTimespan(req: Request, res: Response) {
     try {
-      if (!parseInt(req.query.from as string, 10) || !parseInt(req.query.to as string, 10)) {
-        throw new Error('Invalid timestamp range');
+      const from = parseInt(req.query.from as string, 10);
+      const to = parseInt(req.query.to as string, 10);
+      if (isNaN(from) || isNaN(to)) {
+        handleError(req, res, 400, `Parameters 'from' and 'to' must be integers`);
+        return;
       }
-      if (parseInt(req.query.from as string, 10) > parseInt(req.query.to as string, 10)) {
-        throw new Error('from must be less than to');
+      if (from > to) {
+        handleError(req, res, 400, `Parameter 'from' must be lesser than parameter 'to'`);
+        return;
       }
       const blockFees = await mining.$getBlockFeesTimespan(parseInt(req.query.from as string, 10), parseInt(req.query.to as string, 10));
       res.header('Pragma', 'public');
@@ -315,7 +319,7 @@ class MiningRoutes {
 
   private async $getRewardStats(req: Request, res: Response) {
     try {
-      const response = await mining.$getRewardStats(parseInt(req.params.blockCount, 10));
+      const response = await mining.$getRewardStats(144);
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(response);
     } catch (e) {
@@ -364,7 +368,8 @@ class MiningRoutes {
       const nowPlus1day = Math.floor(Date.now() / 1000) + 60 * 60 * 24;
       // Prevent non-integers that are not seconds
       if (!/^[1-9][0-9]*$/.test(req.params.timestamp) || timestamp > nowPlus1day) {
-        throw new Error(`Invalid timestamp, value must be Unix seconds`);
+        handleError(req, res, 400, `Invalid timestamp, value must be Unix seconds`);
+        return;
       }
       const result = await BlocksRepository.$getBlockHeightFromTimestamp(
         timestamp,
