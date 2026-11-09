@@ -1,5 +1,4 @@
-import * as bitcoinjs from 'bitcoinjs-lib';
-import { AbstractBitcoinApi, HealthCheckHost } from './bitcoin-api-abstract-factory';
+import { AbstractBitcoinApi } from './bitcoin-api-abstract-factory';
 import { IBitcoinApi, SubmitPackageResult, TestMempoolAcceptResult } from './bitcoin-api.interface';
 import { IEsploraApi } from './esplora-api.interface';
 import blocks from '../blocks';
