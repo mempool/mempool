@@ -21,7 +21,6 @@ import { ApiPrice } from '../repositories/PricesRepository';
 import { Acceleration } from './services/acceleration';
 import accelerationApi from './services/acceleration';
 import mempool from './mempool';
-import statistics from './statistics/statistics';
 import bitcoinApi from './bitcoin/bitcoin-api-factory';
 import walletApi from './services/wallets';
 
@@ -30,7 +29,6 @@ interface AddressTransactions {
   confirmed: MempoolTransactionExtended[],
   removed: MempoolTransactionExtended[],
 }
-import bitcoinSecondClient from './bitcoin/bitcoin-second-client';
 import { calculateMempoolTxCpfp } from './cpfp';
 import stratumApi, { StratumJob } from './services/stratum';
 

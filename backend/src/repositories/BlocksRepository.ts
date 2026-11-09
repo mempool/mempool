@@ -1,4 +1,4 @@
-import bitcoinApi, { bitcoinCoreApi } from '../api/bitcoin/bitcoin-api-factory';
+import bitcoinApi from '../api/bitcoin/bitcoin-api-factory';
 import { BlockExtended, BlockExtension, BlockPrice, EffectiveFeeStats } from '../mempool.interfaces';
 import DB from '../database';
 import logger from '../logger';

@@ -1,4 +1,3 @@
-import { escape } from 'mysql2';
 import { Common } from '../api/common';
 import mining from '../api/mining/mining';
 import DB from '../database';
