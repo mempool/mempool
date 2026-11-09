@@ -35,51 +35,6 @@ export class Common {
     return config?.MEMPOOL?.NETWORK === 'liquid' || config?.MEMPOOL?.NETWORK === 'liquidtestnet';
   }
 
-  static median(numbers: number[]) {
-    let medianNr = 0;
-    const numsLen = numbers.length;
-    if (numsLen % 2 === 0) {
-        medianNr = (numbers[numsLen / 2 - 1] + numbers[numsLen / 2]) / 2;
-    } else {
-        medianNr = numbers[(numsLen - 1) / 2];
-    }
-    return medianNr;
-  }
-
-  static percentile(numbers: number[], percentile: number) {
-    if (percentile === 50) {
-      return this.median(numbers);
-    }
-    const index = Math.ceil(numbers.length * (100 - percentile) * 1e-2);
-    if (index < 0 || index > numbers.length - 1) {
-      return 0;
-    }
-    return numbers[index];
-  }
-
-  static getFeesInRange(transactions: TransactionExtended[], rangeLength: number) {
-    const filtered: TransactionExtended[] = [];
-    let lastValidRate = Infinity;
-    // filter out anomalous fee rates to ensure monotonic range
-    for (const tx of transactions) {
-      if (tx.effectiveFeePerVsize <= lastValidRate) {
-        filtered.push(tx);
-        lastValidRate = tx.effectiveFeePerVsize;
-      }
-    }
-    const arr = [filtered[filtered.length - 1].effectiveFeePerVsize];
-    const chunk = 1 / (rangeLength - 1);
-    let itemsToAdd = rangeLength - 2;
-
-    while (itemsToAdd > 0) {
-      arr.push(filtered[Math.floor(filtered.length * chunk * itemsToAdd)].effectiveFeePerVsize);
-      itemsToAdd--;
-    }
-
-    arr.push(filtered[0].effectiveFeePerVsize);
-    return arr;
-  }
-
   static findRbfTransactions(added: MempoolTransactionExtended[], deleted: MempoolTransactionExtended[], forceScalable = false): { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }} {
     const matches: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }} = {};
 
