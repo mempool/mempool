@@ -330,6 +330,9 @@ function calculateCpfpCluster(txid: string, graph: Map<string, GraphTx>): Map<st
   let maxIterations = MAX_CLUSTER_ITERATIONS;
   let best = sortedRelatives.shift();
   let bestCluster = new Map<string, GraphTx>(best?.ancestors?.entries() || []);
+  if (best) {
+    bestCluster.set(best.txid, best);
+  }
   while (sortedRelatives.length && best && (best.txid !== tx.txid && !best.ancestors.has(tx.txid)) && maxIterations > 0) {
     maxIterations--;
     if ((best && best.txid === tx.txid) || (bestCluster && bestCluster.has(tx.txid))) {
