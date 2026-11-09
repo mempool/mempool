@@ -15,15 +15,12 @@ class Icons {
     }
     const cacheData = fs.readFileSync(Icons.FILE_NAME, 'utf8');
     this.icons = JSON.parse(cacheData);
-
-    for (const i in this.icons) {
-      this.iconIds.push(i);
-    }
+    this.iconIds = Object.keys(this.icons);
     logger.debug(`Liquid icons has been loaded.`);
   }
 
   public getIconByAssetId(assetId: string): Buffer | undefined {
-    const icon = this.icons[assetId];
+    const icon = Object.prototype.hasOwnProperty.call(this.icons, assetId) ? this.icons[assetId] : undefined;
     if (icon) {
       return Buffer.from(icon, 'base64');
     }
