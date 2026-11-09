@@ -436,7 +436,7 @@ class MempoolBlocks {
                 matched = true;
               } else {
                 if (!ancestor) {
-                  console.log('txid missing from mempool! ', txid, candidates?.txs[txid]);
+                  logger.warn(`txid missing from mempool! ${txid} ${candidates?.txs[txid]}`);
                   return;
                 }
                 const relative = {
