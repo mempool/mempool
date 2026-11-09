@@ -321,11 +321,6 @@ class MempoolBlocks {
   }
 
   /** @asyncSafe */
-  public async $oneOffRustBlockTemplates(transactions: string[], newMempool: { [txid: string]: MempoolTransactionExtended }, candidates: GbtCandidates | undefined, useAccelerations: boolean, accelerationPool?: number): Promise<MempoolBlockWithTransactions[]> {
-    return this.$rustMakeBlockTemplates(transactions, newMempool, candidates, false, useAccelerations, accelerationPool);
-  }
-
-  /** @asyncSafe */
   public async $rustUpdateBlockTemplates(transactions: string[], newMempool: { [txid: string]: MempoolTransactionExtended }, added: MempoolTransactionExtended[], removed: MempoolTransactionExtended[], candidates: GbtCandidates | undefined, useAccelerations: boolean, accelerationPool?: number, dryRun = false): Promise<MempoolBlockWithTransactions[]> {
     // GBT optimization requires that uids never get too sparse
     // as a sanity check, we should also explicitly prevent uint32 uid overflow

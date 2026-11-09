@@ -30,8 +30,6 @@ class Mempool {
   private static readonly RECENTLY_MINED_BLOCKS = 2;
   private mempoolInfo: IBitcoinApi.MempoolInfo;
   public clusterMempool: ClusterMempool | null = null;
-  private mempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, newTransactions: MempoolTransactionExtended[],
-    deletedTransactions: MempoolTransactionExtended[][], accelerationDelta: string[]) => void) | undefined;
   private $asyncMempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, mempoolSize: number, newTransactions: MempoolTransactionExtended[],
     deletedTransactions: MempoolTransactionExtended[][], accelerationDelta: string[], candidates?: GbtCandidates) => Promise<void>) | undefined;
 
@@ -110,11 +108,6 @@ class Mempool {
     return this.latestTransactions;
   }
 
-  public setMempoolChangedCallback(fn: (newMempool: { [txId: string]: MempoolTransactionExtended; },
-    newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[][], accelerationDelta: string[]) => void): void {
-    this.mempoolChangedCallback = fn;
-  }
-
   public setAsyncMempoolChangedCallback(fn: (newMempool: { [txId: string]: MempoolTransactionExtended; }, mempoolSize: number,
     newTransactions: MempoolTransactionExtended[], deletedTransactions: MempoolTransactionExtended[][], accelerationDelta: string[],
     candidates?: GbtCandidates) => Promise<void>): void {
@@ -177,10 +170,6 @@ class Mempool {
     return this.spendMap;
   }
 
-  public getFromSpendMap(txid, index): MempoolTransactionExtended | void {
-    return this.spendMap.get(`${txid}:${index}`);
-  }
-
   /** @asyncUnsafe */
   public async $setMempool(mempoolData: { [txId: string]: MempoolTransactionExtended }) {
     this.mempoolCache = mempoolData;
@@ -214,9 +203,6 @@ class Mempool {
     }
     if (config.MEMPOOL.CLUSTER_MEMPOOL) {
       this.clusterMempool = new ClusterMempool(this.mempoolCache, this.accelerations);
-    }
-    if (this.mempoolChangedCallback) {
-      this.mempoolChangedCallback(this.mempoolCache, [], [], []);
     }
     if (this.$asyncMempoolChangedCallback) {
       await this.$asyncMempoolChangedCallback(this.mempoolCache, count, [], [], [], this.limitGBT ? { txs: {}, added: [], removed: [] } : undefined);
@@ -475,9 +461,6 @@ class Mempool {
     this.recentlyDeleted.unshift(deletedTransactions);
     this.recentlyDeleted.length = Math.min(this.recentlyDeleted.length, 10); // truncate to the last 10 mempool updates
 
-    if (this.mempoolChangedCallback && (hasChange || newTransactions.length || deletedTransactions.length)) {
-      this.mempoolChangedCallback(this.mempoolCache, newTransactions, this.recentlyDeleted, accelerationDelta);
-    }
     if (this.$asyncMempoolChangedCallback && (hasChange || newTransactions.length || deletedTransactions.length || candidatesChanged)) {
       this.updateTimerProgress(timer, 'running async mempool callback');
       await this.$asyncMempoolChangedCallback(this.mempoolCache, newMempoolSize, newTransactions, this.recentlyDeleted, accelerationDelta, candidates);
