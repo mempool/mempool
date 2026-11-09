@@ -822,10 +822,6 @@ export class Common {
     };
   }
 
-  static stripTransactions(txs: TransactionExtended[]): TransactionStripped[] {
-    return txs.map(Common.stripTransaction);
-  }
-
   /** @asyncSafe */
   static sleep$(ms: number): Promise<void> {
     return new Promise((resolve) => {
