@@ -25,6 +25,7 @@ export class TransactionDetailsComponent implements OnChanges {
   @Input() transactionTime: number;
   @Input() isLoadingFirstSeen: boolean;
   @Input() featuresEnabled: boolean;
+  @Input() isPayjoin = false;
   @Input() auditStatus: TxAuditStatus;
   @Input() filters: Filter[];
   @Input() miningStats: MiningStats;
