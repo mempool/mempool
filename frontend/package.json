@@ -114,9 +114,20 @@
     "start-server-and-test": "~2.1.2"
   },
   "overrides": {
-    "tar": "^7.5.5"
+    "tar": "^7.5.5",
+    "vite": {
+      "esbuild": "0.28.1"
+    }
   },
   "scarfSettings": {
     "enabled": false
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true,
+    "cypress": false,
+    "@parcel/watcher": false,
+    "fsevents": false,
+    "lmdb": false,
+    "msgpackr-extract": false
   }
 }
