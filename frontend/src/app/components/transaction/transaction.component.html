@@ -210,7 +210,13 @@
     </div>
 
 
-    <app-transactions-list #txList [transactions]="[tx]" [cached]="isCached" [errorUnblinded]="errorUnblinded" [inputIndex]="inputIndex" [outputIndex]="outputIndex" [transactionPage]="true"></app-transactions-list>
+    <app-transactions-list #txList [transactions]="[tx]" [cached]="isCached" [errorUnblinded]="errorUnblinded" [inputIndex]="inputIndex" [outputIndex]="outputIndex" [transactionPage]="true" [debugIndex]="debugVin" [debuggableInputs]="debuggableInputs" (debugInput)="openScriptDebugger($event)"></app-transactions-list>
+
+    <ng-container *ngIf="debugVin !== null">
+      <span id="debug" class="anchor"></span>
+      <app-script-debugger [tx]="tx" [vinIndex]="debugVin" [isMobile]="isMobile" (hide)="closeScriptDebugger()"></app-script-debugger>
+      <br>
+    </ng-container>
 
     <div class="title text-start">
       <h2 i18n="transaction.details|Transaction Details">Details</h2>

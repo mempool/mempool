@@ -1,0 +1,542 @@
+:host {
+  display: block;
+  outline: none;
+  --op-push: var(--primary);
+  --op-stack: var(--red);
+  --op-arith: var(--green);
+  --op-compare: color-mix(in srgb, var(--info) 55%, black);
+  --op-crypto: var(--tertiary);
+  --op-flow: var(--orange);
+  --op-locktime: color-mix(in srgb, var(--yellow) 60%, black);
+  --op-disabled: var(--grey);
+  --op-invalid: var(--grey);
+}
+
+@each $category in push, stack, arith, compare, crypto, flow, locktime, disabled, invalid {
+  .op-#{$category} {
+    --op-color: var(--op-#{$category});
+  }
+}
+
+@mixin no-scrollbar {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// same header as the other transaction page sections (transaction.component.scss)
+.subtitle-block {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+
+  .title h2 {
+    line-height: 1;
+    margin: 0;
+    padding-bottom: 5px;
+  }
+
+  .title-buttons .btn {
+    margin: 0 0 8px 8px;
+  }
+}
+
+.debugger {
+  display: flex;
+  gap: 16px;
+}
+
+// the script pane sets the height (the stack pane stretches to it), so stepping never changes the section's height
+.script-wrap,
+.stack-pane {
+  background: var(--stat-box-bg);
+  border-radius: 4px;
+}
+
+.pane-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.script-wrap {
+  flex: 2;
+  min-width: 0;
+}
+
+.script-pane {
+  position: relative;
+  min-height: 200px; // room for the tooltip
+  max-height: 430px; // a whole P2PKH or P2WPKH (the tallest common scripts, 394 / 428px with the END chip) fits without scrolling
+  overflow: auto;
+  @include no-scrollbar;
+
+  svg {
+    display: block;
+    user-select: none; // blocks, chips and box labels are click targets, not text
+  }
+}
+
+// scrollbars are hidden; a fade shows which edge has more content
+// scrollbars are hidden; the content itself fades out at an edge while there's more past it,
+// with a scroll-driven mask like the goggles filters (block-filters.component.scss)
+@property --fade-top {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --fade-bottom {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes fade-top {
+  to { --fade-top: 40px; }
+}
+
+@keyframes fade-bottom {
+  from { --fade-bottom: 40px; }
+}
+
+@supports (animation-timeline: scroll()) {
+  .fade-edges {
+    mask-image: linear-gradient(to bottom, transparent 0, #000 var(--fade-top), #000 calc(100% - var(--fade-bottom)), transparent 100%);
+    animation: fade-top linear both, fade-bottom linear both;
+    animation-timeline: scroll(self block);
+    animation-range: 0 40px, calc(100% - 40px) 100%;
+    animation-duration: 1ms;
+  }
+}
+
+.stack-pane {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 10px;
+}
+
+.pane-title {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.stack-wrap {
+  flex: 1;
+  min-height: 0;
+  margin-top: 6px;
+}
+
+.stack-scroll {
+  position: absolute; // out of the flow, so the stack never grows the pane
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  @include no-scrollbar;
+}
+
+// sits at the bottom while it fits; when it overflows it scrolls from the top, so the top of the stack stays in view
+.stack-columns {
+  margin-top: auto;
+  display: flex;
+  align-items: flex-start; // tops line up, so both stack tops stay in view when one column overflows
+  gap: 12px;
+  padding: 4px; // room for the read-group outline
+}
+
+.stack-column {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.column-title {
+  font-size: 11px;
+  color: var(--grey);
+}
+
+// a button, so values can be expanded from the keyboard (Enter / Space)
+.stack-item {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  padding: 4px 8px;
+  border-radius: 3px;
+  background: var(--active-bg);
+  border: 1px solid transparent;
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--tooltip-grey);
+  white-space: nowrap;
+  cursor: pointer;
+
+  app-truncate {
+    min-width: 0;
+  }
+
+  .item-icon {
+    flex-shrink: 0;
+    margin-right: 6px;
+    color: var(--grey);
+  }
+
+  .empty {
+    color: var(--grey);
+    font-style: italic;
+  }
+
+  &.expanded {
+    white-space: normal;
+    word-break: break-all;
+  }
+
+  // about to be added: pulses until the op runs
+  &.pending {
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+
+  &.valid {
+    border-color: var(--green);
+    color: var(--green);
+  }
+}
+
+// about to be used: outlined in the colour of the opcode that uses them
+.read-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  outline: 2px solid color-mix(in srgb, var(--op-color, var(--fg)) 70%, white);
+  outline-offset: 2px;
+  border-radius: 3px;
+  margin: 4px 0;
+
+  // the op removes them without adding anything (DROP, VERIFY, …)
+  &.leaving .stack-item {
+    background: color-mix(in srgb, var(--red) 18%, var(--active-bg));
+  }
+}
+
+.more-below {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  text-align: center;
+  font-size: 11px;
+  color: var(--grey);
+  pointer-events: none;
+
+  // part of the stack isn't drawn: clicking draws it
+  &.expandable {
+    pointer-events: auto;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--fg);
+    }
+  }
+}
+
+.block {
+  opacity: 0.5;
+  cursor: pointer;
+  transition: opacity 0.1s, filter 0.2s;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &.not-executed {
+    opacity: 0.25;
+
+    &:hover {
+      opacity: 0.45;
+    }
+  }
+
+  &.current {
+    opacity: 1;
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--op-color) 85%, white));
+  }
+
+  // an op that won't run stays dim even when it's the current step: no glow (the ▶ marker and the tooltip badge still point at it)
+  &.current.not-executed {
+    opacity: 0.25;
+    filter: none;
+  }
+
+  &.current.error {
+    filter: drop-shadow(0 0 6px var(--red));
+  }
+
+  .hex-bg {
+    fill: color-mix(in srgb, var(--op-color) 55%, black);
+  }
+
+  .name-bg {
+    fill: color-mix(in srgb, var(--op-color) 80%, var(--stat-box-bg));
+  }
+
+  text {
+    font-size: var(--block-font, 14px);
+    font-weight: 700;
+    fill: white;
+    pointer-events: none;
+  }
+}
+
+// handover and end steps
+.chip {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.1s, filter 0.2s;
+  --chip-color: var(--grey);
+
+  &.chip-valid { --chip-color: var(--green); }
+  &.chip-invalid { --chip-color: var(--red); }
+
+  &:hover { opacity: 0.85; }
+
+  &.current {
+    opacity: 1;
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--chip-color) 85%, white));
+  }
+
+  rect {
+    fill: var(--active-bg);
+    stroke: var(--chip-color);
+    stroke-width: 1.5;
+  }
+
+  text {
+    font-size: 12px;
+    font-weight: 700;
+    fill: color-mix(in srgb, var(--chip-color) 70%, white);
+    pointer-events: none;
+  }
+}
+
+.indent-guide {
+  stroke: var(--grey);
+  stroke-width: 1.5;
+  opacity: 0.35;
+}
+
+// program counter: points at the next opcode and slides between blocks
+.pc {
+  fill: var(--fg);
+  transition: transform 0.2s ease;
+  pointer-events: none;
+
+  &.idle {
+    opacity: 0.4;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes enter-push {
+  from { opacity: 0.5; transform: translateY(-6px); }
+}
+
+@keyframes enter-move {
+  from { opacity: 0.6; transform: translateY(calc(var(--from, 0) * (100% + 4px))); }
+}
+
+@keyframes enter-replace {
+  from { opacity: 0; transform: scale(0.92); }
+}
+
+@keyframes enter-alt-left {
+  from { opacity: 0.6; transform: translateX(calc(-100% - 12px)); }
+}
+
+@keyframes enter-alt-right {
+  from { opacity: 0.6; transform: translateX(calc(100% + 12px)); }
+}
+
+@keyframes exit {
+  from { opacity: 1; max-height: 40px; }
+  to { opacity: 0; max-height: 0; padding-top: 0; padding-bottom: 0; margin-bottom: -4px; border-width: 0; }
+}
+
+@keyframes dim-in {
+  from { opacity: 0.5; }
+  to { opacity: 0.25; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: none; }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+
+@keyframes valid-pulse {
+  from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--green) 60%, transparent); }
+  to { box-shadow: 0 0 0 8px transparent; }
+}
+
+// one-off transitions, only when stepping one op forward
+:host(.animate) {
+  .stack-item {
+    &.enter-push { animation: enter-push 0.2s ease-out; }
+    &.enter-move { animation: enter-move 0.25s ease-out; }
+    // replace (HASH160, CHECKSIG, …): the inputs collapse first, then the result appears in their place
+    &.enter-replace { animation: enter-replace 0.25s ease-out 0.15s both; }
+    &.enter-alt-left { animation: enter-alt-left 0.25s ease-out; }
+    &.enter-alt-right { animation: enter-alt-right 0.25s ease-out; }
+    &.exiting { animation: exit 0.25s ease-in forwards; overflow: hidden; }
+    &.valid { animation: valid-pulse 0.6s ease-out; }
+    &.enter-replace.valid { animation: enter-replace 0.25s ease-out 0.15s both, valid-pulse 0.6s ease-out 0.4s; }
+  }
+
+  .block.not-executed.dim-in {
+    animation: dim-in 0.25s ease both;
+    animation-delay: calc(var(--i, 0) * 40ms);
+  }
+
+  .block.current.error {
+    animation: shake 0.3s ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .stack-item.pending {
+    opacity: 0.4;
+  }
+
+  .stack-item.exiting {
+    display: none;
+  }
+}
+
+.section-box {
+  .box-border {
+    fill: none;
+    stroke: var(--grey);
+    stroke-width: 1;
+    stroke-dasharray: 6 4;
+  }
+
+  &.inner .box-border {
+    stroke-dasharray: 3 3;
+  }
+
+  .box-label-bg {
+    fill: var(--stat-box-bg);
+  }
+
+  .box-label {
+    font-size: 12px;
+    font-weight: 700;
+    fill: var(--fg);
+  }
+
+  &.inner .box-label {
+    font-weight: normal;
+    fill: var(--grey);
+  }
+}
+
+.debugger-tooltip {
+  background: color-mix(in srgb, var(--active-bg) 95%, transparent);
+  border-radius: 4px;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
+  color: var(--tooltip-grey);
+  padding: 8px 12px;
+  font-size: 13px;
+  position: absolute;
+  max-width: 300px;
+  user-select: text; // so hex values and descriptions can be copied
+
+  &.mobile {
+    position: static;
+    max-width: none;
+  }
+
+  .tooltip-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    &.valid {
+      color: var(--green);
+    }
+
+    &.invalid {
+      color: var(--red);
+    }
+  }
+
+  .not-executed-badge {
+    font-size: 0.75em;
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    border-radius: 3px;
+    padding: 1px 6px;
+  }
+
+  .tooltip-hex {
+    font-family: monospace;
+    font-size: 12px;
+    word-break: break-all;
+  }
+
+  .tooltip-error {
+    color: var(--red);
+  }
+
+  .tooltip-note {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--grey);
+  }
+}
+
+.unsupported {
+  color: var(--grey);
+}
+
+@media (max-width: 849px) {
+  .debugger {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .script-wrap {
+    flex: none;
+  }
+
+  .script-pane {
+    min-height: 0; // the tooltip sits below the pane on mobile
+    max-height: 250px;
+  }
+
+  .stack-pane {
+    flex: none;
+    height: 220px; // about 6 items
+  }
+}
