@@ -251,6 +251,7 @@ class NodesApi {
           SELECT nodes.public_key AS publicKey, IF(nodes.alias = '', SUBSTRING(nodes.public_key, 1, 20), alias) as alias,
             nodes.capacity
           FROM nodes
+          WHERE nodes.status = 1
           ORDER BY capacity DESC
           LIMIT 6
         `;
@@ -269,6 +270,7 @@ class NodesApi {
           LEFT JOIN geo_names geo_names_city ON geo_names_city.id = nodes.city_id AND geo_names_city.type = 'city'
           LEFT JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
           LEFT JOIN geo_names geo_names_subdivision on geo_names_subdivision.id = nodes.subdivision_id AND geo_names_subdivision.type = 'division'
+          WHERE nodes.status = 1
           ORDER BY capacity DESC
           LIMIT 100
         `;
@@ -304,6 +306,7 @@ class NodesApi {
           LEFT JOIN geo_names geo_names_city ON geo_names_city.id = nodes.city_id AND geo_names_city.type = 'city'
           LEFT JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
           LEFT JOIN geo_names geo_names_subdivision on geo_names_subdivision.id = nodes.subdivision_id AND geo_names_subdivision.type = 'division'
+          WHERE nodes.status = 1
           ORDER BY channels DESC
           LIMIT 6;
         `;
@@ -326,6 +329,7 @@ class NodesApi {
           LEFT JOIN geo_names geo_names_city ON geo_names_city.id = nodes.city_id AND geo_names_city.type = 'city'
           LEFT JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
           LEFT JOIN geo_names geo_names_subdivision on geo_names_subdivision.id = nodes.subdivision_id AND geo_names_subdivision.type = 'division'
+          WHERE nodes.status = 1
           ORDER BY channels DESC
           LIMIT 100
         `;
@@ -356,7 +360,7 @@ class NodesApi {
             node_stats.channels
           FROM node_stats
           JOIN nodes ON nodes.public_key = node_stats.public_key
-          WHERE added = FROM_UNIXTIME(${latestDate})
+          WHERE added = FROM_UNIXTIME(${latestDate}) AND nodes.status = 1
           ORDER BY first_seen
           LIMIT 100;
         `;
@@ -376,7 +380,7 @@ class NodesApi {
           LEFT JOIN geo_names geo_names_city ON geo_names_city.id = nodes.city_id AND geo_names_city.type = 'city'
           LEFT JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
           LEFT JOIN geo_names geo_names_subdivision on geo_names_subdivision.id = nodes.subdivision_id AND geo_names_subdivision.type = 'division'
-          WHERE added = FROM_UNIXTIME(${latestDate})
+          WHERE added = FROM_UNIXTIME(${latestDate}) AND nodes.status = 1
           ORDER BY first_seen
           LIMIT 100
         `;
@@ -573,7 +577,7 @@ class NodesApi {
         LEFT JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
         LEFT JOIN geo_names geo_names_subdivision on geo_names_subdivision.id = nodes.subdivision_id AND geo_names_subdivision.type = 'division'
         LEFT JOIN geo_names geo_names_isp on geo_names_isp.id = nodes.as_number AND geo_names_isp.type = 'as_organization'
-        WHERE geo_names_country.id = ?
+        WHERE geo_names_country.id = ? AND nodes.status = 1
         ORDER BY capacity DESC
       `;
 
@@ -662,12 +666,13 @@ class NodesApi {
         FROM nodes
         JOIN geo_names ON geo_names.id = nodes.country_id AND geo_names.type = 'country'
         JOIN geo_names geo_names_iso ON geo_names_iso.id = nodes.country_id AND geo_names_iso.type = 'country_iso_code'
+        WHERE nodes.status = 1
         GROUP BY country_id
         ORDER BY COUNT(DISTINCT nodes.public_key) DESC
       `;
       const [nodesCountPerCountry]: any = await DB.query(query);
 
-      query = `SELECT COUNT(*) as total FROM nodes WHERE country_id IS NOT NULL`;
+      query = `SELECT COUNT(*) as total FROM nodes WHERE status = 1 AND country_id IS NOT NULL`;
       const [nodesWithAS]: any = await DB.query(query);
 
       const nodesPerCountry: any[] = [];
