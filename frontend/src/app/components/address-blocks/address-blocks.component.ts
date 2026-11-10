@@ -4,6 +4,8 @@ import { ThemeService } from '@app/services/theme.service';
 import { StateService } from '@app/services/state.service';
 import { fromEvent, Subscription } from 'rxjs';
 
+const MAX_AUTO_LOADS = 2;
+
 @Component({
   selector: 'app-address-blocks',
   templateUrl: './address-blocks.component.html',
@@ -30,6 +32,7 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
   private startScrollLeft = 0;
   private suppressClick = false;
   private headerObserver: ResizeObserver;
+  private autoLoads = 0;
 
   constructor(
     private themeService: ThemeService,
@@ -81,6 +84,13 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.updatePendingBackground();
+    if (changes.groups && !this.groups.length) {
+      this.autoLoads = 0;
+    }
+    if (changes.groups || changes.loading || changes.fullyLoaded) {
+      // Wait for the view to render the blocks before measuring the strip.
+      requestAnimationFrame(() => this.loadMoreIfShort());
+    }
     if (changes.selectedGroup && !changes.selectedGroup.firstChange) {
       // Wait for the view to render the selection before revealing it.
       requestAnimationFrame(() => this.revealSelectedBlock());
@@ -90,6 +100,15 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
     this.headerObserver?.disconnect();
+  }
+
+  private loadMoreIfShort(): void {
+    const strip = this.strip.nativeElement;
+    if (!this.loading && !this.fullyLoaded && this.groups.length && this.autoLoads < MAX_AUTO_LOADS
+      && strip.scrollWidth <= strip.clientWidth) {
+      this.autoLoads++;
+      this.loadMore.emit();
+    }
   }
 
   // Scrolls the strip, not the page, so the selected block is fully visible.

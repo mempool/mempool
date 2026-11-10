@@ -140,8 +140,8 @@
       <div class="title-tx">
         <h2 class="text-start" i18n="address.blocks.title">Activity by block</h2>
       </div>
-      <app-address-blocks [groups]="blockGroups" [selectedGroup]="selectedBlockGroup" [fullyLoaded]="fullyLoaded" [loading]="isLoadingTransactions"
-        (selectGroup)="selectBlockGroup($event)" (loadMore)="loadMore()"></app-address-blocks>
+      <app-address-blocks [groups]="stripGroups" [selectedGroup]="selectedBlockGroup" [fullyLoaded]="fullyLoaded || stripHistoryDone" [loading]="isLoadingTransactions || isLoadingStripHistory"
+        (selectGroup)="selectBlockGroup($event)" (loadMore)="loadMoreStrip()"></app-address-blocks>
     }
 
     <div class="title-tx">
