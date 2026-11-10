@@ -89,6 +89,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   latestBlock: BlockExtended;
   transactionTime = -1;
   subscription: Subscription;
+  networkChangedSubscription: Subscription;
   fetchCpfpSubscription: Subscription;
   transactionTimesSubscription: Subscription;
   fetchRbfSubscription: Subscription;
@@ -249,7 +250,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.websocketService.want(['blocks', 'mempool-blocks']);
-    this.stateService.networkChanged$.subscribe(
+    this.networkChangedSubscription = this.stateService.networkChanged$.subscribe(
       (network) => {
         this.network = network;
         this.acceleratorAvailable = this.stateService.env.ACCELERATOR_BUTTON && this.stateService.network === '';
@@ -1297,6 +1298,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.networkChangedSubscription?.unsubscribe();
     this.subscription.unsubscribe();
     this.fetchCpfpSubscription.unsubscribe();
     this.transactionTimesSubscription.unsubscribe();
