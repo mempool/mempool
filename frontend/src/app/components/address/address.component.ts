@@ -386,12 +386,14 @@ export class AddressComponent implements OnInit, OnDestroy {
       .subscribe(tx => {
         this.addTransaction(tx);
         this.mempoolStats.addTx(tx);
+        this.updateBlockGroups();
       });
 
     this.mempoolRemovedTxSubscription = this.stateService.mempoolRemovedTransactions$
       .subscribe(tx => {
         this.removeTransaction(tx);
         this.mempoolStats.removeTx(tx);
+        this.updateBlockGroups();
       });
 
     this.blockTxSubscription = this.stateService.blockTransactions$
@@ -409,6 +411,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           }
         }
         this.chainStats.addTx(transaction);
+        this.updateBlockGroups();
       });
   }
 
@@ -545,6 +548,8 @@ export class AddressComponent implements OnInit, OnDestroy {
     if (pendingGroup && this.mempoolStats) {
       pendingGroup.count = this.mempoolStats.tx_count;
       pendingGroup.net = isLiquid ? null : this.mempoolStats.funded_txo_sum - this.mempoolStats.spent_txo_sum;
+      pendingGroup.received = this.mempoolStats.funded_txo_count > 0;
+      pendingGroup.sent = this.mempoolStats.spent_txo_count > 0;
       pendingGroup.partial = false;
     }
 
@@ -556,8 +561,12 @@ export class AddressComponent implements OnInit, OnDestroy {
   }
 
   private get stripUsesOwnHistory(): boolean {
+    // Only Esplora backends serve the confirmed-only /txs/chain pages.
+    if (this.stateService.backend !== 'esplora') {
+      return false;
+    }
     const lastTransaction = this.transactions?.[this.transactions.length - 1];
-    return !this.fullyLoaded && !!lastTransaction && !lastTransaction.status.confirmed;
+    return !this.fullyLoaded && (!!this.stripHistoryCursor || (!!lastTransaction && !lastTransaction.status.confirmed));
   }
 
   toggleBlockStrip(): void {
