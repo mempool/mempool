@@ -1,9 +1,10 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, HostListener, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { SeoService } from '@app/services/seo.service';
 import { OpenGraphService } from '@app/services/opengraph.service';
 import { WebsocketService } from '@app/services/websocket.service';
 import { StateService } from '@app/services/state.service';
 import { EventType, NavigationStart, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-mining-dashboard',
@@ -12,9 +13,10 @@ import { EventType, NavigationStart, Router } from '@angular/router';
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MiningDashboardComponent implements OnInit, AfterViewInit {
+export class MiningDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   hashrateGraphHeight = 335;
   poolGraphHeight = 375;
+  routerEventsSubscription: Subscription;
 
   constructor(
     private seoService: SeoService,
@@ -34,13 +36,17 @@ export class MiningDashboardComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.stateService.focusSearchInputDesktop();
-    this.router.events.subscribe((e: NavigationStart) => {
+    this.routerEventsSubscription = this.router.events.subscribe((e: NavigationStart) => {
       if (e.type === EventType.NavigationStart) {
         if (e.url.indexOf('graphs') === -1) { // The mining dashboard and the graph component are part of the same module so we can't use ngAfterViewInit in graphs.component.ts to blur the input
           this.stateService.focusSearchInputDesktop();
         }
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.routerEventsSubscription?.unsubscribe();
   }
 
   @HostListener('window:resize', ['$event'])
