@@ -10,6 +10,7 @@ import { AudioService } from '@app/services/audio.service';
 import { ApiService } from '@app/services/api.service';
 import { of, merge, Subscription, Observable, forkJoin } from 'rxjs';
 import { SeoService } from '@app/services/seo.service';
+import { StorageService } from '@app/services/storage.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { AddressInformation } from '@interfaces/node-api.interface';
 import { AddressTypeInfo } from '@app/shared/address-utils';
@@ -152,6 +153,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   selectedBlockGroup: string | null = null;
   showBlockGroups = false;
   stripGroups: AddressBlockGroup[] = [];
+  hideBlockStrip = false;
   isLoadingStripHistory = false;
   stripHistoryDone = false;
   private stripHistory: Transaction[] = [];
@@ -188,9 +190,11 @@ export class AddressComponent implements OnInit, OnDestroy {
     private formBuilder: UntypedFormBuilder,
     private elementRef: ElementRef<HTMLElement>,
     private zone: NgZone,
+    private storageService: StorageService,
   ) { }
 
   ngOnInit(): void {
+    this.hideBlockStrip = this.storageService.getValue('address-blocks-preference') === 'hide';
     this.zone.runOutsideAngular(() => window.addEventListener('scroll', this.onPageScroll, { passive: true }));
     this.network = this.stateService.network;
     this.networkChangeSubscription = this.stateService.networkChanged$.subscribe((network) => {
@@ -556,6 +560,16 @@ export class AddressComponent implements OnInit, OnDestroy {
     return !this.fullyLoaded && !!lastTransaction && !lastTransaction.status.confirmed;
   }
 
+  toggleBlockStrip(): void {
+    this.hideBlockStrip = !this.hideBlockStrip;
+    if (this.hideBlockStrip) {
+      this.storageService.setValue('address-blocks-preference', 'hide');
+    } else {
+      this.storageService.removeItem('address-blocks-preference');
+      this.fillStripHistory();
+    }
+  }
+
   loadMoreStrip(): void {
     if (this.stripUsesOwnHistory) {
       const confirmedBlocks = this.stripGroups.filter(group => group.status.confirmed).length;
@@ -566,7 +580,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   }
 
   private fillStripHistory(minConfirmedBlocks = STRIP_MIN_BLOCKS, pagesLeft = STRIP_MAX_PAGES_PER_LOAD): void {
-    if (!this.stripUsesOwnHistory || this.stripHistoryDone || this.isLoadingStripHistory) {
+    if (this.hideBlockStrip || !this.stripUsesOwnHistory || this.stripHistoryDone || this.isLoadingStripHistory) {
       return;
     }
     const address = this.address;
