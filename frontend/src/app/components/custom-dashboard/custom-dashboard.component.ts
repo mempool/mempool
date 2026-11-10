@@ -11,6 +11,7 @@ import { ActiveFilter, FilterMode, GradientMode, toFlags } from '@app/shared/fil
 import { detectWebGL } from '@app/shared/graphs.utils';
 import { Address, AddressTxSummary } from '@interfaces/electrs.interface';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
+import { isMobile } from '@app/shared/common.utils';
 
 interface MempoolBlocksData {
   blocks: number;
@@ -61,7 +62,7 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
   incomingGraphHeight: number = 300;
   graphHeight: number = 300;
   webGlEnabled = true;
-  isMobile: boolean = window.innerWidth <= 767.98;
+  isMobile: boolean = isMobile();
 
   widgets;
 
@@ -470,6 +471,6 @@ export class CustomDashboardComponent implements OnInit, OnDestroy, AfterViewIni
       this.goggleResolution = 86;
       this.graphHeight = 310;
     }
-    this.isMobile = window.innerWidth <= 767.98;
+    this.isMobile = isMobile();
   }
 }

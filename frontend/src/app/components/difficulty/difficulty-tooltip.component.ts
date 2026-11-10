@@ -1,4 +1,5 @@
 import { Component, ElementRef, ViewChild, Input, OnChanges, HostListener } from '@angular/core';
+import { isMobile } from '@app/shared/common.utils';
 
 interface EpochProgress {
   base: string;
@@ -70,6 +71,6 @@ export class DifficultyTooltipComponent implements OnChanges {
 
   @HostListener('window:resize', ['$event'])
   onResize(): void {
-    this.isMobile = window.innerWidth <= 767.98;
+    this.isMobile = isMobile();
   }
 }

@@ -4,6 +4,7 @@ import { merge, Observable, of, Subscription} from 'rxjs';
 import { LanguageService } from '@app/services/language.service';
 import { EnterpriseService } from '@app/services/enterprise.service';
 import { NavigationService } from '@app/services/navigation.service';
+import { isMobile } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-liquid-master-page',
@@ -15,7 +16,7 @@ export class LiquidMasterPageComponent implements OnInit, OnDestroy {
   env: Env;
   connectionState$: Observable<number>;
   navCollapsed = false;
-  isMobile = window.innerWidth <= 767.98;
+  isMobile = isMobile();
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
   subdomain = '';
   network$: Observable<string>;
@@ -61,7 +62,7 @@ export class LiquidMasterPageComponent implements OnInit, OnDestroy {
   }
 
   onResize(): void {
-    this.isMobile = window.innerWidth <= 767.98;
+    this.isMobile = isMobile();
   }
 
   ngOnDestroy(): void {
