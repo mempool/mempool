@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, SecurityContext, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, SecurityContext, ChangeDetectorRef } from '@angular/core';
 import { WebsocketService } from '@app/services/websocket.service';
 import { Observable, map, tap } from 'rxjs';
 import { StateService } from '@app/services/state.service';
@@ -12,7 +12,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ServerHealthComponent implements OnInit {
+export class ServerHealthComponent implements OnInit, OnDestroy {
   hosts$: Observable<HealthCheckHost[]>;
   maxHeight: number;
   interval: number;
@@ -98,6 +98,10 @@ export class ServerHealthComponent implements OnInit {
 
     this.isLiquidMainnet = this.stateService.network === 'liquid';
     this.showHybridHash = !this.stateService.isLiquid();
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.interval);
   }
 
   trackByFn(index: number, host: HealthCheckHost): string {

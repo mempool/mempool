@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
 import { Observable, Subscription, of, switchMap, tap } from 'rxjs';
 import { StateService } from '@app/services/state.service';
 import { BlockExtended } from '@interfaces/node-api.interface';
@@ -14,10 +14,11 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ClockComponent implements OnInit {
+export class ClockComponent implements OnInit, OnDestroy {
   hideStats: boolean = false;
   mode: 'mempool' | 'mined' = 'mined';
   blockIndex: number;
+  queryParamsSubscription: Subscription;
   pageSubscription: Subscription;
   blocksSubscription: Subscription;
   recommendedFees$: Observable<Recommendedfees>;
@@ -50,7 +51,7 @@ export class ClockComponent implements OnInit {
     private relativeUrlPipe: RelativeUrlPipe,
     private cd: ChangeDetectorRef,
   ) {
-    this.route.queryParams.subscribe((params) => {
+    this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
       this.hideStats = params && params.stats === 'false';
       this.limitWidth = Number.parseInt(params.width) || null;
       this.limitHeight = Number.parseInt(params.height) || null;
@@ -95,6 +96,12 @@ export class ClockComponent implements OnInit {
         }
       })
     ).subscribe();
+  }
+
+  ngOnDestroy(): void {
+    this.queryParamsSubscription?.unsubscribe();
+    this.blocksSubscription?.unsubscribe();
+    this.pageSubscription?.unsubscribe();
   }
 
   getStyleForBlock(block: BlockExtended) {
