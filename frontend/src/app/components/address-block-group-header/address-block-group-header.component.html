@@ -1,0 +1,29 @@
+@if (group.status.confirmed) {
+  <h3>
+    @if (group.status.block_height != null) {
+      <span i18n="shared.block-title">Block</span>&nbsp;
+      @if (group.status.block_hash) {
+        <a [routerLink]="['/block' | relativeUrl, group.status.block_hash]">{{ group.status.block_height }}</a>
+      } @else {
+        {{ group.status.block_height }}
+      }
+    } @else {
+      <span i18n="transaction.confirmed|Transaction confirmed state">Confirmed</span>
+    }
+  </h3>
+} @else {
+  <h3 i18n="dashboard.unconfirmed|Unconfirmed count">Unconfirmed</h3>
+}
+<span class="group-count">
+  @if (group.count === 1) {
+    <span i18n="shared.transaction-count.singular">{{ group.count | number }} transaction</span>
+  } @else {
+    <span i18n="shared.transaction-count.plural">{{ group.count | number }} transactions</span>
+  }
+</span>
+@if (group.partial) {
+  <span class="group-partial" i18n="address.blocks.partial">Partial activity</span>
+}
+@if (group.status.confirmed) {
+  <app-timestamp [customFormat]="'yyyy-MM-dd HH:mm:ss'" [unixTime]="group.status.block_time" [hideTimeSince]="true"></app-timestamp>
+}

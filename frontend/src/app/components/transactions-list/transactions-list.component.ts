@@ -1,8 +1,9 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, OnChanges, Output, EventEmitter, ChangeDetectorRef, OnDestroy, TemplateRef } from '@angular/core';
 import { StateService, SignaturesMode } from '@app/services/state.service';
 import { CacheService } from '@app/services/cache.service';
 import { Observable, ReplaySubject, BehaviorSubject, merge, Subscription, of, forkJoin } from 'rxjs';
 import { Outspend, Transaction, Vin, Vout } from '@interfaces/electrs.interface';
+import { getAddressActivity } from '@app/shared/address-activity.utils';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { environment } from '@environments/environment';
 import { AssetsService } from '@app/services/assets.service';
@@ -41,6 +42,8 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   @Input() inputIndex: number;
   @Input() outputIndex: number;
   @Input() addresses: string[] = [];
+  // Optional content rendered before each transaction, with the transaction and its index as context.
+  @Input() txHeaderTemplate: TemplateRef<{ $implicit: Transaction, index: number }> | null = null;
   @Input() acceleratedTxids: Set<string> | null = null;
   @Input() rowLimit = 12;
   @Input() blockTime: number = 0; // Used for price calculation if all the transactions are in the same block
@@ -128,20 +131,24 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
               for (let i = 0; i < txIds.length; i += 50) {
                 batches.push(txIds.slice(i, i + 50));
               }
-              return forkJoin(batches.map(batch => { return this.electrsApiService.cachedRequest(this.electrsApiService.getOutspendsBatched$, 250, batch); }));
+              return forkJoin(batches.map(batch => { return this.electrsApiService.cachedRequest(this.electrsApiService.getOutspendsBatched$, 250, batch); })).pipe(
+                map(batchedOutspends => ({ txIds, outspends: batchedOutspends.flat(1) })),
+              );
             } else {
-              return of([]);
+              return of({ txIds, outspends: [] });
             }
           }),
-          tap((batchedOutspends: Outspend[][][]) => {
-            // flatten batched results back into a single array
-            const outspends = batchedOutspends.flat(1);
+          tap(({ txIds, outspends }: { txIds: string[]; outspends: Outspend[][] }) => {
             if (!this.transactions) {
               return;
             }
-            const transactions = this.transactions.filter((tx) => !tx._outspends);
+            // The list may have been reordered or a transaction removed while loading.
+            const txByTxid = new Map(this.transactions.map(tx => [tx.txid, tx]));
             outspends.forEach((outspend, i) => {
-              transactions[i]._outspends = outspend;
+              const tx = txByTxid.get(txIds[i]);
+              if (tx) {
+                tx._outspends = outspend;
+              }
             });
             this.ref.markForCheck();
           }),
@@ -161,7 +168,9 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
         this.refreshChannels$
           .pipe(
             filter(() => this.stateService.networkSupportsLightning() && !this.txPreview),
-            switchMap((txIds) => this.apiService.getChannelByTxIds$(txIds)),
+            switchMap((txIds) => this.apiService.getChannelByTxIds$(txIds).pipe(
+              map(channels => channels.map((channel, i) => ({ txid: txIds[i], channel }))),
+            )),
             catchError((error) => {
               // handle 404
               return of([]);
@@ -170,9 +179,12 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
               if (!this.transactions) {
                 return;
               }
-              const transactions = this.transactions.filter((tx) => !tx._channels);
-              channels.forEach((channel, i) => {
-                transactions[i]._channels = channel;
+              const txByTxid = new Map(this.transactions.map(tx => [tx.txid, tx]));
+              channels.forEach(({ txid, channel }) => {
+                const tx = txByTxid.get(txid);
+                if (tx) {
+                  tx._channels = channel;
+                }
               });
             }),
           )
@@ -247,51 +259,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
         tx['_interestingSignatures'] = false;
 
         if (this.addresses?.length) {
-          const addressIn = tx.vout.map(v => {
-            for (const address of this.addresses) {
-              switch (address.length) {
-                case 130: {
-                  if (v.scriptpubkey === '41' + address + 'ac') {
-                    return v.value;
-                  }
-                } break;
-                case 66: {
-                  if (v.scriptpubkey === '21' + address + 'ac') {
-                    return v.value;
-                  }
-                } break;
-                default:{
-                  if (v.scriptpubkey_address === address) {
-                    return v.value;
-                  }
-                } break;
-              }
-            }
-            return 0;
-          }).reduce((acc, v) => acc + v, 0);
-          const addressOut = tx.vin.map(v => {
-            for (const address of this.addresses) {
-              switch (address.length) {
-                case 130: {
-                  if (v.prevout?.scriptpubkey === '41' + address + 'ac') {
-                    return v.prevout?.value;
-                  }
-                } break;
-                case 66: {
-                  if (v.prevout?.scriptpubkey === '21' + address + 'ac') {
-                    return v.prevout?.value;
-                  }
-                } break;
-                default:{
-                  if (v.prevout?.scriptpubkey_address === address) {
-                    return v.prevout?.value;
-                  }
-                } break;
-              }
-            }
-            return 0;
-          }).reduce((acc, v) => acc + v, 0);
-          tx['addressValue'] = addressIn - addressOut;
+          tx['addressValue'] = getAddressActivity(tx, this.addresses).value;
         }
 
         if (!this.blockTime && tx.status.block_time && this.currency) {
