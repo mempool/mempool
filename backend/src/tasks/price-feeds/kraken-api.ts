@@ -79,7 +79,7 @@ class KrakenApi implements PriceFeed {
       const priceHistoryRaw = response ? response['result'][this.getTicker(currency)] : [];
 
       for (const price of priceHistoryRaw) {
-        if (existingPriceTimes.includes(parseInt(price[0]))) {
+        if (existingPriceTimes.has(parseInt(price[0]))) {
           continue;
         }
 

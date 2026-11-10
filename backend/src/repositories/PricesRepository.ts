@@ -258,7 +258,7 @@ class PricesRepository {
   }
 
   /** @asyncUnsafe */
-  public async $getPricesTimes(): Promise<number[]> {
+  public async $getPricesTimes(): Promise<Set<number>> {
     const [times] = await DB.query(`
       SELECT UNIX_TIMESTAMP(time) AS time
       FROM prices
@@ -266,9 +266,9 @@ class PricesRepository {
       ORDER BY time
     `);
     if (!Array.isArray(times)) {
-      return [];
+      return new Set();
     }
-    return times.map(time => time.time);
+    return new Set(times.map(time => time.time));
   }
 
   /** @asyncUnsafe */
