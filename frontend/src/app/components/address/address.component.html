@@ -142,7 +142,7 @@
         <button type="button" class="btn btn-outline-info btn-sm" (click)="toggleBlockStrip()" i18n="address.blocks.hide">Hide blocks</button>
       </div>
       <app-address-blocks [groups]="stripGroups" [selectedGroup]="selectedBlockGroup" [fullyLoaded]="fullyLoaded || stripHistoryDone" [loading]="isLoadingTransactions || isLoadingStripHistory"
-        (selectGroup)="selectBlockGroup($event)" (loadMore)="loadMoreStrip()"></app-address-blocks>
+        (selectGroup)="selectBlockGroup($event)" (loadMore)="loadMoreStrip($event)"></app-address-blocks>
     }
 
     <div class="title-tx title-with-toggle">

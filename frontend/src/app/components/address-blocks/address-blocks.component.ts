@@ -19,7 +19,7 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Input() loading = false;
   @Input() fullyLoaded = false;
   @Output() selectGroup = new EventEmitter<string>();
-  @Output() loadMore = new EventEmitter<void>();
+  @Output() loadMore = new EventEmitter<boolean>();
 
   @HostBinding('style.--sticky-top') stickyTop = '0px';
   pendingBackground: string;
@@ -69,7 +69,7 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
         const strip = this.strip.nativeElement;
         const remaining = strip.scrollWidth - strip.scrollLeft - strip.clientWidth;
         if (!this.loading && !this.fullyLoaded && remaining < 2 * strip.querySelector<HTMLElement>('.activity-block').offsetWidth) {
-          this.zone.run(() => this.loadMore.emit());
+          this.zone.run(() => this.loadMore.emit(false));
         }
       }));
     });
@@ -107,7 +107,7 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
     if (!this.loading && !this.fullyLoaded && this.groups.length && this.autoLoads < MAX_AUTO_LOADS
       && strip.scrollWidth <= strip.clientWidth) {
       this.autoLoads++;
-      this.loadMore.emit();
+      this.loadMore.emit(true);
     }
   }
 

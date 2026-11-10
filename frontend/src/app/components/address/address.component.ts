@@ -343,6 +343,7 @@ export class AddressComponent implements OnInit, OnDestroy {
         times.forEach((time, index) => {
           this.tempTransactions[this.timeTxIndexes[index]].firstSeen = time;
         });
+        this.resetStripHistory();
         this.transactions = this.tempTransactions;
         this.sortTransactions();
         if (this.transactions.length === (this.mempoolStats.tx_count + this.chainStats.tx_count)) {
@@ -579,11 +580,11 @@ export class AddressComponent implements OnInit, OnDestroy {
     }
   }
 
-  loadMoreStrip(): void {
+  loadMoreStrip(automatic: boolean): void {
     if (this.stripUsesOwnHistory) {
       const confirmedBlocks = this.stripGroups.filter(group => group.status.confirmed).length;
       this.fillStripHistory(confirmedBlocks + STRIP_BLOCKS_PER_LOAD);
-    } else {
+    } else if (!automatic) {
       this.loadMore();
     }
   }
