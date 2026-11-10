@@ -30,6 +30,7 @@ export class AddressGroupComponent implements OnInit, OnDestroy {
   isLoadingAddress = true;
   error: any;
   mainSubscription: Subscription;
+  networkChangedSubscription: Subscription;
   wsSubscription: Subscription;
 
   page: string[] = [];
@@ -52,7 +53,7 @@ export class AddressGroupComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.onResize();
-    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.networkChangedSubscription = this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.websocketService.want(['blocks']);
 
     this.mainSubscription = this.route.queryParamMap
@@ -206,6 +207,7 @@ export class AddressGroupComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.networkChangedSubscription?.unsubscribe();
     this.mainSubscription.unsubscribe();
     this.wsSubscription.unsubscribe();
     this.websocketService.stopTrackingAddresses();

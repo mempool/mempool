@@ -1,0 +1,45 @@
+.settings-table { width: 100%; table-layout: fixed; }
+.settings-table tr { white-space: normal; }
+.settings-table td:first-child { width: 12rem; color: var(--transparent-fg); }
+.settings-table td:last-child { min-width: 0; overflow-wrap: anywhere; }
+.mono, .descriptor { font-family: monospace; }
+.gap-limit-control { display: flex; align-items: center; gap: .5rem; }
+.gap-limit-control .form-control { width: 6rem; }
+.script-type-control { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+.script-type-control .form-select { width: auto; max-width: 14rem; }
+.settings-name { padding: 0; color: var(--fg); background: transparent; border: 0; border-bottom: 1px dashed var(--transparent-fg); text-align: left; }
+.settings-name:hover, .settings-name:focus-visible { border-bottom-color: var(--fg); }
+// The global stylesheet removes outlines, so keyboard focus gets a ring of its own.
+.settings-name:focus-visible, .fingerprint-info:focus-visible { border-radius: .2rem; box-shadow: 0 0 0 2px var(--info); }
+.wallet-rename { display: flex; align-items: center; gap: .5rem; }
+.wallet-rename .form-control { max-width: 20rem; }
+.fingerprint-info { margin-left: .25rem; color: var(--transparent-fg); cursor: help; }
+.descriptor-box {
+  display: flex;
+  align-items: flex-start;
+  gap: .35rem;
+  padding: .65rem;
+  border: 1px solid var(--stat-box-bg);
+  border-radius: .25rem;
+  background: var(--active-bg);
+}
+.descriptor {
+  display: block;
+  min-width: 0;
+  color: var(--transparent-fg);
+  font-size: .75rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.settings-group { padding: 1rem 0 0; border-top: 1px solid var(--stat-box-bg); }
+.settings-group h3 { font-size: 1rem; }
+@media (max-width: 767.98px) {
+  .settings-table, .settings-table tbody, .settings-table tr, .settings-table td { display: block; width: 100%; }
+  .settings-table td:first-child { padding-bottom: .2rem; }
+  .settings-table td:last-child { padding-top: .2rem; }
+}
+.gap-limit-error { margin-top: .35rem; font-size: .85rem; }
+// NgbModal renders the dialog frame outside this component.
+::ng-deep .watch-forget-dialog .modal-content { color: var(--fg); background: var(--box-bg); border: 1px solid var(--stat-box-bg); }
+.modal-header, .modal-footer { border-color: var(--stat-box-bg); }
+.modal-title { font-size: 1.15rem; }

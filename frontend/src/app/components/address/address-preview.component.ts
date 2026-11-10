@@ -27,6 +27,7 @@ export class AddressPreviewComponent implements OnInit, OnDestroy {
   isLoadingAddress = true;
   error: any;
   mainSubscription: Subscription;
+  networkChangedSubscription: Subscription;
   addressLoadingStatus$: Observable<number>;
   addressInfo: null | AddressInformation = null;
 
@@ -49,7 +50,7 @@ export class AddressPreviewComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.networkChangedSubscription = this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     this.addressLoadingStatus$ = this.route.paramMap
       .pipe(
@@ -122,6 +123,7 @@ export class AddressPreviewComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.networkChangedSubscription?.unsubscribe();
     this.mainSubscription.unsubscribe();
   }
 }

@@ -1,8 +1,8 @@
-import { Component, OnInit, LOCALE_ID, Inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, LOCALE_ID, Inject, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UntypedFormGroup, UntypedFormBuilder } from '@angular/forms';
-import { of, merge, Observable} from 'rxjs';
-import { catchError, retry, scan, switchMap, tap } from 'rxjs/operators';
+import { of, merge, Observable, Subject } from 'rxjs';
+import { catchError, retry, scan, switchMap, takeUntil, tap } from 'rxjs/operators';
 
 import { OptimizedMempoolStats } from '@interfaces/node-api.interface';
 import { WebsocketService } from '@app/services/websocket.service';
@@ -21,7 +21,7 @@ import { IncomingTransactionsGraphComponent } from '@components/incoming-transac
   styleUrls: ['./statistics.component.scss'],
   standalone: false,
 })
-export class StatisticsComponent implements OnInit {
+export class StatisticsComponent implements OnInit, OnDestroy {
   @ViewChild('mempoolgraph') mempoolGraph: MempoolGraphComponent;
   @ViewChild('incominggraph') incomingGraph: IncomingTransactionsGraphComponent;
 
@@ -49,6 +49,7 @@ export class StatisticsComponent implements OnInit {
   timespan = '';
   titleCount = $localize`Count`;
   statsError: any;
+  private destroy$: Subject<void> = new Subject<void>();
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
@@ -66,7 +67,7 @@ export class StatisticsComponent implements OnInit {
     this.setFeeLevelDropdownData();
     this.seoService.setTitle($localize`:@@5d4f792f048fcaa6df5948575d7cb325c9393383:Graphs`);
     this.seoService.setDescription($localize`:@@meta.description.bitcoin.graphs.mempool:See mempool size (in MvB) and transactions per second (in vB/s) visualized over time.`);
-    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.stateService.networkChanged$.pipe(takeUntil(this.destroy$)).subscribe((network) => this.network = network);
     this.graphWindowPreference = this.storageService.getValue('graphWindowPreference') ? this.storageService.getValue('graphWindowPreference').trim() : '2h';
     this.outlierCappingEnabled = this.storageService.getValue('cap-outliers') === 'true';
 
@@ -150,6 +151,7 @@ export class StatisticsComponent implements OnInit {
           return of(mempoolStats);
         }
       }),
+      takeUntil(this.destroy$),
     )
     .subscribe((mempoolStats: any) => {
       this.mempoolStats = mempoolStats;
@@ -158,6 +160,11 @@ export class StatisticsComponent implements OnInit {
       }
       this.isLoading = false;
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   handleNewMempoolData(mempoolStats: OptimizedMempoolStats[]) {
@@ -249,9 +256,5 @@ export class StatisticsComponent implements OnInit {
     } else if (name === 'incoming') {
       this.incomingGraph.onSaveChart(this.timespan);
     }
-  }
-
-  isMobile() {
-    return (window.innerWidth <= 767.98);
   }
 }

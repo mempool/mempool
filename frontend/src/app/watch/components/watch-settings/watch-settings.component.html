@@ -1,0 +1,109 @@
+<div class="title-tx"><h2 class="text-start" i18n="watch.settings-title">Wallet settings</h2></div>
+<div class="box">
+  <table class="table table-borderless table-striped settings-table">
+    <tbody>
+      <tr>
+        <td i18n="watch.detail.name">Name</td>
+        <td>
+          <button *ngIf="!editingLabel" type="button" class="settings-name" (click)="startRename()" title="Rename" i18n-title="watch.rename">{{ wallet.label }}</button>
+          <form class="wallet-rename" *ngIf="editingLabel" (ngSubmit)="saveRename()">
+            <input #renameInput name="label" type="text" class="form-control form-control-sm" [(ngModel)]="labelDraft"
+                   (keyup.escape)="editingLabel = false" [attr.maxlength]="60" autocomplete="off"
+                   aria-label="Wallet name" i18n-aria-label="watch.wallet-name">
+            <button type="submit" class="btn btn-sm btn-primary" i18n="watch.save">Save</button>
+            <button type="button" class="btn btn-sm btn-secondary" (click)="editingLabel = false" i18n="watch.cancel">Cancel</button>
+          </form>
+        </td>
+      </tr>
+      <tr *ngIf="!descriptorWallet">
+        <td i18n="watch.detail.source">Source</td>
+        <td>
+          <ng-container i18n="watch.detail.address-list-value">Address list, {{ wallet.addresses.length }} addresses</ng-container>
+          <app-clipboard [text]="addressListText" size="normal"></app-clipboard>
+        </td>
+      </tr>
+      <ng-container *ngIf="descriptorWallet as dw">
+        <tr *ngIf="dw.fingerprint">
+          <td>
+            <ng-container *ngIf="dw.fingerprintIsMaster" i18n="watch.detail.master-fingerprint">Master fingerprint</ng-container>
+            <ng-container *ngIf="!dw.fingerprintIsMaster" i18n="watch.detail.key-fingerprint">Key fingerprint</ng-container>
+            <fa-icon *ngIf="!dw.fingerprintIsMaster" class="fingerprint-info" [icon]="['fas', 'info-circle']" [fixedWidth]="true" tabindex="0" role="img"
+                     ngbTooltip="Fingerprint of the imported account key. It will not match your signing device; import a descriptor with key origin to see the master fingerprint."
+                     i18n-ngbTooltip="watch.detail.key-fingerprint-help"
+                     aria-label="Fingerprint of the imported account key. It will not match your signing device; import a descriptor with key origin to see the master fingerprint."
+                     i18n-aria-label="watch.detail.key-fingerprint-help"></fa-icon>
+          </td>
+          <td class="mono">{{ dw.fingerprint | uppercase }}</td>
+        </tr>
+        <tr *ngFor="let key of dw.multisig?.keys; let i = index; trackBy: trackByIndex">
+          <td i18n="watch.detail.multisig-key">Key {{ i + 1 }}</td>
+          <td>
+            <span class="mono">{{ key.fingerprint | uppercase }}</span>
+            <span class="mono text-muted" *ngIf="key.originPath"> · {{ key.originPath }}</span>
+            <span class="text-muted" *ngIf="key.fixedStep !== undefined" i18n="watch.detail.multisig-key-fixed-step"> · fixed path …/{{ key.fixedStep }}/* on both chains</span>
+            <span class="text-muted" *ngIf="!key.fingerprintIsMaster" i18n="watch.detail.multisig-key-fingerprint"> (key fingerprint, no key origin)</span>
+          </td>
+        </tr>
+        <tr>
+          <td i18n="watch.detail.address-type">Address type</td>
+          <td>
+            <ng-container *ngIf="!scriptTypeChangeable">{{ scriptType.name }}<span class="text-muted" *ngIf="scriptType.code !== scriptType.name"> · {{ scriptType.code }}</span></ng-container>
+            <div class="script-type-control" *ngIf="scriptTypeChangeable">
+              <select class="form-select form-select-sm" [(ngModel)]="scriptTypeDraft" [disabled]="scanning" aria-label="Address type" i18n-aria-label="watch.detail.address-type">
+                <option *ngFor="let t of scriptTypes" [value]="t.value">{{ t.label }}</option>
+              </select>
+              <button type="button" class="btn btn-sm btn-outline-secondary" [disabled]="scanning || scriptTypeDraft === descriptorWallet?.scriptType"
+                      (click)="applyScriptType()" i18n="watch.detail.apply-script-type">Change and rescan</button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="path">
+          <td i18n="watch.detail.path">Derivation path</td>
+          <td class="mono">{{ path }}<span class="text-muted" *ngIf="!dw.originPath && !dw.fingerprintIsMaster" i18n="watch.detail.path-assumed"> (standard path, assumed)</span></td>
+        </tr>
+        <tr>
+          <td i18n="watch.detail.addresses">Addresses derived</td>
+          <td i18n="watch.detail.addresses-value">{{ dw.addresses.length }} <span class="text-muted">(receive {{ dw.derivedCount[0] }}, change {{ dw.derivedCount[1] }})</span></td>
+        </tr>
+        <tr>
+          <td i18n="watch.detail.gap-limit">Gap limit</td>
+          <td>
+            <div class="gap-limit-control">
+              <input type="number" class="form-control form-control-sm" [class.is-invalid]="gapLimitInvalid" [attr.min]="minGapLimit" [attr.max]="maxGapLimit"
+                     [(ngModel)]="gapLimit" [disabled]="scanning" aria-label="Gap limit" i18n-aria-label="watch.detail.gap-limit">
+              <button *ngIf="gapLimitChanged" type="button" class="btn btn-sm btn-primary" [disabled]="scanning"
+                      (click)="applyGapLimit()" i18n="watch.detail.apply-gap-limit">Apply and rescan</button>
+            </div>
+            <div class="gap-limit-error text-danger" *ngIf="gapLimitInvalid" role="alert" i18n="watch.detail.gap-limit-invalid">Gap limit must be a whole number from {{ minGapLimit }} to {{ maxGapLimit }}.</div>
+          </td>
+        </tr>
+        <tr>
+          <td i18n="watch.detail.descriptor">Descriptor</td>
+          <td>
+            <div class="descriptor-box">
+              <code class="descriptor">{{ dw.descriptor }}</code>
+              <app-clipboard [text]="dw.descriptor" size="normal"></app-clipboard>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+      <tr><td i18n="watch.detail.network">Network</td><td>{{ networkName }}</td></tr>
+    </tbody>
+  </table>
+
+  <section class="settings-group">
+    <h3 i18n="watch.forget-title">Remove from this browser</h3>
+    <button type="button" class="btn btn-sm btn-danger" (click)="confirmForget(forgetDialog)" [disabled]="scanning" i18n="watch.forget">Forget wallet</button>
+  </section>
+</div>
+
+<ng-template #forgetDialog let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="watch-forget-title" i18n="watch.forget-dialog-title">Forget “{{ wallet.label }}”?</h4>
+  </div>
+  <div class="modal-body" i18n="watch.forget-dialog-body">This removes the wallet from this browser. It does not affect your funds, and you can add the wallet again at any time.</div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-sm btn-outline-danger" (click)="modal.close(true)" [disabled]="scanning" i18n="watch.forget-confirm">Forget</button>
+    <button type="button" class="btn btn-sm btn-primary" (click)="modal.dismiss()" ngbAutofocus i18n="watch.cancel">Cancel</button>
+  </div>
+</ng-template>

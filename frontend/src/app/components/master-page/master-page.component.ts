@@ -8,6 +8,8 @@ import { NavigationService } from '@app/services/navigation.service';
 import { MenuComponent } from '@components/menu/menu.component';
 import { StorageService } from '@app/services/storage.service';
 import { AuthServiceMempool } from '@app/services/auth.service';
+import { WalletAccessService } from '@app/services/wallet-access.service';
+import { isMobile } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-master-page',
@@ -21,9 +23,10 @@ export class MasterPageComponent implements OnInit, OnDestroy {
 
   env: Env;
   network$: Observable<string>;
+  walletAvailable$: Observable<boolean>;
   connectionState$: Observable<number>;
   navCollapsed = false;
-  isMobile = window.innerWidth <= 767.98;
+  isMobile = isMobile();
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
   officialMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
   urlLanguage: string;
@@ -51,10 +54,16 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     private storageService: StorageService,
     private authService: AuthServiceMempool,
     private router: Router,
+    private walletAccessService: WalletAccessService,
   ) { }
+
+  walletRunsOn(network: string): boolean {
+    return this.walletAccessService.runsOn(network);
+  }
 
   ngOnInit(): void {
     this.env = this.stateService.env;
+    this.walletAvailable$ = this.walletAccessService.walletAvailable$;
     this.connectionState$ = this.stateService.connectionState$;
     this.network$ = merge(of(''), this.stateService.networkChanged$);
     this.urlLanguage = this.languageService.getLanguageForUrl();
@@ -80,8 +89,9 @@ export class MasterPageComponent implements OnInit, OnDestroy {
       this.user = auth?.user ?? null;
     });
 
-    const isServicesPage = this.router.url.includes('/services/');
-    this.menuOpen = isServicesPage && !this.isSmallScreen();
+    const isServicesPage = this.router.url.includes('/services/') && !this.router.url.includes('/services/admin/serverstats');
+    this.menuOpen = isServicesPage && !isMobile();
+    this.stateService.menuOpen$.next(this.menuOpen);
     this.setDropdownVisibility();
   }
 
@@ -107,12 +117,8 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     this.navCollapsed = !this.navCollapsed;
   }
 
-  isSmallScreen(): boolean {
-    return window.innerWidth <= 767.98;
-  }
-
   onResize(): void {
-    this.isMobile = this.isSmallScreen();
+    this.isMobile = isMobile();
   }
 
   brandClick(e): void {
@@ -137,6 +143,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
 
   menuToggled(isOpen: boolean): void {
     this.menuOpen = isOpen;
+    this.stateService.menuOpen$.next(isOpen);
   }
 
   ngOnDestroy(): void {

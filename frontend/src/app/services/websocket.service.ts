@@ -34,6 +34,12 @@ export class WebsocketService {
   private isTrackingRbfSummary = false;
   private isTrackingAddress: string | false = false;
   private isTrackingAddresses: string[] | false = false;
+  private trackAddressesRequest = 0;
+  /**
+   * The track-addresses request each unanswered ping went with (null for the online check). The
+   * server answers a connection's messages in order, so each pong closes the oldest one.
+   */
+  private pendingPongs: (number | null)[] = [];
   private isTrackingAccelerations: boolean = false;
   private isTrackingWallet: boolean = false;
   private trackingWalletName: string;
@@ -100,6 +106,7 @@ export class WebsocketService {
     this.websocketSubject = webSocket<WebsocketResponse>(
       this.webSocketUrl.replace('{network}', this.network ? '/' + this.network : '')
     );
+    this.pendingPongs = [];
 
     this.startSubscription(retrying, hasInitData);
   }
@@ -138,7 +145,7 @@ export class WebsocketService {
             this.startTrackAddress(this.isTrackingAddress);
           }
           if (this.isTrackingAddresses) {
-            this.startTrackAddresses(this.isTrackingAddresses);
+            this.startTrackAddresses(this.isTrackingAddresses, this.trackAddressesRequest);
           }
           if (this.isTrackingAccelerations) {
             this.startTrackAccelerations();
@@ -198,9 +205,13 @@ export class WebsocketService {
     this.isTrackingAddress = false;
   }
 
-  startTrackAddresses(addresses: string[]) {
-    this.websocketSubject.next({ 'track-addresses': addresses });
+  /** Returns the request's number; a refusal is published on trackAddressesError$ with it. */
+  startTrackAddresses(addresses: string[], request = ++this.trackAddressesRequest): number {
+    // The ping's pong arrives with the reply to this request: a refusal, or nothing if accepted.
+    this.pendingPongs.push(request);
+    this.websocketSubject.next({ 'track-addresses': addresses, action: 'ping' });
     this.isTrackingAddresses = addresses;
+    return request;
   }
 
   stopTrackingAddresses() {
@@ -337,6 +348,7 @@ export class WebsocketService {
     clearTimeout(this.onlineCheckTimeoutTwo);
 
     this.onlineCheckTimeout = window.setTimeout(() => {
+      this.pendingPongs.push(null);
       this.websocketSubject.next({action: 'ping'});
       this.onlineCheckTimeoutTwo = window.setTimeout(() => {
         if (!this.goneOffline) {
@@ -473,6 +485,13 @@ export class WebsocketService {
 
     if (response['multi-address-transactions']) {
       this.stateService.multiAddressTransactions$.next(response['multi-address-transactions']);
+    }
+
+    if (response.pong) {
+      const request = this.pendingPongs.shift();
+      if (request && response['track-addresses-error']) {
+        this.stateService.trackAddressesError$.next(request);
+      }
     }
 
     if (response['block-transactions']) {

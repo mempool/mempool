@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, HostListener, Inject, OnDestroy, On
 import { SeoService } from '@app/services/seo.service';
 import { OpenGraphService } from '@app/services/opengraph.service';
 import { WebsocketService } from '@app/services/websocket.service';
-import { Acceleration, BlockExtended } from '@interfaces/node-api.interface';
+import type { Acceleration, BlockExtended } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { Observable, Subscription, catchError, combineLatest, distinctUntilChanged, map, of, share, switchMap, tap } from 'rxjs';
 import { Color } from '@components/block-overview-graph/sprite-types';
@@ -38,7 +38,7 @@ export class AcceleratorDashboardComponent implements OnInit, OnDestroy {
   webGlEnabled = true;
   seen: Set<string> = new Set();
   firstLoad = true;
-  timespan: '24h' | '1m' | '1y' | 'all' = '1y';
+  timespan: '24h' | '1m' | '1y' | 'all' = '24h';
 
   accelerationDeltaSubscription: Subscription;
 

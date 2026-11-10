@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ElementRef, NgZone } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
@@ -13,6 +13,7 @@ import { SeoService } from '@app/services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { AddressInformation } from '@interfaces/node-api.interface';
 import { AddressTypeInfo } from '@app/shared/address-utils';
+import { AddressBlockGroup, buildAddressBlockGroups } from '@components/address-blocks/address-blocks.utils';
 import { extractTapLeaves, fillTapTree, convertTextToBuffer, PsbtKeyValue } from '@app/shared/transaction.utils';
 
 class AddressStats implements ChainStats {
@@ -130,6 +131,17 @@ export class AddressComponent implements OnInit, OnDestroy {
   acceleratedTxids: Set<string> | null = null;
 
   fullyLoaded = false;
+  blockGroups: AddressBlockGroup[] = [];
+  blockGroupStarts = new Map<string, AddressBlockGroup>();
+  selectedBlockGroup: string | null = null;
+  showBlockGroups = false;
+  private scrollSpyFrame = 0;
+  private readonly onPageScroll = (): void => {
+    this.scrollSpyFrame ||= requestAnimationFrame(() => {
+      this.scrollSpyFrame = 0;
+      this.selectBlockGroupInView();
+    });
+  };
   chainStats: AddressStats;
   mempoolStats: AddressStats;
 
@@ -151,9 +163,12 @@ export class AddressComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private seoService: SeoService,
     private formBuilder: UntypedFormBuilder,
+    private elementRef: ElementRef<HTMLElement>,
+    private zone: NgZone,
   ) { }
 
   ngOnInit(): void {
+    this.zone.runOutsideAngular(() => window.addEventListener('scroll', this.onPageScroll, { passive: true }));
     this.network = this.stateService.network;
     this.networkChangeSubscription = this.stateService.networkChanged$.subscribe((network) => {
       this.network = network;
@@ -189,6 +204,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.address = null;
           this.isLoadingTransactions = true;
           this.transactions = null;
+          this.updateBlockGroups();
           this.utxos = null;
           this.addressInfo = null;
           this.exampleChannel = null;
@@ -299,20 +315,12 @@ export class AddressComponent implements OnInit, OnDestroy {
         times.forEach((time, index) => {
           this.tempTransactions[this.timeTxIndexes[index]].firstSeen = time;
         });
-        this.tempTransactions.sort((a, b) => {
-          if (b.status.confirmed) {
-            if (b.status.block_height === a.status.block_height) {
-              return b.status.block_time - a.status.block_time;
-            }
-            return b.status.block_height - a.status.block_height;
-          }
-          return b.firstSeen - a.firstSeen;
-        });
-
         this.transactions = this.tempTransactions;
+        this.sortTransactions();
         if (this.transactions.length === (this.mempoolStats.tx_count + this.chainStats.tx_count)) {
           this.fullyLoaded = true;
         }
+        this.updateBlockGroups();
         this.isLoadingTransactions = false;
 
         const addressVin: Vin[] = [];
@@ -362,7 +370,7 @@ export class AddressComponent implements OnInit, OnDestroy {
         const tx = this.transactions.find((t) => t.txid === transaction.txid);
         if (tx) {
           tx.status = transaction.status;
-          this.transactions = this.transactions.slice();
+          this.sortTransactions();
           this.mempoolStats.removeTx(transaction);
           this.audioService.playSound('magic');
           this.confirmTransaction(tx);
@@ -381,7 +389,7 @@ export class AddressComponent implements OnInit, OnDestroy {
     }
 
     this.transactions.unshift(transaction);
-    this.transactions = this.transactions.slice();
+    this.sortTransactions();
 
     if (playSound) {
       if (transaction.vout.some((vout) => vout?.scriptpubkey_address === this.address.address)) {
@@ -427,6 +435,7 @@ export class AddressComponent implements OnInit, OnDestroy {
 
     this.transactions.splice(index, 1);
     this.transactions = this.transactions.slice();
+    this.updateBlockGroups();
 
     // update utxos in-place
     if (this.utxos != null) {
@@ -487,6 +496,71 @@ export class AddressComponent implements OnInit, OnDestroy {
     }
   }
 
+  private sortTransactions(): void {
+    this.transactions = this.transactions.slice().sort((a, b) => {
+      if (a.status.confirmed !== b.status.confirmed) {
+        return a.status.confirmed ? 1 : -1;
+      }
+      if (!a.status.confirmed) {
+        return (b.firstSeen ?? 0) - (a.firstSeen ?? 0);
+      }
+      return (b.status.block_height ?? -1) - (a.status.block_height ?? -1);
+    });
+    this.updateBlockGroups();
+  }
+
+  private updateBlockGroups(): void {
+    const isLiquid = this.network === 'liquid' || this.network === 'liquidtestnet';
+    this.blockGroups = this.address ? buildAddressBlockGroups(this.transactions, [this.address.address], this.fullyLoaded, isLiquid) : [];
+    this.blockGroupStarts = new Map(this.blockGroups.map(group => [group.firstTxid, group]));
+    // Grouping adds little for addresses active in only a few blocks.
+    this.showBlockGroups = this.blockGroups.length >= 5 || (!this.fullyLoaded && this.blockGroups.length > 0);
+    if (!this.blockGroups.some(group => group.id === this.selectedBlockGroup)) {
+      this.selectedBlockGroup = this.blockGroups[0]?.id ?? null;
+    }
+  }
+
+  // Bottom edge of the block strip once it sticks below the site header, or null when it doesn't stick.
+  private stickyStripBottom(): number | null {
+    const strip = this.elementRef.nativeElement.querySelector<HTMLElement>('app-address-blocks');
+    if (!strip) {
+      return null;
+    }
+    const style = getComputedStyle(strip);
+    return style.position === 'sticky' ? parseFloat(style.top) + strip.offsetHeight : null;
+  }
+
+  // While scrolling through the transactions, select the block of the group shown below the strip.
+  private selectBlockGroupInView(): void {
+    const stripBottom = this.stickyStripBottom();
+    if (!this.showBlockGroups || stripBottom === null) {
+      return;
+    }
+    const headers = this.elementRef.nativeElement.querySelectorAll<HTMLElement>('app-address-block-group-header');
+    let current = headers[0]?.dataset.blockGroup ?? null;
+    for (const header of headers) {
+      if (header.getBoundingClientRect().top > stripBottom + 16) {
+        break;
+      }
+      current = header.dataset.blockGroup;
+    }
+    if (current && current !== this.selectedBlockGroup) {
+      this.zone.run(() => this.selectedBlockGroup = current);
+    }
+  }
+
+  selectBlockGroup(id: string): void {
+    this.selectedBlockGroup = id;
+    const header = this.elementRef.nativeElement.querySelector<HTMLElement>(`app-address-block-group-header[data-block-group="${CSS.escape(id)}"]`);
+    const stripBottom = this.stickyStripBottom();
+    if (header && stripBottom !== null) {
+      // Land the header right below the sticky strip instead of behind it.
+      header.style.scrollMarginTop = `${stripBottom + 8}px`;
+    }
+    header?.scrollIntoView({ block: 'start' });
+    header?.focus({ preventScroll: true });
+  }
+
   loadMore(): void {
     if (this.isLoadingTransactions || this.fullyLoaded) {
       return;
@@ -498,11 +572,26 @@ export class AddressComponent implements OnInit, OnDestroy {
     : this.electrsApiService.getAddressTransactions$(this.address.address, this.lastTransactionTxId))
       .subscribe((transactions: Transaction[]) => {
         if (transactions && transactions.length) {
+          // Keep the API cursor independent of the display order and live updates.
           this.lastTransactionTxId = transactions[transactions.length - 1].txid;
-          this.transactions = this.transactions.concat(transactions);
+          const txByTxid = new Map(this.transactions.map(tx => [tx.txid, tx]));
+          for (const tx of transactions) {
+            const existing = txByTxid.get(tx.txid);
+            if (!existing) {
+              txByTxid.set(tx.txid, tx);
+            } else if (tx.status.confirmed) {
+              // Preserve cached transaction data and don't undo a live confirmation
+              // when an older request returns a pending transaction.
+              existing.status = tx.status;
+            }
+          }
+          this.transactions = [...txByTxid.values()];
+          this.sortTransactions();
+          this.fullyLoaded = this.transactions.length === this.mempoolStats.tx_count + this.chainStats.tx_count;
         } else {
           this.fullyLoaded = true;
         }
+        this.updateBlockGroups();
         this.isLoadingTransactions = false;
       },
       (error) => {
@@ -653,6 +742,8 @@ export class AddressComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    window.removeEventListener('scroll', this.onPageScroll);
+    cancelAnimationFrame(this.scrollSpyFrame);
     this.mainSubscription.unsubscribe();
     this.mempoolTxSubscription.unsubscribe();
     this.mempoolRemovedTxSubscription.unsubscribe();

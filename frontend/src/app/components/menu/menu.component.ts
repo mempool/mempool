@@ -6,6 +6,7 @@ import { StateService } from '@app/services/state.service';
 import { IUser, ServicesApiServices } from '@app/services/services-api.service';
 import { AuthServiceMempool } from '@app/services/auth.service';
 import { SERVICES_LOGOUT_ACTION } from '@app/shared/services-logout-action.token';
+import { isMobile } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-menu',
@@ -42,9 +43,10 @@ export class MenuComponent implements OnInit, OnDestroy {
       });
     }
 
-    this.isServicesPage = this.router.url.includes('/services/');
+    this.isServicesPage = this.router.url.includes('/services/') && !this.router.url.includes('/services/admin/serverstats');
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
+        this.isServicesPage = event.url.includes('/services/') && !event.url.includes('/services/admin/serverstats');
         if (!this.isServicesPage) {
           this.toggleMenu(false);
         }
@@ -55,10 +57,6 @@ export class MenuComponent implements OnInit, OnDestroy {
   toggleMenu(toggled: boolean) {
     this.navOpen = toggled;
     this.menuToggled.emit(toggled);
-  }
-
-  isSmallScreen() {
-    return window.innerWidth <= 767.98;
   }
 
   logout(): void {
@@ -83,7 +81,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.toggleMenu(false);
       return;
     }
-    if (!this.isServicesPage || this.isSmallScreen()) {
+    if (!this.isServicesPage || isMobile()) {
       this.toggleMenu(false);
     }
     this.router.navigateByUrl(link);
@@ -91,12 +89,11 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   hamburgerClick() {
     this.toggleMenu(!this.navOpen);
-    this.stateService.menuOpen$.next(this.navOpen);
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
-    if (this.isSmallScreen()) {
+    if (isMobile()) {
       this.toggleMenu(false);
     } else if (this.isServicesPage) {
       this.toggleMenu(true);
@@ -105,7 +102,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   @HostListener('window:click', ['$event'])
   onClick(event) {
-    const isServicesPageOnMobile = this.isServicesPage && this.isSmallScreen();
+    const isServicesPageOnMobile = this.isServicesPage && isMobile();
     const cssClasses = event.target.className;
 
     if (!cssClasses.indexOf) { // Click on chart or non html thingy, close the menu

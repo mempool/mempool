@@ -1,0 +1,35 @@
+<div class="title-tx">
+  <h2 class="text-start">
+    <ng-container i18n="watch.unspent-outputs">Unspent outputs</ng-container>
+    <span class="badge bg-secondary ms-2">{{ view.utxos.length }}</span>
+  </h2>
+</div>
+<div class="box">
+  <p class="text-muted mb-0" *ngIf="!view.utxos.length" i18n="watch.no-utxos">This wallet has no unspent outputs.</p>
+  <ng-container *ngIf="view.utxos.length">
+    <div class="mb-3">
+      <app-utxo-graph [utxos]="graphUtxos" [widget]="true" [height]="300"></app-utxo-graph>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-borderless table-striped table-sm">
+        <thead>
+          <tr>
+            <th class="text-end" i18n="watch.utxo-value">Value</th>
+            <th i18n="watch.utxo-address">Address</th>
+            <th i18n="watch.utxo-output">Output</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let utxo of view.utxos; trackBy: trackByOutpoint">
+            <td class="text-end value-cell">
+              <app-amount [satoshis]="utxo.value"></app-amount>
+              <span class="badge bg-warning ms-1" *ngIf="!utxo.confirmed" i18n="watch.unconfirmed">Unconfirmed</span>
+            </td>
+            <td class="address-cell"><a [routerLink]="['/address/' | relativeUrl, utxo.address]">{{ utxo.address }}</a></td>
+            <td class="output-cell"><a [routerLink]="['/tx/' | relativeUrl, utxo.txid]" [fragment]="'vout=' + utxo.vout">{{ utxo.txid | shortenString : 12 }}:{{ utxo.vout }}</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</div>

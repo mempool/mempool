@@ -2,7 +2,7 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, ChangeDetectorRef, SimpleChanges, HostListener } from '@angular/core';
 import { Subscription, tap, of, catchError, Observable, switchMap, Subject, ReplaySubject, filter, take, takeUntil, timeout } from 'rxjs';
 import { ServicesApiServices } from '@app/services/services-api.service';
-import { md5 } from '@app/shared/common.utils';
+import { md5, isMobile } from '@app/shared/common.utils';
 import { StateService } from '@app/services/state.service';
 import { AudioService } from '@app/services/audio.service';
 import { ETA, EtaService } from '@app/services/eta.service';
@@ -93,7 +93,7 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
   btcpayInvoiceFailed = false;
   timePaid: number = 0; // time acceleration requested
   math = Math;
-  isMobile: boolean = window.innerWidth <= 767.98;
+  isMobile: boolean = isMobile();
   isProdDomain = false;
   accelerationResponse: { receiptUrl: string | null } | undefined;
 
@@ -1210,6 +1210,6 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
 
   @HostListener('window:resize', ['$event'])
   onResize(): void {
-    this.isMobile = window.innerWidth <= 767.98;
+    this.isMobile = isMobile();
   }
 }

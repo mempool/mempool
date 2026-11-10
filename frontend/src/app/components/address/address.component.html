@@ -136,6 +136,14 @@
     </ng-container>
 
     <br>
+    @if (showBlockGroups) {
+      <div class="title-tx">
+        <h2 class="text-start" i18n="address.blocks.title">Activity by block</h2>
+      </div>
+      <app-address-blocks [groups]="blockGroups" [selectedGroup]="selectedBlockGroup" [fullyLoaded]="fullyLoaded" [loading]="isLoadingTransactions"
+        (selectGroup)="selectBlockGroup($event)" (loadMore)="loadMore()"></app-address-blocks>
+    }
+
     <div class="title-tx">
       <h2 class="text-start">
         <ng-template [ngIf]="!transactions?.length">&nbsp;</ng-template>
@@ -144,7 +152,13 @@
       </h2>
     </div>
 
-    <app-transactions-list [transactions]="transactions" [showConfirmations]="true" [addresses]="[address.address]" [acceleratedTxids]="acceleratedTxids" (loadMore)="loadMore()"></app-transactions-list>
+    <app-transactions-list [transactions]="transactions" [txHeaderTemplate]="showBlockGroups ? blockGroupHeader : null" [showConfirmations]="true" [addresses]="[address.address]" [acceleratedTxids]="acceleratedTxids" (loadMore)="loadMore()"></app-transactions-list>
+
+    <ng-template #blockGroupHeader let-tx let-index="index">
+      @if (blockGroupStarts.get(tx.txid); as group) {
+        <app-address-block-group-header [group]="group" [first]="index === 0"></app-address-block-group-header>
+      }
+    </ng-template>
 
     <div class="text-center">
       <ng-template [ngIf]="isLoadingTransactions">

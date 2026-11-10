@@ -117,6 +117,7 @@ export class WalletPreviewComponent implements OnInit, OnDestroy {
   walletStats$: Observable<WalletStats>;
   error: any;
   walletSubscription: Subscription;
+  networkChangedSubscription: Subscription;
 
   collapseAddresses: boolean = true;
 
@@ -139,7 +140,7 @@ export class WalletPreviewComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.websocketService.want(['blocks', 'stats']);
-    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.networkChangedSubscription = this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.wallet$ = this.route.paramMap.pipe(
       map((params: ParamMap) => params.get('wallet') as string),
       tap((walletName: string) => {
@@ -243,6 +244,7 @@ export class WalletPreviewComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.networkChangedSubscription?.unsubscribe();
     this.walletSubscription.unsubscribe();
   }
 }

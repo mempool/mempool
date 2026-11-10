@@ -10,6 +10,7 @@ import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pip
 import { StateService } from '@app/services/state.service';
 import { PriceService } from '@app/services/price.service';
 import { FiatCurrencyPipe } from '@app/shared/pipes/fiat-currency.pipe';
+import { isMobile } from '@app/shared/common.utils';
 
 const periodSeconds = {
   '1d': (60 * 60 * 24),
@@ -236,7 +237,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         }
       } : undefined,
       tooltip: {
-        show: !this.isMobile(),
+        show: !isMobile(),
         trigger: 'axis',
         axisPointer: {
           type: 'line'
@@ -312,7 +313,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
       },
       xAxis: {
         type: 'time',
-        splitNumber: this.isMobile() ? 5 : 10,
+        splitNumber: isMobile() ? 5 : 10,
         axisLabel: {
           hideOverlap: true,
         }
@@ -482,10 +483,6 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     }
   }
 
-  isMobile() {
-    return (window.innerWidth <= 767.98);
-  }
-
   extendSummary(summary) {
     const extendedSummary = summary.slice();
 
@@ -516,8 +513,8 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
 
   graphicElements() {
     const children = [];
-    const imgWidth = this.isMobile() ? 60 : 120;
-    const imgHeight = this.isMobile() ? 40 : 80;
+    const imgWidth = isMobile() ? 60 : 120;
+    const imgHeight = isMobile() ? 40 : 80;
 
     if (this.image) {
       children.push({
@@ -542,7 +539,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         style: {
           fill: 'var(--fg)',
           text: this.label,
-          font: this.isMobile() ? '18px sans-serif' : '24px sans-serif',
+          font: isMobile() ? '18px sans-serif' : '24px sans-serif',
           textAlign: 'center'
         }
       });
@@ -551,7 +548,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     if (children.length) {
       return [{
         type: 'group',
-        right: this.adjustedRight + (this.isMobile() ? 10 : 22),
+        right: this.adjustedRight + (isMobile() ? 10 : 22),
         bottom: '36px',
         z: 100,
         silent: true,

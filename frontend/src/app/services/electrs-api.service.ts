@@ -146,10 +146,13 @@ export class ElectrsApiService {
     return this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/address/' + address + '/txs', { params });
   }
 
-  getAddressesTransactions$(addresses: string[], txid?: string): Observable<Transaction[]> {
+  getAddressesTransactions$(addresses: string[], txid?: string, maxTxs?: number): Observable<Transaction[]> {
     let params = new HttpParams();
     if (txid) {
       params = params.append('after_txid', txid);
+    }
+    if (maxTxs) {
+      params = params.append('max_txs', maxTxs);
     }
     return this.httpClient.post<Transaction[]>(
       this.apiBaseUrl + this.apiBasePath + '/api/addresses/txs',

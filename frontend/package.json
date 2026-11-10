@@ -78,6 +78,9 @@
     "@fortawesome/free-solid-svg-icons": "~6.7.2",
     "@ng-bootstrap/ng-bootstrap": "^19.0.0",
     "@noble/secp256k1": "^3.2.0",
+    "@scure/base": "2.4.0",
+    "@scure/bip32": "2.4.0",
+    "@scure/btc-signer": "2.4.1",
     "@types/qrcode": "~1.5.0",
     "bootstrap": "~5.3.8",
     "domino": "^2.1.6",
@@ -111,9 +114,20 @@
     "start-server-and-test": "~2.1.2"
   },
   "overrides": {
-    "tar": "^7.5.5"
+    "tar": "^7.5.5",
+    "vite": {
+      "esbuild": "0.28.1"
+    }
   },
   "scarfSettings": {
     "enabled": false
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true,
+    "cypress": false,
+    "@parcel/watcher": false,
+    "fsevents": false,
+    "lmdb": false,
+    "msgpackr-extract": false
   }
 }

@@ -318,7 +318,7 @@ class PriceUpdater {
     const prices = this.getEmptyPricesObj();
     let insertedCount: number = 0;
     for (const price of pricesJson) {
-      if (existingPriceTimes.includes(price['ct'])) {
+      if (existingPriceTimes.has(price['ct'])) {
         continue;
       }
 
@@ -375,7 +375,7 @@ class PriceUpdater {
     const grouped = {};
     for (const historicalEntry of historicalPrices) {
       for (const time in historicalEntry) {
-        if (existingPriceTimes.includes(parseInt(time, 10))) {
+        if (existingPriceTimes.has(parseInt(time, 10))) {
           continue;
         }
 

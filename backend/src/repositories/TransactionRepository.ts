@@ -84,17 +84,21 @@ class TransactionRepository {
     }
   }
 
-  public async $removeTransaction(txid: string): Promise<void> {
+  public async $removeTransactions(txids: string[]): Promise<void> {
+    const CHUNK_SIZE = 1000;
     try {
-      await DB.query(
-        `
-          DELETE FROM compact_transactions
-          WHERE txid = UNHEX(?)
-        `,
-        [txid]
-      );
+      for (let i = 0; i < txids.length; i += CHUNK_SIZE) {
+        const chunk = txids.slice(i, i + CHUNK_SIZE);
+        await DB.query(
+          `
+            DELETE FROM compact_transactions
+            WHERE txid IN (${chunk.map(() => 'UNHEX(?)').join(', ')})
+          `,
+          chunk
+        );
+      }
     } catch (e) {
-      logger.warn('Cannot delete transaction cpfp info from db. Reason: ' + (e instanceof Error ? e.message : e));
+      logger.warn('Cannot bulk delete transaction cpfps info from db. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
