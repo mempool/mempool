@@ -1,3 +1,4 @@
+<span class="block-cube" [class.pending]="!group.status.confirmed" [style.background]="cubeBackground" aria-hidden="true"></span>
 @if (group.status.confirmed) {
   <h3>
     @if (group.status.block_height != null) {
@@ -23,7 +24,4 @@
 </span>
 @if (group.partial) {
   <span class="group-partial" i18n="address.blocks.partial">Partial activity</span>
-}
-@if (group.status.confirmed) {
-  <app-timestamp [customFormat]="'yyyy-MM-dd HH:mm:ss'" [unixTime]="group.status.block_time" [hideTimeSince]="true"></app-timestamp>
 }
