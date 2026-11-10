@@ -164,6 +164,15 @@ describe('Mainnet - Mining Features', () => {
           cy.get('.spinner-border').should('not.exist');
         });
       });
+
+      describe('script type adoption', () => {
+        it('loads the graph', () => {
+          cy.visit('/graphs/mining/script-type-adoption');
+          cy.waitForSkeletonGone();
+          cy.waitForPageIdle();
+          cy.get('.spinner-border').should('not.exist');
+        });
+      });
     });
   } else {
     it.skip(`Tests cannot be run on the selected BASE_MODULE ${baseModule}`);

@@ -1,0 +1,163 @@
+<app-indexing-progress></app-indexing-progress>
+
+<div class="full-container">
+  <div class="card-header mb-0 mb-md-4">
+    <div class="d-flex d-md-block align-items-baseline">
+      <span i18n="mining.script-type-adoption">Script Type Adoption</span>
+      <button
+        type="button"
+        class="btn p-0 ps-2"
+        style="margin: 0 0 4px 0px"
+        aria-label="Download chart"
+        i18n-aria-label="script-type-adoption.download-chart"
+        (click)="onSaveChart()"
+      >
+        <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+      </button>
+    </div>
+
+    <div class="graph-toolbar">
+      <form
+        [formGroup]="radioGroupForm"
+        class="formRadioGroup interval-group"
+        *ngIf="blockCount > 0"
+      >
+        <div class="btn-group" role="group" name="radioBasic">
+          <ng-container *ngIf="blockCount >= 144">
+            <input
+              type="radio"
+              class="btn-check"
+              id="adoption-24h"
+              [value]="'24h'"
+              fragment="24h"
+              [routerLink]="[
+                '/graphs/mining/script-type-adoption' | relativeUrl
+              ]"
+              [attr.data-cy]="'24h'"
+              formControlName="dateSpan"
+            />
+            <label class="btn btn-primary btn-sm" for="adoption-24h">24H</label>
+          </ng-container>
+          <ng-container *ngIf="blockCount >= 25920">
+            <input
+              type="radio"
+              class="btn-check"
+              id="adoption-6m"
+              [value]="'6m'"
+              fragment="6m"
+              [routerLink]="[
+                '/graphs/mining/script-type-adoption' | relativeUrl
+              ]"
+              [attr.data-cy]="'6m'"
+              formControlName="dateSpan"
+            />
+            <label class="btn btn-primary btn-sm" for="adoption-6m">6M</label>
+          </ng-container>
+          <ng-container *ngIf="blockCount >= 52560">
+            <input
+              type="radio"
+              class="btn-check"
+              id="adoption-1y"
+              [value]="'1y'"
+              fragment="1y"
+              [routerLink]="[
+                '/graphs/mining/script-type-adoption' | relativeUrl
+              ]"
+              [attr.data-cy]="'1y'"
+              formControlName="dateSpan"
+            />
+            <label class="btn btn-primary btn-sm" for="adoption-1y">1Y</label>
+          </ng-container>
+          <ng-container *ngIf="blockCount >= 105120">
+            <input
+              type="radio"
+              class="btn-check"
+              id="adoption-2y"
+              [value]="'2y'"
+              fragment="2y"
+              [routerLink]="[
+                '/graphs/mining/script-type-adoption' | relativeUrl
+              ]"
+              [attr.data-cy]="'2y'"
+              formControlName="dateSpan"
+            />
+            <label class="btn btn-primary btn-sm" for="adoption-2y">2Y</label>
+          </ng-container>
+          <ng-container *ngIf="blockCount >= 157680">
+            <input
+              type="radio"
+              class="btn-check"
+              id="adoption-3y"
+              [value]="'3y'"
+              fragment="3y"
+              [routerLink]="[
+                '/graphs/mining/script-type-adoption' | relativeUrl
+              ]"
+              [attr.data-cy]="'3y'"
+              formControlName="dateSpan"
+            />
+            <label class="btn btn-primary btn-sm" for="adoption-3y">3Y</label>
+          </ng-container>
+          <input
+            type="radio"
+            class="btn-check"
+            id="adoption-all"
+            [value]="'all'"
+            fragment="all"
+            [routerLink]="['/graphs/mining/script-type-adoption' | relativeUrl]"
+            [attr.data-cy]="'all'"
+            formControlName="dateSpan"
+          />
+          <label class="btn btn-primary btn-sm" for="adoption-all">ALL</label>
+        </div>
+      </form>
+
+      <form [formGroup]="metricGroupForm" class="formRadioGroup">
+        <div class="btn-group" role="group" name="radioBasic">
+          <input
+            type="radio"
+            class="btn-check"
+            id="adoption-txs"
+            [value]="'txs'"
+            formControlName="metric"
+          />
+          <label
+            class="btn btn-primary btn-sm"
+            for="adoption-txs"
+            i18n="script-type-adoption.txs"
+            >Txs</label
+          >
+          <input
+            type="radio"
+            class="btn-check"
+            id="adoption-vsize"
+            [value]="'vsize'"
+            formControlName="metric"
+          />
+          <label
+            class="btn btn-primary btn-sm"
+            for="adoption-vsize"
+            i18n="script-type-adoption.vsize"
+            >Vsize</label
+          >
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div
+    class="chart"
+    *browserOnly
+    echarts
+    [initOpts]="chartInitOptions"
+    [options]="chartOptions"
+    (chartInit)="onChartInit($event)"
+    [style]="{ opacity: isLoading ? 0.5 : 1 }"
+  ></div>
+  <div
+    class="text-center loadingGraphs"
+    *ngIf="!stateService.isBrowser || isLoading"
+  >
+    <div class="spinner-border text-light"></div>
+  </div>
+</div>
