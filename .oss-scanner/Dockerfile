@@ -18,7 +18,7 @@ RUN NODE_VERSION=$(sed 's/^v//' /tmp/.nvmrc | tr -d '[:space:]') && \
 
 # Same npm as .github/workflows/ci.yml. The npm bundled with Node 24.13 (11.6.2) rejects the frontend
 # lockfile on a full `npm ci` ("Missing: readdirp@4.1.2 from lock file").
-RUN npm install -g npm@11.12.0
+RUN npm install -g npm@11.20.0
 
 # Cypress is an optional frontend dependency; keep the package, skip its browser binary download
 ENV CYPRESS_INSTALL_BINARY=0
