@@ -17,6 +17,16 @@ class StatisticsApi {
               total_fee,
               min_fee,
               vsize_0,
+              vsize_0_0,
+              vsize_0_1,
+              vsize_0_2,
+              vsize_0_3,
+              vsize_0_4,
+              vsize_0_5,
+              vsize_0_6,
+              vsize_0_7,
+              vsize_0_8,
+              vsize_0_9,
               vsize_1,
               vsize_2,
               vsize_3,
@@ -57,7 +67,8 @@ class StatisticsApi {
               vsize_2000
             )
             VALUES (NOW(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)`;
+               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+               0, 0, 0, 0, 0, 0, 0, 0, 0, 0)`;
       const [result]: any = await DB.query(query);
       return result.insertId;
     } catch (e) {
@@ -77,6 +88,16 @@ class StatisticsApi {
               total_fee,
               min_fee,
               vsize_0,
+              vsize_0_0,
+              vsize_0_1,
+              vsize_0_2,
+              vsize_0_3,
+              vsize_0_4,
+              vsize_0_5,
+              vsize_0_6,
+              vsize_0_7,
+              vsize_0_8,
+              vsize_0_9,
               vsize_1,
               vsize_2,
               vsize_3,
@@ -117,7 +138,8 @@ class StatisticsApi {
               vsize_2000
             )
             VALUES (${convertToDatetime ? `FROM_UNIXTIME(${statistics.added})` : statistics.added}, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-               ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+               ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+               ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       const params: (string | number)[] = [
         statistics.unconfirmed_transactions,
@@ -128,6 +150,16 @@ class StatisticsApi {
         statistics.total_fee,
         statistics.min_fee,
         statistics.vsize_0,
+        statistics.vsize_0_0,
+        statistics.vsize_0_1,
+        statistics.vsize_0_2,
+        statistics.vsize_0_3,
+        statistics.vsize_0_4,
+        statistics.vsize_0_5,
+        statistics.vsize_0_6,
+        statistics.vsize_0_7,
+        statistics.vsize_0_8,
+        statistics.vsize_0_9,
         statistics.vsize_1,
         statistics.vsize_2,
         statistics.vsize_3,
@@ -181,6 +213,16 @@ class StatisticsApi {
       CAST(avg(vbytes_per_second) as DOUBLE) as vbytes_per_second,
       CAST(avg(min_fee) as DOUBLE) as min_fee,
       CAST(avg(vsize_0) as DOUBLE) as vsize_0,
+      CAST(avg(vsize_0_0) as DOUBLE) as vsize_0_0,
+      CAST(avg(vsize_0_1) as DOUBLE) as vsize_0_1,
+      CAST(avg(vsize_0_2) as DOUBLE) as vsize_0_2,
+      CAST(avg(vsize_0_3) as DOUBLE) as vsize_0_3,
+      CAST(avg(vsize_0_4) as DOUBLE) as vsize_0_4,
+      CAST(avg(vsize_0_5) as DOUBLE) as vsize_0_5,
+      CAST(avg(vsize_0_6) as DOUBLE) as vsize_0_6,
+      CAST(avg(vsize_0_7) as DOUBLE) as vsize_0_7,
+      CAST(avg(vsize_0_8) as DOUBLE) as vsize_0_8,
+      CAST(avg(vsize_0_9) as DOUBLE) as vsize_0_9,
       CAST(avg(vsize_1) as DOUBLE) as vsize_1,
       CAST(avg(vsize_2) as DOUBLE) as vsize_2,
       CAST(avg(vsize_3) as DOUBLE) as vsize_3,
@@ -232,6 +274,16 @@ class StatisticsApi {
       CAST(avg(vbytes_per_second) as DOUBLE) as vbytes_per_second,
       CAST(avg(min_fee) as DOUBLE) as min_fee,
       vsize_0,
+      vsize_0_0,
+      vsize_0_1,
+      vsize_0_2,
+      vsize_0_3,
+      vsize_0_4,
+      vsize_0_5,
+      vsize_0_6,
+      vsize_0_7,
+      vsize_0_8,
+      vsize_0_9,
       vsize_1,
       vsize_2,
       vsize_3,
@@ -411,7 +463,7 @@ class StatisticsApi {
 
   private mapStatisticToOptimizedStatistic(statistic: Statistic[]): OptimizedStatistic[] {
     return statistic.map((s) => {
-      return {
+      const result = {
         added: s.added,
         count: s.unconfirmed_transactions,
         vbytes_per_second: s.vbytes_per_second,
@@ -460,12 +512,30 @@ class StatisticsApi {
           s.vsize_2000,
         ]
       };
+
+      if (s.vsize_0_0 > 0 || s.vsize_0_1 > 0 || s.vsize_0_2 > 0 || s.vsize_0_3 > 0 || s.vsize_0_4 > 0 ||
+          s.vsize_0_5 > 0 || s.vsize_0_6 > 0 || s.vsize_0_7 > 0 || s.vsize_0_8 > 0 || s.vsize_0_9 > 0) {
+        result['vsizes_sub1'] = [
+          s.vsize_0_0,
+          s.vsize_0_1,
+          s.vsize_0_2,
+          s.vsize_0_3,
+          s.vsize_0_4,
+          s.vsize_0_5,
+          s.vsize_0_6,
+          s.vsize_0_7,
+          s.vsize_0_8,
+          s.vsize_0_9,
+        ];
+      }
+      return result;
     });
   }
 
   public mapOptimizedStatisticToStatistic(statistic: OptimizedStatistic[]): Statistic[] {
     return statistic.map((s) => {
-      const completeVsizes = s.vsizes.length === 37 ? [0, ...s.vsizes] : s.vsizes;
+      const completeVsizes = s.vsizes.length === 38 ? [0, ...s.vsizes] : s.vsizes;
+      const subVsizes = s.vsizes_sub1 || [];
       return {
         added: s.added,
         unconfirmed_transactions: s.count,
@@ -476,6 +546,16 @@ class StatisticsApi {
         min_fee: s.min_fee,
         fee_data: '',
         vsize_0: completeVsizes[0],
+        vsize_0_0: subVsizes[0] || 0,
+        vsize_0_1: subVsizes[1] || 0,
+        vsize_0_2: subVsizes[2] || 0,
+        vsize_0_3: subVsizes[3] || 0,
+        vsize_0_4: subVsizes[4] || 0,
+        vsize_0_5: subVsizes[5] || 0,
+        vsize_0_6: subVsizes[6] || 0,
+        vsize_0_7: subVsizes[7] || 0,
+        vsize_0_8: subVsizes[8] || 0,
+        vsize_0_9: subVsizes[9] || 0,
         vsize_1: completeVsizes[1],
         vsize_2: completeVsizes[2],
         vsize_3: completeVsizes[3],

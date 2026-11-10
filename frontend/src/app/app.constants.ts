@@ -167,6 +167,22 @@ export const chartColors = [
 ];
 export const originalChartColors = chartColors.slice(1);
 
+// 0.1 sat/vB breakdown of the 0-1 band, used by the mempool statistics charts only
+export const subOneFeeLevels = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9];
+
+export const subOneChartColors = [
+  '#D50000',
+  '#AA00FF',
+  '#304FFE',
+  '#00E5FF',
+  '#00BFA5',
+  '#00C853',
+  '#AEEA00',
+  '#FFFF00',
+  '#FF5252',
+  '#E040FB',
+];
+
 export const poolsColor = {
   'unknown': '#FDD835',
 };

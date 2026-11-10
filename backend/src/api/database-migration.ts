@@ -7,7 +7,7 @@ import cpfpRepository from '../repositories/CpfpRepository';
 import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
-  private static currentVersion = 114;
+  private static currentVersion = 115;
   private queryTimeout = 3600_000;
   private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
@@ -1276,6 +1276,12 @@ class DatabaseMigration {
         }
       }
       await this.updateToSchemaVersion(114);
+    }
+
+    // Add 0.1 sat/vB breakdown of the 0-1 band to statistics table
+    if (databaseSchemaVersion < 115) {
+      await this.$executeQuery('ALTER TABLE statistics ADD COLUMN vsize_0_0 int(11) NOT NULL DEFAULT 0, ADD COLUMN vsize_0_1 int(11) NOT NULL DEFAULT 0, ADD COLUMN vsize_0_2 int(11) NOT NULL DEFAULT 0, ADD COLUMN vsize_0_3 int(11) NOT NULL DEFAULT 0, ADD COLUMN vsize_0_4 int(11) NOT NULL DEFAULT 0, ADD COLUMN vsize_0_5 int(11) NOT NULL DEFAULT 0, ADD COLUMN vsize_0_6 int(11) NOT NULL DEFAULT 0, ADD COLUMN vsize_0_7 int(11) NOT NULL DEFAULT 0, ADD COLUMN vsize_0_8 int(11) NOT NULL DEFAULT 0, ADD COLUMN vsize_0_9 int(11) NOT NULL DEFAULT 0');
+      await this.updateToSchemaVersion(115);
     }
   }
 
