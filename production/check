@@ -29,11 +29,10 @@ check_contributors_md5_hash() {
 for site in hnl sv1 fra tk7 va1 sg1;do
 	echo "${site}"
 	for node in 201 202 203 204 205 206 207 208 209 210 211 212 213 214;do
-		[ "${site}" = "sv1" ] && [ "${node}" -lt 202 ] && continue
-		[ "${site}" = "sv1" ] && [ "${node}" -gt 203 ] && continue
+		[ "${site}" = "sv1" ] && [ "${node}" -gt 206 ] && continue
 		[ "${site}" = "sg1" ] && [ "${node}" -gt 204 ] && continue
 		[ "${site}" = "hnl" ] && [ "${node}" -gt 204 ] && continue
-		[ "${site}" = "tk7" ] && [ "${node}" -gt 206 ] && continue
+		[ "${site}" = "tk7" ] && [ "${node}" -gt 209 ] && continue
 		echo -n "node${node}.${site}: "
 #		check_mempoolspace_frontend_git_hash $node $site
 #		echo -n " "
@@ -41,16 +40,16 @@ for site in hnl sv1 fra tk7 va1 sg1;do
 #		echo -n " "
 #		check_mempoolfoss_backend_git_hash $node $site
 #		echo -n " "
-#		check_mempoolspace_frontend_md5_hash $node $site
-#		echo -n " "
-#		check_mempoolfoss_frontend_md5_hash $node $site
-#		echo -n " "
-		check_mempool_electrs_git_hash $node $site
+		check_mempoolspace_frontend_md5_hash $node $site
 		echo -n " "
+		check_mempoolfoss_frontend_md5_hash $node $site
+		echo -n " "
+#		check_mempool_electrs_git_hash $node $site
+#		echo -n " "
 #		check_liquid_electrs_git_hash $node $site
 #		echo -n " "
 #		check_contributors_md5_hash $node $site
-		check_mempool_electrs_negative_balance $node $site
+#		check_mempool_electrs_negative_balance $node $site
 		echo
 	done
 done
