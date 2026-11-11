@@ -101,6 +101,8 @@
     .card-title {
       font-size: 1rem;
       color: var(--title-fg);
+      display: inline-block;
+      max-width: 100%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
