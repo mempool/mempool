@@ -1,4 +1,3 @@
-import { escape } from 'mysql2';
 import { Common } from '../api/common';
 import mining from '../api/mining/mining';
 import DB from '../database';
@@ -175,45 +174,6 @@ class HashratesRepository {
     } catch (e) {
       logger.err('Cannot fetch pool hashrate history for this pool. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
       throw e;
-    }
-  }
-
-  /**
-   * Get latest run timestamp
-   */
-  public async $getLatestRun(key: string): Promise<number> {
-    const query = `SELECT number FROM state WHERE name = ?`;
-
-    try {
-      const [rows]: any[] = await DB.query(query, [key]);
-
-      if (rows.length === 0) {
-        return 0;
-      }
-      return rows[0]['number'];
-    } catch (e) {
-      logger.err(`Cannot retrieve last indexing run for ${key}. Reason: ` + (e instanceof Error ? e.message : e), logger.tags.mining);
-      throw e;
-    }
-  }
-
-  /**
-   * Delete most recent data points for re-indexing
-   */
-  public async $deleteLastEntries() {
-    logger.info(`Delete latest hashrates data points from the database`, logger.tags.mining);
-
-    try {
-      const [rows]: any[] = await DB.query(`SELECT MAX(hashrate_timestamp) as timestamp FROM hashrates GROUP BY type`);
-      for (const row of rows) {
-        await DB.query(`DELETE FROM hashrates WHERE hashrate_timestamp = ?`, [row.timestamp]);
-      }
-      // Re-run the hashrate indexing to fill up missing data
-      mining.lastHashrateIndexingDate = null;
-      mining.lastWeeklyHashrateIndexingDate = null;
-      void mining.invalidatePoolsHistoricalHashrateCache();
-    } catch (e) {
-      logger.err('Cannot delete latest hashrates data points. Reason: ' + (e instanceof Error ? e.message : e), logger.tags.mining);
     }
   }
 

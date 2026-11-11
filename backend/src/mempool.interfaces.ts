@@ -193,31 +193,10 @@ export interface GbtCandidates {
   removed: MempoolTransactionExtended[];
 }
 
-export interface ThreadTransaction {
-  txid: string;
-  fee: number;
-  weight: number;
-  feePerVsize: number;
-  effectiveFeePerVsize?: number;
-  inputs: number[];
-  cpfpRoot?: string;
-  cpfpChecked?: boolean;
-}
-
 export interface Ancestor {
   txid: string;
   weight: number;
   fee: number;
-}
-
-export interface TransactionSet {
-  fee: number;
-  weight: number;
-  score: number;
-  children?: Set<string>;
-  available?: boolean;
-  modified?: boolean;
-  modifiedNode?: HeapNode<string>;
 }
 
 interface BestDescendant {
@@ -376,14 +355,6 @@ export interface TransactionMinerInfo {
   vout: VoutStrippedToScriptPubkey[];
 }
 
-export interface MempoolStats {
-  funded_txo_count: number;
-  funded_txo_sum: number;
-  spent_txo_count: number;
-  spent_txo_sum: number;
-  tx_count: number;
-}
-
 export interface EffectiveFeeStats {
   medianFee: number; // median effective fee rate
   feeRange: number[]; // 2nd, 10th, 25th, 50th, 75th, 90th, 98th percentiles
@@ -520,13 +491,6 @@ export interface VbytesPerSecond {
   vSize: number;
 }
 
-export interface RequiredSpec { [name: string]: RequiredParams; }
-
-interface RequiredParams {
-  required: boolean;
-  types: ('@string' | '@number' | '@boolean' | string)[];
-}
-
 export interface ILoadingIndicators { [name: string]: number; }
 
 export interface IBackendInfo {
@@ -537,31 +501,6 @@ export interface IBackendInfo {
   coreVersion: string;
   osVersion: string;
   backend: 'esplora' | 'electrum' | 'none';
-}
-
-export interface INetworkInfo {
-    version: number;
-    subversion: string;
-    protocolversion: number;
-    localservices: string;
-    localrelay: boolean;
-    timeoffset: number;
-    networkactive: boolean;
-    networks: {
-      name: string;
-      limited: boolean;
-      reachable: boolean;
-      proxy: string;
-      proxy_randomize_credentials: boolean;
-    }[];
-    relayfee: number;
-    incrementalfee: number;
-    localaddresses: {
-      address: string;
-      port: number;
-      score: number;
-    }[];
-    warnings: string;
 }
 
 export interface IDifficultyAdjustment {
@@ -616,15 +555,4 @@ export interface ITopNodesPerCapacity {
 export interface INodesRanking {
   topByCapacity: ITopNodesPerCapacity[];
   topByChannels: ITopNodesPerChannels[];
-}
-
-export interface IOldestNodes {
-  publicKey: string,
-  alias: string,
-  firstSeen: number,
-  channels?: number,
-  capacity: number,
-  updatedAt?: number,
-  city?: any,
-  country?: any,
 }

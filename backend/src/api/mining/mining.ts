@@ -6,7 +6,6 @@ import bitcoinClient from '../bitcoin/bitcoin-client';
 import logger from '../../logger';
 import { Common } from '../common';
 import loadingIndicators from '../loading-indicators';
-import { escape } from 'mysql2';
 import DifficultyAdjustmentsRepository from '../../repositories/DifficultyAdjustmentsRepository';
 import config from '../../config';
 import BlocksAuditsRepository from '../../repositories/BlocksAuditsRepository';

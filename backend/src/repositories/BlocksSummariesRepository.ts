@@ -85,43 +85,6 @@ class BlocksSummariesRepository {
   }
 
   /** @asyncSafe */
-  public async $getSummariesWithVersion(version: number): Promise<{ height: number, id: string }[]> {
-    try {
-      const [rows]: any[] = await DB.query(`
-        SELECT
-          height,
-          id
-        FROM blocks_summaries
-        WHERE version = ?
-        ORDER BY height DESC;`, [version]);
-      return rows;
-    } catch (e) {
-      logger.err(`Cannot get block summaries with version. Reason: ` + (e instanceof Error ? e.message : e));
-    }
-
-    return [];
-  }
-
-  /** @asyncSafe */
-  public async $getTemplatesWithVersion(version: number): Promise<{ height: number, id: string }[]> {
-    try {
-      const [rows]: any[] = await DB.query(`
-        SELECT
-          blocks_summaries.height as height,
-          blocks_templates.id as id
-        FROM blocks_templates
-        JOIN blocks_summaries ON blocks_templates.id = blocks_summaries.id
-        WHERE blocks_templates.version = ?
-        ORDER BY height DESC;`, [version]);
-      return rows;
-    } catch (e) {
-      logger.err(`Cannot get block summaries with version. Reason: ` + (e instanceof Error ? e.message : e));
-    }
-
-    return [];
-  }
-
-  /** @asyncSafe */
   public async $getSummariesBelowVersion(version: number): Promise<{ height: number, id: string, version: number }[]> {
     try {
       const [rows]: any[] = await DB.query(`

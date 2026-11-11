@@ -1,7 +1,6 @@
 import DB from '../database';
 import logger from '../logger';
-import bitcoinApi from '../api/bitcoin/bitcoin-api-factory';
-import { BlockAudit, AuditScore, TransactionAudit, TransactionStripped, TemplateAlgorithm } from '../mempool.interfaces';
+import { BlockAudit, AuditScore, TransactionAudit, TransactionStripped } from '../mempool.interfaces';
 
 interface MigrationAudit {
   version: number,
@@ -118,23 +117,6 @@ class BlocksAuditRepositories {
     } catch (e: any) {
       logger.err(`Cannot fetch block audit from db. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
-    }
-  }
-
-  /** @asyncSafe */
-  public async $getBlockTemplateAlgo(hash: string): Promise<TemplateAlgorithm | null> {
-    try {
-      const [rows]: any[] = await DB.query(
-        `SELECT template_algo FROM blocks_audits WHERE hash = ?`,
-        [hash]
-      );
-      if (rows.length) {
-        return rows[0].template_algo as TemplateAlgorithm;
-      }
-      return null;
-    } catch (e: any) {
-      logger.err(`Cannot fetch block template algo from db. Reason: ` + (e instanceof Error ? e.message : e));
-      return null;
     }
   }
 
