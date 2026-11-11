@@ -8,6 +8,10 @@ export function isMobile(): boolean {
   return (window.innerWidth <= 767.98);
 }
 
+export function isServicesMenuPage(url: string): boolean {
+  return url.includes('/services/') && !url.includes('/services/admin/serverstats') && !url.includes('/services/admin/analytics');
+}
+
 export function getFlagEmoji(countryCode): string {
   if (!countryCode) {
     return '';

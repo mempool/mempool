@@ -6,7 +6,7 @@ import { StateService } from '@app/services/state.service';
 import { IUser, ServicesApiServices } from '@app/services/services-api.service';
 import { AuthServiceMempool } from '@app/services/auth.service';
 import { SERVICES_LOGOUT_ACTION } from '@app/shared/services-logout-action.token';
-import { isMobile } from '@app/shared/common.utils';
+import { isMobile, isServicesMenuPage } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-menu',
@@ -43,10 +43,10 @@ export class MenuComponent implements OnInit, OnDestroy {
       });
     }
 
-    this.isServicesPage = this.router.url.includes('/services/') && !this.router.url.includes('/services/admin/serverstats');
+    this.isServicesPage = isServicesMenuPage(this.router.url);
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
-        this.isServicesPage = event.url.includes('/services/') && !event.url.includes('/services/admin/serverstats');
+        this.isServicesPage = isServicesMenuPage(event.url);
         if (!this.isServicesPage) {
           this.toggleMenu(false);
         }

@@ -9,7 +9,7 @@ import { MenuComponent } from '@components/menu/menu.component';
 import { StorageService } from '@app/services/storage.service';
 import { AuthServiceMempool } from '@app/services/auth.service';
 import { WalletAccessService } from '@app/services/wallet-access.service';
-import { isMobile } from '@app/shared/common.utils';
+import { isMobile, isServicesMenuPage } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-master-page',
@@ -89,7 +89,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
       this.user = auth?.user ?? null;
     });
 
-    const isServicesPage = this.router.url.includes('/services/') && !this.router.url.includes('/services/admin/serverstats');
+    const isServicesPage = isServicesMenuPage(this.router.url);
     this.menuOpen = isServicesPage && !isMobile();
     this.stateService.menuOpen$.next(this.menuOpen);
     this.setDropdownVisibility();
