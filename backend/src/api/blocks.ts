@@ -1875,14 +1875,7 @@ class Blocks {
     const blocks: any[] = [];
 
     while (fromHeight <= toHeight) {
-      let block: BlockExtended | null = await blocksRepository.$getBlockByHeight(fromHeight);
-      if (!block) {
-        await this.$indexBlockByHeight(fromHeight);
-        block = await blocksRepository.$getBlockByHeight(fromHeight);
-        if (!block) {
-          continue;
-        }
-      }
+      const block: BlockExtended = await this.$indexBlockByHeight(fromHeight); // early returns the block from database
 
       // Cleanup fields before sending the response
       const cleanBlock: any = {
