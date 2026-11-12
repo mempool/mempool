@@ -375,30 +375,32 @@
             <div class="col-sm text-center d-flex flex-column justify-content-center align-items-center">
               <p i18n="accelerator.pay-fiat-with">Pay&nbsp;<app-fiat [value]="cost"></app-fiat> with</p>
               @if (canPayWithCashapp) {
-                <img class="paymentMethod mx-2" style="width: 200px" [src]="isLightMode ? '/resources/cash-app-light.svg' : '/resources/cash-app.svg'" height=55 (click)="moveToStep('cashapp')">
+                <button type="button" class="paymentMethod mx-2" style="width: 200px; height: 55px" (click)="moveToStep('cashapp')">
+                  <img [src]="isLightMode ? '/resources/cash-app-light.svg' : '/resources/cash-app.svg'" style="width: 100%; height: 100%" alt="Cash App">
+                </button>
               }
               @if (canPayWithApplePay) {
                 @if (canPayWithCashapp) { <span class="mt-1 mb-1"></span> }
-                <div class="paymentMethod mx-2" style="width: 200px; height: 55px" (click)="moveToStep('applepay')">
-                  <img [src]="isLightMode ? '/resources/apple-pay-light.png' : '/resources/apple-pay.png'" height=37>
-                </div>
+                <button type="button" class="paymentMethod mx-2" style="width: 200px; height: 55px" (click)="moveToStep('applepay')">
+                  <img [src]="isLightMode ? '/resources/apple-pay-light.png' : '/resources/apple-pay.png'" height=37 alt="Apple Pay">
+                </button>
               }
               @if (canPayWithGooglePay) {
                 @if (canPayWithCashapp || canPayWithApplePay) { <span class="mt-1 mb-1"></span> }
-                <div class="paymentMethod mx-2" style="width: 200px; height: 55px" (click)="moveToStep('googlepay')">
-                  <img [src]="isLightMode ? '/resources/google-pay-light.png' : '/resources/google-pay.png'" height=37>
-                </div>
+                <button type="button" class="paymentMethod mx-2" style="width: 200px; height: 55px" (click)="moveToStep('googlepay')">
+                  <img [src]="isLightMode ? '/resources/google-pay-light.png' : '/resources/google-pay.png'" height=37 alt="Google Pay">
+                </button>
               }
               @if (canPayWithCardOnFile) {
                 @if (canPayWithCashapp || canPayWithApplePay || canPayWithGooglePay) { <span class="mt-1 mb-1"></span> }
-                <div class="paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" (click)="moveToStep('cardonfile')">
+                <button type="button" class="paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" (click)="moveToStep('cardonfile')">
                   @if (isValidCardBrand(estimate?.availablePaymentMethods?.cardOnFile?.card?.brand)) {
                     <app-svg-images [name]="estimate?.availablePaymentMethods?.cardOnFile?.card?.brand" height="33" class="me-2"></app-svg-images>
                   } @else {
                     <app-svg-images name="OTHER_BRAND" height="33" class="me-2"></app-svg-images>
                   }
                   <span style="font-size: 22px; padding-bottom: 3px">{{ estimate?.availablePaymentMethods?.cardOnFile?.card?.last_4 }}</span>
-                </div>
+                </button>
               }
             </div>
           }
@@ -419,16 +421,16 @@
                   &nbsp;<span style="white-space: nowrap"><small style="font-family: monospace;">{{ cost | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>
                 </p>
                 <div class="d-flex justify-content-center" [class.disabled]="quoteError || accelerateError || showSuccess || calculating || processing">
-                  <div class="paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px; font-size: 30px" (click)="accelerateWithMempoolAccount()">
+                  <button type="button" class="paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px; font-size: 30px" [disabled]="quoteError || accelerateError || showSuccess || calculating || processing" (click)="accelerateWithMempoolAccount()">
                     <div class="me-2 purple-icon" style="width: 40px; height: 40px;"></div>
                     <span i18n="transaction.pay|Pay button label">Pay</span>
-                  </div>
+                  </button>
                 </div>
               } @else {
                 <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<span><small style="font-family: monospace;">{{ ((invoice?.btcDue * 100_000_000) || cost) | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span> <span i18n="accelerator.pay-with">with</span></p>
-                <div class="paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" (click)="moveToStep('bitcoin')">
-                  <img src="/resources/bitcoin-btc-logo-full.svg" height=30>
-                </div>
+                <button type="button" class="paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" (click)="moveToStep('bitcoin')">
+                  <img src="/resources/bitcoin-btc-logo-full.svg" height=30 alt="Bitcoin">
+                </button>
               }
             </div>
           }
@@ -518,14 +520,14 @@
             } @else if (step === 'googlepay') {
               <div id="google-pay-button" class="d-inline-block" style="height: 50px" [style]="loadingGooglePay ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
             } @else if (step === 'cardonfile') {
-              <div class="ms-auto me-auto paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" (click)="requestCardOnFilePayment()" [style]="loadingCardOnFile ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''">
+              <button type="button" class="ms-auto me-auto paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" [disabled]="loadingCardOnFile" (click)="requestCardOnFilePayment()" [style]="loadingCardOnFile ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''">
                 @if (isValidCardBrand(estimate?.availablePaymentMethods?.cardOnFile?.card?.brand)) {
                   <app-svg-images [name]="estimate?.availablePaymentMethods?.cardOnFile?.card?.brand" height="33" class="me-2"></app-svg-images>
                 } @else {
                   <app-svg-images name="OTHER_BRAND" height="33" class="me-2"></app-svg-images>
                 }
                 <span style="font-size: 22px; padding-bottom: 3px">{{ estimate?.availablePaymentMethods?.cardOnFile?.card?.last_4 }}</span>
-              </div>
+              </button>
             }
             @if (loadingCashapp || loadingApplePay || loadingGooglePay || loadingCardOnFile) {
             <div class="d-flex flex-row justify-content-center">
