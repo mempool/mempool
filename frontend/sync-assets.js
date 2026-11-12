@@ -118,7 +118,8 @@ const httpsGet = (target, options = {}) => {
       response.on('end', () => {
         let body = Buffer.concat(chunks).toString().slice(0, 300);
         try {
-          body = JSON.parse(body).message || body;
+          const message = JSON.parse(body).message;
+          if (typeof message === 'string' && message) body = message;
         } catch (e) { /* not JSON, keep the raw body */ }
         reject(new HttpError(response.statusCode, url, body.trim()));
       });
