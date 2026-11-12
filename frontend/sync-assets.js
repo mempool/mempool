@@ -158,7 +158,7 @@ const downloadFile = (filePath, url) => {
 
   // Download to a temporary file first so a failed transfer never leaves a
   // truncated file behind or clobbers a good existing one
-  const tempPath = `${filePath}.download`;
+  const tempPath = `${filePath}.${process.pid}.${crypto.randomBytes(8).toString('hex')}.download`;
 
   return withRetry(`Download of ${url}`, async () => {
     try {
