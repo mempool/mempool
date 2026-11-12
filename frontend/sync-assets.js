@@ -3,6 +3,7 @@ const fsSync = require('fs');
 const crypto = require('crypto');
 const path = require('node:path');
 const { pipeline } = require('node:stream/promises');
+const { setTimeout } = require('node:timers');
 
 // Configuration
 const LOG_TAG = '[sync-assets]';
@@ -120,7 +121,7 @@ const httpsGet = (target, options = {}) => {
         try {
           const message = JSON.parse(body).message;
           if (typeof message === 'string' && message) body = message;
-        } catch (e) { /* not JSON, keep the raw body */ }
+        } catch { /* not JSON, keep the raw body */ }
         reject(new HttpError(response.statusCode, url, body.trim()));
       });
     });
