@@ -289,17 +289,13 @@ class MiningRoutes {
 
   private async $getHistoricalBlockSizeAndWeight(req: Request, res: Response) {
     try {
-      const blockSizes = await mining.$getHistoricalBlockSizes(req.params.interval);
-      const blockWeights = await mining.$getHistoricalBlockWeights(req.params.interval);
+      const blockSizesAndWeights = await mining.$getHistoricalBlockSizesAndWeights(req.params.interval);
       const blockCount = await BlocksRepository.$blockCount(null, null);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.header('X-total-count', blockCount.toString());
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
-      res.json({
-        sizes: blockSizes,
-        weights: blockWeights
-      });
+      res.json(blockSizesAndWeights);
     } catch (e) {
       handleError(req, res, 500, 'Failed to get historical block size and weight');
     }
