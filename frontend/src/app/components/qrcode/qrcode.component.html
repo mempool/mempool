@@ -1,4 +1,4 @@
 <div class="holder" [ngStyle]="{'width': size, 'height': size}">
-  <img *ngIf="imageUrl" [src]="imageUrl">
+  <img *ngIf="imageUrl" [src]="imageUrl" alt="">
   <canvas #canvas [style]="{'border': border + 'px solid white'}"></canvas>
 </div>
