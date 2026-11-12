@@ -53,7 +53,7 @@ function withVsizes(stats: any[], vsizes: number[]): any[] {
 
 function check(results: any[][]): { serverPicked: string, sanitizedResult: any[] } {
   const resultsPerServer = Object.fromEntries(results.map((result, index) => [`server-${index}`, result]));
-  return (statisticsReplication as any).performSanityCheck(resultsPerServer, '/api/v1/statistics/1w');
+  return (statisticsReplication as any).performRemoteCheck(resultsPerServer, '/api/v1/statistics/1w');
 }
 
 describe('StatisticsReplication sanity check', () => {
@@ -180,11 +180,13 @@ describe('StatisticsReplication sync', () => {
     expect(replication.inProgress).toBe(false);
   });
 
-  test('releases the in progress lock when syncing an interval fails', async () => {
-    getMissingStatistics.mockResolvedValue(missingStatistics([60, 120]));
-    syncStatistics.mockRejectedValue(new Error('insert failed'));
-    await expect(replication.$sync()).rejects.toThrow('insert failed');
+  test('records a failed interval and keeps syncing the next one when syncing throws', async () => {
+    getMissingStatistics.mockResolvedValue({ ...missingStatistics([60, 120]), '1w': new Set([300, 600]) });
+    syncStatistics.mockRejectedValueOnce(new Error('list timeout')).mockResolvedValue({ success: true, synced: 1, missed: 1 });
+    await replication.$sync();
     expect(replication.inProgress).toBe(false);
+    expect(replication.failedAttempts['24h']).toBeDefined();
+    expect(syncStatistics.mock.calls.map(([interval]) => interval)).toEqual(['24h', '1w']);
   });
 
   test('skips an interval that failed in the last 24 hours even when new rows are missing', async () => {
@@ -232,6 +234,7 @@ describe('StatisticsReplication insert', () => {
 
   beforeEach(() => {
     create = jest.spyOn(statistics, '$create').mockResolvedValue(1);
+    jest.spyOn(statistics, '$list1W').mockResolvedValue([]);
   });
 
   afterEach(() => {
@@ -259,6 +262,63 @@ describe('StatisticsReplication insert', () => {
     const result = await replication.$syncStatistics('1w', new Set([NOW]));
     expect(create).not.toHaveBeenCalled();
     expect(result.success).toBe(false);
+  });
+
+  test('falls back to consensus when there are fewer local rows than missing rows', async () => {
+    const stats = numericStats(10);
+    jest.spyOn(statistics, '$list1W').mockResolvedValue(stats.slice(0, 4));
+    (($sync as unknown) as jest.Mock).mockResolvedValue({ exists: false });
+    await replication.$syncStatistics('1w', new Set(stats.slice(4).map(stat => stat.added)));
+    expect((($sync as unknown) as jest.Mock).mock.lastCall[1].name).toBe('bound performRemoteCheck');
+  });
+
+  test('compares against local rows when there are enough of them', async () => {
+    const stats = numericStats(10);
+    jest.spyOn(statistics, '$list1W').mockResolvedValue(stats.slice(0, 6));
+    (($sync as unknown) as jest.Mock).mockResolvedValue({ exists: false });
+    await replication.$syncStatistics('1w', new Set(stats.slice(6).map(stat => stat.added)));
+    expect((($sync as unknown) as jest.Mock).mock.lastCall[1].name).toBe('bound performLocalCheck');
+  });
+});
+
+describe('StatisticsReplication local check', () => {
+  const replication = statisticsReplication as any;
+  const ALIGNED = NOW - NOW % STEP;
+  const full = makeStats(100, 1, 39, ALIGNED);
+  const local = full.filter((stat, i) => i < 40 || i >= 60);
+  const missing = full.slice(40, 60).map(stat => Number(stat.added));
+
+  function localCheck(results: any[][]): { serverPicked: string, sanitizedResult: any[] } {
+    const resultsPerServer = Object.fromEntries(results.map((result, index) => [`server-${index}`, result]));
+    return replication.performLocalCheck(replication.mapBySlot(local, STEP), new Set(missing), STEP, resultsPerServer, '/api/v1/statistics/1w');
+  }
+
+  test('rejects remotes that agree with each other but deviate from local', () => {
+    const corrupt = makeStats(100, 0.5, 39, ALIGNED);
+    const { sanitizedResult } = localCheck([corrupt, corrupt, corrupt]);
+    expect(sanitizedResult).toEqual([]);
+  });
+
+  test('accepts a remote within 20% of local', () => {
+    const { serverPicked, sanitizedResult } = localCheck([makeStats(100, 0.8, 39, ALIGNED)]);
+    expect(serverPicked).toBe('server-0');
+    expect(sanitizedResult.length).toBe(100);
+  });
+
+  test('rejects a remote without the missing slots', () => {
+    const { sanitizedResult } = localCheck([local]);
+    expect(sanitizedResult).toEqual([]);
+  });
+
+  test('rejects a remote sharing less than 75% of local slots', () => {
+    const { sanitizedResult } = localCheck([full.slice(0, 70)]);
+    expect(sanitizedResult).toEqual([]);
+  });
+
+  test('picks the agreeing remote covering the most missing slots', () => {
+    const partial = full.filter((stat, i) => i < 40 || i >= 50);
+    const { serverPicked } = localCheck([partial, full]);
+    expect(serverPicked).toBe('server-1');
   });
 });
 
@@ -289,6 +349,18 @@ describe('StatisticsReplication missing rows', () => {
       expected.push(start + index * STEP);
     }
     expect([...missing].sort((a, b) => a - b)).toEqual(expected);
+  });
+
+  test('ignores a run of 5 missing slots', async () => {
+    jest.spyOn(DB, 'query').mockResolvedValue([storedRows(40, 45), []] as any);
+    const missing: Set<number> = await replication.$getMissingStatisticsInterval([start, end, '1w'], start);
+    expect(missing.size).toBe(0);
+  });
+
+  test('returns a run of 6 missing slots', async () => {
+    jest.spyOn(DB, 'query').mockResolvedValue([storedRows(40, 46), []] as any);
+    const missing: Set<number> = await replication.$getMissingStatisticsInterval([start, end, '1w'], start);
+    expect(missing.size).toBe(6);
   });
 
   test('returns nothing when every slot has a stored row', async () => {

@@ -3,7 +3,7 @@ import logger from '../logger';
 import { $sync } from './replicator';
 import config from '../config';
 import { Common } from '../api/common';
-import statistics from '../api/statistics/statistics-api';
+import StatisticsApi from '../api/statistics/statistics-api';
 import { OptimizedStatistic } from '../mempool.interfaces';
 
 interface MissingStatistics {
@@ -26,9 +26,23 @@ const steps = {
   'all': 43200,
 };
 
+const listMethods: Record<string, () => Promise<OptimizedStatistic[]>> = {
+  '24h': () => StatisticsApi.$list24H(),
+  '1w': () => StatisticsApi.$list1W(),
+  '1m': () => StatisticsApi.$list1M(),
+  '3m': () => StatisticsApi.$list3M(),
+  '6m': () => StatisticsApi.$list6M(),
+  '2y': () => StatisticsApi.$list2Y(),
+  'all': () => StatisticsApi.$listAll(),
+};
+
 const MAX_EMPTINESS = 0.1;
 const MAX_POLLUTION = 0.1;
 const MAX_DEVIATION = 0.1;
+const LOCAL_MIN_OVERLAP = 0.75;
+const LOCAL_MAX_POLLUTION = 0.25;
+const LOCAL_MAX_DEVIATION = 0.25;
+const MIN_GAP_SLOTS = 6;
 const VSIZES_LENGTH = 39;
 const RETRY_COOLDOWN = 24 * 60 * 60 * 1000;
 
@@ -70,16 +84,22 @@ class StatisticsReplication {
       let totalMissed = 0;
 
       for (const interval of missingIntervals) {
-        const results = await this.$syncStatistics(interval, missingStatistics[interval]);
-        totalSynced += results.synced;
-        totalMissed += results.missed;
+        try {
+          const results = await this.$syncStatistics(interval, missingStatistics[interval]);
 
-        if (results.synced === 0) {
+          totalSynced += results.synced;
+          totalMissed += results.missed;
+
+          if (results.synced === 0) {
+            this.failedAttempts[interval] = Date.now();
+          }
+
+          logger.info(`Found ${totalSynced} / ${totalSynced + totalMissed} of ${totalMissing} missing statistics rows`, logger.tags.replication);
+          await Common.sleep$(3000);
+        } catch (e: any) {
           this.failedAttempts[interval] = Date.now();
+          logger.err(`Failed to sync statistics in '${interval}' timespan. Reason: ` + (e instanceof Error ? e.message : e), logger.tags.replication);
         }
-
-        logger.info(`Found ${totalSynced} / ${totalSynced + totalMissed} of ${totalMissing} missing statistics rows`, logger.tags.replication);
-        await Common.sleep$(3000);
       }
 
       logger.debug(`Synced ${totalSynced} statistics rows, ${totalMissed} still missing`, logger.tags.replication);
@@ -99,16 +119,26 @@ class StatisticsReplication {
     let success = false;
     let synced = 0;
     const missed = new Set(missingTimes);
-    const syncResult = await $sync(`/api/v1/statistics/${interval}`, this.performSanityCheck.bind(this));
+    const step = steps[interval];
+    const localIndexed = await listMethods[interval]();
+    const localSlots = this.mapBySlot(localIndexed, step);
+    let sanityCheck: (resultsPerServer: Record<string, OptimizedStatistic[]>, path: string) => {serverPicked: string, sanitizedResult: OptimizedStatistic[]};
+    if (localSlots.size >= missingTimes.size) {
+      sanityCheck = this.performLocalCheck.bind(this, localSlots, missingTimes, step);
+    } else {
+      logger.info(`Only ${localSlots.size} local statistics rows to compare against ${missingTimes.size} missing in '${interval}' timespan, falling back to consensus`, logger.tags.replication);
+      sanityCheck = this.performRemoteCheck.bind(this);
+    }
+    const syncResult = await $sync(`/api/v1/statistics/${interval}`, sanityCheck);
     if (syncResult && syncResult.data?.length && this.isValidResult(syncResult.data)) {
       success = true;
       logger.info(`Fetched /api/v1/statistics/${interval} from ${syncResult.server}`, logger.tags.replication);
 
       for (const stat of syncResult.data) {
-        const time = this.roundToNearestStep(stat.added, steps[interval]);
+        const time = this.roundToNearestStep(stat.added, step);
         if (missingTimes.has(time)) {
           try {
-            await statistics.$create(statistics.mapOptimizedStatisticToStatistic([stat])[0], true);
+            await StatisticsApi.$create(StatisticsApi.mapOptimizedStatisticToStatistic([stat])[0], true);
             if (missed.delete(time)) {
               synced++;
             }
@@ -126,6 +156,66 @@ class StatisticsReplication {
   }
 
   /**
+   * Compares each result from trusted servers against this node's own statistics, so a remote
+   * is only used to fill gaps if it agrees with the data we already have
+   *
+   * @param localSlots this node's statistics keyed by slot
+   * @param missingTimes the slots missing in this node
+   * @param step the slot size of the timespan
+   * @param resultsPerServer responses keyed by the server that returned each result
+   * @param path the path of the endpoint gotten
+   * @returns the agreeing result that covers the most missing slots
+   */
+  private performLocalCheck(localSlots: Map<number, OptimizedStatistic>, missingTimes: Set<number>, step: number, resultsPerServer: Record<string, OptimizedStatistic[]>, path: string): {serverPicked: string, sanitizedResult: OptimizedStatistic[]} {
+    let best: {serverPicked: string, sanitizedResult: OptimizedStatistic[]} = this.emptyResult();
+    let bestCovered = 0;
+
+    for (const [server, remoteResult] of Object.entries(resultsPerServer)) {
+      if (!this.isValidResult(remoteResult)) {
+        logger.warn(`Invalid result from ${server} at ${path}`, logger.tags.replication);
+        continue;
+      }
+
+      const remoteSlots = this.mapBySlot(remoteResult, step);
+      const covered = Array.from(missingTimes).filter(time => remoteSlots.has(time)).length;
+      if (covered === 0) {
+        logger.warn(`${server} has none of the missing slots at ${path}`, logger.tags.replication);
+        continue;
+      }
+
+      let shared = 0;
+      let deviating = 0;
+      for (const [localSlot, localStat] of localSlots) {
+        const remoteStat = remoteSlots.get(localSlot);
+        if (remoteStat) {
+          shared++;
+          if (this.deviates(localStat, remoteStat, LOCAL_MAX_DEVIATION)) {
+            deviating++;
+          }
+        }
+      }
+
+      if (shared < localSlots.size * LOCAL_MIN_OVERLAP || deviating > shared * LOCAL_MAX_POLLUTION) {
+        logger.warn(`${server} disagrees with local statistics at ${path} (${shared}/${localSlots.size} shared slots, ${deviating} deviating)`, logger.tags.replication);
+        continue;
+      }
+
+      if (covered > bestCovered) {
+        best = {serverPicked: server, sanitizedResult: Array.from(remoteSlots.values())};
+        bestCovered = covered;
+      }
+    }
+
+    if (bestCovered === 0) {
+      logger.err(`None of ${Object.keys(resultsPerServer).length} servers agreed with local statistics at ${path}`, logger.tags.replication);
+    } else {
+      logger.info(`Best server after comparing against local statistics: ${best.serverPicked} for ${path}`, logger.tags.replication);
+    }
+
+    return best;
+  }
+
+  /**
    * Iterates over the list of results from trusted servers and compares each result against the others
    * to make sure their responses don't vary too much
    *
@@ -133,7 +223,7 @@ class StatisticsReplication {
    * @param path the path of the endpoint gotten, used to get its timespan parameter
    * @returns the healthiest result
    */
-  private performSanityCheck(resultsPerServer: Record<string, OptimizedStatistic[]>, path: string): {serverPicked: string, sanitizedResult: OptimizedStatistic[]} {
+  private performRemoteCheck(resultsPerServer: Record<string, OptimizedStatistic[]>, path: string): {serverPicked: string, sanitizedResult: OptimizedStatistic[]} {
     const servers = Object.keys(resultsPerServer);
     const results = Object.values(resultsPerServer);
     if (Object.entries(resultsPerServer).length === 0) {
@@ -252,28 +342,28 @@ class StatisticsReplication {
       );
   }
 
-  private deviates(stat1: OptimizedStatistic, stat2: OptimizedStatistic): boolean {
+  private deviates(stat1: OptimizedStatistic, stat2: OptimizedStatistic, maxDeviation = MAX_DEVIATION): boolean {
     const sum1 = this.sumArr(stat1.vsizes);
     const sum2 = this.sumArr(stat2.vsizes);
-    return this.differs(stat1.count, stat2.count)
-      || this.differs(sum1, sum2)
-      || this.shareOfBandsDiffers(stat1.vsizes, sum1, stat2.vsizes, sum2);
+    return this.differs(stat1.count, stat2.count, maxDeviation)
+      || this.differs(sum1, sum2, maxDeviation)
+      || this.shareOfBandsDiffers(stat1.vsizes, sum1, stat2.vsizes, sum2, maxDeviation);
   }
 
-  private differs(value1: number, value2: number): boolean {
-    return Math.abs(value1 - value2) > Math.max(value1, value2) * MAX_DEVIATION;
+  private differs(value1: number, value2: number, maxDeviation: number): boolean {
+    return Math.abs(value1 - value2) > Math.max(value1, value2) * maxDeviation;
   }
 
   private sumArr(arr: number[]): number {
     return arr.reduce((acc, val) => acc + val, 0);
   }
 
-  private shareOfBandsDiffers(vsizes1: number[], sum1: number, vsizes2: number[], sum2: number): boolean {
+  private shareOfBandsDiffers(vsizes1: number[], sum1: number, vsizes2: number[], sum2: number, maxDeviation: number): boolean {
     let shareDiffBand = 0;
     for (let index = 0; index < vsizes1.length; index++) {
       shareDiffBand += Math.abs((vsizes1[index] / sum1) - (vsizes2[index] / sum2));
     }
-    return shareDiffBand / 2 > MAX_DEVIATION;
+    return shareDiffBand / 2 > maxDeviation;
   }
 
   private getCandidatesRanking(sanityResults: Record<string, boolean>): Record<number, number> {
@@ -379,15 +469,7 @@ class StatisticsReplication {
 
       const roundedTimesAlreadyHere = new Set<number>(rows.map(row => this.roundToNearestStep(row.added, step)));
 
-      const missingTimes = timeSteps.filter(time => !roundedTimesAlreadyHere.has(time)).filter((time, i, arr) => {
-        // Remove outsiders
-        if (i === 0) {
-          return arr[i + 1] === time + step;
-        } else if (i === arr.length - 1) {
-          return arr[i - 1] === time - step;
-        }
-        return (arr[i + 1] === time + step) && (arr[i - 1] === time - step);
-      });
+      const missingTimes = this.keepClearGaps(timeSteps.filter(time => !roundedTimesAlreadyHere.has(time)), step);
 
       // Don't bother fetching if very few rows are missing
       if (missingTimes.length < timeSteps.length * 0.01) {
@@ -399,6 +481,21 @@ class StatisticsReplication {
       logger.err(`Cannot fetch missing statistics times from db. Reason: ` + (e instanceof Error ? e.message : e), logger.tags.replication);
       throw e;
     }
+  }
+
+  private keepClearGaps(times: number[], step: number): number[] {
+    const kept: number[] = [];
+    let run: number[] = [];
+    for (let i = 0; i < times.length; i++) {
+      run.push(times[i]);
+      if (times[i + 1] !== times[i] + step) {
+        if (run.length >= MIN_GAP_SLOTS) {
+          kept.push(...run);
+        }
+        run = [];
+      }
+    }
+    return kept;
   }
 
   private roundToNearestStep(time: number, step: number): number {
