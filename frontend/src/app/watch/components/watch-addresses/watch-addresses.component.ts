@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges } from '@angular/core';
-import { derivationPath, WalletView } from '@app/watch/wallet-math';
+import { WalletSessionService } from '@app/watch/services/wallet-session.service';
+import { derivationPath, upcomingReceiveAddresses, WalletView } from '@app/watch/wallet-math';
 import { DerivedAddress } from '@app/watch/watch.types';
 
 type AddressUsage = 'used' | 'unused' | 'unknown';
@@ -35,12 +36,23 @@ export class WatchAddressesComponent implements OnChanges {
   fundedOnly = false;
 
   isAddressList = false;
+  receive: DerivedAddress | null = null;
+  receivePath = '';
+  hasNextReceive = false;
+  hasPreviousReceive = false;
   rows: AddressRow[] = [];
   visible: AddressRow[] = [];
   stats = { total: 0, used: 0, funded: 0 };
 
+  constructor(public session: WalletSessionService) {}
+
   ngOnChanges(): void {
     this.isAddressList = this.view.wallet.kind === 'address-list';
+    const [receive, next] = this.isAddressList || this.view.truncated ? [] : upcomingReceiveAddresses(this.view, 2);
+    this.receive = receive ?? null;
+    this.receivePath = receive ? derivationPath(this.view.wallet, receive) : '';
+    this.hasNextReceive = !!next;
+    this.hasPreviousReceive = !!receive && receive.index > this.view.lastUsed[0] + 1;
     if (this.isAddressList) {
       this.chainFilter = 'all';
     }

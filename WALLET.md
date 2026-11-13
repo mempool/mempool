@@ -42,7 +42,7 @@ Private keys are refused.
 
 ## What it shows
 
-**Overview:** balance, a balance chart, the next unused receive address with a QR code, and recent transactions (shown above).
+**Overview:** balance and a balance chart (shown above).
 
 **Transactions:** the wallet's full history with the net effect of each transaction.
 
@@ -52,7 +52,7 @@ Private keys are refused.
 
 ![UTXOs tab](frontend/src/app/watch/screenshots/utxos.png)
 
-**Addresses:** every derived receive and change address, with its path, use and balance.
+**Addresses:** the next unused receive address with a QR code, then every derived receive and change address, with its path, use and balance.
 
 ![Addresses tab](frontend/src/app/watch/screenshots/addresses.png)
 
