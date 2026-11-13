@@ -59,7 +59,8 @@
     overflow: hidden;
     flex-shrink: 0;
     flex-grow: 0;
-    background: var(--stat-box-bg);
+    margin: 0 -1px;
+    background: linear-gradient(to right, transparent 1.5px, var(--stat-box-bg) 1.5px calc(100% - 1.5px), transparent calc(100% - 1.5px));
     border-top: solid 2px var(--stat-box-bg);
     border-bottom: solid 2px var(--stat-box-bg);
 
@@ -106,7 +107,7 @@
       background: var(--div-left-color);
     }
 
-    width: clamp(5px, 2.5vw, 15px);
+    width: calc(clamp(5px, 2.5vw, 15px) + 2px);
   }
 
   &.transitions {
