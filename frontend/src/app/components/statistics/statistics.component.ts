@@ -257,8 +257,4 @@ export class StatisticsComponent implements OnInit, OnDestroy {
       this.incomingGraph.onSaveChart(this.timespan);
     }
   }
-
-  isMobile() {
-    return (window.innerWidth <= 767.98);
-  }
 }

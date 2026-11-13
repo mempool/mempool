@@ -26,7 +26,7 @@ import { AudioService } from '@app/services/audio.service';
 import { ApiService } from '@app/services/api.service';
 import { SeoService } from '@app/services/seo.service';
 import { StorageService } from '@app/services/storage.service';
-import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { seoDescriptionNetwork, isMobile } from '@app/shared/common.utils';
 import { getTransactionFlags, getUnacceleratedFeeRate } from '@app/shared/transaction.utils';
 import { Filter, TransactionFlags, toFilters } from '@app/shared/filters.utils';
 import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition } from '@interfaces/node-api.interface';
@@ -39,6 +39,7 @@ import { PartnerCodeService } from '@app/services/partner-code.service';
 import { ZONE_SERVICE } from '@app/injection-tokens';
 import { MiningService, MiningStats } from '@app/services/mining.service';
 import { ETA, EtaService } from '@app/services/eta.service';
+import { AnalyticsService } from '@app/services/analytics.service';
 
 export interface Pool {
   id: number;
@@ -226,6 +227,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     private priceService: PriceService,
     private storageService: StorageService,
     private partnerCodeService: PartnerCodeService,
+    private analyticsService: AnalyticsService,
     private miningService: MiningService,
     private etaService: EtaService,
     private cd: ChangeDetectorRef,
@@ -626,7 +628,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           if (this.network === '' && this.txId) {
             this.duplicateTxBlocks = DUPLICATE_TX_BLOCKS[this.txId?.toLowerCase()];
           }
-          if (window.innerWidth <= 767.98) {
+          if (isMobile()) {
             this.router.navigate([this.relativeUrlPipe.transform('/tx'), this.txId], {
               queryParamsHandling: 'merge',
               fragment: this.formatFragment(this.fragmentParams, this.fragmentAnchor),
@@ -710,6 +712,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
           this.setupGraph();
 
           if (!tx.status?.confirmed) {
+            this.analyticsService.action('/tx/:txid', 'unconfirmed-tx');
             if (tx.firstSeen) {
               this.transactionTime = tx.firstSeen;
             } else {

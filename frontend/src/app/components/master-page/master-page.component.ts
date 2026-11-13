@@ -9,6 +9,7 @@ import { MenuComponent } from '@components/menu/menu.component';
 import { StorageService } from '@app/services/storage.service';
 import { AuthServiceMempool } from '@app/services/auth.service';
 import { WalletAccessService } from '@app/services/wallet-access.service';
+import { isMobile, isServicesMenuPage } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-master-page',
@@ -25,7 +26,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   walletAvailable$: Observable<boolean>;
   connectionState$: Observable<number>;
   navCollapsed = false;
-  isMobile = window.innerWidth <= 767.98;
+  isMobile = isMobile();
   officialMempoolSpace = this.stateService.env.OFFICIAL_MEMPOOL_SPACE;
   officialMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
   urlLanguage: string;
@@ -88,8 +89,8 @@ export class MasterPageComponent implements OnInit, OnDestroy {
       this.user = auth?.user ?? null;
     });
 
-    const isServicesPage = this.router.url.includes('/services/') && !this.router.url.includes('/services/admin/serverstats');
-    this.menuOpen = isServicesPage && !this.isSmallScreen();
+    const isServicesPage = isServicesMenuPage(this.router.url);
+    this.menuOpen = isServicesPage && !isMobile();
     this.stateService.menuOpen$.next(this.menuOpen);
     this.setDropdownVisibility();
   }
@@ -116,12 +117,8 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     this.navCollapsed = !this.navCollapsed;
   }
 
-  isSmallScreen(): boolean {
-    return window.innerWidth <= 767.98;
-  }
-
   onResize(): void {
-    this.isMobile = this.isSmallScreen();
+    this.isMobile = isMobile();
   }
 
   brandClick(e): void {

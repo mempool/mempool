@@ -12,6 +12,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Acceleration, BlockExtended } from '@interfaces/node-api.interface';
 import { ServicesApiServices } from '@app/services/services-api.service';
 import { StateService } from '@app/services/state.service';
+import { isMobile } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-acceleration-fees-graph',
@@ -199,7 +200,7 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
         left: this.left,
       },
       tooltip: {
-        show: !this.isMobile(),
+        show: !isMobile(),
         trigger: 'axis',
         axisPointer: {
           type: 'line'
@@ -377,10 +378,6 @@ export class AccelerationFeesGraphComponent implements OnInit, OnChanges, OnDest
 
   onChartInit(ec) {
     this.chartInstance = ec;
-  }
-
-  isMobile() {
-    return (window.innerWidth <= 767.98);
   }
 
   onSaveChart() {

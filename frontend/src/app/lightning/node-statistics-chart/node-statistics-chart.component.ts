@@ -9,6 +9,7 @@ import { download } from '@app/shared/graphs.utils';
 import { LightningApiService } from '@app/lightning/lightning-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { StateService } from '@app/services/state.service';
+import { isMobile } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-node-statistics-chart',
@@ -104,7 +105,7 @@ export class NodeStatisticsChartComponent implements OnInit {
         left: this.left,
       },
       tooltip: {
-        show: !this.isMobile(),
+        show: !isMobile(),
         trigger: 'axis',
         axisPointer: {
           type: 'line'
@@ -140,7 +141,7 @@ export class NodeStatisticsChartComponent implements OnInit {
       },
       xAxis: data.channels.length < 2 ? undefined : {
         type: 'time',
-        splitNumber: this.isMobile() ? 5 : 10,
+        splitNumber: isMobile() ? 5 : 10,
         axisLabel: {
           hideOverlap: true,
         }
@@ -250,9 +251,5 @@ export class NodeStatisticsChartComponent implements OnInit {
     this.chartInstance.on('legendselectchanged', (e) => {
       this.storageService.setValue('sizes_ln_legend', JSON.stringify(e.selected));
     });
-  }
-
-  isMobile() {
-    return (window.innerWidth <= 767.98);
   }
 }
