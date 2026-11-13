@@ -1,5 +1,6 @@
 import { Status, Transaction } from '@interfaces/electrs.interface';
 import { getAddressActivity } from '@app/shared/address-activity.utils';
+import { feeLevels } from '@app/app.constants';
 
 export interface AddressBlockGroup {
   id: string;
@@ -47,4 +48,30 @@ export function buildAddressBlockGroups(transactions: Transaction[] | null, addr
     lastGroup.partial = true;
   }
   return groups;
+}
+
+const blockGradientColors: Record<string, [string, string]> = {
+  '': ['var(--mainnet-alt)', 'var(--primary)'],
+  liquid: ['var(--liquid)', 'var(--testnet-alt)'],
+  'liquidtestnet': ['var(--liquidtestnet)', 'var(--liquidtestnet-alt)'],
+  testnet: ['var(--testnet)', 'var(--testnet-alt)'],
+  testnet4: ['var(--testnet)', 'var(--testnet-alt)'],
+  signet: ['var(--signet)', 'var(--signet-alt)'],
+  regtest: ['var(--regtest)', 'var(--regtest-alt)'],
+};
+
+export function minedBlockBackground(network: string): string {
+  const [top, bottom] = blockGradientColors[network] ?? blockGradientColors[''];
+  return `linear-gradient(${top}, ${bottom})`;
+}
+
+export function pendingBlockBackground(feeRates: number[], mempoolFeeColors: string[]): string {
+  const colors = feeRates.slice().sort((a, b) => a - b).map(fee => {
+    const nextLevel = feeLevels.findIndex(level => level > fee);
+    const index = nextLevel < 0 ? feeLevels.length - 1 : Math.max(0, nextLevel - 1);
+    return '#' + mempoolFeeColors[index];
+  });
+  return colors.length > 1
+    ? `linear-gradient(to right, ${colors.join(', ')})`
+    : colors[0] ?? 'var(--mempool-block-loading)';
 }

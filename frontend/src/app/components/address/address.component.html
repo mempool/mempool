@@ -136,20 +136,24 @@
     </ng-container>
 
     <br>
-    @if (showBlockGroups) {
-      <div class="title-tx">
+    @if (showBlockGroups && !hideBlockStrip) {
+      <div class="title-tx title-with-toggle">
         <h2 class="text-start" i18n="address.blocks.title">Activity by block</h2>
+        <button type="button" class="btn btn-outline-info btn-sm" (click)="toggleBlockStrip()" i18n="address.blocks.hide">Hide blocks</button>
       </div>
-      <app-address-blocks [groups]="blockGroups" [selectedGroup]="selectedBlockGroup" [fullyLoaded]="fullyLoaded" [loading]="isLoadingTransactions"
-        (selectGroup)="selectBlockGroup($event)" (loadMore)="loadMore()"></app-address-blocks>
+      <app-address-blocks [groups]="stripGroups" [selectedGroup]="selectedBlockGroup" [fullyLoaded]="fullyLoaded || stripHistoryDone" [loading]="isLoadingTransactions || isLoadingStripHistory"
+        (selectGroup)="selectBlockGroup($event)" (loadMore)="loadMoreStrip($event)"></app-address-blocks>
     }
 
-    <div class="title-tx">
+    <div class="title-tx title-with-toggle">
       <h2 class="text-start">
         <ng-template [ngIf]="!transactions?.length">&nbsp;</ng-template>
         <ng-template i18n="X of X Address Transaction" [ngIf]="transactions?.length === 1">{{ (transactions?.length | number) || '?' }} of {{ mempoolStats.tx_count + chainStats.tx_count | number }} transaction</ng-template>
         <ng-template i18n="X of X Address Transactions (Plural)" [ngIf]="transactions?.length > 1">{{ (transactions?.length | number) || '?' }} of {{ mempoolStats.tx_count + chainStats.tx_count | number }} transactions</ng-template>
       </h2>
+      @if (showBlockGroups && hideBlockStrip) {
+        <button type="button" class="btn btn-outline-info btn-sm" (click)="toggleBlockStrip()" i18n="address.blocks.show">Show blocks</button>
+      }
     </div>
 
     <app-transactions-list [transactions]="transactions" [txHeaderTemplate]="showBlockGroups ? blockGroupHeader : null" [showConfirmations]="true" [addresses]="[address.address]" [acceleratedTxids]="acceleratedTxids" (loadMore)="loadMore()"></app-transactions-list>
