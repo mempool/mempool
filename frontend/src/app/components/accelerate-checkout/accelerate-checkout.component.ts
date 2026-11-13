@@ -1051,6 +1051,14 @@ export class AccelerateCheckout implements OnInit, OnDestroy {
     return this.auth !== null;
   }
 
+  get useSavedCardLabel(): string {
+    return $localize`:@@accelerator.use-saved-card:Use saved card ending in ${this.estimate?.availablePaymentMethods?.cardOnFile?.card?.last_4}:INTERPOLATION:`;
+  }
+
+  get payWithSavedCardLabel(): string {
+    return $localize`:@@accelerator.pay-with-saved-card:Pay with saved card ending in ${this.estimate?.availablePaymentMethods?.cardOnFile?.card?.last_4}:INTERPOLATION:`;
+  }
+
   isValidCardBrand(brand: string | undefined): boolean {
     return !!brand && ['VISA', 'MASTERCARD', 'JCB', 'DISCOVER', 'DISCOVER_DINERS', 'AMERICAN_EXPRESS'].includes(brand);
   }

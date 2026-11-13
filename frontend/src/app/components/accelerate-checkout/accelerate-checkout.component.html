@@ -393,7 +393,7 @@
               }
               @if (canPayWithCardOnFile) {
                 @if (canPayWithCashapp || canPayWithApplePay || canPayWithGooglePay) { <span class="mt-1 mb-1"></span> }
-                <button type="button" class="paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" (click)="moveToStep('cardonfile')">
+                <button type="button" class="paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" [attr.aria-label]="useSavedCardLabel" (click)="moveToStep('cardonfile')">
                   @if (isValidCardBrand(estimate?.availablePaymentMethods?.cardOnFile?.card?.brand)) {
                     <app-svg-images [name]="estimate?.availablePaymentMethods?.cardOnFile?.card?.brand" height="33" class="me-2"></app-svg-images>
                   } @else {
@@ -520,7 +520,7 @@
             } @else if (step === 'googlepay') {
               <div id="google-pay-button" class="d-inline-block" style="height: 50px" [style]="loadingGooglePay ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''"></div>
             } @else if (step === 'cardonfile') {
-              <button type="button" class="ms-auto me-auto paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" [disabled]="loadingCardOnFile" (click)="requestCardOnFilePayment()" [style]="loadingCardOnFile ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''">
+              <button type="button" class="ms-auto me-auto paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" [disabled]="loadingCardOnFile" [attr.aria-label]="payWithSavedCardLabel" (click)="requestCardOnFilePayment()" [style]="loadingCardOnFile ? 'opacity: 0; width: 0px; height: 0px; pointer-events: none;' : ''">
                 @if (isValidCardBrand(estimate?.availablePaymentMethods?.cardOnFile?.card?.brand)) {
                   <app-svg-images [name]="estimate?.availablePaymentMethods?.cardOnFile?.card?.brand" height="33" class="me-2"></app-svg-images>
                 } @else {
