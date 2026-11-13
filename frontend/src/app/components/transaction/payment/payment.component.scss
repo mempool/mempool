@@ -44,116 +44,56 @@
   font-size: 0.8125rem;
   letter-spacing: 0.05em;
   color: var(--transparent-fg);
+
+  fa-icon {
+    margin-right: 0.35em;
+  }
 }
 
-.stats {
-  display: flex;
-  flex-direction: column;
-
-  .item {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    min-width: 0;
+.table {
+  tr td {
     padding: 0.75rem 0.5rem;
-    text-align: right;
-
-    &:nth-child(odd) {
-      background-color: var(--stat-box-bg);
+    @media (min-width: 576px) {
+      padding: 0.75rem 0.75rem;
     }
-
-    .label {
-      flex: 0 0 100px;
-      text-align: left;
-      font-size: 1rem;
-      letter-spacing: normal;
-      color: var(--fg);
+    &:last-child {
+      text-align: right;
+      @media (min-width: 850px) {
+        text-align: left;
+      }
     }
   }
 
-  app-truncate {
-    display: block;
-    flex: 1 1 auto;
-    min-width: 0;
-    max-width: 100%;
+  .td-width {
+    width: 150px;
+
+    @media (max-width: 768px) {
+      width: 175px;
+    }
   }
 
-  .skeleton-loader {
-    width: 100%;
-    max-width: 120px;
-    margin-left: auto;
+  .progress-circle-wrapper {
+    margin-block: -4px;
   }
 
   .etaDeepMempool,
-  .confs-cell,
-  .block-info {
-    justify-content: flex-end;
-  }
-
   .confs-cell {
-    flex-direction: row-reverse;
-    justify-content: flex-start;
+    display: inline-flex;
+    vertical-align: middle;
+  }
+}
+
+@container (max-width: 719.98px) {
+  .col-sm {
+    flex: 0 0 100%;
   }
 
-  .block-info {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem;
-  }
+  .col-sm + .col-sm tr {
+    background-color: transparent;
 
-  @media (min-width: 768px) {
-    flex-direction: row;
-
-    .item {
-      flex: 1 1 0;
-      flex-direction: column;
-      justify-content: center;
-      gap: 0.25rem;
-      padding: 0.5rem 0.75rem;
-      text-align: center;
-
-      &:nth-child(odd) {
-        background-color: transparent;
-      }
-
-      & + .item {
-        border-left: 1px solid var(--stat-box-bg);
-      }
-
-      .label {
-        flex: 0 0 auto;
-        text-align: center;
-        font-size: 0.8125rem;
-        letter-spacing: 0.05em;
-        color: var(--transparent-fg);
-      }
+    td {
+      --bs-table-bg-type: transparent;
     }
-
-    app-truncate {
-      flex: 0 1 auto;
-    }
-
-    .skeleton-loader {
-      margin-left: 0;
-    }
-
-    .etaDeepMempool,
-    .block-info {
-      justify-content: center;
-    }
-
-    .confs-cell {
-      flex-direction: row;
-      justify-content: center;
-    }
-  }
-
-  .miner-name {
-    margin-right: 4px;
-    vertical-align: top;
   }
 }
 
@@ -162,41 +102,33 @@
   text-align: center;
 }
 
-.summary {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 0.5rem;
+.details {
+  container-type: inline-size;
 
   @media (min-width: 768px) {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.5rem;
-    border-bottom: 1px solid var(--stat-box-bg);
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 }
 
 .tracker-bar {
   width: 100%;
-  margin-bottom: 0.5rem;
-
-  @media (min-width: 768px) {
-    flex: 1 1 auto;
-    min-width: 0;
-    padding: 0 0.5em;
-    margin-bottom: 0;
-  }
-
-  @media (min-width: 850px) {
-    flex: 0 0 60%;
-    min-width: 60%;
-  }
+  margin-bottom: 0.75rem;
 }
 
 .box {
   padding-bottom: 0.75em;
   word-wrap: normal;
+
+  @media (min-width: 768px) {
+    display: flex;
+    align-items: stretch;
+    gap: 1.5rem;
+    padding-bottom: 1.25rem;
+  }
 }
 
 .settled {
@@ -224,12 +156,6 @@
   @media (max-width: 767.98px) {
     margin-top: 1em;
   }
-
-  @media (min-width: 768px) {
-    flex: 0 0 50%;
-    max-width: 50%;
-    margin-bottom: 0;
-  }
 }
 
 .alert-replaced {
@@ -240,17 +166,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2em;
+  padding: 0 0 1rem;
 
   @media (min-width: 768px) {
     flex: 0 0 auto;
+    min-width: 30%;
     align-items: flex-start;
-    padding: 0.5em;
-  }
-
-  @media (min-width: 850px) {
-    flex: 1 1 auto;
-    min-width: 0;
+    justify-content: center;
+    padding: 1.25rem;
+    background-color: var(--stat-box-bg);
   }
 
   .amount-link {
@@ -260,7 +184,7 @@
 
   app-amount,
   .asset-amount {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: 600;
     line-height: 1.2;
   }
@@ -269,8 +193,36 @@
     font-size: 1rem;
   }
 
+  .address {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    width: 280px;
+    max-width: 100%;
+    margin-top: 0.5rem;
+    font-size: 1rem;
+
+    .by {
+      color: var(--transparent-fg);
+    }
+
+    app-truncate {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+  }
+
   .amount-loader {
-    padding: 0.5em 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 280px;
+    max-width: 100%;
+    height: calc(0.8125rem * 1.5 + 1.5rem * 1.2);
+
+    &.with-fiat {
+      height: calc(0.8125rem * 1.5 + 1.5rem * 1.2 + 1.5rem);
+    }
   }
 }
 

@@ -25,12 +25,29 @@
     }
 
     <div class="box">
-      <div class="summary">
-        <ng-container *ngTemplateOutlet="amountSection"></ng-container>
+      <ng-container *ngTemplateOutlet="amountSection"></ng-container>
+      <div class="details">
         <ng-container *ngTemplateOutlet="trackerPanel"></ng-container>
-      </div>
-      <div class="stats">
-        <ng-container *ngTemplateOutlet="stats"></ng-container>
+        @if (!tx || (!replaced && !removed)) {
+          <div class="row">
+            <div class="col-sm">
+              <table class="table table-borderless table-striped">
+                <tbody>
+                  <ng-container *ngTemplateOutlet="statsLeft"></ng-container>
+                </tbody>
+              </table>
+            </div>
+            @if (!isLiquid || tx?.status?.confirmed) {
+              <div class="col-sm">
+                <table class="table table-borderless table-striped">
+                  <tbody>
+                    <ng-container *ngTemplateOutlet="statsRight"></ng-container>
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
+        }
       </div>
     </div>
 
@@ -95,13 +112,13 @@
       @if (!isLoadingTx && tx) {
         @switch (paymentKind) {
           @case ('received') {
-            <span class="label" i18n="payment.kind.received|Received payment">Received</span>
+            <span class="label"><fa-icon [icon]="['fas', 'arrow-down']"></fa-icon><ng-container i18n="payment.kind.received|Received payment">Received</ng-container></span>
           }
           @case ('sent') {
-            <span class="label" i18n="payment.kind.sent|Sent payment">Sent</span>
+            <span class="label"><fa-icon [icon]="['fas', 'arrow-up']"></fa-icon><ng-container i18n="payment.kind.sent|Sent payment">Sent</ng-container></span>
           }
           @case ('self-transfer') {
-            <span class="label" i18n="payment.kind.self-transfer|Self transfer">Self-transfer</span>
+            <span class="label"><fa-icon [icon]="['fas', 'arrow-right-arrow-left']"></fa-icon><ng-container i18n="payment.kind.self-transfer|Self transfer">Self-transfer</ng-container></span>
           }
         }
         @if (asset && asset !== nativeAssetId && amount !== null) {
@@ -123,30 +140,40 @@
           <app-fiat class="fiat" [value]="amount" [blockConversion]="tx.price" [colorClass]="amount < 0 ? 'red-color' : 'green-color'"></app-fiat>
         }
       } @else {
-        <span class="label" i18n="transaction.amount|Amount">Amount</span>
-        <div class="amount-loader">
-          <div class="spinner-border spinner-border-sm text-light"></div>
+        <div class="amount-loader" [class.with-fiat]="!isLiquid">
+          <span class="skeleton-loader"></span>
+          <span class="skeleton-loader"></span>
+          @if (!isLiquid) {
+            <span class="skeleton-loader"></span>
+          }
         </div>
       }
+      <div class="address">
+        <span class="by" i18n="payment.by|Payment address">by</span>
+        <app-truncate [text]="destination" [lastChars]="6"
+          [link]="['/address/' | relativeUrl, destination]"></app-truncate>
+      </div>
     </div>
   }
 </ng-template>
 
-<ng-template #stats>
-  <div class="item">
-    <span class="label" i18n="shared.address">Address</span>
-    <app-truncate [text]="destination" [textAlign]="'end'" [lastChars]="6"
-      [link]="['/address/' | relativeUrl, destination]"></app-truncate>
-  </div>
+<ng-template #skeletonRow>
+  <tr>
+    <td class="td-width"><span class="skeleton-loader"></span></td>
+    <td><span class="skeleton-loader"></span></td>
+  </tr>
+</ng-template>
+
+<ng-template #statsLeft>
   @if (!tx) {
-    <div class="item"><span class="skeleton-loader"></span></div>
-    <div class="item"><span class="skeleton-loader"></span></div>
-  } @else if (!replaced && !removed) {
+    <ng-container *ngTemplateOutlet="skeletonRow"></ng-container>
+  } @else {
     @if (!tx.status?.confirmed) {
-      <div class="item">
-        <span class="label" i18n="transaction.eta|Transaction ETA">ETA</span>
+      <tr>
+        <td class="td-width" i18n="transaction.eta|Transaction ETA">ETA</td>
+        <td>
         @if (ETA$ | async; as eta) {
-          <span [class]="showAccelerateButton ? 'etaDeepMempool d-flex' : ''">
+          <span [class]="showAccelerateButton ? 'etaDeepMempool d-inline-flex' : ''">
             @if (eta.blocks >= 7) {
               <span i18n="transaction.eta.not-any-time-soon|Transaction ETA mot any time soon">Not any time soon</span>
             } @else {
@@ -166,55 +193,42 @@
         } @else {
           <span class="skeleton-loader"></span>
         }
-      </div>
-      @if (!isLiquid) {
-        <div class="item">
-          <span class="label" i18n="transaction.first-seen|Transaction first seen">First seen</span>
-          @if (transactionTime > 0) {
-            <i><app-time kind="since" [time]="transactionTime" [fastRender]="true" [showTooltip]="true"></app-time></i>
-          } @else {
-            <span class="skeleton-loader"></span>
-          }
-        </div>
-      }
+        </td>
+      </tr>
     } @else {
-      <div class="item">
-        <span class="label" i18n="transaction.status|Transaction Status">Status</span>
-        <ng-container *ngTemplateOutlet="status"></ng-container>
-      </div>
-      @if (!isLiquid) {
-        <div class="item">
-          <span class="label" i18n="block.miner">Miner</span>
-          <span class="block-info">
-            @if (pool) {
-              <a placement="bottom" [routerLink]="['/mining/pool' | relativeUrl, pool.slug]" class="badge" style="color: var(--fg);padding:0;">
-                <ng-container *ngIf="pool.minerSlug && pool.minerName; else minerName">
-                  <app-mining-pool [slug]="pool.minerSlug" [name]="pool.minerName" [showName]="false"></app-mining-pool>
-                  <span class="miner-name">{{ pool.minerName }}</span>
-                  <app-mining-pool [slug]="pool.slug" [name]="pool.name"></app-mining-pool>
-                </ng-container>
-                <ng-template #minerName>
-                  <span class="miner-name" *ngIf="pool.minerNames?.length > 1 && pool.minerNames[1] != ''">
-                    @if (pool.minerNames[1].length > 16) {
-                      {{ pool.minerNames[1].slice(0, 15) }}…
-                    } @else {
-                      {{ pool.minerNames[1] }}
-                    }
-                  </span>
-                  <app-mining-pool [slug]="pool.slug" [name]="pool.name"></app-mining-pool>
-                </ng-template>
-              </a>
-            }
-          </span>
-        </div>
-      }
+      <tr>
+        <td class="td-width" i18n="transaction.status|Transaction Status">Status</td>
+        <td><ng-container *ngTemplateOutlet="status"></ng-container></td>
+      </tr>
     }
+  }
+</ng-template>
+
+<ng-template #statsRight>
+  @if (!tx) {
+    <ng-container *ngTemplateOutlet="skeletonRow"></ng-container>
+  } @else if (!tx.status?.confirmed) {
+    <tr>
+      <td class="td-width" i18n="transaction.first-seen|Transaction first seen">First seen</td>
+      <td>
+        @if (transactionTime > 0) {
+          <i><app-time kind="since" [time]="transactionTime" [fastRender]="true" [showTooltip]="true"></app-time></i>
+        } @else {
+          <span class="skeleton-loader"></span>
+        }
+      </td>
+    </tr>
+  } @else {
+    <tr>
+      <td class="td-width" i18n="block.timestamp">Timestamp</td>
+      <td><app-timestamp [unixTime]="tx.status.block_time" [hideTimeSince]="true"></app-timestamp></td>
+    </tr>
   }
 </ng-template>
 
 <ng-template #status>
   @if (settled) {
-    <span class="settled" i18n="transaction.status.settled|Settled">Settled</span>
+    <span>✅ <span class="settled" i18n="transaction.status.settled|Settled">Settled</span></span>
   } @else if (confsRequired > 1) {
     <span class="confs-cell">
       <ng-container *ngTemplateOutlet="progressCircle"></ng-container>
