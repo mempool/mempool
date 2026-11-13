@@ -626,6 +626,12 @@ class Blocks {
       });
       this.updateTimerProgress(timer, `saved audit results for ${this.currentBlockHeight}`);
     }
+
+    // Single writer. The CPFP pass above applies accelerations to the template, so
+    // computing here would store a different answer than the backfill's for the same block.
+    if (config.MEMPOOL.NETWORK === 'mainnet') {
+      indexer.scheduleSingleTask('minFeeRate', 10000);
+    }
   }
 
   /**
