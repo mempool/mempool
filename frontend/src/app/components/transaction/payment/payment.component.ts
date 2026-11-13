@@ -82,8 +82,6 @@ export class PaymentComponent implements OnInit, OnDestroy {
   assetsMinimal: any = {};
   confsRequired = DEFAULT_CONFS;
   amount = 0;
-  received = 0;
-  sent = 0;
   paymentKind: PaymentKind = 'received';
   confirmations = 0;
   transactionTime = -1;
@@ -280,14 +278,14 @@ export class PaymentComponent implements OnInit, OnDestroy {
             }
           }
 
-          if (this.stateService.network === '') {
-            if (!this.mempoolPosition.accelerated) {
-              if (!this.accelerationFlowCompleted && !this.hideAccelerationSummary && !this.showAccelerationSummary) {
-                this.miningService.getMiningStats('1m').subscribe(stats => {
-                  this.miningStats = stats;
-                });
-              }
-            }
+          if (this.stateService.network === '' &&
+              !this.mempoolPosition.accelerated &&
+              !this.accelerationFlowCompleted &&
+              !this.hideAccelerationSummary &&
+              !this.showAccelerationSummary) {
+            this.miningService.getMiningStats('1m').subscribe(stats => {
+              this.miningStats = stats;
+            });
           }
         }
       } else {
@@ -365,16 +363,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
       this.seoService.clearSoft404();
 
       if (!this.tx) {
-        this.tx = tx;
-        this.checkAccelerationEligibility();
-        this.isCached = true;
-        if (tx.fee === undefined) {
-          this.tx.fee = 0;
-        }
-        this.tx.feePerVsize = tx.fee / (tx.weight / 4);
-        this.isLoadingTx = false;
-        this.error = undefined;
-        this.waitingForTransaction = false;
+        this.setTransaction(tx, true);
 
         if (!this.isValidDestination(tx)) {
           this.fallbackToTxView();
@@ -439,16 +428,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
         }
         this.seoService.clearSoft404();
 
-        this.tx = tx;
-        this.checkAccelerationEligibility();
-        this.isCached = false;
-        if (tx.fee === undefined) {
-          this.tx.fee = 0;
-        }
-        this.tx.feePerVsize = tx.fee / (tx.weight / 4);
-        this.isLoadingTx = false;
-        this.error = undefined;
-        this.waitingForTransaction = false;
+        this.setTransaction(tx, false);
 
         if (!this.isValidDestination(tx)) {
           this.fallbackToTxView();
@@ -577,33 +557,43 @@ export class PaymentComponent implements OnInit, OnDestroy {
       this.updateFragmentParams(fragment);
     });
 
-    this.fetchCpfpSubscription = this.fetchCpfp$
-          .pipe(
-            switchMap((txId) =>
-              this.apiService
-                .getCpfpinfo$(txId)
-                .pipe(retryWhen((errors) => errors.pipe(
-                  mergeMap((error) => {
-                    if (!this.tx?.status || this.tx.status.confirmed) {
-                      return throwError(error);
-                    } else {
-                      return of(null);
-                    }
-                  }),
-                  delay(2000)
-                )),
-                catchError(() => {
-                  return of(null);
-                })
-              )
-            ),
-            catchError(() => {
-              return of(null);
-            })
-          )
-          .subscribe((cpfpInfo) => {
-            this.setCpfpInfo(cpfpInfo);
-          });
+    this.fetchCpfpSubscription = this.fetchCpfp$.pipe(
+      switchMap((txId) =>
+        this.apiService.getCpfpinfo$(txId).pipe(
+          retryWhen((errors) => errors.pipe(
+            mergeMap((error) => {
+              if (!this.tx?.status || this.tx.status.confirmed) {
+                return throwError(error);
+              } else {
+                return of(null);
+              }
+            }),
+            delay(2000)
+          )),
+          catchError(() => {
+            return of(null);
+          })
+        )
+      ),
+      catchError(() => {
+        return of(null);
+      })
+    ).subscribe((cpfpInfo) => {
+      this.setCpfpInfo(cpfpInfo);
+    });
+  }
+
+  private setTransaction(tx: Transaction, isCached: boolean): void {
+    this.tx = tx;
+    this.checkAccelerationEligibility();
+    this.isCached = isCached;
+    if (tx.fee === undefined) {
+      this.tx.fee = 0;
+    }
+    this.tx.feePerVsize = tx.fee / (tx.weight / 4);
+    this.isLoadingTx = false;
+    this.error = undefined;
+    this.waitingForTransaction = false;
   }
 
   private destinationMatches(vout?: Vout): boolean {
@@ -616,7 +606,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
     }
 
     const pushOpcode = this.matchAddress.length === 130 ? '41' : '21';
-    return vout.scriptpubkey === `${pushOpcode}${this.matchAddress}ac`
+    return vout.scriptpubkey === `${pushOpcode}${this.matchAddress}ac`;
   }
 
   private resolveDestination$(): Observable<string> {
@@ -681,9 +671,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
   }
 
   setAmount(): void {
-    this.received = this.receivedBy(this.tx);
-    this.sent = this.sentBy(this.tx);
-    this.amount = this.destinationValueUnknown(this.tx) ? null : this.received - this.sent;
+    this.amount = this.destinationValueUnknown(this.tx) ? null : this.receivedBy(this.tx) - this.sentBy(this.tx);
     this.paymentKind = this.getPaymentKind();
     this.asset = this.destinationAssets(this.tx)[0] ?? null;
     if (this.asset && this.asset !== this.nativeAssetId) {
@@ -856,8 +844,6 @@ export class PaymentComponent implements OnInit, OnDestroy {
     this.amount = 0;
     this.asset = null;
     this.errorUnblinded = undefined;
-    this.received = 0;
-    this.sent = 0;
     this.paymentKind = 'received';
     this.confirmations = 0;
     this.transactionTime = -1;
@@ -1013,8 +999,6 @@ export class PaymentComponent implements OnInit, OnDestroy {
       if (initialState) {
         this.accelerationFlowCompleted = true;
       }
-    }
-    if (this.isAcceleration) {
       // this immediately returns cached stats if we fetched them recently
       this.miningService.getMiningStats('1m').subscribe(stats => {
         this.miningStats = stats;

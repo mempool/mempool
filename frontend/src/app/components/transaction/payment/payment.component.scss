@@ -1,4 +1,3 @@
-
 .title-block {
   flex-wrap: wrap;
   align-items: baseline;
@@ -54,7 +53,7 @@
   tr td {
     padding: 0.75rem 0.5rem;
     @media (min-width: 576px) {
-      padding: 0.75rem 0.75rem;
+      padding: 0.75rem;
     }
     &:last-child {
       text-align: right;
@@ -70,16 +69,6 @@
     @media (max-width: 768px) {
       width: 175px;
     }
-  }
-
-  .progress-circle-wrapper {
-    margin-block: -4px;
-  }
-
-  .etaDeepMempool,
-  .confs-cell {
-    display: inline-flex;
-    vertical-align: middle;
   }
 }
 
@@ -115,7 +104,6 @@
 }
 
 .tracker-bar {
-  width: 100%;
   margin-bottom: 0.75rem;
 }
 
@@ -137,10 +125,10 @@
 }
 
 .confs-cell {
-  display: flex;
+  display: inline-flex;
   gap: 12px;
   align-items: center;
-  justify-content: center;
+  vertical-align: middle;
 }
 
 .alert-replaced,
@@ -200,7 +188,6 @@
     width: 280px;
     max-width: 100%;
     margin-top: 0.5rem;
-    font-size: 1rem;
 
     .by {
       color: var(--transparent-fg);
@@ -230,6 +217,7 @@
   display: inline-block;
   width: 2em;
   height: 2em;
+  margin-block: -4px;
   vertical-align: middle;
 
   .circular-chart {
@@ -259,6 +247,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
+  vertical-align: middle;
 }
 
 .title {

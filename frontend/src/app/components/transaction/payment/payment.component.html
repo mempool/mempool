@@ -150,8 +150,7 @@
       }
       <div class="address">
         <span class="by" i18n="payment.by|Payment address">by</span>
-        <app-truncate [text]="destination" [lastChars]="6"
-          [link]="['/address/' | relativeUrl, destination]"></app-truncate>
+        <app-truncate [text]="destination" [lastChars]="6" [link]="['/address/' | relativeUrl, destination]"></app-truncate>
       </div>
     </div>
   }
@@ -167,11 +166,10 @@
 <ng-template #statsLeft>
   @if (!tx) {
     <ng-container *ngTemplateOutlet="skeletonRow"></ng-container>
-  } @else {
-    @if (!tx.status?.confirmed) {
-      <tr>
-        <td class="td-width" i18n="transaction.eta|Transaction ETA">ETA</td>
-        <td>
+  } @else if (!tx.status?.confirmed) {
+    <tr>
+      <td class="td-width" i18n="transaction.eta|Transaction ETA">ETA</td>
+      <td>
         @if (ETA$ | async; as eta) {
           <span [class]="showAccelerateButton ? 'etaDeepMempool d-inline-flex' : ''">
             @if (eta.blocks >= 7) {
@@ -193,14 +191,13 @@
         } @else {
           <span class="skeleton-loader"></span>
         }
-        </td>
-      </tr>
-    } @else {
-      <tr>
-        <td class="td-width" i18n="transaction.status|Transaction Status">Status</td>
-        <td><ng-container *ngTemplateOutlet="status"></ng-container></td>
-      </tr>
-    }
+      </td>
+    </tr>
+  } @else {
+    <tr>
+      <td class="td-width" i18n="transaction.status|Transaction Status">Status</td>
+      <td><ng-container *ngTemplateOutlet="status"></ng-container></td>
+    </tr>
   }
 </ng-template>
 
