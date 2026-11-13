@@ -10,7 +10,6 @@ import { AudioService } from '@app/services/audio.service';
 import { ApiService } from '@app/services/api.service';
 import { of, merge, Subscription, Observable, forkJoin } from 'rxjs';
 import { SeoService } from '@app/services/seo.service';
-import { StorageService } from '@app/services/storage.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
 import { AddressInformation } from '@interfaces/node-api.interface';
 import { AddressTypeInfo } from '@app/shared/address-utils';
@@ -153,7 +152,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   selectedBlockGroup: string | null = null;
   showBlockGroups = false;
   stripGroups: AddressBlockGroup[] = [];
-  hideBlockStrip = false;
+  hideBlockStrip = true;
   isLoadingStripHistory = false;
   stripHistoryDone = false;
   private stripHistory: Transaction[] = [];
@@ -190,11 +189,9 @@ export class AddressComponent implements OnInit, OnDestroy {
     private formBuilder: UntypedFormBuilder,
     private elementRef: ElementRef<HTMLElement>,
     private zone: NgZone,
-    private storageService: StorageService,
   ) { }
 
   ngOnInit(): void {
-    this.hideBlockStrip = this.storageService.getValue('address-blocks-preference') === 'hide';
     this.zone.runOutsideAngular(() => window.addEventListener('scroll', this.onPageScroll, { passive: true }));
     this.network = this.stateService.network;
     this.networkChangeSubscription = this.stateService.networkChanged$.subscribe((network) => {
@@ -231,6 +228,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.address = null;
           this.isLoadingTransactions = true;
           this.transactions = null;
+          this.hideBlockStrip = true;
           this.resetStripHistory();
           this.updateBlockGroups();
           this.utxos = null;
@@ -572,10 +570,7 @@ export class AddressComponent implements OnInit, OnDestroy {
 
   toggleBlockStrip(): void {
     this.hideBlockStrip = !this.hideBlockStrip;
-    if (this.hideBlockStrip) {
-      this.storageService.setValue('address-blocks-preference', 'hide');
-    } else {
-      this.storageService.removeItem('address-blocks-preference');
+    if (!this.hideBlockStrip) {
       this.fillStripHistory();
     }
   }
