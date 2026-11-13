@@ -62,6 +62,7 @@ const routes: Routes = [
       {
         path: 'tx',
         component: StartComponent,
+        runGuardsAndResolvers: 'always',
         data: { preload: true, networkSpecific: true },
         loadChildren: () => import('@components/transaction/transaction.module').then(m => m.TransactionModule),
       },

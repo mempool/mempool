@@ -1,0 +1,277 @@
+.title-block {
+  flex-wrap: wrap;
+  align-items: baseline;
+
+  @media (min-width: 650px) {
+    flex-direction: row;
+  }
+
+  h1 {
+    margin: 0;
+    margin-right: 15px;
+    line-height: 1;
+  }
+}
+
+.tx-link {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: baseline;
+  width: 0;
+  max-width: 100%;
+  margin-top: 8px;
+  @media (min-width: 651px) {
+    flex-grow: 1;
+    margin-right: 1em;
+    top: 1px;
+    position: relative;
+  }
+  @media (max-width: 650px) {
+    width: 100%;
+    order: 3;
+  }
+
+  .txid {
+    width: 200px;
+    min-width: 200px;
+    flex-grow: 1;
+  }
+}
+
+.label {
+  font-size: 0.8125rem;
+  letter-spacing: 0.05em;
+  color: var(--transparent-fg);
+
+  fa-icon {
+    margin-right: 0.35em;
+  }
+}
+
+.table {
+  tr td {
+    padding: 0.75rem 0.5rem;
+    @media (min-width: 576px) {
+      padding: 0.75rem;
+    }
+    &:last-child {
+      text-align: right;
+      @media (min-width: 850px) {
+        text-align: left;
+      }
+    }
+  }
+
+  .td-width {
+    width: 150px;
+
+    @media (max-width: 768px) {
+      width: 175px;
+    }
+  }
+}
+
+@container (max-width: 719.98px) {
+  .col-sm {
+    flex: 0 0 100%;
+  }
+
+  .col-sm + .col-sm tr {
+    background-color: transparent;
+
+    td {
+      --bs-table-bg-type: transparent;
+    }
+  }
+}
+
+.details-button {
+  align-self: center;
+  text-align: center;
+}
+
+.details {
+  container-type: inline-size;
+
+  @media (min-width: 768px) {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+.tracker-bar {
+  margin-bottom: 0.75rem;
+}
+
+.box {
+  padding-bottom: 0.75em;
+  word-wrap: normal;
+
+  @media (min-width: 768px) {
+    display: flex;
+    align-items: stretch;
+    gap: 1.5rem;
+    padding-bottom: 1.25rem;
+  }
+}
+
+.settled {
+  color: var(--green);
+  opacity: 0.8;
+}
+
+.confs-cell {
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.alert-replaced,
+.alert-removed {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  margin-bottom: 1em;
+  padding: 0.5em;
+  border-radius: 0.5em;
+
+  @media (max-width: 767.98px) {
+    margin-top: 1em;
+  }
+}
+
+.alert-replaced {
+  background: var(--red);
+}
+
+.amount-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0 1rem;
+
+  @media (min-width: 768px) {
+    flex: 0 0 auto;
+    min-width: 30%;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 1.25rem;
+    background-color: var(--stat-box-bg);
+  }
+
+  .amount-link {
+    text-decoration: none;
+    color: var(--fg);
+  }
+
+  app-amount,
+  .asset-amount {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .fiat {
+    font-size: 1rem;
+  }
+
+  .address {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    width: 280px;
+    max-width: 100%;
+    margin-top: 0.5rem;
+
+    .by {
+      color: var(--transparent-fg);
+    }
+
+    app-truncate {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+  }
+
+  .amount-loader {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 280px;
+    max-width: 100%;
+    height: calc(0.8125rem * 1.5 + 1.5rem * 1.2);
+
+    &.with-fiat {
+      height: calc(0.8125rem * 1.5 + 1.5rem * 1.2 + 1.5rem);
+    }
+  }
+}
+
+.progress-circle-wrapper {
+  display: inline-block;
+  width: 2em;
+  height: 2em;
+  margin-block: -4px;
+  vertical-align: middle;
+
+  .circular-chart {
+    display: block;
+    width: 100%;
+    height: 100%;
+
+    .circle-bg {
+      stroke: var(--orange);
+      stroke-opacity: 0.3;
+      fill-opacity: 0;
+      stroke-width: 4px;
+    }
+
+    .circle {
+      stroke: var(--orange);
+      stroke-opacity: 1;
+      fill-opacity: 0;
+      stroke-width: 4px;
+      stroke-linecap: round;
+      transition: stroke-dasharray 0.5s ease-out;
+    }
+  }
+}
+
+.etaDeepMempool {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  vertical-align: middle;
+}
+
+.title {
+  h2 {
+    line-height: 1;
+    margin: 0;
+    padding-bottom: 5px;
+  }
+}
+
+.accelerator-toggle {
+  position: relative;
+  bottom: -13px;
+  margin-top: -5px;
+  margin-left: 10px;
+  @media (min-width: 768px) {
+    display: inline-block;
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+}
+
+.hide-on-mobile {
+  @media (max-width: 767px) {
+    display: none;
+  }
+}
