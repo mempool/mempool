@@ -30,6 +30,21 @@ interface PoolsStats {
   lastEstimatedHashrate1w: number,
 }
 
+interface IndexedWeek {
+  timestamp: number,
+  blockCount: number,
+  shares: Map<number, number>,
+  poolBlockCounts: Map<number, number>,
+}
+
+interface WeekBoundaryOrStaleBlock {
+  poolId: number,
+  timestamp: number,
+  stale: number,
+}
+
+const WEEK_SECONDS = 604800;
+
 class Mining {
   private blocksPriceIndexingRunning = false;
   public lastHashrateIndexingDate: number | null = null;
@@ -344,7 +359,8 @@ class Mining {
       const genesisData = await this.getGenesisData();
       const genesisTimestamp = genesisData.timestamp * 1000;
 
-      const indexedTimestamp = await HashratesRepository.$getWeeklyHashrateTimestamps();
+      await this.$deleteStaleWeeklyHashrates(oldestConsecutiveBlockTimestamp);
+      const indexedTimestamp = new Set((await HashratesRepository.$getWeeklyHashrates()).map(hashrate => hashrate.timestamp));
       const hashrates: any[] = [];
 
       const lastMonday = new Date(now.setDate(now.getDate() - (now.getDay() + 6) % 7));
@@ -365,7 +381,7 @@ class Mining {
         const fromTimestamp = toTimestamp - 604800000;
 
         // Skip already indexed weeks
-        if (indexedTimestamp.includes(toTimestamp / 1000)) {
+        if (indexedTimestamp.has(toTimestamp / 1000)) {
           toTimestamp -= 604800000;
           ++totalIndexed;
           continue;
@@ -434,6 +450,129 @@ class Mining {
       logger.err(`Weekly mining pools hashrates indexing failed. Trying again in 10 seconds. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
       throw e;
     }
+  }
+
+  /**
+   * Delete weekly pool hashrates which no longer match the pool assigned to each block, so they get re-indexed.
+   *
+   * Mining pools updates only relabel blocks, so the number of blocks in each week never changes
+   * and every indexed pool block count can be recovered as round(share * blocks in that week).
+   * @asyncSafe
+   */
+  private async $deleteStaleWeeklyHashrates(oldestConsecutiveBlockTimestamp: number): Promise<void> {
+    try {
+      const weeks = new Map<number, IndexedWeek>();
+      for (const hashrate of await HashratesRepository.$getWeeklyHashrates()) {
+        if (hashrate.timestamp * 1000 > oldestConsecutiveBlockTimestamp) {
+          const week = weeks.get(hashrate.timestamp) ?? { timestamp: hashrate.timestamp, blockCount: 0, shares: new Map(), poolBlockCounts: new Map() };
+          week.shares.set(hashrate.poolId, hashrate.share);
+          weeks.set(hashrate.timestamp, week);
+        }
+      }
+      const timestamps = [...weeks.keys()];
+      if (timestamps.length === 0) {
+        return;
+      }
+      const weekEndOffset = timestamps[0] % WEEK_SECONDS;
+      // the indexer counts blocks mined exactly at a week boundary in both adjacent weeks
+      const extraBlocks = await BlocksRepository.$getStaleBlocksAndBlocksAt(timestamps.map(timestamp => timestamp - WEEK_SECONDS));
+
+      await this.$countIndexedWeeksBlocks(weeks, weekEndOffset, extraBlocks, null);
+      const poolIds = await this.$getMismatchedPools(weeks, timestamps, extraBlocks);
+      if (poolIds.length === 0) {
+        return;
+      }
+      await this.$countIndexedWeeksBlocks(weeks, weekEndOffset, extraBlocks, poolIds);
+
+      const staleTimestamps = timestamps.filter(timestamp => this.isWeekStale(weeks.get(timestamp), poolIds));
+      if (staleTimestamps.length > 0) {
+        logger.notice(`Deleting ${staleTimestamps.length} weeks of mining pools hashrates which do not match blocks pool assignments`, logger.tags.mining);
+        await HashratesRepository.$deleteWeeklyHashrates(staleTimestamps);
+      }
+    } catch (e) {
+      logger.err(`Cannot check weekly mining pools hashrates consistency. Reason: ${(e instanceof Error ? e.message : e)}`, logger.tags.mining);
+    }
+  }
+
+  /**
+   * Count non-stale blocks in each indexed week the same way as the weekly indexer, in total or for the given pools
+   * @asyncUnsafe
+   */
+  private async $countIndexedWeeksBlocks(weeks: Map<number, IndexedWeek>, weekEndOffset: number, extraBlocks: WeekBoundaryOrStaleBlock[], poolIds: number[] | null): Promise<void> {
+    for (const row of await BlocksRepository.$getBlockCountPerWeek(weekEndOffset, poolIds)) {
+      this.addWeekBlocks(weeks.get(row.timestamp), row.poolId, row.blockCount);
+    }
+    for (const block of extraBlocks.filter(block => !poolIds || poolIds.includes(block.poolId))) {
+      const poolId = poolIds ? block.poolId : null;
+      if (block.stale) {
+        this.addWeekBlocks(weeks.get(weekEndOffset + WEEK_SECONDS * Math.ceil((block.timestamp - weekEndOffset) / WEEK_SECONDS)), poolId, -1);
+      } else {
+        this.addWeekBlocks(weeks.get(block.timestamp + WEEK_SECONDS), poolId, 1);
+      }
+    }
+  }
+
+  /**
+   * Pools whose block count in indexed weeks differs from the count implied by their weekly hashrates.
+   * Relabeling a block changes the count of two pools in the same week, so the mismatched pool
+   * with the most blocks can be skipped without missing any stale week.
+   * @asyncUnsafe
+   */
+  private async $getMismatchedPools(weeks: Map<number, IndexedWeek>, timestamps: number[], extraBlocks: WeekBoundaryOrStaleBlock[]): Promise<number[]> {
+    const blockCounts = new Map<number, number>();
+    const differences = new Map<number, number>();
+    for (const row of await BlocksRepository.$getBlockCountPerPool()) {
+      blockCounts.set(row.poolId, row.blockCount);
+      this.addCount(differences, row.poolId, row.blockCount);
+    }
+    for (const block of extraBlocks) {
+      if (block.stale) {
+        this.addCount(differences, block.poolId, -1);
+      } else if (weeks.has(block.timestamp)) {
+        this.addCount(differences, block.poolId, 1);
+      }
+    }
+    const unindexedRanges = [{ from: 0, to: timestamps[0] - WEEK_SECONDS - 1 }];
+    for (let i = 1; i < timestamps.length; i++) {
+      if (timestamps[i] - timestamps[i - 1] > WEEK_SECONDS) {
+        unindexedRanges.push({ from: timestamps[i - 1] + 1, to: timestamps[i] - WEEK_SECONDS - 1 });
+      }
+    }
+    unindexedRanges.push({ from: timestamps[timestamps.length - 1] + 1, to: Date.now() / 1000 + WEEK_SECONDS });
+    for (const range of unindexedRanges) {
+      for (const pool of await PoolsRepository.$getPoolsInfoBetween(range.from, range.to)) {
+        this.addCount(differences, pool.poolId, -pool.blockCount);
+      }
+    }
+    for (const week of weeks.values()) {
+      for (const [poolId, share] of week.shares) {
+        this.addCount(differences, poolId, -Math.round(share * week.blockCount));
+      }
+    }
+
+    const mismatchedPoolIds = [...differences.keys()]
+      .filter(poolId => differences.get(poolId) !== 0)
+      .sort((a, b) => (blockCounts.get(b) ?? 0) - (blockCounts.get(a) ?? 0));
+    return mismatchedPoolIds.length < 2 ? [] : mismatchedPoolIds.slice(1);
+  }
+
+  private isWeekStale(week: IndexedWeek | undefined, poolIds: number[]): boolean {
+    return !!week && poolIds.some(poolId => (week.poolBlockCounts.get(poolId) ?? 0) !== Math.round((week.shares.get(poolId) ?? 0) * week.blockCount));
+  }
+
+  private addWeekBlocks(week: IndexedWeek | undefined, poolId: number | null, count: number): void {
+    if (!week) {
+      return;
+    }
+    if (poolId === null) {
+      week.blockCount += count;
+    } else {
+      this.addCount(week.poolBlockCounts, poolId, count);
+    }
+  }
+
+  private addCount(counts: Map<number, number>, key: number, count: number): void {
+    counts.set(key, (counts.get(key) ?? 0) + count);
   }
 
   /**
