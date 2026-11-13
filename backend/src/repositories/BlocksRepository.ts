@@ -852,41 +852,15 @@ class BlocksRepository {
   }
 
   /**
-   * Get the historical averaged block sizes
+   * Get the historical averaged block sizes and weights
    * @asyncSafe
    */
-   public async $getHistoricalBlockSizes(div: number, interval: string | null): Promise<any> {
+   public async $getHistoricalBlockSizesAndWeights(div: number, interval: string | null): Promise<{ sizes: any[], weights: any[] }> {
     try {
       let query = `SELECT
         CAST(AVG(height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(size) as INT) as avgSize
-      FROM blocks
-      WHERE stale = 0`;
-
-      if (interval !== null) {
-        query += ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
-      }
-
-      query += ` GROUP BY UNIX_TIMESTAMP(blockTimestamp) DIV ${div}`;
-
-      const [rows]: any = await DB.query(query);
-      return rows;
-    } catch (e) {
-      logger.err('Cannot generate block size and weight history. Reason: ' + (e instanceof Error ? e.message : e));
-      throw e;
-    }
-  }
-
-  /**
-   * Get the historical averaged block weights
-   * @asyncSafe
-   */
-   public async $getHistoricalBlockWeights(div: number, interval: string | null): Promise<any> {
-    try {
-      let query = `SELECT
-        CAST(AVG(height) as INT) as avgHeight,
-        CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
+        CAST(AVG(size) as INT) as avgSize,
         CAST(AVG(weight) as INT) as avgWeight
       FROM blocks
       WHERE stale = 0`;
@@ -898,7 +872,10 @@ class BlocksRepository {
       query += ` GROUP BY UNIX_TIMESTAMP(blockTimestamp) DIV ${div}`;
 
       const [rows]: any = await DB.query(query);
-      return rows;
+      return {
+        sizes: rows.map(row => ({ avgHeight: row.avgHeight, timestamp: row.timestamp, avgSize: row.avgSize })),
+        weights: rows.map(row => ({ avgHeight: row.avgHeight, timestamp: row.timestamp, avgWeight: row.avgWeight })),
+      };
     } catch (e) {
       logger.err('Cannot generate block size and weight history. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
