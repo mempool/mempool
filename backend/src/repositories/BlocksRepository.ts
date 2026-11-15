@@ -13,7 +13,6 @@ import bitcoinClient from '../api/bitcoin/bitcoin-client';
 import config from '../config';
 import chainTips from '../api/chain-tips';
 import blocks from '../api/blocks';
-import BlocksAuditsRepository from './BlocksAuditsRepository';
 import transactionUtils from '../api/transaction-utils';
 import { parseDATUMTemplateCreator, parseDMNDTemplateCreator } from '../utils/bitcoin-script';
 import poolsUpdater from '../tasks/pools-updater';
@@ -63,6 +62,9 @@ interface DatabaseBlock {
   firstSeen: string; // UNIX_TIMESTAMP() returns a string when applied to datetime(6)
   stale: boolean;
   coinbaseBip54: boolean | null;
+  matchRate: number | null;
+  expectedFees: number | null;
+  expectedWeight: number | null;
 }
 
 const BLOCK_DB_FIELDS = `
@@ -111,6 +113,17 @@ const BLOCK_DB_FIELDS = `
   UNIX_TIMESTAMP(blocks.first_seen) AS firstSeen,
   blocks.stale
 `;
+
+function auditFields(): string {
+  return config.MEMPOOL.AUDIT ? `,
+  blocks_audits.match_rate AS matchRate,
+  blocks_audits.expected_fees AS expectedFees,
+  blocks_audits.expected_weight AS expectedWeight` : '';
+}
+
+function auditJoin(): string {
+  return config.MEMPOOL.AUDIT ? 'LEFT JOIN blocks_audits ON blocks_audits.hash = blocks.hash' : '';
+}
 
 class BlocksRepository {
   static version = 1;
@@ -476,18 +489,19 @@ class BlocksRepository {
 
     const params: any[] = [];
     let query = `
-      SELECT ${BLOCK_DB_FIELDS}
+      SELECT ${BLOCK_DB_FIELDS}${auditFields()}
       FROM blocks
       JOIN pools ON blocks.pool_id = pools.id
+      ${auditJoin()}
       WHERE pool_id = ? AND stale = 0`;
     params.push(pool.id);
 
     if (startHeight !== undefined) {
-      query += ` AND height < ?`;
+      query += ` AND blocks.height < ?`;
       params.push(startHeight);
     }
 
-    query += ` ORDER BY height DESC
+    query += ` ORDER BY blocks.height DESC
       LIMIT 100`;
 
     try {
@@ -512,9 +526,10 @@ class BlocksRepository {
   public async $getBlockByHeight(height: number): Promise<BlockExtended | null> {
     try {
       const [rows]: any[] = await DB.query(`
-        SELECT ${BLOCK_DB_FIELDS}
+        SELECT ${BLOCK_DB_FIELDS}${auditFields()}
         FROM blocks
         JOIN pools ON blocks.pool_id = pools.id
+        ${auditJoin()}
         WHERE blocks.height = ? AND stale = 0`,
         [height]
       );
@@ -562,9 +577,10 @@ class BlocksRepository {
   public async $getBlockByHash(hash: string): Promise<BlockExtended | null> {
     try {
       const [rows]: any[] = await DB.query(`
-        SELECT ${BLOCK_DB_FIELDS}
+        SELECT ${BLOCK_DB_FIELDS}${auditFields()}
         FROM blocks
         JOIN pools ON blocks.pool_id = pools.id
+        ${auditJoin()}
         WHERE blocks.hash = ?`,
         [hash]
       );
@@ -1280,11 +1296,10 @@ class BlocksRepository {
     extras.expectedFees = null;
     extras.expectedWeight = null;
     if (config.MEMPOOL.AUDIT) {
-      const auditScore = await BlocksAuditsRepository.$getBlockAuditScore(dbBlk.id);
-      if (auditScore != null) {
-        extras.matchRate = auditScore.matchRate;
-        extras.expectedFees = auditScore.expectedFees;
-        extras.expectedWeight = auditScore.expectedWeight;
+      if (dbBlk.matchRate != null) {
+        extras.matchRate = dbBlk.matchRate;
+        extras.expectedFees = dbBlk.expectedFees;
+        extras.expectedWeight = dbBlk.expectedWeight;
       }
     }
 
