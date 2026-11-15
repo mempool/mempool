@@ -138,6 +138,26 @@
   padding-bottom: 3px;
 }
 
+.title-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+  column-gap: 8px;
+  margin-top: -13px;
+  .main-title {
+    grid-column: 2;
+    margin-top: 0;
+  }
+  .widget-toggler {
+    grid-column: 3;
+    justify-self: end;
+    position: static;
+    margin-inline-end: 4px;
+    margin-top: -1px;
+    white-space: nowrap;
+  }
+}
+
 .card-wrapper {
   .card {
     height: auto !important;
