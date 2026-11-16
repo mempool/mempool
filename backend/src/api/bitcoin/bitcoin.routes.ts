@@ -14,6 +14,7 @@ import loadingIndicators from '../loading-indicators';
 import { CpfpInfo, TransactionExtended } from '../../mempool.interfaces';
 import logger from '../../logger';
 import blocks from '../blocks';
+import syncProgress from './sync-progress';
 import bitcoinClient from './bitcoin-client';
 import difficultyAdjustment from '../difficulty-adjustment';
 import transactionRepository from '../../repositories/TransactionRepository';
@@ -32,7 +33,6 @@ const MAX_TRANSACTION_TIMES = 100;
 const MAX_PSBT_INPUTS = 100;
 const MAX_OUTSPENDS_OUTPUTS = 20000;
 const JUST_NUMBERS_REGEX = /^[1-9]\d*$/;
-
 class BitcoinRoutes {
   public initRoutes(app: Application) {
     app
@@ -45,6 +45,7 @@ class BitcoinRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'fees/mempool-blocks', this.getMempoolBlocks)
       .get(config.MEMPOOL.API_URL_PREFIX + 'backend-info', this.getBackendInfo)
       .get(config.MEMPOOL.API_URL_PREFIX + 'init-data', this.getInitData)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'sync-progress', this.$getSyncProgress)
       .get(config.MEMPOOL.API_URL_PREFIX + 'validate-address/:address', this.validateAddress)
       .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/rbf', this.getRbfHistory)
       .get(config.MEMPOOL.API_URL_PREFIX + 'tx/:txId/cached', this.getCachedTx)
@@ -120,6 +121,15 @@ class BitcoinRoutes {
       res.send(result);
     } catch (e) {
       handleError(req, res, 500, 'Failed to get init data');
+    }
+  }
+
+  private async $getSyncProgress(req: Request, res: Response): Promise<void> {
+    try {
+      res.set('Cache-Control', 'no-store');
+      res.json(await syncProgress.$get());
+    } catch (e) {
+      handleError(req, res, 500, 'Failed to get sync progress');
     }
   }
 

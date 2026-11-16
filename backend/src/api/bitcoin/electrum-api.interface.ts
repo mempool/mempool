@@ -1,4 +1,9 @@
 export namespace IElectrumApi {
+  export interface BlockHeader {
+    height: number;
+    hex: string;
+  }
+
   export interface ScriptHashBalance {
     confirmed: number;
     unconfirmed: number;
