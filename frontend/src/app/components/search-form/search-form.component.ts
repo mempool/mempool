@@ -196,8 +196,7 @@ export class SearchFormComponent implements OnInit {
           const matchesAddressRegex = !matchesTxId && this.regexAddress.test(searchText);
           const matchesAddress = matchesAddressRegex && isValidAddress(searchText, this.network);
           const publicKey = matchesAddress && searchText.startsWith('0');
-          const candidateNetworks = findOtherNetworks(searchText, this.network as any || 'mainnet', this.env);
-          const otherNetworks = (!matchesAddressRegex || matchesAddress) && candidateNetworks.every(({ network }) => isValidAddress(searchText, network)) ? candidateNetworks : [];
+          const otherNetworks = findOtherNetworks(searchText, this.network as any || 'mainnet', this.env);
           const pools = this.pools.filter(pool => pool['name'].toLowerCase().includes(searchText.toLowerCase())).slice(0, 10);
           const hashQuickMatch = +(matchesBlockHeight || matchesBlockHash || (matchesTxId && !liquidAssets.length) || matchesAddress || matchesUnixTimestamp || matchesDateTime);
 
@@ -218,6 +217,7 @@ export class SearchFormComponent implements OnInit {
             txId: matchesTxId,
             blockHash: matchesBlockHash,
             address: matchesAddress,
+            invalidAddress: matchesAddressRegex && !matchesAddress,
             publicKey: publicKey,
             addresses: matchesAddress && addressPrefixSearchResults.length === 1 && searchText === addressPrefixSearchResults[0] ? [] : addressPrefixSearchResults, // If there is only one address and it matches the search text, don't show it in the dropdown
             otherNetworks: otherNetworks,
@@ -268,7 +268,7 @@ export class SearchFormComponent implements OnInit {
     if (searchText) {
       this.isSearching = true;
 
-      if (!this.regexTransaction.test(searchText) && this.regexAddress.test(searchText) && isValidAddress(searchText, this.network)) {
+      if (!this.regexTransaction.test(searchText) && this.regexAddress.test(searchText)) {
         this.navigate('/address/', searchText);
       } else if (this.regexBlockhash.test(searchText)) {
         this.navigate('/block/', searchText);

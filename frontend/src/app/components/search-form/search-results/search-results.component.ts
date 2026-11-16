@@ -33,6 +33,9 @@ export class SearchResultsComponent implements OnChanges {
       if (this.results.publicKey && this.results.nodes.length > 0) {
         this.activeIdx = 1;
       }
+      if (this.results.invalidAddress) {
+        this.activeIdx = -1;
+      }
     }
   }
 
