@@ -79,9 +79,9 @@ docker-compose up
 
 ## Further Configuration
 
-Optionally, you can override any other backend settings from `mempool-config.json`.
+Optionally, you can override any other backend settings from `mempool-config.json`, as well as frontend and database settings.
 
-Below we list all settings from `mempool-config.json` and the corresponding overrides you can make in the `api` > `environment` section of `docker-compose.yml`. 
+Below we list all settings from `mempool-config.json` and the corresponding overrides you can make in the `api` > `environment` section of `docker-compose.yml`. Settings for the `web` (frontend) and `db` (database) services are documented at the end of this section. 
 
 <br/>
 
@@ -440,3 +440,95 @@ Corresponding `docker-compose.yml` overrides:
       MAXMIND_GEOIP2_ISP": "/backend/GeoIP/GeoIP2-ISP.mmdb"
       ...
 ```
+
+<br/>
+
+### Frontend (`web`) settings
+
+The settings above only apply to the `api` (backend) service. The `web` (frontend) service is configured at runtime by [`docker/frontend/entrypoint.sh`](./frontend/entrypoint.sh), which reads environment variables from the `web` > `environment` section of `docker-compose.yml` and substitutes them into the nginx and frontend configuration.
+
+Below we list the environment variables understood by the frontend entrypoint and the defaults applied when they are not set.
+
+Connection and HTTP port:
+```yaml
+  web:
+    environment:
+      FRONTEND_HTTP_PORT: "8080"
+      BACKEND_MAINNET_HTTP_HOST: "api"
+      BACKEND_MAINNET_HTTP_PORT: "8999"
+      PROXIED_SERVICES: "false"
+      PROXIED_SERVICES_HOST: "https://mempool.space"
+```
+
+Networks enabled in the frontend:
+```yaml
+  web:
+    environment:
+      MAINNET_ENABLED: "true"
+      TESTNET_ENABLED: "false"
+      TESTNET4_ENABLED: "false"
+      SIGNET_ENABLED: "false"
+      REGTEST_ENABLED: "false"
+      LIQUID_ENABLED: "false"
+      LIQUID_TESTNET_ENABLED: "false"
+```
+
+Display and content options:
+```yaml
+  web:
+    environment:
+      ITEMS_PER_PAGE: "10"
+      KEEP_BLOCKS_AMOUNT: "8"
+      BLOCK_WEIGHT_UNITS: "4000000"
+      MEMPOOL_BLOCKS_AMOUNT: "8"
+      BASE_MODULE: "mempool"
+      ROOT_NETWORK: ""
+      MEMPOOL_WEBSITE_URL: "https://mempool.space"
+      LIQUID_WEBSITE_URL: "https://liquid.network"
+      MINING_DASHBOARD: "true"
+      LIGHTNING: "false"
+      AUDIT: "false"
+      ACCELERATOR: "false"
+      ACCELERATOR_BUTTON: "true"
+      SERVICES_API: "https://mempool.space/api/v1/services"
+      PUBLIC_ACCELERATIONS: "false"
+      HISTORICAL_PRICE: "true"
+      ADDITIONAL_CURRENCIES: "false"
+      WALLET_ENABLED: "false"
+      WALLET_NAV_ENABLED: "false"
+      WALLET_REQUIRES_INVITE: "false"
+      STRATUM_ENABLED: "false"
+```
+
+Block audit and transaction first-seen start heights:
+```yaml
+  web:
+    environment:
+      MAINNET_BLOCK_AUDIT_START_HEIGHT: "0"
+      TESTNET_BLOCK_AUDIT_START_HEIGHT: "0"
+      SIGNET_BLOCK_AUDIT_START_HEIGHT: "0"
+      REGTEST_BLOCK_AUDIT_START_HEIGHT: "0"
+      TESTNET4_BLOCK_AUDIT_START_HEIGHT: "0"
+      MAINNET_TX_FIRST_SEEN_START_HEIGHT: "0"
+      TESTNET_TX_FIRST_SEEN_START_HEIGHT: "0"
+      TESTNET4_TX_FIRST_SEEN_START_HEIGHT: "0"
+      SIGNET_TX_FIRST_SEEN_START_HEIGHT: "0"
+      REGTEST_TX_FIRST_SEEN_START_HEIGHT: "0"
+```
+
+Nginx endpoint used by the frontend:
+```yaml
+  web:
+    environment:
+      NGINX_PROTOCOL: "http"
+      NGINX_HOSTNAME: "localhost"
+      NGINX_PORT: "8999"
+```
+
+Set `PROXIED_SERVICES` to `"true"` to have the frontend proxy requests to another Mempool instance instead of the bundled backend, using `PROXIED_SERVICES_HOST` as the upstream.
+
+<br/>
+
+### Database (`db`) settings
+
+The default `db` service uses the [`mariadb`](https://hub.docker.com/_/mariadb) image. See the [MariaDB documentation on Docker Hub](https://hub.docker.com/_/mariadb) for the full list of supported environment variables, such as `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD`, and `MARIADB_AUTO_UPGRADE`.
