@@ -101,6 +101,18 @@ h1 {
   }
 }
 
+.title-with-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+
+  .btn {
+    flex-shrink: 0;
+    margin-bottom: 10px;
+  }
+}
+
 .liquid-address {
   .address-table {
     table-layout: fixed;

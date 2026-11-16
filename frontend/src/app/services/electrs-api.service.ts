@@ -146,6 +146,10 @@ export class ElectrsApiService {
     return this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/address/' + address + '/txs', { params });
   }
 
+  getAddressTransactionsChain$(address: string, lastSeenTxid?: string): Observable<Transaction[]> {
+    return this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/address/' + address + '/txs/chain' + (lastSeenTxid ? '/' + lastSeenTxid : ''));
+  }
+
   getAddressesTransactions$(addresses: string[], txid?: string, maxTxs?: number): Observable<Transaction[]> {
     let params = new HttpParams();
     if (txid) {
@@ -184,6 +188,12 @@ export class ElectrsApiService {
     }
     return from(calcScriptHash$(script)).pipe(
       switchMap(scriptHash => this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/scripthash/' + scriptHash + '/txs', { params })),
+    );
+  }
+
+  getScriptHashTransactionsChain$(script: string, lastSeenTxid?: string): Observable<Transaction[]> {
+    return from(calcScriptHash$(script)).pipe(
+      switchMap(scriptHash => this.httpClient.get<Transaction[]>(this.apiBaseUrl + this.apiBasePath + '/api/scripthash/' + scriptHash + '/txs/chain' + (lastSeenTxid ? '/' + lastSeenTxid : ''))),
     );
   }
 
