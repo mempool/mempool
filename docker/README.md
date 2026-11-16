@@ -454,11 +454,13 @@ Connection and HTTP port:
   web:
     environment:
       FRONTEND_HTTP_PORT: "8080"
-      BACKEND_MAINNET_HTTP_HOST: "api"
+      BACKEND_MAINNET_HTTP_HOST: "127.0.0.1"
       BACKEND_MAINNET_HTTP_PORT: "8999"
       PROXIED_SERVICES: "false"
       PROXIED_SERVICES_HOST: "https://mempool.space"
 ```
+
+The shipped `docker-compose.yml` overrides `BACKEND_MAINNET_HTTP_HOST` with `"api"`, the name of the backend service. If you run the `web` image without that override, the frontend contacts a backend on `127.0.0.1`.
 
 Networks enabled in the frontend:
 ```yaml
@@ -525,7 +527,7 @@ Nginx endpoint used by the frontend:
       NGINX_PORT: "8999"
 ```
 
-Set `PROXIED_SERVICES` to `"true"` to have the frontend proxy requests to another Mempool instance instead of the bundled backend, using `PROXIED_SERVICES_HOST` as the upstream.
+Set `PROXIED_SERVICES` to `"true"` to change the upstream of `/api/v1/services`, which proxies to `https://mempool.space` by default, to `PROXIED_SERVICES_HOST`. Only the services upstream changes: the other API and WebSocket routes still go to the backend set by `BACKEND_MAINNET_HTTP_HOST` and `BACKEND_MAINNET_HTTP_PORT`.
 
 <br/>
 
