@@ -44,6 +44,8 @@ class ChainTips {
   private staleBlocks: Record<string, BlockExtended> = {};
   private txOverlaps = new Map<string, TxOverlap>();
   private txOverlapRequests = new Map<string, Promise<TxOverlap | undefined>>();
+  // uncached overlaps hit Core and the esplora backend, so bound them across all page requests and cache warming
+  private txOverlapLimiter = pLimit(4);
   private orphanedBlocks: { [hash: string]: OrphanedBlock } = {};
   private blockCache: { [hash: string]: OrphanedBlock } = {};
   private orphansByHeight: { [height: number]: OrphanedBlock[] } = {};
@@ -210,6 +212,15 @@ class ChainTips {
     return height >= oldestCachedHeight;
   }
 
+  public updateStaleBlocksFirstSeen(results: { hash: string; firstSeen: number | null }[]): void {
+    for (const { hash, firstSeen } of results) {
+      const staleBlock = this.staleBlocks[hash];
+      if (staleBlock?.extras) {
+        staleBlock.extras.firstSeen = firstSeen;
+      }
+    }
+  }
+
   private cacheStaleBlock(block: BlockExtended): void {
     this.staleBlocks[block.id] = block;
     this.trimStaleBlocksCache();
@@ -324,9 +335,7 @@ class ChainTips {
       });
     }
 
-    // uncached overlaps hit Core and the esplora backend, so compare a few tips at a time rather than one after another
-    const limiter = pLimit(4);
-    const overlaps = await Promise.allSettled(tips.map(tip => limiter(() => this.$getTxOverlap(tip.stale.id, tip.canonical.id))));
+    const overlaps = await Promise.allSettled(tips.map(tip => this.$getTxOverlap(tip.stale.id, tip.canonical.id)));
     overlaps.forEach((overlap, index) => {
       if (overlap.status === 'fulfilled') {
         tips[index].txOverlap = overlap.value;
@@ -346,7 +355,8 @@ class ChainTips {
     // share the computation between concurrent requests for the same tips
     let request = this.txOverlapRequests.get(key);
     if (!request) {
-      request = this.$computeTxOverlap(staleHash, canonicalHash).finally(() => this.txOverlapRequests.delete(key));
+      request = this.txOverlapLimiter(() => this.$computeTxOverlap(staleHash, canonicalHash))
+        .finally(() => this.txOverlapRequests.delete(key));
       this.txOverlapRequests.set(key, request);
     }
     return request;

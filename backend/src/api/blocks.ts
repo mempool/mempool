@@ -1346,6 +1346,7 @@ class Blocks {
         cachedBlock.extras.firstSeen = firstSeen;
       }
     }
+    chainTips.updateStaleBlocksFirstSeen(results);
 
     logger.debug(`Indexed ${foundCount} / ${blocks.length} block first seen times in ${((Date.now() - startedAt) / 1000).toFixed(2)} seconds`);
   }
