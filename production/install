@@ -813,14 +813,13 @@ EOF
 cat $input | sed -e 's/^/"/' -e 's/:/" "/g' -e 's/$/"/' >$output
 cat $output >$input
 
+retval=0
 $DIALOG --backtitle "${backtitle}" \
         --title "${title}" "$@" \
         --separate-output \
         --checklist "Toggle the features below to configure your fullnode:\n" \
         20 80 10 \
-        --file $input 2> $output
-
-retval=$?
+        --file $input 2> $output || retval=$?
 
 tempfile=$output
 if [ $retval != $DIALOG_OK ];then
