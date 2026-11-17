@@ -57,8 +57,4 @@ export class DifficultyAdjustmentsTable implements OnInit {
         }),
       );
   }
-
-  isMobile() {
-    return (window.innerWidth <= 767.98);
-  }
 }

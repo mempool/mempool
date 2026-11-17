@@ -1,14 +1,16 @@
-<div *ngIf="showTitle && mode === 'difficulty'" class="main-title" i18n="dashboard.difficulty-adjustment">Difficulty Adjustment</div>
-<div *ngIf="showTitle && mode === 'halving'" class="main-title" i18n="dashboard.halving-countdown">Halving Countdown</div>
+<div class="title-row">
+  <div *ngIf="showTitle && mode === 'difficulty'" class="main-title" i18n="dashboard.difficulty-adjustment">Difficulty Adjustment</div>
+  <div *ngIf="showTitle && mode === 'halving'" class="main-title" i18n="dashboard.halving-countdown">Halving Countdown</div>
+  <div class="widget-toggler">
+    <a href="" (click)="setMode('difficulty')" class="toggler-option"
+      [ngClass]="{'inactive': mode === 'difficulty'}"><small i18n="statistics.average-small">difficulty</small></a>
+    <span style="color: var(--transparent-fg); font-size: 8px"> | </span>
+    <a href="" (click)="setMode('halving')" class="toggler-option"
+      [ngClass]="{'inactive': mode === 'halving'}"><small i18n="statistics.median-small">halving</small></a>
+  </div>
+</div>
 <div class="card-wrapper">
   <div class="card">
-    <div class="widget-toggler">
-      <a href="" (click)="setMode('difficulty')" class="toggler-option"
-        [ngClass]="{'inactive': mode === 'difficulty'}"><small i18n="statistics.average-small">difficulty</small></a>
-      <span style="color: var(--transparent-fg); font-size: 8px"> | </span>
-      <a href="" (click)="setMode('halving')" class="toggler-option"
-        [ngClass]="{'inactive': mode === 'halving'}"><small i18n="statistics.median-small">halving</small></a>
-    </div>
     <div *ngIf="mode === 'difficulty'; else halving" class="card-body more-padding">
       <div class="difficulty-adjustment-container" *ngIf="(isLoadingWebSocket$ | async) === false && (difficultyEpoch$ | async) as epochData; else loadingDifficulty">
         <div class="epoch-progress">

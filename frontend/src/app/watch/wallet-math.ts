@@ -80,44 +80,29 @@ function computeBalance(txs: Transaction[], addressMap: AddressMap): WalletBalan
   return { confirmed, pending, total: confirmed + pending };
 }
 
-/** -1 for a chain never used. */
-function computeLastUsed(txs: Transaction[], addressMap: AddressMap): Record<Chain, number> {
-  const lastUsed: Record<Chain, number> = { 0: -1, 1: -1 };
-  const touch = (address: string | undefined): void => {
-    if (!address) {
-      return;
-    }
-    const derived = addressMap.get(address);
-    if (derived && derived.index > lastUsed[derived.chain]) {
-      lastUsed[derived.chain] = derived.index;
-    }
-  };
-  for (const tx of txs) {
-    for (const vin of tx.vin || []) {
-      touch(vin.prevout?.scriptpubkey_address);
-    }
-    for (const vout of tx.vout || []) {
-      touch(vout.scriptpubkey_address);
-    }
-  }
-  return lastUsed;
+/** The addresses a transaction pays to, and those it spends from where the input has a prevout. */
+export function txAddresses(tx: Transaction): string[] {
+  const spent = (tx.vin || []).map((vin) => vin.prevout?.scriptpubkey_address);
+  const paid = (tx.vout || []).map((vout) => vout.scriptpubkey_address);
+  return [...spent, ...paid].filter((address): address is string => !!address);
 }
 
-function computeUsed(txs: Transaction[], addressMap: AddressMap): Set<string> {
+/** The wallet's addresses that appear in `txs`, and the highest index used on each chain (-1 if none). */
+export function computeUsage(txs: Transaction[], addressMap: AddressMap): { used: Set<string>; lastUsed: Record<Chain, number> } {
   const used = new Set<string>();
-  const touch = (address?: string): void => {
-    if (address && addressMap.has(address)) {
-      used.add(address);
-    }
-  };
+  const lastUsed: Record<Chain, number> = { 0: -1, 1: -1 };
   for (const tx of txs) {
-    tx.vin?.forEach((vin) => touch(vin.prevout?.scriptpubkey_address));
-    tx.vout?.forEach((vout) => touch(vout.scriptpubkey_address));
+    for (const address of txAddresses(tx)) {
+      const derived = addressMap.get(address);
+      if (derived) {
+        used.add(address);
+        lastUsed[derived.chain] = Math.max(lastUsed[derived.chain], derived.index);
+      }
+    }
   }
-  return used;
+  return { used, lastUsed };
 }
 
-/** In the shape <app-address-graph> takes. */
 function balanceHistory(txs: Transaction[], addressMap: AddressMap): AddressTxSummary[] {
   return txs
     .filter((tx) => tx.status?.confirmed)
@@ -149,8 +134,7 @@ export function buildWalletView(wallet: WatchWallet, transactions: Transaction[]
     transactions,
     utxos: computeUtxos(transactions, map),
     balance: computeBalance(transactions, map),
-    lastUsed: computeLastUsed(transactions, map),
-    used: computeUsed(transactions, map),
+    ...computeUsage(transactions, map),
     history: balanceHistory(transactions, map),
     truncated,
   };

@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { distinctUntilChanged, map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
+import { distinctUntilChanged, map, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { StateService } from '@app/services/state.service';
 import { ApiService } from '@app/services/api.service';
 import { Price } from '@app/services/price.service';
@@ -18,7 +18,7 @@ const MAX_SATOSHI_SUPPLY = MAX_BTC_SUPPLY * 100_000_000;
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CalculatorComponent implements OnInit {
+export class CalculatorComponent implements OnInit, OnDestroy {
   dateModel: NgbDateStruct;
   todayDateModel: NgbDateStruct;
 
@@ -34,6 +34,7 @@ export class CalculatorComponent implements OnInit {
   price$: Observable<number>;
   lastFiatPrice$: Observable<number>;
   timestamp$ = new BehaviorSubject<number>(new Date().getTime() / 1000);
+  private destroy$: Subject<void> = new Subject<void>();
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
@@ -91,7 +92,9 @@ export class CalculatorComponent implements OnInit {
       this.form.get('fiat').valueChanges.pipe(
         tap(() => this.lastInput = 'fiat')
       )
-    ]).subscribe(([price, value]) => {
+    ]).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(([price, value]) => {
       if (this.lastInput !== 'fiat') {
         return;
       }
@@ -120,7 +123,9 @@ export class CalculatorComponent implements OnInit {
       this.form.get('bitcoin').valueChanges.pipe(
         tap(() => this.lastInput = 'bitcoin')
       )
-    ]).subscribe(([price, value]) => {
+    ]).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(([price, value]) => {
       if (this.lastInput !== 'bitcoin') {
         return;
       }
@@ -140,7 +145,9 @@ export class CalculatorComponent implements OnInit {
       this.form.get('satoshis').valueChanges.pipe(
         tap(() => this.lastInput = 'satoshis')
       )
-    ]).subscribe(([price, value]) => {
+    ]).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(([price, value]) => {
       if (this.lastInput !== 'satoshis') {
         return;
       }
@@ -164,6 +171,11 @@ export class CalculatorComponent implements OnInit {
 
     // Default form with 1 BTC
     this.form.get('bitcoin').setValue(1, { emitEvent: true });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   transformInput(name: string): void {

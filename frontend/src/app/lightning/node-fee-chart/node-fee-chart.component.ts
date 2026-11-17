@@ -6,6 +6,7 @@ import { LightningApiService } from '@app/lightning/lightning-api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { StateService } from '@app/services/state.service';
+import { isMobile } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-node-fee-chart',
@@ -134,7 +135,7 @@ export class NodeFeeChartComponent implements OnInit {
         left: 65,
       },
       tooltip: {
-        show: !this.isMobile(),
+        show: !isMobile(),
         trigger: 'axis',
         axisPointer: {
           type: 'line'
@@ -251,9 +252,5 @@ export class NodeFeeChartComponent implements OnInit {
     }
 
     this.chartInstance = ec;
-  }
-
-  isMobile() {
-    return (window.innerWidth <= 767.98);
   }
 }

@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, combineLatest, map, Observable, share, tap } from 'rxjs';
 import { ApiService } from '@app/services/api.service';
 import { SeoService } from '@app/services/seo.service';
-import { getFlagEmoji } from '@app/shared/common.utils';
+import { getFlagEmoji, isMobile } from '@app/shared/common.utils';
 import { GeolocationData } from '@app/shared/components/geolocation/geolocation.component';
 
 @Component({
@@ -20,7 +20,7 @@ export class NodesPerCountry implements OnInit {
   startingIndexSubject: BehaviorSubject<number> = new BehaviorSubject(0);
   page = 1;
   pageSize = 15;
-  maxSize = window.innerWidth <= 767.98 ? 3 : 5;
+  maxSize = isMobile() ? 3 : 5;
   isLoading = true;
 
   skeletonLines: number[] = [];

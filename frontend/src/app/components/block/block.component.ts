@@ -12,7 +12,7 @@ import { Acceleration, BlockAudit, BlockExtended, TransactionStripped } from '@i
 import { ApiService } from '@app/services/api.service';
 import { BlockOverviewGraphComponent } from '@components/block-overview-graph/block-overview-graph.component';
 import { detectWebGL } from '@app/shared/graphs.utils';
-import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { seoDescriptionNetwork, isMobile } from '@app/shared/common.utils';
 import { PriceService, Price } from '@app/services/price.service';
 import { CacheService } from '@app/services/cache.service';
 import { ServicesApiServices } from '@app/services/services-api.service';
@@ -73,7 +73,7 @@ export class BlockComponent implements OnInit, OnDestroy {
   auditModeEnabled: boolean = !this.stateService.hideAudit.value;
   auditAvailable = true;
   showAudit: boolean;
-  isMobile = window.innerWidth <= 767.98;
+  isMobile = isMobile();
   hoverTx: string;
   numMissing: number = 0;
   paginationMaxSize = window.matchMedia('(max-width: 670px)').matches ? 3 : 5;

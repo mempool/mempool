@@ -9,6 +9,7 @@ import { StorageService } from '@app/services/storage.service';
 import { EChartsOption } from '@app/graphs/echarts';
 import { feeLevels, chartColors } from '@app/app.constants';
 import { download, formatterXAxis, formatterXAxisLabel } from '@app/shared/graphs.utils';
+import { isMobile } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-mempool-graph',
@@ -226,7 +227,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       hover: true,
       color: this.inverted ? [...newColors].reverse() : newColors,
       tooltip: {
-        show: !this.isMobile(),
+        show: !isMobile(),
         trigger: 'axis',
         alwaysShowContent: false,
         position: (pos, params, el, elRect, size) => {
@@ -381,7 +382,7 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
           </div>`;
         }
       },
-      dataZoom: (this.isWidget && this.isMobile()) ? null : [{
+      dataZoom: (this.isWidget && isMobile()) ? null : [{
         type: 'inside',
         realtime: true,
         zoomLock: (this.isWidget) ? true : false,
@@ -517,10 +518,6 @@ export class MempoolGraphComponent implements OnInit, OnChanges {
       }
     }
     this.chartColorsOrdered =  chartColors.slice(0, this.feeLevelsOrdered.length);
-  }
-
-  isMobile() {
-    return window.innerWidth <= 767.98;
   }
 
   onSaveChart(timespan) {

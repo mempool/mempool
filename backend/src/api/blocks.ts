@@ -2,7 +2,7 @@ import config from '../config';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
-import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended, TransactionClassified, BlockAudit, TransactionAudit, TemplateAlgorithm, TransactionFlags } from '../mempool.interfaces';
+import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended, TransactionClassified, BlockAudit, TransactionAudit, TransactionFlags } from '../mempool.interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
@@ -404,9 +404,9 @@ class Blocks {
     const totalFee = transactions.reduce((acc, tx) => acc + tx.fee, 0);
     const totalVsize = transactions.reduce((acc, tx) => acc + tx.vsize, 0);
     const totalReward = transactions[0].vout.reduce((acc, vout) => acc + vout.value, 0);
-    const sortedByFee = transactions.sort((a, b) => a.fee - b.fee);
-    const sortedByVsize = transactions.sort((a, b) => a.vsize - b.vsize);
-    const sortedByFeerate = transactions.sort((a, b) => (a.fee / a.weight) - (b.fee / b.weight));
+    const sortedByFee = [...transactions].sort((a, b) => a.fee - b.fee);
+    const sortedByVsize = [...transactions].sort((a, b) => a.vsize - b.vsize);
+    const sortedByFeerate = [...transactions].sort((a, b) => (a.fee / a.weight) - (b.fee / b.weight));
     const sortedFeerates = sortedByFeerate.map(tx => (tx.fee / (tx.weight / 4)));
     const avgfee = totalFee / transactions.length;
     const avgfeerate = totalFee / (block.weight / 4);
@@ -1875,14 +1875,7 @@ class Blocks {
     const blocks: any[] = [];
 
     while (fromHeight <= toHeight) {
-      let block: BlockExtended | null = await blocksRepository.$getBlockByHeight(fromHeight);
-      if (!block) {
-        await this.$indexBlockByHeight(fromHeight);
-        block = await blocksRepository.$getBlockByHeight(fromHeight);
-        if (!block) {
-          continue;
-        }
-      }
+      const block: BlockExtended = await this.$indexBlockByHeight(fromHeight); // early returns the block from database
 
       // Cleanup fields before sending the response
       const cleanBlock: any = {

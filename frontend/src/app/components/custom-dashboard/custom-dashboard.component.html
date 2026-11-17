@@ -113,7 +113,7 @@
                     <th class="table-cell-badges" i18n="transaction.status|Transaction Status">Status</th>
                   </thead>
                   <tbody *ngIf="replacements$ | async as replacements; else replacementsSkeleton">
-                    <tr *ngFor="let replacement of replacements">
+                    <tr *ngFor="let replacement of replacements; trackBy: trackByTxid">
                       <td class="table-cell-txid">
                         <a [routerLink]="['/tx' | relativeUrl, replacement.txid]">
                           <app-truncate [text]="replacement.txid" [lastChars]="5"></app-truncate>
@@ -200,7 +200,7 @@
                     <th class="table-cell-fees" i18n="transaction.fee|Transaction fee">Fee</th>
                   </thead>
                   <tbody *ngIf="transactions$ | async as transactions else recentTransactionsSkeleton">
-                    <tr *ngFor="let transaction of transactions; let i = index;">
+                    <tr *ngFor="let transaction of transactions; let i = index; trackBy: trackByTxid">
                       <td class="table-cell-txid">
                         <a [routerLink]="['/tx' | relativeUrl, transaction.txid]">
                           <app-truncate [text]="transaction.txid" [lastChars]="5"></app-truncate>

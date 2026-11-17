@@ -37,6 +37,7 @@ export class WalletComponent implements OnInit, OnDestroy {
   walletStats$: Observable<WalletStats>;
   error: any;
   walletSubscription: Subscription;
+  networkChangedSubscription: Subscription;
   transactionSubscription: Subscription;
 
   collapseAddresses: boolean = true;
@@ -60,7 +61,7 @@ export class WalletComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.networkChangedSubscription = this.stateService.networkChanged$.subscribe((network) => this.network = network);
     this.websocketService.want(['blocks']);
     this.wallet$ = this.route.paramMap.pipe(
       map((params: ParamMap) => params.get('wallet') as string),
@@ -291,6 +292,7 @@ export class WalletComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.networkChangedSubscription?.unsubscribe();
     this.websocketService.stopTrackingWallet();
     this.walletSubscription.unsubscribe();
     this.transactionSubscription.unsubscribe();

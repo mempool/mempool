@@ -8,7 +8,8 @@
           <button *ngIf="!editingLabel" type="button" class="settings-name" (click)="startRename()" title="Rename" i18n-title="watch.rename">{{ wallet.label }}</button>
           <form class="wallet-rename" *ngIf="editingLabel" (ngSubmit)="saveRename()">
             <input #renameInput name="label" type="text" class="form-control form-control-sm" [(ngModel)]="labelDraft"
-                   (keyup.escape)="editingLabel = false" [attr.maxlength]="60" autocomplete="off">
+                   (keyup.escape)="editingLabel = false" [attr.maxlength]="60" autocomplete="off"
+                   aria-label="Wallet name" i18n-aria-label="watch.wallet-name">
             <button type="submit" class="btn btn-sm btn-primary" i18n="watch.save">Save</button>
             <button type="button" class="btn btn-sm btn-secondary" (click)="editingLabel = false" i18n="watch.cancel">Cancel</button>
           </form>
@@ -45,7 +46,16 @@
         </tr>
         <tr>
           <td i18n="watch.detail.address-type">Address type</td>
-          <td>{{ scriptType.name }}<span class="text-muted" *ngIf="scriptType.code !== scriptType.name"> · {{ scriptType.code }}</span></td>
+          <td>
+            <ng-container *ngIf="!scriptTypeChangeable">{{ scriptType.name }}<span class="text-muted" *ngIf="scriptType.code !== scriptType.name"> · {{ scriptType.code }}</span></ng-container>
+            <div class="script-type-control" *ngIf="scriptTypeChangeable">
+              <select class="form-select form-select-sm" [(ngModel)]="scriptTypeDraft" [disabled]="scanning" aria-label="Address type" i18n-aria-label="watch.detail.address-type">
+                <option *ngFor="let t of scriptTypes" [value]="t.value">{{ t.label }}</option>
+              </select>
+              <button type="button" class="btn btn-sm btn-outline-secondary" [disabled]="scanning || scriptTypeDraft === descriptorWallet?.scriptType"
+                      (click)="applyScriptType()" i18n="watch.detail.apply-script-type">Change and rescan</button>
+            </div>
+          </td>
         </tr>
         <tr *ngIf="path">
           <td i18n="watch.detail.path">Derivation path</td>

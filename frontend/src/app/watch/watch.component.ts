@@ -19,7 +19,7 @@ const STALE_AFTER_MS = 30 * 60 * 1000;
   styleUrls: ['./watch.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false,
-  // Page-scoped, so chain watching stops when the user leaves the page.
+  // Page-scoped, so address tracking and chain watching stop when the user leaves the page.
   providers: [WalletSessionService, WalletTrackerService],
 })
 export class WatchComponent implements OnInit, OnDestroy {

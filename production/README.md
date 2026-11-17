@@ -119,11 +119,13 @@ DataDirectory /var/db/tor
 DataDirectoryGroupReadable 1
 
 HiddenServiceDir /var/db/tor/mempool
-HiddenServicePort 80 127.0.0.1:81
+HiddenServicePort 80 unix:/mempool/socket/nginx-tor-mempool
+HiddenServiceExportCircuitID haproxy
 HiddenServiceVersion 3
 
 HiddenServiceDir /var/db/tor/liquid
-HiddenServicePort 80 127.0.0.1:83
+HiddenServicePort 80 unix:/mempool/socket/nginx-tor-liquid
+HiddenServiceExportCircuitID haproxy
 HiddenServiceVersion 3
 ```
 

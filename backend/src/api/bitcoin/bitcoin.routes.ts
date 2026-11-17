@@ -1,5 +1,4 @@
 import { Application, Request, Response } from 'express';
-import axios from 'axios';
 import * as bitcoinjs from 'bitcoinjs-lib';
 import config from '../../config';
 import websocketHandler from '../websocket-handler';
@@ -31,6 +30,7 @@ const ADDRESS_REGEX = /^[a-z0-9]{2,120}$/i;
 const SCRIPT_HASH_REGEX = /^([a-f0-9]{2})+$/i;
 const MAX_TRANSACTION_TIMES = 100;
 const MAX_PSBT_INPUTS = 100;
+const MAX_OUTSPENDS_OUTPUTS = 20000;
 const JUST_NUMBERS_REGEX = /^[1-9]\d*$/;
 
 class BitcoinRoutes {
@@ -244,9 +244,13 @@ class BitcoinRoutes {
     }
 
     try {
-      const batchedOutspends = await bitcoinApi.$getBatchedOutspends(txids);
+      const batchedOutspends = await bitcoinApi.$getBatchedOutspends(txids, MAX_OUTSPENDS_OUTPUTS);
       res.json(batchedOutspends);
     } catch (e) {
+      if (e instanceof Error && e.message === 'Too many outputs requested') {
+        handleError(req, res, 400, e.message);
+        return;
+      }
       handleError(req, res, 500, 'Failed to get batched outspends');
     }
   }
@@ -591,12 +595,12 @@ class BitcoinRoutes {
       }
 
       const from = parseInt(req.params.from, 10);
-      if (!req.params.from || from < 0) {
+      if (!req.params.from || isNaN(from) ||  from < 0) {
         handleError(req, res, 400, `Parameter 'from' must be a block height (integer)`);
         return;
       }
       const to = req.params.to === undefined ? await bitcoinApi.$getBlockHeightTip() : parseInt(req.params.to, 10);
-      if (to < 0) {
+      if (isNaN(to) || to < 0) {
         handleError(req, res, 400, `Parameter 'to' must be a block height (integer)`);
         return;
       }
@@ -1110,9 +1114,13 @@ class BitcoinRoutes {
       return;
     }
     try {
-      const result = await bitcoinApi.$getOutspends(req.params.txId);
+      const result = await bitcoinApi.$getOutspends(req.params.txId, MAX_OUTSPENDS_OUTPUTS);
       res.json(result);
     } catch (e) {
+      if (e instanceof Error && e.message === 'Too many outputs requested') {
+        handleError(req, res, 400, e.message);
+        return;
+      }
       handleError(req, res, 500, 'Failed to get transaction outspends');
     }
   }
@@ -1241,7 +1249,7 @@ class BitcoinRoutes {
       const rawTxs = Common.getTransactionsFromRequest(req);
       const maxfeerate = parseFloat(req.query.maxfeerate as string);
       const maxburnamount = parseFloat(req.query.maxburnamount as string);
-      const result = await bitcoinClient.submitPackage(rawTxs, maxfeerate ?? undefined, maxburnamount ?? undefined);
+      const result = await bitcoinClient.submitPackage(rawTxs, Number.isFinite(maxfeerate) ? maxfeerate : undefined, Number.isFinite(maxburnamount) ? maxburnamount : undefined);
       res.send(result);
     } catch (e: any) {
       handleError(req, res, 400, (e.message && e.code) ? 'submitpackage RPC error: ' + JSON.stringify({ code: e.code })

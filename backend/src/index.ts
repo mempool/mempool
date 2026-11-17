@@ -41,6 +41,7 @@ import chainTips from './api/chain-tips';
 import { AxiosError } from 'axios';
 import v8 from 'v8';
 import { formatBytes, getBytesUnit } from './utils/format';
+import { apiErrorHandler } from './utils/api';
 import redisCache from './api/redis-cache';
 import accelerationApi from './api/services/acceleration';
 import bitcoinCoreRoutes from './api/bitcoin/bitcoin-core.routes';
@@ -405,6 +406,7 @@ class Server {
     if (!config.MEMPOOL.OFFICIAL) {
       aboutRoutes.initRoutes(this.app);
     }
+    this.app.use(apiErrorHandler);
   }
 
   healthCheck(): void {

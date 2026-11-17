@@ -11,6 +11,7 @@ import { MiningService } from '@app/services/mining.service';
 import { ActivatedRoute } from '@angular/router';
 import { download, formatterXAxis } from '@app/shared/graphs.utils';
 import { StateService } from '@app/services/state.service';
+import { isMobile } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-block-sizes-weights-graph',
@@ -138,7 +139,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
         left: this.left,
       },
       tooltip: {
-        show: !this.isMobile(),
+        show: !isMobile(),
         trigger: 'axis',
         axisPointer: {
           type: 'line'
@@ -176,7 +177,7 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
       },
       xAxis: data.sizes.length === 0 ? undefined : {
         type: 'time',
-        splitNumber: this.isMobile() ? 5 : 10,
+        splitNumber: isMobile() ? 5 : 10,
         axisLabel: {
           hideOverlap: true,
         }
@@ -331,10 +332,6 @@ export class BlockSizesWeightsGraphComponent implements OnInit {
     this.chartInstance.on('legendselectchanged', (e) => {
       this.storageService.setValue('sizes_weights_legend', JSON.stringify(e.selected));
     });
-  }
-
-  isMobile() {
-    return (window.innerWidth <= 767.98);
   }
 
   onSaveChart() {

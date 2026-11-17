@@ -10,6 +10,7 @@ import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { formatNumber } from '@angular/common';
 import { SeoService } from '@app/services/seo.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { isMobile } from '@app/shared/common.utils';
 import { StratumJob } from '@interfaces/websocket.interface';
 import { WebsocketService } from '@app/services/websocket.service';
 import { MiningService } from '@app/services/mining.service';
@@ -34,6 +35,7 @@ export class PoolComponent implements OnInit, OnDestroy {
   stratumEnabled = this.stateService.env.STRATUM_ENABLED;
 
   formatNumber = formatNumber;
+  isMobile = isMobile;
   Math = Math;
   slugSubscription: Subscription;
   poolStats$: Observable<PoolStat>;
@@ -346,10 +348,6 @@ export class PoolComponent implements OnInit, OnDestroy {
         },
       }],
     };
-  }
-
-  isMobile() {
-    return (window.innerWidth <= 767.98);
   }
 
   loadMore() {

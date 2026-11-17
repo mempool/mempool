@@ -377,12 +377,17 @@ jobs:
       - name: Unzip assets before building (src/resources)
         run: unzip -o promo-video-assets.zip -d ${{ matrix.module }}/frontend/src/resources/promo-video
 
+      - name: Install dependencies and Cypress binary
+        working-directory: ${{ matrix.module }}/frontend
+        run: npm ci && npx cypress install
+
       # mempool
       - name: Chrome browser tests (${{ matrix.module }})
         if: ${{ matrix.module == 'mempool' }}
         uses: cypress-io/github-action@bc982daf1fc26474fa0cf2c355d6c910616ce411 # v7.4.7
         with:
           tag: ${{ github.event_name }}
+          install: false
           working-directory: ${{ matrix.module }}/frontend
           build: npm run config:defaults:${{ matrix.module }}
           start: npm run start:parameterized
@@ -408,6 +413,7 @@ jobs:
         uses: cypress-io/github-action@bc982daf1fc26474fa0cf2c355d6c910616ce411 # v7.4.7
         with:
           tag: ${{ github.event_name }}
+          install: false
           working-directory: ${{ matrix.module }}/frontend
           build: npm run config:defaults:${{ matrix.module }}
           start: npm run start:parameterized
@@ -433,6 +439,7 @@ jobs:
         uses: cypress-io/github-action@bc982daf1fc26474fa0cf2c355d6c910616ce411 # v7.4.7
         with:
           tag: ${{ github.event_name }}
+          install: false
           working-directory: ${{ matrix.module }}/frontend
           build: npm run config:defaults:mempool
           start: npm run start:parameterized

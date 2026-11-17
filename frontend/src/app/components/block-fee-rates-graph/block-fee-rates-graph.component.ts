@@ -13,6 +13,7 @@ import { selectPowerOfTen } from '@app/bitcoin.utils';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from '@app/services/state.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { isMobile } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-block-fee-rates-graph',
@@ -255,10 +256,10 @@ export class BlockFeeRatesGraphComponent implements OnInit {
         right: this.right,
         left: this.left,
         bottom: this.widget ? 30 : 80,
-        top: this.widget ? 20 : (this.isMobile() ? 10 : 50),
+        top: this.widget ? 20 : (isMobile() ? 10 : 50),
       },
       tooltip: {
-        show: !this.isMobile(),
+        show: !isMobile(),
         trigger: 'axis',
         axisPointer: {
           type: 'line',
@@ -408,10 +409,6 @@ export class BlockFeeRatesGraphComponent implements OnInit {
     this.chartInstance.on('legendselectchanged', (e) => {
       this.storageService.setValue('fee_rates_legend', JSON.stringify(e.selected));
     });
-  }
-
-  isMobile() {
-    return (window.innerWidth <= 767.98);
   }
 
   onSaveChart() {

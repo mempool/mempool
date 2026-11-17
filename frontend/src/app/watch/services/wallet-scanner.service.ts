@@ -5,7 +5,7 @@ import { Transaction } from '@interfaces/electrs.interface';
 import { firstValueFrom } from 'rxjs';
 import { hash as sha256 } from '@app/shared/sha256';
 import { RequestCancelledError, RetryOptions, RetryWait, withRetry } from '@app/watch/api-retry';
-import { sortNewestFirst } from '@app/watch/wallet-math';
+import { computeUsage, sortNewestFirst, txAddresses } from '@app/watch/wallet-math';
 import {
   AddressListWallet,
   AddressListWalletDefinition,
@@ -47,7 +47,6 @@ export interface ScanProgress {
   addressesDerived: number;
   txsFound: number;
   apiRequests: number;
-  chain?: Chain;
   retry?: RetryWait;
 }
 
@@ -127,6 +126,63 @@ function replacedTxids(unconfirmed: Transaction[]): Set<string> {
     }
   }
   return new Set(unconfirmed.filter((tx) => outpointsOf(tx).some((o) => winners.get(o) !== tx)).map((tx) => tx.txid));
+}
+
+function unconfirmedOf(txsById: Map<string, Transaction>): Transaction[] {
+  return [...txsById.values()].filter((tx) => !tx.status?.confirmed);
+}
+
+function dropWithDescendants(txsById: Map<string, Transaction>, dropped: Set<string>): void {
+  let grew = dropped.size > 0;
+  while (grew) {
+    grew = false;
+    for (const tx of unconfirmedOf(txsById).filter((t) => !dropped.has(t.txid) && t.vin?.some((v) => dropped.has(v.txid)))) {
+      dropped.add(tx.txid);
+      grew = true;
+    }
+  }
+  for (const txid of dropped) {
+    txsById.delete(txid);
+  }
+}
+
+/** False if two confirmed transactions spend one outpoint, which only a rescan can settle. */
+function resolveConflicts(txsById: Map<string, Transaction>): boolean {
+  const confirmed = confirmedSpenders([...txsById.values()]);
+  if (!confirmed) {
+    return false;
+  }
+  const doubleSpends = unconfirmedOf(txsById).filter((tx) => outpointsOf(tx).some((outpoint) => confirmed.has(outpoint)));
+  dropWithDescendants(txsById, new Set(doubleSpends.map((tx) => tx.txid)));
+  dropWithDescendants(txsById, replacedTxids(unconfirmedOf(txsById)));
+  return true;
+}
+
+/**
+ * Applies transactions seen on the websocket to a history. Removed ones (replaced, evicted or
+ * expired) go with their unconfirmed descendants, and conflicts are settled as a scan settles
+ * them. Null if the result needs a rescan.
+ */
+export function applyLiveUpdate(txs: Transaction[], added: Transaction[], removed: Transaction[]): Transaction[] | null {
+  const txsById = new Map(txs.map((tx) => [tx.txid, tx]));
+  const arriving = new Set(added.map((tx) => tx.txid));
+  // New arrivals go first among the unconfirmed, newest first where firstSeen is known.
+  const fresh = added.filter((tx) => !txsById.has(tx.txid)).sort((a, b) => (b.firstSeen ?? 0) - (a.firstSeen ?? 0));
+  dropWithDescendants(txsById, new Set(removed
+    .filter((tx) => !arriving.has(tx.txid) && txsById.has(tx.txid) && !txsById.get(tx.txid).status?.confirmed)
+    .map((tx) => tx.txid)));
+  for (const tx of added) {
+    // A mempool copy of a transaction already confirmed is stale.
+    if (!txsById.get(tx.txid)?.status?.confirmed || tx.status?.confirmed) {
+      txsById.set(tx.txid, tx);
+    }
+  }
+  if (!resolveConflicts(txsById)) {
+    return null;
+  }
+  const freshIds = new Set(fresh.map((tx) => tx.txid));
+  const kept = fresh.filter((tx) => txsById.has(tx.txid)).map((tx) => txsById.get(tx.txid));
+  return sortNewestFirst([...kept, ...[...txsById.values()].filter((tx) => !freshIds.has(tx.txid))]);
 }
 
 function withoutUiState(tx: Transaction): Transaction {
@@ -253,35 +309,6 @@ class HistoryCollector {
     }
   }
 
-  resolveConflicts(): boolean {
-    const confirmed = confirmedSpenders([...this.txsById.values()]);
-    if (!confirmed) {
-      return false;
-    }
-    const doubleSpends = this.unconfirmed().filter((tx) => outpointsOf(tx).some((outpoint) => confirmed.has(outpoint)));
-    this.dropWithDescendants(new Set(doubleSpends.map((tx) => tx.txid)));
-    this.dropWithDescendants(replacedTxids(this.unconfirmed()));
-    return true;
-  }
-
-  private unconfirmed(): Transaction[] {
-    return [...this.txsById.values()].filter((tx) => !tx.status?.confirmed);
-  }
-
-  private dropWithDescendants(dropped: Set<string>): void {
-    let grew = dropped.size > 0;
-    while (grew) {
-      grew = false;
-      for (const tx of this.unconfirmed().filter((t) => !dropped.has(t.txid) && t.vin?.some((v) => dropped.has(v.txid)))) {
-        dropped.add(tx.txid);
-        grew = true;
-      }
-    }
-    for (const txid of dropped) {
-      this.txsById.delete(txid);
-    }
-  }
-
   private async fetchPage(addresses: string[], cursor: string | undefined): Promise<Transaction[] | null> {
     try {
       return await withRetry(
@@ -311,6 +338,29 @@ export class WalletScannerService {
 
   private queued(options: RetryOptions): RetryOptions {
     return { ...options, queue: this.addressRequestQueue.queue };
+  }
+
+  /** One request; a full page can hide an address's history, so the others are then asked for one tx each. */
+  async addressesWithHistory(addresses: string[], options: RetryOptions = {}): Promise<Set<string>> {
+    const wanted = new Set(addresses);
+    const used = new Set<string>();
+    const read = async (batch: string[], maxTxs: number): Promise<number> => {
+      const page = await withRetry(() => firstValueFrom(this.electrsApiService.getAddressesTransactions$(batch, undefined, maxTxs)), this.queued(options)) || [];
+      for (const tx of page) {
+        for (const address of txAddresses(tx)) {
+          if (wanted.has(address)) {
+            used.add(address);
+          }
+        }
+      }
+      return page.length;
+    };
+    if (await read(addresses, PAGE_SIZE) >= PAGE_SIZE) {
+      for (const address of addresses.filter((a) => !used.has(a))) {
+        await read([address], 1);
+      }
+    }
+    return used;
   }
 
   async scan(request: WalletScanRequest): Promise<WalletScanResult> {
@@ -392,7 +442,7 @@ export class WalletScannerService {
   }
 
   private finish(wallet: WatchWallet, history: HistoryCollector, onProgress: (p: ScanProgress) => void): WalletScanResult | null {
-    if (!history.resolveConflicts()) {
+    if (!resolveConflicts(history.txsById)) {
       return null;
     }
     const txs = sortNewestFirst([...history.txsById.values()]);
@@ -428,16 +478,15 @@ export class WalletScannerService {
     const addresses: DerivedAddress[] = scanned ? [...scanned.addresses] : [];
     const byAddress = new Map(addresses.map((a) => [a.address, a]));
 
-    const report = (phase: ScanProgress['phase'], chain: Chain, apiRequests: number): void => onProgress?.({
+    const report = (phase: ScanProgress['phase'], apiRequests: number): void => onProgress?.({
       phase,
       addressesDerived: addresses.length,
       txsFound: history.found(),
-      chain,
       apiRequests,
     });
 
     const extend = async (chain: Chain, count: number): Promise<DerivedAddress[]> => {
-      report('deriving', chain, history.requests);
+      report('deriving', history.requests);
       const from = derivedCount[chain];
       const fresh = await this.derivationService.derive(descriptor, network, chain, from, count, isCancelled);
       derivedCount[chain] = from + count;
@@ -450,27 +499,10 @@ export class WalletScannerService {
 
     const fetchFor = (targets: DerivedAddress[]): Promise<void> => history.fetch(
       targets.map((a) => a.address),
-      () => report('fetching', targets[0].chain, history.requests + 1),
+      () => report('fetching', history.requests + 1),
     );
 
-    const lastUsedOn = (chain: Chain): number => {
-      let last = -1;
-      const touch = (address?: string): void => {
-        const d = address ? byAddress.get(address) : undefined;
-        if (d && d.chain === chain && d.index > last) {
-          last = d.index;
-        }
-      };
-      for (const tx of history.txsById.values()) {
-        for (const vin of tx.vin || []) {
-          touch(vin.prevout?.scriptpubkey_address);
-        }
-        for (const vout of tx.vout || []) {
-          touch(vout.scriptpubkey_address);
-        }
-      }
-      return last;
-    };
+    const lastUsedOn = (chain: Chain): number => computeUsage([...history.txsById.values()], byAddress).lastUsed[chain];
 
     if (!scanned) {
       const receive = await extend(0, gapLimit);

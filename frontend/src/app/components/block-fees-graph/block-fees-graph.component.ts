@@ -13,6 +13,7 @@ import { ActivatedRoute } from '@angular/router';
 import { FiatShortenerPipe } from '@app/shared/pipes/fiat-shortener.pipe';
 import { FiatCurrencyPipe } from '@app/shared/pipes/fiat-currency.pipe';
 import { StateService } from '@app/services/state.service';
+import { isMobile } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-block-fees-graph',
@@ -192,7 +193,7 @@ export class BlockFeesGraphComponent implements OnInit {
         left: this.left,
       },
       tooltip: {
-        show: !this.isMobile(),
+        show: !isMobile(),
         trigger: 'axis',
         axisPointer: {
           type: 'line'
@@ -227,7 +228,7 @@ export class BlockFeesGraphComponent implements OnInit {
       xAxis: data.blockFees.length === 0 ? undefined :
       {
         type: 'time',
-        splitNumber: this.isMobile() ? 5 : 10,
+        splitNumber: isMobile() ? 5 : 10,
         axisLabel: {
           hideOverlap: true,
         }
@@ -346,10 +347,6 @@ export class BlockFeesGraphComponent implements OnInit {
 
   onChartInit(ec) {
     this.chartInstance = ec;
-  }
-
-  isMobile() {
-    return (window.innerWidth <= 767.98);
   }
 
   onSaveChart() {

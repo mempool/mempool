@@ -1102,7 +1102,8 @@ if [ "${TOR_INSTALL}" = ON ];then
     if [ "${ELEMENTS_LIQUID_ENABLE}" = "ON" ];then
         if ! grep "${LIQUID_TOR_HS}" "${TOR_CONFIGURATION}" >/dev/null 2>&1;then
             osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServiceDir ${TOR_RESOURCES}/${LIQUID_TOR_HS}/ >> ${TOR_CONFIGURATION}"
-            osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServicePort 80 127.0.0.1:83 >> ${TOR_CONFIGURATION}"
+            osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServicePort 80 unix:/mempool/socket/nginx-tor-liquid >> ${TOR_CONFIGURATION}"
+            osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServiceExportCircuitID haproxy >> ${TOR_CONFIGURATION}"
             osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServiceVersion 3 >> ${TOR_CONFIGURATION}"
         fi
     fi
@@ -1111,6 +1112,7 @@ if [ "${TOR_INSTALL}" = ON ];then
         FreeBSD)
             echo net.inet.ip.random_id=1 >> /etc/sysctl.conf
             sysctl net.inet.ip.random_id=1
+            osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/rc.d/nginx_tor_sockets" "${FREEBSD_SERVICE_HOME}"
         ;;
     esac
 
@@ -1839,7 +1841,7 @@ echo "[*] Setting permissions for electrs sockets"
 case $OS in
 
     FreeBSD)
-        setfacl -m "user:bitcoin:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,everyone@::f:allow" "${MEMPOOL_HOME}/socket"
+        setfacl -m "user:bitcoin:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,user:_tor:full_set:f:allow,everyone@::f:allow" "${MEMPOOL_HOME}/socket"
         chown "${MEMPOOL_USER}:${MEMPOOL_GROUP}" "${MEMPOOL_HOME}/socket"
         setfacl -m "user:bitcoin:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,everyone@::f:allow" "${BITCOIN_HOME}/socket"
         chown "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_HOME}/socket"
@@ -1861,6 +1863,7 @@ case $OS in
 moused_nondefault_enable="NO"
 
 nginx_enable="YES"
+nginx_tor_sockets_enable="YES"
 #nginx_profiles="mempool"
 #nginx_mempool_flags="-p /mempool"
 #nginx_mempool_configfile="/mempool/mempool.space/nginx/nginx.conf"

@@ -13,6 +13,7 @@ import { ActivatedRoute } from '@angular/router';
 import { FiatShortenerPipe } from '@app/shared/pipes/fiat-shortener.pipe';
 import { FiatCurrencyPipe } from '@app/shared/pipes/fiat-currency.pipe';
 import { StateService } from '@app/services/state.service';
+import { isMobile } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-price-chart',
@@ -172,7 +173,7 @@ export class PriceChartComponent implements OnInit {
         left: this.left,
       },
       tooltip: {
-        show: !this.isMobile() || !this.widget,
+        show: !isMobile() || !this.widget,
         trigger: 'axis',
         axisPointer: {
           type: 'line'
@@ -201,7 +202,7 @@ export class PriceChartComponent implements OnInit {
       xAxis: data.priceData.length === 0 ? undefined :
       {
         type: 'time',
-        splitNumber: (this.isMobile() || this.widget) ? 5 : 10,
+        splitNumber: (isMobile() || this.widget) ? 5 : 10,
         axisLabel: {
           hideOverlap: true,
         }
@@ -271,10 +272,6 @@ export class PriceChartComponent implements OnInit {
 
   onChartInit(ec) {
     this.chartInstance = ec;
-  }
-
-  isMobile() {
-    return (window.innerWidth <= 767.98);
   }
 
   onSaveChart() {

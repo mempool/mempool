@@ -36,7 +36,6 @@ export class ClockFaceComponent implements OnInit, OnChanges, OnDestroy {
     if (this.stateService.isBrowser) {
       this.timeSubscription = timer(0, 250).pipe(
         tap(() => {
-          console.log('face tick');
           this.updateTime();
         })
       ).subscribe();
@@ -59,6 +58,9 @@ export class ClockFaceComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy(): void {
     if (this.timeSubscription) {
       this.timeSubscription.unsubscribe();
+    }
+    if (this.blocksSubscription) {
+      this.blocksSubscription.unsubscribe();
     }
   }
 
