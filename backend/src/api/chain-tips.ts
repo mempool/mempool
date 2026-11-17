@@ -44,6 +44,7 @@ class ChainTips {
   private staleBlocks: Record<string, BlockExtended> = {};
   private txOverlaps = new Map<string, TxOverlap>();
   private txOverlapRequests = new Map<string, Promise<TxOverlap | undefined>>();
+  private txOverlapFailures = new Map<string, number>(); // last failure time by block pair
   // uncached overlaps hit Core and the esplora backend, so bound them across all page requests and cache warming
   private txOverlapLimiter = pLimit(4);
   private orphanedBlocks: { [hash: string]: OrphanedBlock } = {};
@@ -54,6 +55,7 @@ class ChainTips {
 
   private staleBlocksCacheSize = 50;
   private txOverlapsCacheSize = 200;
+  private txOverlapRetryInterval = 10 * 60 * 1000;
   private maxIndexingQueueSize = 100;
 
   /** @asyncSafe */
@@ -351,6 +353,11 @@ class ChainTips {
     if (cached) {
       return cached;
     }
+    // don't hammer Core and the esplora backend if they can't serve these blocks
+    const failedAt = this.txOverlapFailures.get(key);
+    if (failedAt && Date.now() - failedAt < this.txOverlapRetryInterval) {
+      return undefined;
+    }
 
     // share the computation between concurrent requests for the same tips
     let request = this.txOverlapRequests.get(key);
@@ -373,7 +380,8 @@ class ChainTips {
         bitcoinApi.$getTxIdsForBlock(canonicalHash),
       ]);
     } catch (e) {
-      logger.warn(`Cannot compare transactions of stale block ${staleHash} and canonical block ${canonicalHash}. Reason: ${e instanceof Error ? e.message : e}`);
+      logger.warn(`Cannot compare transactions of stale block ${staleHash} and canonical block ${canonicalHash}, retrying in ${this.txOverlapRetryInterval / 60000} minutes. Reason: ${e instanceof Error ? e.message : e}`);
+      this.txOverlapFailures.set(`${staleHash}:${canonicalHash}`, Date.now());
       return undefined;
     }
 
@@ -387,6 +395,7 @@ class ChainTips {
     };
 
     const key = `${staleHash}:${canonicalHash}`;
+    this.txOverlapFailures.delete(key);
     this.txOverlaps.set(key, txOverlap);
     if (this.txOverlaps.size > this.txOverlapsCacheSize) {
       const oldestKey = this.txOverlaps.keys().next().value;
