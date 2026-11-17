@@ -1397,13 +1397,17 @@ if [ "${ELEMENTS_ELECTRS_INSTALL}" = ON ];then
     echo "[*] Checking out Liquid Electrs ${ELEMENTS_ELECTRS_LATEST_RELEASE}"
     osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_HOME}/${ELEMENTS_ELECTRS_REPO_NAME} && git checkout ${ELEMENTS_ELECTRS_LATEST_RELEASE}"
 
-    echo "[*] Cloning Liquid Asset Registry repo from ${LIQUID_ASSET_REGISTRY_DB_URL}"
-    osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
-    osSudo "${ELEMENTS_USER}" git clone "${LIQUID_ASSET_REGISTRY_DB_URL}" "${ELEMENTS_HOME}/${LIQUID_ASSET_REGISTRY_DB_NAME}"
+    if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
+        echo "[*] Cloning Liquid Asset Registry repo from ${LIQUID_ASSET_REGISTRY_DB_URL}"
+        osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
+        osSudo "${ELEMENTS_USER}" git clone "${LIQUID_ASSET_REGISTRY_DB_URL}" "${ELEMENTS_HOME}/${LIQUID_ASSET_REGISTRY_DB_NAME}"
+    fi
 
-    echo "[*] Cloning Liquid Asset Registry testnet repo from ${LIQUIDTESTNET_ASSET_REGISTRY_DB_URL}"
-    osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
-    osSudo "${ELEMENTS_USER}" git clone "${LIQUIDTESTNET_ASSET_REGISTRY_DB_URL}" "${ELEMENTS_HOME}/${LIQUIDTESTNET_ASSET_REGISTRY_DB_NAME}"
+    if [ "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
+        echo "[*] Cloning Liquid Asset Registry testnet repo from ${LIQUIDTESTNET_ASSET_REGISTRY_DB_URL}"
+        osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
+        osSudo "${ELEMENTS_USER}" git clone "${LIQUIDTESTNET_ASSET_REGISTRY_DB_URL}" "${ELEMENTS_HOME}/${LIQUIDTESTNET_ASSET_REGISTRY_DB_NAME}"
+    fi
 
     echo "[*] Building Liquid Electrs release binary"
     osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_ELECTRS_HOME} && cargo run --release --features liquid --bin electrs -- --network liquid --version" || true
