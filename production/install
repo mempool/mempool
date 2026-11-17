@@ -534,26 +534,42 @@ zfsCreateFilesystems()
     zfs create -o "mountpoint=/backup" "${ZPOOL}/backup"
     zfs create -o "mountpoint=/var/cache/nginx" "${ZPOOL}/cache"
 
-    zfs create -o "mountpoint=${ELEMENTS_HOME}" "${ZPOOL}/elements"
-    zfs create -o "mountpoint=${BITCOIN_HOME}" "${ZPOOL}/bitcoin"
-    zfs create -o "mountpoint=${MINFEE_HOME}" "${ZPOOL}/minfee"
-    zfs create -o "mountpoint=${ELECTRS_HOME}" "${ZPOOL}/electrs"
     zfs create -o "mountpoint=${MEMPOOL_HOME}" "${ZPOOL}/mempool"
     zfs create -o "mountpoint=${MYSQL_HOME}" "${ZPOOL}/mysql" || true
-
-    zfs create -o "mountpoint=${BITCOIN_ELECTRS_HOME}" "${ZPOOL}/bitcoin/electrs"
-
-    zfs create -o "mountpoint=${ELEMENTS_HOME}/liquidv1" "${ZPOOL}/elements/liquidv1"
-    zfs create -o "mountpoint=${ELEMENTS_ELECTRS_HOME}" "${ZPOOL}/elements/electrs"
 
     # create /mempool/socket with custom ACL for electrs unix sockets
     zfs create -o "mountpoint=${MEMPOOL_HOME}/socket" "${ZPOOL}/mempool/socket"
 
-    # create /bitcoin/socket with custom ACL for electrs unix sockets
-    zfs create -o "mountpoint=${BITCOIN_HOME}/socket" "${ZPOOL}/bitcoin/socket"
+    if [ "${BITCOIN_INSTALL}" = ON ];then
+        zfs create -o "mountpoint=${BITCOIN_HOME}" "${ZPOOL}/bitcoin"
 
-    # create /elements/socket with custom ACL for electrs unix sockets
-    zfs create -o "mountpoint=${ELEMENTS_HOME}/socket" "${ZPOOL}/elements/socket"
+        # create /bitcoin/socket with custom ACL for electrs unix sockets
+        zfs create -o "mountpoint=${BITCOIN_HOME}/socket" "${ZPOOL}/bitcoin/socket"
+    fi
+
+    if [ "${BITCOIN_MAINNET_MINFEE_ENABLE}" = ON ];then
+        zfs create -o "mountpoint=${MINFEE_HOME}" "${ZPOOL}/minfee"
+    fi
+
+    if [ "${BITCOIN_ELECTRS_INSTALL}" = ON -o "${ELEMENTS_ELECTRS_INSTALL}" = ON ];then
+        zfs create -o "mountpoint=${ELECTRS_HOME}" "${ZPOOL}/electrs"
+    fi
+
+    if [ "${BITCOIN_ELECTRS_INSTALL}" = ON ];then
+        zfs create -o "mountpoint=${BITCOIN_ELECTRS_HOME}" "${ZPOOL}/bitcoin/electrs"
+    fi
+
+    if [ "${ELEMENTS_INSTALL}" = ON ];then
+        zfs create -o "mountpoint=${ELEMENTS_HOME}" "${ZPOOL}/elements"
+        zfs create -o "mountpoint=${ELEMENTS_ELECTRS_HOME}" "${ZPOOL}/elements/electrs"
+
+        # create /elements/socket with custom ACL for electrs unix sockets
+        zfs create -o "mountpoint=${ELEMENTS_HOME}/socket" "${ZPOOL}/elements/socket"
+    fi
+
+    if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
+        zfs create -o "mountpoint=${ELEMENTS_HOME}/liquidv1" "${ZPOOL}/elements/liquidv1"
+    fi
 
     # Bitcoin Mainnet
     if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
@@ -1135,17 +1151,19 @@ if [ "${BITCOIN_INSTALL}" = ON ];then
     fi
     osSudo "${ROOT_USER}" chsh -s `which zsh` "${BITCOIN_USER}"
 
-    echo "[*] Creating Bitcoin minfee user with Tor access"
-    osGroupCreate "${MINFEE_GROUP}"
-    if [ "${TOR_INSTALL}" = ON ];then
-        osUserCreate "${MINFEE_USER}" "${MINFEE_HOME}" "${MINFEE_GROUP}" "${TOR_GROUP}"
-    else
-        osUserCreate "${MINFEE_USER}" "${MINFEE_HOME}" "${MINFEE_GROUP}"
+    if [ "${BITCOIN_MAINNET_MINFEE_ENABLE}" = ON ];then
+        echo "[*] Creating Bitcoin minfee user with Tor access"
+        osGroupCreate "${MINFEE_GROUP}"
+        if [ "${TOR_INSTALL}" = ON ];then
+            osUserCreate "${MINFEE_USER}" "${MINFEE_HOME}" "${MINFEE_GROUP}" "${TOR_GROUP}"
+        else
+            osUserCreate "${MINFEE_USER}" "${MINFEE_HOME}" "${MINFEE_GROUP}"
+        fi
+        osSudo "${ROOT_USER}" chown -R "${MINFEE_USER}:${MINFEE_GROUP}" "${MINFEE_HOME}"
+        osSudo "${ROOT_USER}" chsh -s `which zsh` "${MINFEE_USER}"
+        osSudo "${MINFEE_USER}" touch "${MINFEE_HOME}/.zshrc"
+        osSudo "${MINFEE_USER}" ln -s . .bitcoin
     fi
-    osSudo "${ROOT_USER}" chown -R "${MINFEE_USER}:${MINFEE_GROUP}" "${MINFEE_HOME}"
-    osSudo "${ROOT_USER}" chsh -s `which zsh` "${MINFEE_USER}"
-    osSudo "${MINFEE_USER}" touch "${MINFEE_HOME}/.zshrc"
-    osSudo "${MINFEE_USER}" ln -s . .bitcoin
 
     echo "[*] Creating Bitcoin data folder"
     osSudo "${ROOT_USER}" mkdir -p "${BITCOIN_HOME}"
@@ -1181,14 +1199,18 @@ if [ "${BITCOIN_INSTALL}" = ON ];then
     echo "[*] Installing Bitcoin configuration"
     osSudo "${ROOT_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.conf" "${BITCOIN_HOME}/bitcoin.conf"
 
-    echo "[*] Installing Bitcoin minfee configuration"
-    osSudo "${ROOT_USER}" install -c -o "${MINFEE_USER}" -g "${MINFEE_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.minfee.conf" "${MINFEE_HOME}/bitcoin.conf"
+    if [ "${BITCOIN_MAINNET_MINFEE_ENABLE}" = ON ];then
+        echo "[*] Installing Bitcoin minfee configuration"
+        osSudo "${ROOT_USER}" install -c -o "${MINFEE_USER}" -g "${MINFEE_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.minfee.conf" "${MINFEE_HOME}/bitcoin.conf"
+    fi
 
     echo "[*] Installing Bitcoin RPC credentials"
     osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${BITCOIN_HOME}/bitcoin.conf"
     osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${BITCOIN_HOME}/bitcoin.conf"
-    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${MINFEE_HOME}/bitcoin.conf"
-    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${MINFEE_HOME}/bitcoin.conf"
+    if [ "${BITCOIN_MAINNET_MINFEE_ENABLE}" = ON ];then
+        osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${MINFEE_HOME}/bitcoin.conf"
+        osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${MINFEE_HOME}/bitcoin.conf"
+    fi
 fi
 
 #######################
@@ -1621,8 +1643,12 @@ fi
 echo "[*] Installing crontabs"
 case $OS in
     FreeBSD)
-        osSudo "${ROOT_USER}" crontab -u "${BITCOIN_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.crontab"
-        osSudo "${ROOT_USER}" crontab -u "${MINFEE_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/minfee.crontab"
+        if [ "${BITCOIN_INSTALL}" = ON ];then
+            osSudo "${ROOT_USER}" crontab -u "${BITCOIN_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.crontab"
+        fi
+        if [ "${BITCOIN_MAINNET_MINFEE_ENABLE}" = ON ];then
+            osSudo "${ROOT_USER}" crontab -u "${MINFEE_USER}" "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/minfee.crontab"
+        fi
     ;;
     Debian)
         crontab_bitcoin=()
@@ -1850,12 +1876,26 @@ echo "[*] Setting permissions for electrs sockets"
 case $OS in
 
     FreeBSD)
-        setfacl -m "user:bitcoin:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,user:_tor:full_set:f:allow,everyone@::f:allow" "${MEMPOOL_HOME}/socket"
+        # setfacl fails on users that don't exist, so only name bitcoin and _tor when installed
+        MEMPOOL_SOCKET_ACL="user:mempool:full_set:f:allow,user:www:full_set:f:allow"
+        if [ "${BITCOIN_INSTALL}" = ON ];then
+            MEMPOOL_SOCKET_ACL="user:bitcoin:full_set:f:allow,${MEMPOOL_SOCKET_ACL}"
+        fi
+        if [ "${TOR_INSTALL}" = ON ];then
+            MEMPOOL_SOCKET_ACL+=",user:_tor:full_set:f:allow"
+        fi
+        setfacl -m "${MEMPOOL_SOCKET_ACL},everyone@::f:allow" "${MEMPOOL_HOME}/socket"
         chown "${MEMPOOL_USER}:${MEMPOOL_GROUP}" "${MEMPOOL_HOME}/socket"
-        setfacl -m "user:bitcoin:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,everyone@::f:allow" "${BITCOIN_HOME}/socket"
-        chown "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_HOME}/socket"
-        setfacl -m "user:elements:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,everyone@::f:allow" "${ELEMENTS_HOME}/socket"
-        chown "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_HOME}/socket"
+
+        if [ "${BITCOIN_INSTALL}" = ON ];then
+            setfacl -m "user:bitcoin:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,everyone@::f:allow" "${BITCOIN_HOME}/socket"
+            chown "${BITCOIN_USER}:${BITCOIN_GROUP}" "${BITCOIN_HOME}/socket"
+        fi
+
+        if [ "${ELEMENTS_INSTALL}" = ON ];then
+            setfacl -m "user:elements:full_set:f:allow,user:mempool:full_set:f:allow,user:www:full_set:f:allow,everyone@::f:allow" "${ELEMENTS_HOME}/socket"
+            chown "${ELEMENTS_USER}:${ELEMENTS_GROUP}" "${ELEMENTS_HOME}/socket"
+        fi
     ;;
 
     Debian)
