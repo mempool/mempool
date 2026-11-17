@@ -810,7 +810,6 @@ Signet:Enable Bitcoin Signet:ON
 Liquid:Enable Elements Liquid:ON
 Liquidtestnet:Enable Elements Liquidtestnet:ON
 CoreLN:Enable Core Lightning:ON
-Unfurl:Enable Unfurl:ON
 EOF
 
 cat $input | sed -e 's/^/"/' -e 's/:/" "/g' -e 's/$/"/' >$output
