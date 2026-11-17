@@ -931,6 +931,52 @@ else
     ELEMENTS_ELECTRS_INSTALL=OFF
 fi
 
+DEPENDENCY_ERRORS=""
+
+if [ "${BITCOIN_MAINNET_LIGHTNING_ENABLE}" = ON -a \( "${BITCOIN_MAINNET_ENABLE}" != ON -o "${CLN_INSTALL}" != ON \) ];then
+    DEPENDENCY_ERRORS+="LN-Mainnet requires Mainnet and CoreLN\n"
+fi
+
+if [ "${BITCOIN_TESTNET_LIGHTNING_ENABLE}" = ON -a \( "${BITCOIN_TESTNET_ENABLE}" != ON -o "${CLN_INSTALL}" != ON \) ];then
+    DEPENDENCY_ERRORS+="LN-Testnet requires Testnet and CoreLN\n"
+fi
+
+if [ "${BITCOIN_SIGNET_LIGHTNING_ENABLE}" = ON -a \( "${BITCOIN_SIGNET_ENABLE}" != ON -o "${CLN_INSTALL}" != ON \) ];then
+    DEPENDENCY_ERRORS+="LN-Signet requires Signet and CoreLN\n"
+fi
+
+# liquidv1 runs with validatepegin=1, which needs the mainnet bitcoind
+if [ "${ELEMENTS_LIQUID_ENABLE}" = ON -a "${BITCOIN_MAINNET_ENABLE}" != ON ];then
+    DEPENDENCY_ERRORS+="Liquid requires Mainnet\n"
+fi
+
+# CLN is only set up for the bitcoin, testnet and signet networks
+if [ "${CLN_INSTALL}" = ON -a "${BITCOIN_MAINNET_ENABLE}" != ON -a "${BITCOIN_TESTNET_ENABLE}" != ON -a "${BITCOIN_SIGNET_ENABLE}" != ON ];then
+    DEPENDENCY_ERRORS+="CoreLN requires Mainnet, Testnet or Signet\n"
+fi
+
+# CKPool only gets a cron job for mainnet, testnet and testnet4
+if [ "${CKPOOL_INSTALL}" = ON -a "${BITCOIN_MAINNET_ENABLE}" != ON -a "${BITCOIN_TESTNET_ENABLE}" != ON -a "${BITCOIN_TESTNET4_ENABLE}" != ON ];then
+    DEPENDENCY_ERRORS+="CKPool requires Mainnet, Testnet or Testnet4\n"
+fi
+
+# the minfee node is only used by the mainnet backend
+if [ "${BITCOIN_MAINNET_MINFEE_ENABLE}" = ON -a "${BITCOIN_MAINNET_ENABLE}" != ON ];then
+    DEPENDENCY_ERRORS+="Mainnet-Minfee requires Mainnet\n"
+fi
+
+# mempool-config.mainnet.json sets USE_SECOND_NODE_FOR_MINFEE, so the mainnet backend reads the minfee node
+if [ "${BITCOIN_MAINNET_ENABLE}" = ON -a "${BITCOIN_MAINNET_MINFEE_ENABLE}" != ON ];then
+    DEPENDENCY_ERRORS+="Mainnet requires Mainnet-Minfee\n"
+fi
+
+if [ -n "${DEPENDENCY_ERRORS}" ];then
+    echo
+    echo -n "${DEPENDENCY_ERRORS}"
+    echo "Installation aborted."
+    exit 1
+fi
+
 ##################
 ## dialog part 2 #
 ##################
