@@ -781,7 +781,7 @@ ext4CreateDir()
 
 input=`tempfile 2>/dev/null` || input=/tmp/input$$
 output=`tempfile 2>/dev/null` || output=/tmp/test$$
-trap "rm -f $input $output" $SIG_OFFNE $SIG_HUP $SIG_INT $SIG_TRAP $SIG_TERM
+trap "rm -f $input $output" $SIG_OFFNE $SIG_HUP $SIG_INT $SIG_QUIT $SIG_TERM
 
 DIALOG_ERROR=254
 export DIALOG_ERROR
@@ -794,7 +794,7 @@ returncode=0
 # dialog part 1 #
 #################
 
-$CUT >$input <<-EOF
+cat >$input <<-EOF
 Tor:Enable Tor v3 HS Onion:ON
 CKPool:Enable CKPool Stratum Interface:ON
 Mainnet:Enable Bitcoin Mainnet:ON
