@@ -74,5 +74,9 @@
   "overrides": {
     "js-yaml": "^4.1.1",
     "glob": "^11.1.0"
+  },
+  "allowScripts": {
+    "fsevents": false,
+    "unrs-resolver": false
   }
 }

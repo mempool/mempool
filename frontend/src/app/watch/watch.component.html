@@ -1,0 +1,99 @@
+<div class="container-xl" *ngIf="session.state$ | async as state">
+
+  <h1 class="wallet-brand">
+    <img [src]="(isLightMode$ | async) ? '/resources/mempool-wallet-logo-light.svg' : '/resources/mempool-wallet-logo.svg'" alt="mempool wallet" class="wallet-logo">
+    <span class="badge rounded-pill bg-warning preview" i18n="watch.preview">preview</span>
+  </h1>
+
+  <!-- Liquid's confidential transactions need blinding keys, not just an xpub. -->
+  <div *ngIf="!state.network" class="alert alert-mempool" i18n="watch.unsupported-network">
+    The wallet is not available on this network.
+  </div>
+
+  <ng-container *ngIf="state.network">
+    <app-watch-switcher *ngIf="state.wallets.length" [state]="state" (openSettings)="activeTab = 'settings'"></app-watch-switcher>
+
+    <app-watch-import *ngIf="state.adding || !state.wallets.length" [state]="state"></app-watch-import>
+
+    <ng-container *ngIf="!state.adding && state.activeId">
+      <div class="wallet-status">
+        <span class="status-line">
+          <ng-container *ngIf="state.scanning; else idle">
+            <app-watch-scan-status *ngIf="state.progress as progress; else updating" [progress]="progress" [showCounts]="false"></app-watch-scan-status>
+            <ng-template #updating><small role="status" i18n="watch.updating">Updating…</small></ng-template>
+          </ng-container>
+          <ng-template #idle>
+            <small *ngIf="showUpdatedAt(state, clock$ | async); else automatic" i18n="watch.updated-at">Updated <app-time kind="since" [time]="state.updatedAt" [lowercaseStart]="true" [showTooltip]="true"></app-time></small>
+            <ng-template #automatic>
+              <small *ngIf="!state.error && !state.view?.truncated">
+                <ng-container *ngIf="state.liveUpdates === 'on'; else perBlock" i18n="watch.updates-live">Updates live as transactions arrive</ng-container>
+                <ng-template #perBlock><ng-container i18n="watch.updates-automatically">Updates automatically with each new block</ng-container></ng-template>
+              </small>
+            </ng-template>
+            <!-- Kept beside the age too: an incomplete wallet only updates when asked. -->
+            <small class="d-block" *ngIf="!state.error && state.view?.truncated" i18n="watch.updates-manual-truncated">Not updated automatically while the history is incomplete</small>
+          </ng-template>
+        </span>
+        <button type="button" class="btn btn-sm btn-outline-info" (click)="session.checkMempool()" [disabled]="state.scanning">
+          <span *ngIf="state.scanning" class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+          <ng-container *ngIf="state.error && !state.scanning; else checkLabel" i18n="watch.try-again">Try again</ng-container>
+          <ng-template #checkLabel><ng-container i18n="watch.check-mempool">Check Mempool</ng-container></ng-template>
+        </button>
+      </div>
+      <div class="alert alert-info mt-3 mb-0" *ngIf="state.notice">{{ state.notice }}</div>
+      <div class="alert alert-danger mt-3 mb-0" *ngIf="state.error">
+        {{ state.error }}
+        <ng-container *ngIf="state.view && state.updatedAt" i18n="watch.showing-previous">The figures shown are from the last successful update.</ng-container>
+      </div>
+      <div class="alert alert-info mt-3 mb-0" *ngIf="state.liveUpdates === 'refused'" i18n="watch.live-updates-unavailable">
+        Live updates aren't available for this wallet. It will refresh on each new block instead.
+      </div>
+      <div class="alert alert-warning mt-3 mb-0" *ngIf="state.view?.truncated" i18n="watch.truncated">
+        This wallet has too much history to load completely in the browser. The balance and transactions are incomplete.
+      </div>
+
+      <ul ngbNav #walletNav="ngbNav" [(activeId)]="activeTab" [animation]="false" class="nav-tabs watch-tabs" role="tablist">
+        <li ngbNavItem="overview" role="presentation">
+          <button ngbNavLink type="button" role="tab" i18n="watch.overview">Overview</button>
+          <ng-template ngbNavContent>
+            <app-watch-overview [state]="state" (openTab)="activeTab = $event"></app-watch-overview>
+          </ng-template>
+        </li>
+        <li ngbNavItem="transactions" role="presentation">
+          <button ngbNavLink type="button" role="tab" i18n="watch.transactions">Transactions</button>
+          <ng-template ngbNavContent>
+            <app-watch-transactions *ngIf="state.view as view; else walletLoading" [view]="view"></app-watch-transactions>
+          </ng-template>
+        </li>
+        <li ngbNavItem="utxos" role="presentation">
+          <button ngbNavLink type="button" role="tab" i18n="watch.utxos">UTXOs</button>
+          <ng-template ngbNavContent>
+            <app-watch-utxos *ngIf="state.view as view; else walletLoading" [view]="view"></app-watch-utxos>
+          </ng-template>
+        </li>
+        <li ngbNavItem="addresses" role="presentation">
+          <button ngbNavLink type="button" role="tab" i18n="watch.addresses">Addresses</button>
+          <ng-template ngbNavContent>
+            <app-watch-addresses *ngIf="state.view as view; else walletLoading" [view]="view"></app-watch-addresses>
+          </ng-template>
+        </li>
+        <li ngbNavItem="settings" role="presentation">
+          <button ngbNavLink type="button" role="tab" i18n="watch.settings">Settings</button>
+          <ng-template ngbNavContent>
+            <app-watch-settings *ngIf="session.activeWallet as wallet" [wallet]="wallet" [scanning]="state.scanning" (forgotten)="activeTab = 'overview'"></app-watch-settings>
+          </ng-template>
+        </li>
+      </ul>
+      <div class="watch-tab-content" [ngbNavOutlet]="walletNav"></div>
+      <ng-template #walletLoading>
+        <div class="box wallet-loading" role="status" aria-live="polite" *ngIf="state.scanning || !state.error; else loadFailed">
+          <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+          <ng-container i18n="watch.loading-wallet">Loading wallet…</ng-container>
+        </div>
+      </ng-template>
+      <ng-template #loadFailed>
+        <div class="box wallet-loading" i18n="watch.load-failed-try-again">The wallet could not be loaded. Try again, or change or forget it in Settings.</div>
+      </ng-template>
+    </ng-container>
+  </ng-container>
+</div>

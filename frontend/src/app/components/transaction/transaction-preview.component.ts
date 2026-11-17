@@ -34,6 +34,7 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
   errorUnblinded: any = undefined;
   transactionTime = -1;
   subscription: Subscription;
+  networkChangedSubscription: Subscription;
   fetchCpfpSubscription: Subscription;
   cpfpInfo: CpfpInfo | null;
   showCpfpDetails = false;
@@ -57,7 +58,7 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.stateService.networkChanged$.subscribe(
+    this.networkChangedSubscription = this.stateService.networkChanged$.subscribe(
       (network) => {
         this.network = network;
         if (this.network === 'liquid' || this.network == 'liquidtestnet') {
@@ -248,6 +249,7 @@ export class TransactionPreviewComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.networkChangedSubscription?.unsubscribe();
     this.subscription.unsubscribe();
     this.fetchCpfpSubscription.unsubscribe();
   }

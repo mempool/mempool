@@ -14,6 +14,7 @@ import { StateService } from '@app/services/state.service';
 import { MiningService } from '@app/services/mining.service';
 import { StorageService } from '@app/services/storage.service';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
+import { isMobile } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-block-fees-subsidy-graph',
@@ -179,7 +180,7 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
         left: this.left,
       },
       tooltip: {
-        show: !this.isMobile(),
+        show: !isMobile(),
         trigger: 'axis',
         axisPointer: {
           type: 'line'
@@ -486,10 +487,6 @@ export class BlockFeesSubsidyGraphComponent implements OnInit {
       this.onZoom();
       this.updateZoom = false;
     }
-  }
-
-  isMobile() {
-    return (window.innerWidth <= 767.98);
   }
 
   initSubsidies(): { [key: number]: number } {

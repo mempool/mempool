@@ -58,6 +58,8 @@ class NetworkSyncService {
       logger.err(`$runTasks() error: ${e instanceof Error ? e.message : e}`, logger.tags.ln);
     }
 
+    nodesApi.invalidateNodesISPRanking();
+
     setTimeout(() => { void this.$runTasks(); }, Math.max(1, (1000 * config.LIGHTNING.GRAPH_REFRESH_INTERVAL) - (Date.now() - taskStartTime)));
   }
 

@@ -2,6 +2,7 @@ import { Component, Input, SecurityContext, SimpleChanges, OnChanges } from '@an
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ServicesApiServices } from '@app/services/services-api.service';
 import { catchError, of } from 'rxjs';
+import { isMobile } from '@app/shared/common.utils';
 
 export interface SimpleProofCubo {
   student_name: string;
@@ -38,7 +39,7 @@ export class SimpleProofCuboWidgetComponent implements OnChanges {
   page = 1;
   lastPage = 1;
   itemsPerPage = 15;
-  paginationMaxSize = window.innerWidth <= 767.98 ? 3 : 5;
+  paginationMaxSize = isMobile() ? 3 : 5;
   sortField: SortField = null;
   sortDirection: SortDirection = 'asc';
 

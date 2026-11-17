@@ -35,51 +35,6 @@ export class Common {
     return config?.MEMPOOL?.NETWORK === 'liquid' || config?.MEMPOOL?.NETWORK === 'liquidtestnet';
   }
 
-  static median(numbers: number[]) {
-    let medianNr = 0;
-    const numsLen = numbers.length;
-    if (numsLen % 2 === 0) {
-        medianNr = (numbers[numsLen / 2 - 1] + numbers[numsLen / 2]) / 2;
-    } else {
-        medianNr = numbers[(numsLen - 1) / 2];
-    }
-    return medianNr;
-  }
-
-  static percentile(numbers: number[], percentile: number) {
-    if (percentile === 50) {
-      return this.median(numbers);
-    }
-    const index = Math.ceil(numbers.length * (100 - percentile) * 1e-2);
-    if (index < 0 || index > numbers.length - 1) {
-      return 0;
-    }
-    return numbers[index];
-  }
-
-  static getFeesInRange(transactions: TransactionExtended[], rangeLength: number) {
-    const filtered: TransactionExtended[] = [];
-    let lastValidRate = Infinity;
-    // filter out anomalous fee rates to ensure monotonic range
-    for (const tx of transactions) {
-      if (tx.effectiveFeePerVsize <= lastValidRate) {
-        filtered.push(tx);
-        lastValidRate = tx.effectiveFeePerVsize;
-      }
-    }
-    const arr = [filtered[filtered.length - 1].effectiveFeePerVsize];
-    const chunk = 1 / (rangeLength - 1);
-    let itemsToAdd = rangeLength - 2;
-
-    while (itemsToAdd > 0) {
-      arr.push(filtered[Math.floor(filtered.length * chunk * itemsToAdd)].effectiveFeePerVsize);
-      itemsToAdd--;
-    }
-
-    arr.push(filtered[0].effectiveFeePerVsize);
-    return arr;
-  }
-
   static findRbfTransactions(added: MempoolTransactionExtended[], deleted: MempoolTransactionExtended[], forceScalable = false): { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }} {
     const matches: { [txid: string]: { replaced: MempoolTransactionExtended[], replacedBy: TransactionExtended }} = {};
 
@@ -372,19 +327,24 @@ export class Common {
 
   // Individual versioned standardness rules
 
+  static getActivationHeight(activationHeights: Record<string, number>): number | undefined {
+    return activationHeights[config.MEMPOOL.NETWORK || 'mainnet'];
+  }
+
   static V3_STANDARDNESS_ACTIVATION_HEIGHT = {
     'testnet4': 42_000,
     'testnet': 2_900_000,
     'signet': 211_000,
     'regtest': 0,
-    '': 863_500,
+    'mainnet': 863_500,
   };
   static isNonStandardVersion(tx: TransactionExtended, height?: number): boolean {
     let TX_MAX_STANDARD_VERSION = 3;
+    const activationHeight = this.getActivationHeight(this.V3_STANDARDNESS_ACTIVATION_HEIGHT);
     if (
       height != null
-      && this.V3_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
-      && height <= this.V3_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      && activationHeight
+      && height <= activationHeight
     ) {
       // V3 transactions were non-standard to spend before v28.x (scheduled for 2024/09/30 https://github.com/bitcoin/bitcoin/issues/29891)
       TX_MAX_STANDARD_VERSION = 2;
@@ -401,13 +361,14 @@ export class Common {
     'testnet': 2_900_000,
     'signet': 211_000,
     'regtest': 0,
-    '': 863_500,
+    'mainnet': 863_500,
   };
   static isNonStandardAnchor(vin: IEsploraApi.Vin, height?: number): boolean {
+    const activationHeight = this.getActivationHeight(this.ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT);
     if (
       height != null
-      && this.ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
-      && height <= this.ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+      && activationHeight
+      && height <= activationHeight
       && vin.prevout?.scriptpubkey === '51024e73'
     ) {
       // anchor outputs were non-standard to spend before v28.x (scheduled for 2024/09/30 https://github.com/bitcoin/bitcoin/issues/29891)
@@ -422,14 +383,15 @@ export class Common {
     'testnet': 4_550_000,
     'signet': 260_000,
     'regtest': 0,
-    '': 905_000,
+    'mainnet': 905_000,
   };
   static isStandardEphemeralDust(tx: TransactionExtended, height?: number): boolean {
+    const activationHeight = this.getActivationHeight(this.EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT);
     if (
       tx.fee === 0
       && (height == null || (
-        this.EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
-        && height >= this.EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+        activationHeight != null
+        && height >= activationHeight
       ))
     ) {
       return true;
@@ -443,14 +405,15 @@ export class Common {
     'testnet': 4_750_000,
     'signet': 276_500,
     'regtest': 0,
-    '': 921_000,
+    'mainnet': 921_000,
   };
   static MAX_DATACARRIER_BYTES = 83;
   static isStandardOpReturn(bytes: number, outputs: number,height?: number): boolean {
+    const activationHeight = this.getActivationHeight(this.OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT);
     if (
       (height == null || (
-        this.OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
-        && height >= this.OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+        activationHeight != null
+        && height >= activationHeight
       )) // limits lifted
       || // OR
       (bytes <= this.MAX_DATACARRIER_BYTES && outputs <= 1) // below old limits
@@ -466,13 +429,14 @@ export class Common {
     'testnet': 4_750_000,
     'signet': 276_500,
     'regtest': 0,
-    '': 921_000,
+    'mainnet': 921_000,
   };
   static isNonStandardLegacySigops(tx: TransactionExtended, height?: number): boolean {
+    const activationHeight = this.getActivationHeight(this.LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT);
     if (
       height == null || (
-        this.LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
-        && height >= this.LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[config.MEMPOOL.NETWORK]
+        activationHeight != null
+        && height >= activationHeight
       )
     ) {
       if (!transactionUtils.checkSigopsBIP54(tx, MAX_TX_LEGACY_SIGOPS)) {
@@ -626,6 +590,13 @@ export class Common {
 
     // Already processed static flags, no need to do it again
     if (tx.flags) {
+      // except standardness, which depends on the policy in force at the mined height
+      if (height != null) {
+        flags &= ~TransactionFlags.nonstandard;
+        if (this.isNonStandard(tx, height)) {
+          flags |= TransactionFlags.nonstandard;
+        }
+      }
       return Number(flags);
     }
 
@@ -804,10 +775,6 @@ export class Common {
       rate: tx.effectiveFeePerVsize,
       time: tx.firstSeen || undefined,
     };
-  }
-
-  static stripTransactions(txs: TransactionExtended[]): TransactionStripped[] {
-    return txs.map(Common.stripTransaction);
   }
 
   /** @asyncSafe */
@@ -995,7 +962,7 @@ export class Common {
           url: addr,
         };
       }
-    } else if (addr.indexOf('ipv6') !== -1 || (config.LIGHTNING.BACKEND === 'lnd' && url.indexOf(']:'))) {
+    } else if (addr.indexOf('ipv6') !== -1 || (config.LIGHTNING.BACKEND === 'lnd' && url.indexOf(']:') !== -1)) {
       const parts = url.split('[');
       if (parts.length < 2) {
         return {

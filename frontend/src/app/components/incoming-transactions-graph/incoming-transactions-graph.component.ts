@@ -6,6 +6,7 @@ import { download, formatterXAxis, formatterXAxisLabel } from '@app/shared/graph
 import { formatNumber } from '@angular/common';
 import { StateService } from '@app/services/state.service';
 import { Subscription } from 'rxjs';
+import { isMobile } from '@app/shared/common.utils';
 
 const OUTLIERS_MEDIAN_MULTIPLIER = 4;
 
@@ -186,7 +187,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
         left: this.left,
       },
       animation: false,
-      dataZoom: (this.template === 'widget' && this.isMobile()) ? null : [{
+      dataZoom: (this.template === 'widget' && isMobile()) ? null : [{
         type: 'inside',
         realtime: true,
         zoomLock: (this.template === 'widget') ? true : false,
@@ -213,7 +214,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
         },
       }],
       tooltip: {
-        show: !this.isMobile(),
+        show: !isMobile(),
         trigger: 'axis',
         position: (pos, params, el, elRect, size) => {
           const obj = { top: -20 };
@@ -351,10 +352,6 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
 
   onChartInit(ec) {
     this.chartInstance = ec;
-  }
-
-  isMobile() {
-    return window.innerWidth <= 767.98;
   }
 
   onSaveChart(timespan) {

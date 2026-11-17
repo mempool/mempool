@@ -6,7 +6,6 @@ import bitcoinClient from '../bitcoin/bitcoin-client';
 import logger from '../../logger';
 import { Common } from '../common';
 import loadingIndicators from '../loading-indicators';
-import { escape } from 'mysql2';
 import DifficultyAdjustmentsRepository from '../../repositories/DifficultyAdjustmentsRepository';
 import config from '../../config';
 import BlocksAuditsRepository from '../../repositories/BlocksAuditsRepository';
@@ -101,20 +100,10 @@ class Mining {
   }
 
   /**
-   * Get historical block sizes
+   * Get historical block sizes and weights
    */
-  public async $getHistoricalBlockSizes(interval: string | null = null): Promise<any> {
-    return await BlocksRepository.$getHistoricalBlockSizes(
-      this.getTimeRange(interval),
-      Common.getSqlInterval(interval)
-    );
-  }
-
-  /**
-   * Get historical block weights
-   */
-  public async $getHistoricalBlockWeights(interval: string | null = null): Promise<any> {
-    return await BlocksRepository.$getHistoricalBlockWeights(
+  public async $getHistoricalBlockSizesAndWeights(interval: string | null = null): Promise<{ sizes: any[], weights: any[] }> {
+    return await BlocksRepository.$getHistoricalBlockSizesAndWeights(
       this.getTimeRange(interval),
       Common.getSqlInterval(interval)
     );

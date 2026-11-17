@@ -8,7 +8,7 @@ import { StateService } from '@app/services/state.service';
 import { WebsocketService } from '@app/services/websocket.service';
 import { SeoService } from '@app/services/seo.service';
 import { OpenGraphService } from '@app/services/opengraph.service';
-import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { seoDescriptionNetwork, isMobile } from '@app/shared/common.utils';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 
 @Component({
@@ -32,7 +32,7 @@ export class BlocksList implements OnInit {
   paginationMaxSize: number;
   page = 1;
   lastPage = 1;
-  maxSize = window.innerWidth <= 767.98 ? 3 : 5;
+  maxSize = isMobile() ? 3 : 5;
   blocksCount: number;
   fromHeightSubject: BehaviorSubject<number> = new BehaviorSubject(this.fromBlockHeight);
   skeletonLines: number[] = [];

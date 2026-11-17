@@ -5,6 +5,7 @@ import { ApiService } from '@app/services/api.service';
 import { Env, StateService } from '@app/services/state.service';
 import { AuditStatus, CurrentPegs, FederationAddress } from '@interfaces/node-api.interface';
 import { WebsocketService } from '@app/services/websocket.service';
+import { isMobile } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-federation-addresses-list',
@@ -21,7 +22,7 @@ export class FederationAddressesListComponent implements OnInit {
   isLoading = true;
   page = 1;
   pageSize = 15;
-  maxSize = window.innerWidth <= 767.98 ? 3 : 5;
+  maxSize = isMobile() ? 3 : 5;
   skeletonLines: number[] = [];
   auditStatus$: Observable<AuditStatus>;
   auditUpdated$: Observable<boolean>;

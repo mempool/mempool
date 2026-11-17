@@ -16,6 +16,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpResponse } from '@angular/common/http';
 import { VbytesPipe } from '@app/shared/pipes/bytes-pipe/vbytes.pipe';
 import { SeoService } from '@app/services/seo.service';
+import { isMobile } from '@app/shared/common.utils';
 
 interface GogglesRollup {
   bucketSize: string;
@@ -382,10 +383,10 @@ export class BlockGogglesGraphComponent implements OnInit {
         right: this.right,
         left: this.left,
         bottom: this.widget ? 30 : 80,
-        top: this.widget ? 20 : (this.isMobile() ? 10 : 50),
+        top: this.widget ? 20 : (isMobile() ? 10 : 50),
       },
       tooltip: {
-        show: !this.isMobile(),
+        show: !isMobile(),
         trigger: 'axis',
         axisPointer: {
           type: 'line'
@@ -598,10 +599,6 @@ export class BlockGogglesGraphComponent implements OnInit {
     this.chartInstance.on('legendselectchanged', (e) => {
       this.storageService.setValue('goggles_legend', JSON.stringify(e.selected));
     });
-  }
-
-  isMobile(): boolean {
-    return (window.innerWidth <= 767.98);
   }
 
   // the bucket sizes a given interval can be viewed at (24h is per-block only; longer ranges are week/month)

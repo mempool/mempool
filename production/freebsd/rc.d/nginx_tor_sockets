@@ -1,0 +1,29 @@
+#!/bin/sh
+# PROVIDE: nginx_tor_sockets
+# REQUIRE: FILESYSTEMS
+# BEFORE: nginx
+
+#
+# Add the following lines to /etc/rc.conf to enable :
+# nginx_tor_sockets_enable (bool):	Set to "NO" by default.
+#					Set it to "YES" to delete stale nginx
+#					tor sockets before nginx starts
+
+. /etc/rc.subr
+
+name="nginx_tor_sockets"
+rcvar=nginx_tor_sockets_enable
+
+start_cmd="nginx_tor_sockets_start"
+stop_cmd=":"
+
+: ${nginx_tor_sockets_enable:="NO"}
+
+load_rc_config ${name}
+
+nginx_tor_sockets_start()
+{
+  find /mempool/socket -maxdepth 1 -type s -name 'nginx-tor-*' -delete
+}
+
+run_rc_command "$1"

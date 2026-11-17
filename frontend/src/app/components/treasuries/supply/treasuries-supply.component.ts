@@ -4,6 +4,7 @@ import { StateService } from '@app/services/state.service';
 import { WalletStats } from '../../../shared/wallet-stats';
 import { AddressTxSummary } from '../../../interfaces/electrs.interface';
 import { Treasury } from '../../../interfaces/node-api.interface';
+import { isMobile } from '@app/shared/common.utils';
 
 
 interface SupplyShare {
@@ -181,7 +182,7 @@ export class TreasuriesSupplyComponent implements OnInit, OnDestroy {
 
   @HostListener('window:resize', ['$event'])
   onResize(): void {
-    this.isMobile = window.innerWidth <= 767.98;
+    this.isMobile = isMobile();
   }
 
   ngOnDestroy(): void {
