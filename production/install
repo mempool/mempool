@@ -781,8 +781,8 @@ ext4CreateDir()
 : ${SIG_KILL=9}
 : ${SIG_TERM=15}
 
-input=`tempfile 2>/dev/null` || input=/tmp/input$$
-output=`tempfile 2>/dev/null` || output=/tmp/test$$
+input=$(mktemp)
+output=$(mktemp)
 trap "rm -f $input $output" $SIG_OFFNE $SIG_HUP $SIG_INT $SIG_QUIT $SIG_TERM
 
 DIALOG_ERROR=254
