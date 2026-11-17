@@ -818,6 +818,7 @@ cat $output >$input
 
 $DIALOG --backtitle "${backtitle}" \
         --title "${title}" "$@" \
+        --separate-output \
         --checklist "Toggle the features below to configure your fullnode:\n" \
         20 80 10 \
         --file $input 2> $output
@@ -830,43 +831,43 @@ if [ $retval != $DIALOG_OK ];then
     exit 1
 fi
 
-if grep Tor $tempfile >/dev/null 2>&1;then
+if grep -qx Tor $tempfile;then
     TOR_INSTALL=ON
 else
     TOR_INSTALL=OFF
 fi
 
-if grep CKPool $tempfile >/dev/null 2>&1;then
+if grep -qx CKPool $tempfile;then
     CKPOOL_INSTALL=ON
 else
     CKPOOL_INSTALL=OFF
 fi
 
-if grep Mainnet $tempfile >/dev/null 2>&1;then
+if grep -qx Mainnet $tempfile;then
     BITCOIN_MAINNET_ENABLE=ON
 else
     BITCOIN_MAINNET_ENABLE=OFF
 fi
 
-if grep Mainnet-Minfee $tempfile >/dev/null 2>&1;then
+if grep -qx Mainnet-Minfee $tempfile;then
     BITCOIN_MAINNET_MINFEE_ENABLE=ON
 else
     BITCOIN_MAINNET_MINFEE_ENABLE=OFF
 fi
 
-if grep Testnet $tempfile >/dev/null 2>&1;then
+if grep -qx Testnet $tempfile;then
     BITCOIN_TESTNET_ENABLE=ON
 else
     BITCOIN_TESTNET_ENABLE=OFF
 fi
 
-if grep Testnet4 $tempfile >/dev/null 2>&1;then
+if grep -qx Testnet4 $tempfile;then
     BITCOIN_TESTNET4_ENABLE=ON
 else
     BITCOIN_TESTNET4_ENABLE=OFF
 fi
 
-if grep Signet $tempfile >/dev/null 2>&1;then
+if grep -qx Signet $tempfile;then
     BITCOIN_SIGNET_ENABLE=ON
 else
     BITCOIN_SIGNET_ENABLE=OFF
@@ -878,31 +879,31 @@ else
     BITCOIN_INSTALL=OFF
 fi
 
-if grep LN-Mainnet $tempfile >/dev/null 2>&1;then
+if grep -qx LN-Mainnet $tempfile;then
     BITCOIN_MAINNET_LIGHTNING_ENABLE=ON
 else
     BITCOIN_MAINNET_LIGHTNING_ENABLE=OFF
 fi
 
-if grep LN-Testnet $tempfile >/dev/null 2>&1;then
+if grep -qx LN-Testnet $tempfile;then
     BITCOIN_TESTNET_LIGHTNING_ENABLE=ON
 else
     BITCOIN_TESTNET_LIGHTNING_ENABLE=OFF
 fi
 
-if grep LN-Signet $tempfile >/dev/null 2>&1;then
+if grep -qx LN-Signet $tempfile;then
     BITCOIN_SIGNET_LIGHTNING_ENABLE=ON
 else
     BITCOIN_SIGNET_LIGHTNING_ENABLE=OFF
 fi
 
-if grep Liquid $tempfile >/dev/null 2>&1;then
+if grep -qx Liquid $tempfile;then
     ELEMENTS_LIQUID_ENABLE=ON
 else
     ELEMENTS_LIQUID_ENABLE=OFF
 fi
 
-if grep Liquidtestnet $tempfile >/dev/null 2>&1;then
+if grep -qx Liquidtestnet $tempfile;then
     ELEMENTS_LIQUIDTESTNET_ENABLE=ON
 else
     ELEMENTS_LIQUIDTESTNET_ENABLE=OFF
@@ -914,7 +915,7 @@ else
     ELEMENTS_INSTALL=OFF
 fi
 
-if grep CoreLN $tempfile >/dev/null 2>&1;then
+if grep -qx CoreLN $tempfile;then
     CLN_INSTALL=ON
 else
     CLN_INSTALL=OFF
