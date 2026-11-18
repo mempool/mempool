@@ -261,6 +261,9 @@ export class AnalyticsService {
   }
 
   private doNotTrack(): boolean {
+    if ((navigator as any).globalPrivacyControl === true) {
+      return true;
+    }
     const dnt = (navigator as any).doNotTrack ?? (window as any).doNotTrack ?? (navigator as any).msDoNotTrack;
     return dnt != null && (parseInt(dnt, 10) === 1 || dnt === 'yes');
   }
