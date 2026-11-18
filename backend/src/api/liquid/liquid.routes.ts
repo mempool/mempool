@@ -274,7 +274,7 @@ class LiquidRoutes {
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 300).toUTCString());
-      if (['testnet', 'signet', 'liquidtestnet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK)) {
+      if (['testnet', 'signet', 'liquidtestnet', 'testnet4', 'testnet5', 'regtest'].includes(config.MEMPOOL.NETWORK)) {
         handleError(req, res, 400, 'Prices are not available on testnets.');
         return;
       }
