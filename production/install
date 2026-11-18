@@ -1165,7 +1165,7 @@ if [ "${BITCOIN_INSTALL}" = ON ];then
 
     # use cmake if > v28
     if [ "${BITCOIN_LATEST_RELEASE:1:2}" -gt "28" ];then
-        osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && cmake -B build -DWITH_GUI=OFF -DWITH_ZMQ=ON -DENABLE_IPC=OFF -DENABLE_WALLET=OFF -DBUILD_BITCOIN_TESTS=OFF"
+        osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && cmake -B build -DBUILD_GUI=OFF -DWITH_ZMQ=ON -DENABLE_IPC=OFF -DENABLE_WALLET=OFF -DBUILD_TESTS=OFF"
         osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_REPO_NAME} && cmake --build build -j${NPROC}"
 
         echo "[*] Installing Bitcoin binaries into OS"
@@ -1384,10 +1384,7 @@ if [ "${ELEMENTS_ELECTRS_INSTALL}" = ON ];then
     osSudo "${ELEMENTS_USER}" git clone "${LIQUIDTESTNET_ASSET_REGISTRY_DB_URL}" "${ELEMENTS_HOME}/${LIQUIDTESTNET_ASSET_REGISTRY_DB_NAME}"
 
     echo "[*] Building Liquid Electrs release binary"
-    osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_ELECTRS_HOME} && cargo run --release --features liquid --bin electrs -- --network liquid --version" || true
-
-    echo "[*] Building Liquid Electrs release binary"
-    osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_ELECTRS_HOME} && cargo run --release --features liquid --bin electrs -- --network liquid --version" || true
+    osSudo "${ELEMENTS_USER}" sh -c "cd ${ELEMENTS_ELECTRS_HOME} && cargo run --release --features liquid --bin electrs -- --network liquid --version"
 fi
 
 ##############################
@@ -1936,7 +1933,7 @@ esac
 ##### Build Mempool
 
 echo "[*] Build Mempool"
-osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME} && ./upgrade" || true
+osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME} && ./upgrade"
 
 
 
