@@ -25,6 +25,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   userAuth: any | undefined;
   isServicesPage = false;
   authSubscription$: Subscription;
+  routerEventsSubscription$: Subscription;
 
   constructor(
     private servicesApiServices: ServicesApiServices,
@@ -44,7 +45,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
 
     this.isServicesPage = isServicesMenuPage(this.router.url);
-    this.router.events.subscribe((event) => {
+    this.routerEventsSubscription$ = this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         this.isServicesPage = isServicesMenuPage(event.url);
         if (!this.isServicesPage) {
@@ -122,6 +123,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.authSubscription$) {
       this.authSubscription$.unsubscribe();
+    }
+    if (this.routerEventsSubscription$) {
+      this.routerEventsSubscription$.unsubscribe();
     }
     this.stateService.menuOpen$.next(false);
   }

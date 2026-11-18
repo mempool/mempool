@@ -42,6 +42,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   enterpriseInfo: any;
   enterpriseInfo$: Subscription;
   authSubscription$: Subscription;
+  subnetPathsSubscription$: Subscription;
 
   @ViewChild(MenuComponent)
   public menuComponent!: MenuComponent;
@@ -68,7 +69,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     this.network$ = merge(of(''), this.stateService.networkChanged$);
     this.urlLanguage = this.languageService.getLanguageForUrl();
     this.subdomain = this.enterpriseService.getSubdomain();
-    this.navigationService.subnetPaths.subscribe((paths) => {
+    this.subnetPathsSubscription$ = this.navigationService.subnetPaths.subscribe((paths) => {
       this.networkPaths = paths;
       if (this.footerVisibleOverride === null) {
         if (paths.mainnet.indexOf('docs') > -1) {
@@ -152,6 +153,9 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     }
     if (this.authSubscription$) {
       this.authSubscription$.unsubscribe();
+    }
+    if (this.subnetPathsSubscription$) {
+      this.subnetPathsSubscription$.unsubscribe();
     }
   }
 

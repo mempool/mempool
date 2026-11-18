@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { StorageService } from '@app/services/storage.service';
 import { StateService } from '@app/services/state.service';
+import { Subscription } from 'rxjs';
 import { timezones } from '@app/app.constants';
 
 
@@ -12,8 +13,9 @@ import { timezones } from '@app/app.constants';
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TimezoneSelectorComponent implements OnInit {
+export class TimezoneSelectorComponent implements OnInit, OnDestroy {
   timezoneForm: UntypedFormGroup;
+  timezoneSubscription: Subscription;
   timezones = timezones;
   localTimezoneOffset: string = '';
   localTimezoneName: string;
@@ -29,7 +31,7 @@ export class TimezoneSelectorComponent implements OnInit {
     this.timezoneForm = this.formBuilder.group({
       mode: ['local'],
     });
-    this.stateService.timezone$.subscribe((mode) => {
+    this.timezoneSubscription = this.stateService.timezone$.subscribe((mode) => {
       this.timezoneForm.get('mode')?.setValue(mode);
     });
   }
@@ -38,6 +40,10 @@ export class TimezoneSelectorComponent implements OnInit {
     const newMode = this.timezoneForm.get('mode')?.value;
     this.storageService.setValue('timezone-preference', newMode);
     this.stateService.timezone$.next(newMode);
+  }
+
+  ngOnDestroy(): void {
+    this.timezoneSubscription.unsubscribe();
   }
 
   setLocalTimezone() {
