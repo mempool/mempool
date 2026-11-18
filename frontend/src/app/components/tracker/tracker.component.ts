@@ -738,6 +738,11 @@ export class TrackerComponent implements OnInit, OnDestroy {
           return false;
         }
         break;
+      case 'testnet5':
+        if (blockHeight < this.stateService.env.TESTNET5_BLOCK_AUDIT_START_HEIGHT) {
+          return false;
+        }
+        break;
       case 'signet':
         if (blockHeight < this.stateService.env.SIGNET_BLOCK_AUDIT_START_HEIGHT) {
           return false;

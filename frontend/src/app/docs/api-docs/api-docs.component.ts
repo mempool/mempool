@@ -191,6 +191,9 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
     if (network === 'testnet4') {
       curlResponse = code.codeSampleTestnet.curl;
     }
+    if (network === 'testnet5') {
+      curlResponse = code.codeSampleTestnet.curl;
+    }
     if (network === 'signet') {
       curlResponse = code.codeSampleSignet.curl;
     }
