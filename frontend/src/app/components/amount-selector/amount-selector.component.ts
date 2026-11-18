@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { StorageService } from '@app/services/storage.service';
 import { StateService } from '@app/services/state.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-amount-selector',
@@ -10,8 +11,9 @@ import { StateService } from '@app/services/state.service';
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AmountSelectorComponent implements OnInit {
+export class AmountSelectorComponent implements OnInit, OnDestroy {
   amountForm: UntypedFormGroup;
+  modeSubscription: Subscription;
   modes = ['btc', 'sats', 'fiat'];
 
   constructor(
@@ -24,7 +26,7 @@ export class AmountSelectorComponent implements OnInit {
     this.amountForm = this.formBuilder.group({
       mode: ['btc']
     });
-    this.stateService.viewAmountMode$.subscribe((mode) => {
+    this.modeSubscription = this.stateService.viewAmountMode$.subscribe((mode) => {
       this.amountForm.get('mode')?.setValue(mode);
     });
   }
@@ -33,5 +35,9 @@ export class AmountSelectorComponent implements OnInit {
     const newMode = this.amountForm.get('mode')?.value;
     this.storageService.setValue('view-amount-mode', newMode);
     this.stateService.viewAmountMode$.next(newMode);
+  }
+
+  ngOnDestroy(): void {
+    this.modeSubscription.unsubscribe();
   }
 }
