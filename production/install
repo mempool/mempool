@@ -1756,7 +1756,8 @@ if [ "${BITCOIN_SIGNET_LIGHTNING_ENABLE}" = ON ];then
     osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/signet-lightning && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
-if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
+# mempool-build-all builds the shared Liquid frontend from the liquid repo, so Liquidtestnet needs it too
+if [ "${ELEMENTS_LIQUID_ENABLE}" = ON -o "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON ];then
     echo "[*] Creating Mempool instance for Liquid"
     osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
     osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/liquid"
