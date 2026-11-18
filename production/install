@@ -921,7 +921,7 @@ else
     BITCOIN_MAINNET_MINFEE_ENABLE=OFF
 fi
 
-if grep Testnet $tempfile >/dev/null 2>&1;then
+if grep -w Testnet $tempfile >/dev/null 2>&1;then
     BITCOIN_TESTNET_ENABLE=ON
 else
     BITCOIN_TESTNET_ENABLE=OFF
