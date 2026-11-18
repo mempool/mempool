@@ -171,16 +171,16 @@ export const originalChartColors = chartColors.slice(1);
 export const subOneFeeLevels = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9];
 
 export const subOneChartColors = [
-  '#D50000',
-  '#AA00FF',
-  '#304FFE',
-  '#00E5FF',
-  '#00BFA5',
-  '#00C853',
-  '#AEEA00',
-  '#FFFF00',
-  '#FF5252',
-  '#E040FB',
+  '#AFF6B8',
+  '#01C329',
+  '#7CFE5D',
+  '#A0CA7F',
+  '#779715',
+  '#D8DF13',
+  '#B6A14A',
+  '#FECA7F',
+  '#CE6A1E',
+  '#F9A08E',
 ];
 
 export const poolsColor = {
