@@ -126,63 +126,39 @@ ELEMENTS_LIQUID_RPC_PORT=7041
 ELEMENTS_RPC_USER=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 ELEMENTS_RPC_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 
-# set either socket or TCP host/port, not both
-#ELECTRS_MAINNET_HTTP_SOCK=/tmp/bitcoin.mainnet.electrs
 ELECTRS_MAINNET_HTTP_HOST=127.0.0.1
 ELECTRS_MAINNET_HTTP_PORT=3000
 
-# set either socket or TCP host/port, not both
-#ELECTRS_LIQUID_HTTP_SOCK=/tmp/elements.liquid.electrs
 ELECTRS_LIQUID_HTTP_HOST=127.0.0.1
 ELECTRS_LIQUID_HTTP_PORT=3001
 
-# set either socket or TCP host/port, not both
-#ELECTRS_TESTNET_HTTP_SOCK=/tmp/bitcoin.testnet.electrs
 ELECTRS_TESTNET_HTTP_HOST=127.0.0.1
 ELECTRS_TESTNET_HTTP_PORT=3002
 
-# set either socket or TCP host/port, not both
-#ELECTRS_TESTNET4_HTTP_SOCK=/tmp/bitcoin.testnet4.electrs
 ELECTRS_TESTNET4_HTTP_HOST=127.0.0.1
 ELECTRS_TESTNET4_HTTP_PORT=3005
 
-# set either socket or TCP host/port, not both
-#ELECTRS_SIGNET_HTTP_SOCK=/tmp/bitcoin.signet.electrs
 ELECTRS_SIGNET_HTTP_HOST=127.0.0.1
 ELECTRS_SIGNET_HTTP_PORT=3003
 
-# set either socket or TCP host/port, not both
-#ELECTRS_LIQUIDTESTNET_HTTP_SOCK=/tmp/elements.liquidtestnet.electrs
 ELECTRS_LIQUIDTESTNET_HTTP_HOST=127.0.0.1
 ELECTRS_LIQUIDTESTNET_HTTP_PORT=3004
 
-# set either socket or TCP host/port, not both
-#MEMPOOL_MAINNET_HTTP_SOCK=/tmp/bitcoin.mainnet.mempool
 MEMPOOL_MAINNET_HTTP_HOST=127.0.0.1
 MEMPOOL_MAINNET_HTTP_PORT=8999
 
-# set either socket or TCP host/port, not both
-#MEMPOOL_LIQUID_HTTP_SOCK=/tmp/elements.liquid.mempool
 MEMPOOL_LIQUID_HTTP_HOST=127.0.0.1
 MEMPOOL_LIQUID_HTTP_PORT=8998
 
-# set either socket or TCP host/port, not both
-#MEMPOOL_TESTNET_HTTP_SOCK=/tmp/bitcoin.testnet.mempool
 MEMPOOL_TESTNET_HTTP_HOST=127.0.0.1
 MEMPOOL_TESTNET_HTTP_PORT=8997
 
-# set either socket or TCP host/port, not both
-#MEMPOOL_TESTNET4_HTTP_SOCK=/tmp/bitcoin.testnet.mempool
 MEMPOOL_TESTNET4_HTTP_HOST=127.0.0.1
 MEMPOOL_TESTNET4_HTTP_PORT=8990
 
-# set either socket or TCP host/port, not both
-#MEMPOOL_SIGNET_HTTP_SOCK=/tmp/bitcoin.signet.mempool
 MEMPOOL_SIGNET_HTTP_HOST=127.0.0.1
 MEMPOOL_SIGNET_HTTP_PORT=8995
 
-# set either socket or TCP host/port, not both
-#MEMPOOL_LIQUIDTESTNET_HTTP_SOCK=/tmp/elements.liquidtestnet.mempool
 MEMPOOL_LIQUIDTESTNET_HTTP_HOST=127.0.0.1
 MEMPOOL_LIQUIDTESTNET_HTTP_PORT=8994
 
@@ -1526,9 +1502,9 @@ if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
     esac
 fi
 
-###############################
-# Bitcoin instance for Liquid #
-###############################
+################################
+# Elements instance for Liquid #
+################################
 
 if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
     echo "[*] Installing Elements Liquid service"
@@ -1542,9 +1518,9 @@ if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
         ;;
     esac
 fi
-
-#######################################
-# Bitcoin instance for Liquid Testnet #
+########################################
+# Elements instance for Liquid Testnet #
+########################################
 #######################################
 
 if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
