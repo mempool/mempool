@@ -1872,6 +1872,8 @@ mysql_enable="YES"
 mysql_dbdir="/mysql"
 mysql_args="--innodb-buffer-pool-size=8G --bind-address 127.0.0.1"
 
+redis_enable="YES"
+
 kld_list="nvidia"
 nvidia_xorg_enable="YES"
 
