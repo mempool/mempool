@@ -120,6 +120,8 @@ export class ApiDocsComponent implements OnInit, AfterViewInit {
           this.electrsPort = 60002; break;
         case 'testnet4':
           this.electrsPort = 40002; break;
+        case 'testnet5':
+          this.electrsPort = 60502; break;
         case 'signet':
           this.electrsPort = 60602; break;
         case 'liquid':
