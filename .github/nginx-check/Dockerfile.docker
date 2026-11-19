@@ -1,4 +1,4 @@
-FROM nginx:1.30.1-alpine
+FROM nginx:1.31.9-alpine
 
 # Validate the config set loaded by the mempool/frontend docker image.
 # Build context: repo root
