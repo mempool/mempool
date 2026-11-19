@@ -1297,6 +1297,12 @@ install_ckpool_cron() {
     local network_cmd=$3
     local port=$4
 
+    # CKPool's start script reads the RPC credentials from ${BITCOIN_HOME}/<network>.conf
+    if [ "${network_cmd}" != "bitcoin" ]; then
+        echo "[*] Linking ${BITCOIN_HOME}/${network_cmd}.conf to bitcoin.conf for CKPool ${network_label}"
+        osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_HOME} && ( [ -e ${network_cmd}.conf ] || ln -s bitcoin.conf ${network_cmd}.conf )"
+    fi
+
     echo "[*] Installing CKPool ${network_label} Cron for 'ckpool' user"
     case $OS in
         FreeBSD)
@@ -1348,7 +1354,7 @@ if [ "${CKPOOL_INSTALL}" = ON ]; then
     fi
 
     if [ "${BITCOIN_TESTNET_ENABLE}" = ON ]; then
-        install_ckpool_cron "testnet" "Testnet" "testnet" 2334
+        install_ckpool_cron "testnet" "Testnet" "testnet3" 2334
     fi
 
     if [ "${BITCOIN_TESTNET4_ENABLE}" = ON ]; then
