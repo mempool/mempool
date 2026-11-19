@@ -129,7 +129,11 @@ export class ScriptTypeAdoptionGraphComponent implements OnInit, OnDestroy {
         this.isLoading = true;
         this.cd.markForCheck();
       }),
-      switchMap((timespan) => this.getAdoptionRollups$(timespan))
+      switchMap((timespan) =>
+        this.getAdoptionRollups$(timespan).pipe(
+          map((rollups) => ({ timespan, rollups }))
+        )
+      )
     );
 
     this.subscriptions.push(
@@ -140,7 +144,12 @@ export class ScriptTypeAdoptionGraphComponent implements OnInit, OnDestroy {
           .valueChanges.pipe(
             startWith(this.metricGroupForm.controls.metric.value)
           ),
-      ]).subscribe(([rollups, metric]) => {
+      ]).subscribe(([{ timespan, rollups }, metric]) => {
+        this.metric = metric;
+        // skip stale rollups re-emitted by a metric change mid-load
+        if (timespan !== this.timespan) {
+          return;
+        }
         // keep the timespan selector usable so a failed request can be retried
         // from another range; with no known count yet, offer every preset like
         // the goggles graph does
@@ -149,7 +158,6 @@ export class ScriptTypeAdoptionGraphComponent implements OnInit, OnDestroy {
         } else if (!this.blockCount) {
           this.blockCount = Number.MAX_SAFE_INTEGER;
         }
-        this.metric = metric;
         this.prepareChartOptions(rollups, metric);
         this.isLoading = false;
         this.cd.markForCheck();
