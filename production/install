@@ -240,10 +240,8 @@ DEBIAN_ENV_HOME=/etc/default
 # where rc.d scripts live
 FREEBSD_SERVICE_HOME=/usr/local/etc/rc.d
 
-# mysql data folder and user/group
+# mysql data folder, chowned to mysql by the rc.d script on first start
 MYSQL_HOME=/mysql
-MYSQL_USER=mysql
-MYSQL_GROUP=mysql
 
 # mempool mysql user/password
 MEMPOOL_MAINNET_USER='mempool'
