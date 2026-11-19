@@ -382,6 +382,12 @@ BITCOIN_REPO_NAME=bitcoin
 BITCOIN_REPO_BRANCH=master
 #BITCOIN_LATEST_RELEASE=$(curl -s https://api.github.com/repos/bitcoin/bitcoin/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
 BITCOIN_LATEST_RELEASE=v32.0
+# Testnet5 (BIP95) is in no Bitcoin Core release yet. Its bitcoind is built from
+# bitcoin/bitcoin#35861 at a pinned commit and installed under its own prefix, so
+# every other network keeps running the release above.
+BITCOIN_TESTNET5_REPO_NAME=bitcoin-testnet5
+BITCOIN_TESTNET5_COMMIT=ee505609676a10c389da5962b25a2c0080b9df57
+BITCOIN_TESTNET5_PREFIX=/usr/local/bitcoin-testnet5
 echo -n '.'
 
 CKPOOL_REPO_URL=https://github.com/mempool/ckpool
@@ -1250,6 +1256,21 @@ if [ "${BITCOIN_INSTALL}" = ON ];then
 
         echo "[*] Installing Bitcoin binaries into OS"
         osSudo "${ROOT_USER}" sh -c "cd ${BITCOIN_HOME}/${BITCOIN_REPO_NAME} && gmake install"
+    fi
+
+    if [ "${BITCOIN_TESTNET5_ENABLE}" = ON ];then
+        echo "[*] Cloning Bitcoin repo for Testnet5 from ${BITCOIN_REPO_URL}"
+        osSudo "${BITCOIN_USER}" git clone --branch "${BITCOIN_REPO_BRANCH}" "${BITCOIN_REPO_URL}" "${BITCOIN_HOME}/${BITCOIN_TESTNET5_REPO_NAME}"
+
+        echo "[*] Checking out Bitcoin ${BITCOIN_TESTNET5_COMMIT} for Testnet5"
+        osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_HOME}/${BITCOIN_TESTNET5_REPO_NAME} && git fetch origin ${BITCOIN_TESTNET5_COMMIT} && git checkout ${BITCOIN_TESTNET5_COMMIT}"
+
+        echo "[*] Building Bitcoin for Testnet5 from source repo"
+        osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_TESTNET5_REPO_NAME} && cmake -B build -DCMAKE_INSTALL_PREFIX=${BITCOIN_TESTNET5_PREFIX} -DWITH_GUI=OFF -DWITH_ZMQ=ON -DENABLE_IPC=OFF -DENABLE_WALLET=OFF -DBUILD_BITCOIN_TESTS=OFF"
+        osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_TESTNET5_REPO_NAME} && cmake --build build -j${NPROC}"
+
+        echo "[*] Installing Bitcoin Testnet5 binaries into ${BITCOIN_TESTNET5_PREFIX}"
+        osSudo "${ROOT_USER}" sh -c "cd ${BITCOIN_HOME}/${BITCOIN_TESTNET5_REPO_NAME}/build && cmake --install ."
     fi
 
     echo "[*] Installing Bitcoin configuration"
