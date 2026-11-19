@@ -32,7 +32,6 @@ esac
 
 # tor onion and clearnet hostname
 TOR_INSTALL=ON
-CERTBOT_INSTALL=ON
 
 # install 4 network daemons
 BITCOIN_INSTALL=ON
@@ -54,22 +53,13 @@ BITCOIN_SIGNET_LIGHTNING_ENABLE=ON
 ELEMENTS_LIQUID_ENABLE=ON
 ELEMENTS_LIQUIDTESTNET_ENABLE=ON
 
-# enable lightmode and disable compaction to fit on 1TB SSD drive
+# install electrs
 BITCOIN_ELECTRS_INSTALL=ON
-BITCOIN_ELECTRS_LIGHT_MODE=ON
-BITCOIN_ELECTRS_COMPACTION=OFF
 ELEMENTS_ELECTRS_INSTALL=ON
-ELEMENTS_ELECTRS_LIGHT_MODE=ON
-ELEMENTS_ELECTRS_COMPACTION=OFF
-
-# automaitcally configure firewall
-FIREWALL_CONFIGURE=ON
 
 ############
 # probe OS #
 ############
-
-HOSTNAME=$(hostname)
 
 # get newest zpool if using zfs
 ZPOOL=""
@@ -78,113 +68,17 @@ ZPOOL=""
 MD5=md5sum
 [ "${OS}" = FreeBSD ] && MD5=md5
 
-##################################################
-##### P2P / RPC / HTTP network communication #####
-##################################################
+###############################################
+##### RPC / stratum network communication #####
+###############################################
 
-# used for firewall configuration
-BITCOIN_MAINNET_P2P_HOST=127.0.0.1
-BITCOIN_MAINNET_P2P_PORT=8333
-# used for RPC communication
-BITCOIN_MAINNET_RPC_HOST=127.0.0.1
-BITCOIN_MAINNET_RPC_PORT=8332
 # generate random hex string
 BITCOIN_RPC_USER=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 BITCOIN_RPC_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 
-# used for firewall configuration
-BITCOIN_TESTNET_P2P_HOST=127.0.0.1
-BITCOIN_TESTNET_P2P_PORT=18333
-# used for RPC communication
-BITCOIN_TESTNET_RPC_HOST=127.0.0.1
-BITCOIN_TESTNET_RPC_PORT=18332
-
-# used for firewall configuration
-BITCOIN_TESTNET4_P2P_HOST=127.0.0.1
-BITCOIN_TESTNET4_P2P_PORT=48333
-# used for RPC communication
-BITCOIN_TESTNET4_RPC_HOST=127.0.0.1
-BITCOIN_TESTNET4_RPC_PORT=48332
-
-# used for firewall configuration
-BITCOIN_SIGNET_P2P_HOST=127.0.0.1
-BITCOIN_SIGNET_P2P_PORT=18333
-# used for RPC communication
-BITCOIN_SIGNET_RPC_HOST=127.0.0.1
-BITCOIN_SIGNET_RPC_PORT=18332
-# generate random hex string
-BITCOIN_SIGNET_RPC_USER=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
-BITCOIN_SIGNET_RPC_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
-
-# used for firewall configuration
-ELEMENTS_LIQUID_P2P_HOST=127.0.0.1
-ELEMENTS_LIQUID_P2P_PORT=7042
-# used for RPC communication
-ELEMENTS_LIQUID_RPC_HOST=127.0.0.1
-ELEMENTS_LIQUID_RPC_PORT=7041
 # generate random hex string
 ELEMENTS_RPC_USER=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 ELEMENTS_RPC_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
-
-# set either socket or TCP host/port, not both
-#ELECTRS_MAINNET_HTTP_SOCK=/tmp/bitcoin.mainnet.electrs
-ELECTRS_MAINNET_HTTP_HOST=127.0.0.1
-ELECTRS_MAINNET_HTTP_PORT=3000
-
-# set either socket or TCP host/port, not both
-#ELECTRS_LIQUID_HTTP_SOCK=/tmp/elements.liquid.electrs
-ELECTRS_LIQUID_HTTP_HOST=127.0.0.1
-ELECTRS_LIQUID_HTTP_PORT=3001
-
-# set either socket or TCP host/port, not both
-#ELECTRS_TESTNET_HTTP_SOCK=/tmp/bitcoin.testnet.electrs
-ELECTRS_TESTNET_HTTP_HOST=127.0.0.1
-ELECTRS_TESTNET_HTTP_PORT=3002
-
-# set either socket or TCP host/port, not both
-#ELECTRS_TESTNET4_HTTP_SOCK=/tmp/bitcoin.testnet4.electrs
-ELECTRS_TESTNET4_HTTP_HOST=127.0.0.1
-ELECTRS_TESTNET4_HTTP_PORT=3005
-
-# set either socket or TCP host/port, not both
-#ELECTRS_SIGNET_HTTP_SOCK=/tmp/bitcoin.testnet.electrs
-ELECTRS_SIGNET_HTTP_HOST=127.0.0.1
-ELECTRS_SIGNET_HTTP_PORT=3003
-
-# set either socket or TCP host/port, not both
-#ELECTRS_LIQUIDTESTNET_HTTP_SOCK=/tmp/bitcoin.testnet.electrs
-ELECTRS_LIQUIDTESTNET_HTTP_HOST=127.0.0.1
-ELECTRS_LIQUIDTESTNET_HTTP_PORT=3004
-
-# set either socket or TCP host/port, not both
-#MEMPOOL_MAINNET_HTTP_SOCK=/tmp/bitcoin.mainnet.mempool
-MEMPOOL_MAINNET_HTTP_HOST=127.0.0.1
-MEMPOOL_MAINNET_HTTP_PORT=8999
-
-# set either socket or TCP host/port, not both
-#MEMPOOL_LIQUID_HTTP_SOCK=/tmp/elements.liquid.mempool
-MEMPOOL_LIQUID_HTTP_HOST=127.0.0.1
-MEMPOOL_LIQUID_HTTP_PORT=8998
-
-# set either socket or TCP host/port, not both
-#MEMPOOL_TESTNET_HTTP_SOCK=/tmp/bitcoin.testnet.mempool
-MEMPOOL_TESTNET_HTTP_HOST=127.0.0.1
-MEMPOOL_TESTNET_HTTP_PORT=8997
-
-# set either socket or TCP host/port, not both
-#MEMPOOL_TESTNET4_HTTP_SOCK=/tmp/bitcoin.testnet.mempool
-MEMPOOL_TESTNET4_HTTP_HOST=127.0.0.1
-MEMPOOL_TESTNET4_HTTP_PORT=8990
-
-# set either socket or TCP host/port, not both
-#MEMPOOL_SIGNET_HTTP_SOCK=/tmp/bitcoin.bisq.mempool
-MEMPOOL_SIGNET_HTTP_HOST=127.0.0.1
-MEMPOOL_SIGNET_HTTP_PORT=8995
-
-# set either socket or TCP host/port, not both
-#MEMPOOL_LIQUIDTESTNET_HTTP_SOCK=/tmp/bitcoin.bisq.mempool
-MEMPOOL_LIQUIDTESTNET_HTTP_HOST=127.0.0.1
-MEMPOOL_LIQUIDTESTNET_HTTP_PORT=8994
 
 # set CKPool bitcoin mainnet port
 CKPOOL_MAINNET_STRATUM_HOST=127.0.0.1
@@ -204,7 +98,6 @@ case $OS in
     FreeBSD)
         ROOT_USER=root
         ROOT_GROUP=wheel
-        ROOT_HOME=/root
         TOR_CONFIGURATION=/usr/local/etc/tor/torrc
         TOR_RESOURCES=/var/db/tor
         TOR_PKG=tor
@@ -220,7 +113,6 @@ case $OS in
     Debian)
         ROOT_USER=root
         ROOT_GROUP=root
-        ROOT_HOME=/root
         TOR_CONFIGURATION=/etc/tor/torrc
         TOR_RESOURCES=/var/lib/tor
         TOR_PKG=tor
@@ -235,8 +127,6 @@ esac
 
 # where systemd services get installed
 DEBIAN_SERVICE_HOME=/etc/systemd/system
-# where environment variables for services are set
-DEBIAN_ENV_HOME=/etc/default
 # where rc.d scripts live
 FREEBSD_SERVICE_HOME=/usr/local/etc/rc.d
 
@@ -271,8 +161,6 @@ MEMPOOL_HOME=/mempool
 MEMPOOL_USER=mempool
 MEMPOOL_GROUP=mempool
 MEMPOOL_MYSQL_CREDENTIALS="${MEMPOOL_HOME}/.mysql_credentials"
-# name of Tor hidden service in torrc
-MEMPOOL_TOR_HS=mempool
 
 # bitcoin user/group
 BITCOIN_USER=bitcoin
@@ -295,26 +183,26 @@ BITCOIN_SIGNET_DATA=${BITCOIN_HOME}/signet
 # bitcoin electrs source/binaries
 BITCOIN_ELECTRS_HOME=${BITCOIN_HOME}/electrs
 
-# electrs database root
-ELECTRS_DATA_ROOT=/electrs
+# electrs db top-level
+ELECTRS_HOME=/electrs
 # bitcoin electrs data, needs about 350GB, and uses double that during compaction
 ELECTRS_MAINNET_ZPOOL=${ZPOOL}
-ELECTRS_MAINNET_DATA=${ELECTRS_DATA_ROOT}/mainnet
+ELECTRS_MAINNET_DATA=${ELECTRS_HOME}/mainnet
 # bitcoin testnet electrs database, only a few GB
 ELECTRS_TESTNET_ZPOOL=${ZPOOL}
-ELECTRS_TESTNET_DATA=${ELECTRS_DATA_ROOT}/testnet
+ELECTRS_TESTNET_DATA=${ELECTRS_HOME}/testnet
 # bitcoin testnet4 electrs database, only a few GB
 ELECTRS_TESTNET4_ZPOOL=${ZPOOL}
-ELECTRS_TESTNET4_DATA=${ELECTRS_DATA_ROOT}/testnet4
+ELECTRS_TESTNET4_DATA=${ELECTRS_HOME}/testnet4
 # bitcoin signet electrs database, only a few GB
 ELECTRS_SIGNET_ZPOOL=${ZPOOL}
-ELECTRS_SIGNET_DATA=${ELECTRS_DATA_ROOT}/signet
+ELECTRS_SIGNET_DATA=${ELECTRS_HOME}/signet
 # liquid electrs data, needs about 5GB
 ELECTRS_LIQUID_ZPOOL=${ZPOOL}
-ELECTRS_LIQUID_DATA=${ELECTRS_DATA_ROOT}/liquid
+ELECTRS_LIQUID_DATA=${ELECTRS_HOME}/liquid
 # liquid electrs data, needs about 5GB
 ELECTRS_LIQUIDTESTNET_ZPOOL=${ZPOOL}
-ELECTRS_LIQUIDTESTNET_DATA=${ELECTRS_DATA_ROOT}/liquidtestnet
+ELECTRS_LIQUIDTESTNET_DATA=${ELECTRS_HOME}/liquidtestnet
 
 # Core Lightning user/group
 CLN_USER=cln
@@ -327,8 +215,6 @@ ELEMENTS_USER=elements
 ELEMENTS_GROUP=elements
 # liquid home/data/blockchain folder, needs about 10GB
 ELEMENTS_HOME=/elements
-# electrs db top-level
-ELECTRS_HOME=/electrs
 # elements electrs source/binaries
 ELEMENTS_ELECTRS_HOME=${ELEMENTS_HOME}/electrs
 # tor HS folder
@@ -393,7 +279,7 @@ DEBIAN_PKG+=(build-essential git clang cmake jq)
 DEBIAN_PKG+=(autotools-dev autoconf automake pkg-config bsdmainutils)
 DEBIAN_PKG+=(libevent-dev libdb-dev libssl-dev libtool autotools-dev)
 DEBIAN_PKG+=(libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-test-dev libboost-thread-dev)
-DEBIAN_PKG+=(nodejs npm mariadb-server nginx-core python3-certbot-nginx rsync ufw)
+DEBIAN_PKG+=(nodejs npm mariadb-server nginx-core python3-certbot-nginx rsync)
 DEBIAN_PKG+=(geoipupdate)
 
 # packages needed for mempool ecosystem
@@ -513,22 +399,6 @@ osGroupCreate()
             osSudo "${ROOT_USER}" groupadd $*
         ;;
     esac
-}
-
-osCertbotDryRun()
-{
-    if [ ! -z "${HOSTNAME}" ];then
-        case $OS in
-            FreeBSD)
-                osPackageInstall "${FREEBSD_PKG_CERTBOT}"
-            ;;
-            Debian)
-                osPackageInstall "${DEBIAN_PKG_CERTBOT}"
-            ;;
-        esac
-
-        certbot certonly --dry-run --standalone --agree-tos --register-unsafely-without-email -d "${HOSTNAME}"
-    fi
 }
 
 zfsCreateFilesystems()
@@ -1995,23 +1865,6 @@ osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME} && ./upgrade" || true
 
 #echo "[*] Adding notes to motd"
 #osSudo "${ROOT_USER}" sh -c 'echo " " >> /etc/motd'
-
-##### OS firewall
-
-#case $OS in
-#
-#    FreeBSD)
-#    ;;
-#
-#    Debian)
-#        echo "[*] Preparing firewall"
-#        osSudo "${ROOT_USER}" ufw default deny incoming
-#        osSudo "${ROOT_USER}" ufw default allow outgoing
-#        osSudo "${ROOT_USER}" ufw allow from any to any port ${BITCOIN_MAINNET_P2P_PORT} proto tcp
-#        osSudo "${ROOT_USER}" ufw allow from any to any port ${BITCOIN_TESTNET_P2P_PORT} proto tcp
-#        osSudo "${ROOT_USER}" ufw allow from any to any port ${ELEMENTS_LIQUID_P2P_PORT} proto tcp
-#    ;;
-#esac
 
 ##### finish
 
