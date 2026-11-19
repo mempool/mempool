@@ -1751,6 +1751,8 @@ echo "[*] Adding MySQL configuration"
 case $OS in
 
     FreeBSD)
+        # set before the first start, or the DBs get created in the default /var/db/mysql
+        osSudo "${ROOT_USER}" sysrc mysql_dbdir="${MYSQL_HOME}"
         osSudo "${ROOT_USER}" service mysql-server onestart
     ;;
     Debian)
@@ -1869,7 +1871,6 @@ nginx_tor_sockets_enable="YES"
 #nginx_mempool_configfile="/mempool/mempool.space/nginx/nginx.conf"
 
 mysql_enable="YES"
-mysql_dbdir="/mysql"
 mysql_args="--innodb-buffer-pool-size=8G --bind-address 127.0.0.1"
 
 kld_list="nvidia"
