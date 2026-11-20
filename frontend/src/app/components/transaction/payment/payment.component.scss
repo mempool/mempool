@@ -1,4 +1,3 @@
-
 .title-block {
   flex-wrap: wrap;
   align-items: baseline;
@@ -40,24 +39,108 @@
   }
 }
 
-.td-width {
-  width: 150px;
-  @media (max-width: 768px) {
-    width: 100px;
+.label {
+  font-size: 0.8125rem;
+  letter-spacing: 0.05em;
+  color: var(--transparent-fg);
+
+  fa-icon {
+    margin-right: 0.35em;
   }
 }
 
-.table {
-  width: 100%;
-  table-layout: fixed;
-  margin-bottom: 0;
-  tr td {
+.stats {
+  display: flex;
+  flex-direction: column;
+
+  .item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-width: 0;
     padding: 0.75rem 0.5rem;
-    @media (min-width: 576px) {
-      padding: 0.75rem 0.75rem;
+    text-align: right;
+
+    &:nth-child(odd) {
+      background-color: var(--stat-box-bg);
     }
-    &:last-child {
-      text-align: right;
+
+    .label {
+      flex: 0 0 100px;
+      text-align: left;
+      font-size: 1rem;
+      letter-spacing: normal;
+      color: var(--fg);
+    }
+  }
+
+  app-truncate {
+    display: block;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .skeleton-loader {
+    width: 120px;
+    max-width: 100%;
+    vertical-align: middle;
+  }
+
+  .label .skeleton-loader {
+    width: 75px;
+  }
+
+  .etaDeepMempool {
+    justify-content: flex-end;
+  }
+
+  .confs-cell {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+  }
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+
+    .item {
+      flex: 1 1 0;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.25rem;
+      padding: 0.5rem 0.75rem;
+      text-align: center;
+
+      &:nth-child(odd) {
+        background-color: transparent;
+      }
+
+      & + .item {
+        border-left: 1px solid var(--stat-box-bg);
+      }
+
+      .label {
+        flex: 0 0 auto;
+        text-align: center;
+        font-size: 0.8125rem;
+        letter-spacing: 0.05em;
+        color: var(--transparent-fg);
+      }
+    }
+
+    app-truncate {
+      flex: 0 1 auto;
+    }
+
+    .etaDeepMempool {
+      justify-content: center;
+    }
+
+    .confs-cell {
+      flex-direction: row;
+      justify-content: center;
     }
   }
 }
@@ -71,22 +154,20 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 1rem;
   margin-bottom: 0.5rem;
-  border-bottom: 1px solid var(--stat-box-bg);
 
   @media (min-width: 768px) {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     gap: 1.5rem;
+    border-bottom: 1px solid var(--stat-box-bg);
   }
 }
 
 .tracker-bar {
-  padding: 1em 0.5em 0;
-  margin-bottom: 1em;
   width: 100%;
+  margin-bottom: 0.5rem;
 
   @media (min-width: 768px) {
     flex: 1 1 auto;
@@ -96,8 +177,8 @@
   }
 
   @media (min-width: 850px) {
-    flex: 0 0 50%;
-    max-width: 50%;
+    flex: 0 0 60%;
+    min-width: 60%;
   }
 }
 
@@ -115,12 +196,7 @@
   display: flex;
   gap: 12px;
   align-items: center;
-  justify-content: end;
-
-  @media (max-width: 849.98px) {
-    flex-direction: row-reverse;
-    justify-content: flex-start;
-  }
+  justify-content: center;
 }
 
 .alert-replaced,
@@ -165,18 +241,13 @@
     min-width: 0;
   }
 
-  .label {
-    font-size: 0.8125rem;
-    letter-spacing: 0.05em;
-    color: var(--transparent-fg);
-  }
-
   .amount-link {
     text-decoration: none;
     color: var(--fg);
   }
 
-  app-amount {
+  app-amount,
+  .asset-amount {
     font-size: 1.75rem;
     font-weight: 600;
     line-height: 1.2;
@@ -187,7 +258,16 @@
   }
 
   .amount-loader {
-    padding: 0.5em 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 180px;
+    max-width: 100%;
+    height: calc(0.8125rem * 1.5 + 1.75rem * 1.2);
+
+    &.with-fiat {
+      height: calc(0.8125rem * 1.5 + 1.75rem * 1.2 + 1.5rem);
+    }
   }
 }
 
@@ -195,6 +275,7 @@
   display: inline-block;
   width: 2em;
   height: 2em;
+  margin-block: -4px;
   vertical-align: middle;
 
   .circular-chart {
