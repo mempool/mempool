@@ -31,12 +31,27 @@
     }
 
     <div class="box">
-      <div class="summary">
-        <ng-container *ngTemplateOutlet="amountSection"></ng-container>
+      <ng-container *ngTemplateOutlet="amountSection"></ng-container>
+      <div class="details">
         <ng-container *ngTemplateOutlet="trackerPanel"></ng-container>
-      </div>
-      <div class="stats">
-        <ng-container *ngTemplateOutlet="stats"></ng-container>
+        @if (!tx || (!replaced && !removed)) {
+          <div class="row">
+            <div class="col-sm">
+              <table class="table table-borderless table-striped">
+                <tbody>
+                  <ng-container *ngTemplateOutlet="statsLeft"></ng-container>
+                </tbody>
+              </table>
+            </div>
+            <div class="col-sm">
+              <table class="table table-borderless table-striped">
+                <tbody>
+                  <ng-container *ngTemplateOutlet="statsRight"></ng-container>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
       </div>
     </div>
 
@@ -137,32 +152,30 @@
           }
         </div>
       }
+      <div class="address">
+        <span class="by" i18n="payment.by|Payment address">by</span>
+        <app-truncate [text]="destination" [lastChars]="6" [link]="['/address/' | relativeUrl, destination]"></app-truncate>
+      </div>
     </div>
   }
 </ng-template>
 
-<ng-template #skeletonItem>
-  <div class="item">
-    <span class="label"><span class="skeleton-loader"></span></span>
-    <span><span class="skeleton-loader"></span></span>
-  </div>
+<ng-template #skeletonRow>
+  <tr>
+    <td class="td-width"><span class="skeleton-loader"></span></td>
+    <td><span class="skeleton-loader"></span></td>
+  </tr>
 </ng-template>
 
-<ng-template #stats>
-  <div class="item">
-    <span class="label" i18n="shared.address">Address</span>
-    <app-truncate [text]="destination" [textAlign]="'end'" [lastChars]="6"
-      [link]="['/address/' | relativeUrl, destination]"></app-truncate>
-  </div>
+<ng-template #statsLeft>
   @if (!tx) {
-    <ng-container *ngTemplateOutlet="skeletonItem"></ng-container>
-    <ng-container *ngTemplateOutlet="skeletonItem"></ng-container>
-  } @else if (!replaced && !removed) {
-    @if (!tx.status?.confirmed) {
-      <div class="item">
-        <span class="label" i18n="transaction.eta|Transaction ETA">ETA</span>
+    <ng-container *ngTemplateOutlet="skeletonRow"></ng-container>
+  } @else if (!tx.status?.confirmed) {
+    <tr>
+      <td class="td-width" i18n="transaction.eta|Transaction ETA">ETA</td>
+      <td>
         @if (ETA$ | async; as eta) {
-          <span [class]="showAccelerateButton ? 'etaDeepMempool d-flex' : ''">
+          <span [class]="showAccelerateButton ? 'etaDeepMempool d-inline-flex' : ''">
             @if (eta.blocks >= 7) {
               <span i18n="transaction.eta.not-any-time-soon|Transaction ETA mot any time soon">Not any time soon</span>
             } @else {
@@ -180,27 +193,37 @@
             }
           </span>
         } @else {
-          <span><span class="skeleton-loader"></span></span>
+          <span class="skeleton-loader"></span>
         }
-      </div>
-      <div class="item">
-        <span class="label" i18n="transaction.first-seen|Transaction first seen">First seen</span>
+      </td>
+    </tr>
+  } @else {
+    <tr>
+      <td class="td-width" i18n="transaction.status|Transaction Status">Status</td>
+      <td><ng-container *ngTemplateOutlet="status"></ng-container></td>
+    </tr>
+  }
+</ng-template>
+
+<ng-template #statsRight>
+  @if (!tx) {
+    <ng-container *ngTemplateOutlet="skeletonRow"></ng-container>
+  } @else if (!tx.status?.confirmed) {
+    <tr>
+      <td class="td-width" i18n="transaction.first-seen|Transaction first seen">First seen</td>
+      <td>
         @if (transactionTime > 0) {
           <i><app-time kind="since" [time]="transactionTime" [fastRender]="true" [showTooltip]="true"></app-time></i>
         } @else {
-          <span><span class="skeleton-loader"></span></span>
+          <span class="skeleton-loader"></span>
         }
-      </div>
-    } @else {
-      <div class="item">
-        <span class="label" i18n="transaction.status|Transaction Status">Status</span>
-        <ng-container *ngTemplateOutlet="status"></ng-container>
-      </div>
-      <div class="item">
-        <span class="label" i18n="block.timestamp">Timestamp</span>
-        <app-timestamp [unixTime]="tx.status.block_time" [hideTimeSince]="true"></app-timestamp>
-      </div>
-    }
+      </td>
+    </tr>
+  } @else {
+    <tr>
+      <td class="td-width" i18n="block.timestamp">Timestamp</td>
+      <td><app-timestamp [unixTime]="tx.status.block_time" [hideTimeSince]="true"></app-timestamp></td>
+    </tr>
   }
 </ng-template>
 
