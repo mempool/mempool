@@ -4,7 +4,7 @@ import logger from '../logger';
 import { Common } from './common';
 import blocksRepository from '../repositories/BlocksRepository';
 import cpfpRepository from '../repositories/CpfpRepository';
-import { escapeId, RowDataPacket } from 'mysql2';
+import { RowDataPacket } from 'mysql2';
 
 class DatabaseMigration {
   private static currentVersion = 114;
@@ -140,10 +140,10 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE blocks MODIFY `weight` integer unsigned NOT NULL DEFAULT "0"');
       await this.$executeQuery('ALTER TABLE blocks MODIFY `difficulty` double NOT NULL DEFAULT "0"');
       // We also fix the pools.id type so we need to drop/re-create the foreign key
-      await this.$dropForeignKeys('blocks', 'pool_id');
+      await this.$executeQuery('ALTER TABLE blocks DROP FOREIGN KEY IF EXISTS `blocks_ibfk_1`');
       await this.$executeQuery('ALTER TABLE pools MODIFY `id` smallint unsigned AUTO_INCREMENT');
       await this.$executeQuery('ALTER TABLE blocks MODIFY `pool_id` smallint unsigned NULL');
-      await this.$executeQuery('ALTER TABLE blocks ADD FOREIGN KEY (`pool_id`) REFERENCES `pools` (`id`)');
+      await this.$executeQuery('ALTER TABLE blocks ADD CONSTRAINT `blocks_ibfk_1` FOREIGN KEY (`pool_id`) REFERENCES `pools` (`id`)');
       // Add new block indexing fields
       await this.$executeQuery('ALTER TABLE blocks ADD `version` integer unsigned NOT NULL DEFAULT "0"');
       await this.$executeQuery('ALTER TABLE blocks ADD `bits` integer unsigned NOT NULL DEFAULT "0"');
@@ -212,7 +212,7 @@ class DatabaseMigration {
     if (databaseSchemaVersion < 14 && isBitcoin === true) {
       this.uniqueLog(logger.notice, this.hashratesTruncatedMessage);
       await this.$executeQuery('TRUNCATE hashrates;'); // Need to re-index
-      await this.$dropForeignKeys('hashrates', 'pool_id');
+      await this.$executeQuery('ALTER TABLE `hashrates` DROP FOREIGN KEY `hashrates_ibfk_1`');
       await this.$executeQuery('ALTER TABLE `hashrates` MODIFY `pool_id` SMALLINT UNSIGNED NOT NULL DEFAULT "0"');
       await this.updateToSchemaVersion(14);
     }
@@ -819,10 +819,10 @@ class DatabaseMigration {
         await this.$executeQuery('ALTER TABLE blocks MODIFY `size` integer unsigned NOT NULL DEFAULT "0"');
         await this.$executeQuery('ALTER TABLE blocks MODIFY `weight` integer unsigned NOT NULL DEFAULT "0"');
         await this.$executeQuery('ALTER TABLE blocks MODIFY `difficulty` double NOT NULL DEFAULT "0"');
-        await this.$dropForeignKeys('blocks', 'pool_id');
+        await this.$executeQuery('ALTER TABLE blocks DROP FOREIGN KEY IF EXISTS `blocks_ibfk_1`');
         await this.$executeQuery('ALTER TABLE pools MODIFY `id` smallint unsigned AUTO_INCREMENT');
         await this.$executeQuery('ALTER TABLE blocks MODIFY `pool_id` smallint unsigned NULL');
-        await this.$executeQuery('ALTER TABLE blocks ADD FOREIGN KEY (`pool_id`) REFERENCES `pools` (`id`)');
+        await this.$executeQuery('ALTER TABLE blocks ADD CONSTRAINT `blocks_ibfk_1` FOREIGN KEY (`pool_id`) REFERENCES `pools` (`id`)');
         await this.$executeQuery('ALTER TABLE blocks ADD `version` integer unsigned NOT NULL DEFAULT "0"');
         await this.$executeQuery('ALTER TABLE blocks ADD `bits` integer unsigned NOT NULL DEFAULT "0"');
         await this.$executeQuery('ALTER TABLE blocks ADD `nonce` bigint unsigned NOT NULL DEFAULT "0"');
@@ -865,7 +865,7 @@ class DatabaseMigration {
         await this.$executeQuery('ALTER TABLE blocks MODIFY `avg_fee_rate` BIGINT UNSIGNED NOT NULL DEFAULT "0"');
 
         // Version 14
-        await this.$dropForeignKeys('hashrates', 'pool_id');
+        await this.$executeQuery('ALTER TABLE `hashrates` DROP FOREIGN KEY `hashrates_ibfk_1`');
         await this.$executeQuery('ALTER TABLE `hashrates` MODIFY `pool_id` SMALLINT UNSIGNED NOT NULL DEFAULT "0"');
 
         // Version 17
@@ -1224,7 +1224,7 @@ class DatabaseMigration {
     }
 
     if (databaseSchemaVersion < 107) {
-      await this.$dropForeignKeys('federation_txos', 'bitcoinaddress');
+      await this.$executeQuery('ALTER TABLE `federation_txos` DROP FOREIGN KEY IF EXISTS `federation_txos_ibfk_1`');
       await this.$executeQuery('DROP TABLE IF EXISTS `federation_addresses`');
       await this.updateToSchemaVersion(107);
     }
@@ -1308,21 +1308,6 @@ class DatabaseMigration {
       // any query related to this indexing so it won't fail if the index actually already exists
       logger.err('MIGRATIONS: Unable to check if `statistics.added` INDEX exist or not.');
       this.statisticsAddedIndexed = true;
-    }
-  }
-
-  /**
-   * Drop the foreign key for `column`, whatever the server named it.
-   * Generated constraint names differ between database servers and versions.
-   * @asyncUnsafe
-   */
-  private async $dropForeignKeys(table: string, column: string): Promise<void> {
-    const [rows] = await DB.query<RowDataPacket[]>(
-      `SELECT DISTINCT CONSTRAINT_NAME FROM information_schema.KEY_COLUMN_USAGE
-       WHERE CONSTRAINT_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?
-         AND REFERENCED_TABLE_NAME IS NOT NULL`, [table, column]);
-    for (const row of rows) {
-      await this.$executeQuery(`ALTER TABLE ${escapeId(table)} DROP FOREIGN KEY ${escapeId(row['CONSTRAINT_NAME'] as string)}`);
     }
   }
 
@@ -1577,7 +1562,7 @@ class DatabaseMigration {
       pegindex int(11) NOT NULL,
       pegblocktime int(11) unsigned NOT NULL,
       PRIMARY KEY (txid, txindex),
-      FOREIGN KEY (bitcoinaddress) REFERENCES federation_addresses (bitcoinaddress)
+      CONSTRAINT federation_txos_ibfk_1 FOREIGN KEY (bitcoinaddress) REFERENCES federation_addresses (bitcoinaddress)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
@@ -1618,7 +1603,7 @@ class DatabaseMigration {
       median_fee double unsigned NOT NULL,
       PRIMARY KEY (height),
       INDEX (pool_id),
-      FOREIGN KEY (pool_id) REFERENCES pools (id)
+      CONSTRAINT blocks_ibfk_1 FOREIGN KEY (pool_id) REFERENCES pools (id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
@@ -1651,7 +1636,7 @@ class DatabaseMigration {
       pool_id smallint unsigned NULL,
       PRIMARY KEY (hashrate_timestamp),
       INDEX (pool_id),
-      FOREIGN KEY (pool_id) REFERENCES pools (id)
+      CONSTRAINT hashrates_ibfk_1 FOREIGN KEY (pool_id) REFERENCES pools (id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
