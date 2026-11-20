@@ -1,5 +1,5 @@
 import { TransactionFlags } from '@app/shared/filters.utils';
-import { getVarIntLength, parseMultisigScript, isPoint, parseTapscriptMultisig, parseTapscriptUnanimousMultisig, ScriptInfo } from '@app/shared/script.utils';
+import { getVarIntLength, opcodes, parseMultisigScript, isPoint, parseTapscriptMultisig, parseTapscriptUnanimousMultisig, ScriptInfo } from '@app/shared/script.utils';
 import { Transaction, Vin, Vout } from '@interfaces/electrs.interface';
 import { CpfpInfo, RbfInfo, TransactionStripped } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
@@ -1108,7 +1108,7 @@ function convertScriptSigAsm(hex: string): string {
       } else if (op === 0xba) {
         b.push('OP_CHECKSIGADD');
       } else {
-        const opcode = opcodes[op];
+        const opcode = opcodeNames[op];
         if (opcode) {
           b.push(opcode);
         } else {
@@ -2493,7 +2493,8 @@ export function compactSize(n: number): Uint8Array {
 }
 
 // Inversed the opcodes object from https://github.com/mempool/mempool/blob/14e49126c3ca8416a8d7ad134a95c5e090324d69/backend/src/utils/bitcoin-script.ts#L1
-const opcodes = {
+// (opcode value => asm name; `opcodes` from script.utils maps asm name => opcode value)
+const opcodeNames = {
   0: 'OP_0',
   76: 'OP_PUSHDATA1',
   77: 'OP_PUSHDATA2',
