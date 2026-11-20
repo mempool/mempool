@@ -194,10 +194,29 @@ describe('Mempool ignores recently mined transactions in a stale snapshot', () =
     expect(getBlockHeader).not.toHaveBeenCalled();
   });
 
-  test('only the last two blocks are remembered', async () => {
-    mine('block1', 'block0', ['a']);
+  test('a burst of blocks applied before electrs indexes any of them is remembered in full', async () => {
+    await update(['pending', 'a1', 'a2', 'b', 'c', 'd']);
+    // a block and three minimum-difficulty blocks found on top of it at once, as on testnet4
+    for (const txid of ['a1', 'a2', 'b', 'c', 'd']) {
+      delete cache[txid];
+    }
+    mine('block1', 'block0', ['a1', 'a2']);
     mine('block2', 'block1', ['b']);
     mine('block3', 'block2', ['c']);
-    expect(await update(['a', 'b', 'c'])).toEqual(['a']);
+    mine('block4', 'block3', ['d']);
+
+    expect(await update(['pending', 'a1', 'a2', 'b', 'c', 'd', 'new1'])).toEqual(['new1']);
+    // the newest block being in the active chain vouches for the ones it builds on
+    expect(getBlockHeader).toHaveBeenCalledTimes(1);
+    expect(getBlockHeader).toHaveBeenCalledWith('block4', true);
+  });
+
+  test('only the last eight blocks are remembered', async () => {
+    const txids: string[] = [];
+    for (let height = 1; height <= 9; height++) {
+      mine(`block${height}`, `block${height - 1}`, [`tx${height}`]);
+      txids.push(`tx${height}`);
+    }
+    expect(await update(txids)).toEqual(['tx1']);
   });
 });
