@@ -9,7 +9,6 @@ import { RowDataPacket } from 'mysql2';
 class DatabaseMigration {
   private static currentVersion = 114;
   private queryTimeout = 3600_000;
-  private statisticsAddedIndexed = false;
   private uniqueLogs: string[] = [];
 
   private blocksTruncatedMessage = `'blocks' table has been truncated.`;
@@ -104,14 +103,13 @@ class DatabaseMigration {
    * @asyncUnsafe
    */
   private async $createMissingTablesAndIndexes(databaseSchemaVersion: number) {
-    await this.$setStatisticsAddedIndexedFlag(databaseSchemaVersion);
-
     const isBitcoin = ['mainnet', 'testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK);
 
     await this.$executeQuery(this.getCreateElementsTableQuery(), await this.$checkIfTableExists('elements_pegs'));
     await this.$executeQuery(this.getCreateStatisticsQuery(), await this.$checkIfTableExists('statistics'));
-    if (databaseSchemaVersion < 2 && this.statisticsAddedIndexed === false) {
-      await this.$executeQuery(`CREATE INDEX added ON statistics (added);`);
+    if (databaseSchemaVersion < 2) {
+      // Some databases already had `statistics.added` indexed before this migration existed
+      await this.$executeQuery(`CREATE INDEX IF NOT EXISTS added ON statistics (added);`);
       await this.updateToSchemaVersion(2);
     }
     if (databaseSchemaVersion < 3) {
@@ -1276,38 +1274,6 @@ class DatabaseMigration {
         }
       }
       await this.updateToSchemaVersion(114);
-    }
-  }
-
-  /**
-   * Special case here for the `statistics` table - It appeared that somehow some dbs already had the `added` field indexed
-   * while it does not appear in previous schemas. The mariadb command "CREATE INDEX IF NOT EXISTS" is not supported on
-   * older mariadb version. Therefore we set a flag here in order to know if the index needs to be created or not before
-   * running the migration process
-   */
-  private async $setStatisticsAddedIndexedFlag(databaseSchemaVersion: number) {
-    if (databaseSchemaVersion >= 2) {
-      this.statisticsAddedIndexed = true;
-      return;
-    }
-
-    try {
-      // We don't use "CREATE INDEX IF NOT EXISTS" because it is not supported on old mariadb version 5.X
-      const query = `SELECT COUNT(1) hasIndex FROM INFORMATION_SCHEMA.STATISTICS
-        WHERE table_schema=DATABASE() AND table_name='statistics' AND index_name='added';`;
-      const [rows] = await this.$executeQuery(query, true);
-      if (rows[0].hasIndex === 0) {
-        logger.debug('MIGRATIONS: `statistics.added` is not indexed');
-        this.statisticsAddedIndexed = false;
-      } else if (rows[0].hasIndex === 1) {
-        logger.debug('MIGRATIONS: `statistics.added` is already indexed');
-        this.statisticsAddedIndexed = true;
-      }
-    } catch (e) {
-      // Should really never happen but just in case it fails, we just don't execute
-      // any query related to this indexing so it won't fail if the index actually already exists
-      logger.err('MIGRATIONS: Unable to check if `statistics.added` INDEX exist or not.');
-      this.statisticsAddedIndexed = true;
     }
   }
 
