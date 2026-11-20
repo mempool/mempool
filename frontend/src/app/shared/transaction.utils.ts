@@ -2170,6 +2170,30 @@ function base58ToSpk(address: string, network: string): string | null {
   return null;
 }
 
+const LIQUID_UNCONFIDENTIAL_PREFIX: Record<string, string> = { lq: 'ex', tlq: 'tex', el: 'ert' };
+
+// Strips the blinding key from a confidential Liquid address; any other address is returned unchanged
+export function liquidUnconfidential(address: string): string {
+  try {
+    const blech32 = address.match(/^(lq|tlq|el)1([qpzry9x8gf2tvdw0s3jn54khce6mua7l]+)$/);
+    if (blech32) {
+      // shortcut: the 12-char blech32 checksum is not verified, a mistyped address just matches no output
+      const words = Array.from(blech32[2].slice(0, -12)).map(char => BECH32_ALPHABET.indexOf(char));
+      const program = fromWords(words.slice(1)).slice(33);
+      return bech32Encode(LIQUID_UNCONFIDENTIAL_PREFIX[blech32[1]], [words[0], ...toWords(program)], words[0] === 0 ? 'bech32' : 'bech32m');
+    }
+    const decoded = base58Decode(address);
+    if (decoded.length === 59) { // confidential prefix + version + 33-byte blinding key + 20-byte hash + checksum
+      const payload = new Uint8Array([decoded[1], ...decoded.slice(35, 55)]);
+      const checksum = new Hash().update(new Hash().update(payload).digest()).digest().slice(0, 4);
+      return base58Encode(new Uint8Array([...payload, ...checksum]));
+    }
+  } catch (e) {
+    // not a confidential address
+  }
+  return address;
+}
+
 // bech32 encoding / decoding
 // Adapted from https://github.com/bitcoinjs/bech32/blob/5ceb0e3d4625561a459c85643ca6947739b2d83c/src/index.ts
 const BECH32_ALPHABET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';

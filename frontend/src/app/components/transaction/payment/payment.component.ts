@@ -10,7 +10,7 @@ import { CacheService } from '@app/services/cache.service';
 import { WebsocketService } from '@app/services/websocket.service';
 import { SeoService } from '@app/services/seo.service';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
-import { getUnacceleratedFeeRate, getTransactionFlags } from '@app/shared/transaction.utils';
+import { getUnacceleratedFeeRate, getTransactionFlags, liquidUnconfidential } from '@app/shared/transaction.utils';
 import { BlockExtended, MempoolPosition, Acceleration, AccelerationPosition, RbfTree, CpfpInfo, DifficultyAdjustment } from '@interfaces/node-api.interface';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { ZONE_SERVICE } from '@app/injection-tokens';
@@ -75,7 +75,6 @@ export class PaymentComponent implements OnInit, OnDestroy {
 
   destination = '';
   matchAddress = '';
-  destinationSubscription: Subscription;
   currencyChangeSubscription: Subscription;
   liquidUnblinding = new LiquidUnblinding();
   errorUnblinded: any = undefined;
@@ -414,14 +413,11 @@ export class PaymentComponent implements OnInit, OnDestroy {
           this.seoService.setDescription($localize`:@@meta.description.bitcoin.transaction:Get real-time status, addresses, fees, script info, and more for ${network}${seoDescription} transaction with txid ${this.txId}.`);
           this.resetTransaction();
 
-          return this.resolveDestination$().pipe(
-            tap((address) => this.matchAddress = address),
-            switchMap(() => merge(
-              of(true),
-              this.stateService.connectionState$.pipe(
-                filter((state) => state === 2 && this.tx && !this.tx.status?.confirmed)
-              )
-            )),
+          return merge(
+            of(true),
+            this.stateService.connectionState$.pipe(
+              filter((state) => state === 2 && this.tx && !this.tx.status?.confirmed)
+            )
           );
         }),
         switchMap(() => {
@@ -618,16 +614,6 @@ export class PaymentComponent implements OnInit, OnDestroy {
     return vout.scriptpubkey === `${pushOpcode}${this.matchAddress}ac`;
   }
 
-  private resolveDestination$(): Observable<string> {
-    if (!this.isLiquid || !this.destinationIsAddress()) {
-      return of(this.destination);
-    }
-    return this.apiService.validateAddress$(this.destination).pipe(
-      map((addressInfo) => addressInfo?.unconfidential || this.destination),
-      catchError(() => of(this.destination)),
-    );
-  }
-
   private destinationIsAddress(): boolean {
     const network = (this.network || 'mainnet') as any;
     return !!this.destination && getRegex('address', network).test(this.destination);
@@ -715,10 +701,10 @@ export class PaymentComponent implements OnInit, OnDestroy {
 
   updateFragmentParams(fragment: string | null): void {
     const params = new URLSearchParams(fragment ?? '');
-    const previousDestination = this.destination;
 
     if (params.has('destination')) {
       this.destination = this.formatAddress(params.get('destination') || '');
+      this.matchAddress = this.isLiquid ? liquidUnconfidential(this.destination) : this.destination;
     }
 
     if (params.has('confs')) {
@@ -733,18 +719,6 @@ export class PaymentComponent implements OnInit, OnDestroy {
     }
 
     this.forceAccelerationSummary = params.has('accelerate');
-
-    // previousDestination is empty on first load, where the route pipeline resolves it
-    if (this.destination !== previousDestination && (this.tx || previousDestination)) {
-      this.destinationSubscription?.unsubscribe();
-      this.destinationSubscription = this.resolveDestination$().subscribe((address) => {
-        this.matchAddress = address;
-        if (this.tx) {
-          this.applyDestination();
-        }
-      });
-      return;
-    }
 
     if (this.tx) {
       this.applyDestination();
@@ -904,7 +878,6 @@ export class PaymentComponent implements OnInit, OnDestroy {
     this.txConfirmedSubscription?.unsubscribe();
     this.txReplacedSubscription?.unsubscribe();
     this.urlFragmentSubscription?.unsubscribe();
-    this.destinationSubscription?.unsubscribe();
     this.currencyChangeSubscription?.unsubscribe();
     this.txRbfInfoSubscription?.unsubscribe();
     this.fetchCpfpSubscription?.unsubscribe();
