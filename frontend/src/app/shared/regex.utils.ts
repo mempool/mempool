@@ -104,6 +104,7 @@ const ADDRESS_CHARS: {
         + `{6,100}`
       + `)`,
   },
+  // Liquid prefixes follow from the Elements chain parameters (src/kernel/chainparams.cpp)
   liquid: {
     base58: `[GHPQ]` // PQ is P2PKH, GH is P2SH
         + BASE58_CHARS
@@ -119,7 +120,8 @@ const ADDRESS_CHARS: {
           + `lq1`
         + `)`
         + BECH32_CHARS_LW // blech32 and bech32 are the same alphabet and protocol, different checksums.
-        + `{6,100}`
+        // confidential P2WSH and P2TR take 117 chars here
+        + `{6,130}`
       + `|`
         + `(?:` // Same as above but all upper case
           + `EX1`
@@ -127,21 +129,25 @@ const ADDRESS_CHARS: {
           + `LQ1`
         + `)`
         + BECH32_CHARS_UP
-        + `{6,100}`
+        + `{6,130}`
       + `)`,
   },
   liquidtestnet: {
-    base58: `[89]` // ???(TODO: find version) is P2PKH, 8|9 is P2SH
-      + BASE58_CHARS
-      + `{33}`, // P2PKH is ???(TODO: find size), P2SH is 34
+    base58: `[F89]` // F is P2PKH, 89 is P2SH
+        + BASE58_CHARS
+        + `{33}` // All min-max lengths are 34
+      + `|`
+        + `[v][tj]` // Confidential P2PKH or P2SH starts with vt or vj
+        + BASE58_CHARS
+        + `{78}`,
     bech32: `(?:`
-        + `(?:` // bech32 liquid testnet starts with tex or tlq
-          + `tex1` // TODO: Why does mempool use this and not ert|el like in the elements source?
+        + `(?:` // bech32 liquid testnet starts with tex1 (unconfidential) or tlq1 (confidential)
+          + `tex1` // ert1 and el1 are the prefixes of Elements regtest, not of Liquid testnet
           + `|`
-          + `tlq1` // TODO: does this exist?
+          + `tlq1`
         + `)`
         + BECH32_CHARS_LW // blech32 and bech32 are the same alphabet and protocol, different checksums.
-        + `{6,100}`
+        + `{6,130}` // Same lengths as liquid: confidential P2WSH and P2TR take 117 chars here
       + `|`
         + `(?:` // Same as above but all upper case
           + `TEX1`
@@ -149,7 +155,7 @@ const ADDRESS_CHARS: {
           + `TLQ1`
         + `)`
         + BECH32_CHARS_UP
-        + `{6,100}`
+        + `{6,130}`
       + `)`,
   },
 };

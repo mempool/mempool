@@ -61,7 +61,7 @@ const ADDRESS_PREFIXES = {
     base58: {
       pubkey: ['P','Q'],
       script: ['G','H'],
-      confidential: ['V'],
+      confidential: ['VT','VJ'], // confidential p2pkh, confidential p2sh
     },
     bech32: 'ex1',
     confidential: 'lq1',
@@ -70,7 +70,7 @@ const ADDRESS_PREFIXES = {
     base58: {
       pubkey: ['F'],
       script: ['8','9'],
-      confidential: ['V'], // TODO: check if this is actually correct
+      confidential: ['vt','vj'], // confidential p2pkh, confidential p2sh
     },
     bech32: 'tex1',
     confidential: 'tlq1',
@@ -79,7 +79,7 @@ const ADDRESS_PREFIXES = {
 
 // precompiled regexes for common address types (excluding prefixes)
 const base58Regex = RegExp('^' + BASE58_CHARS + '{26,34}$');
-const confidentialb58Regex = RegExp('^[TJ]' + BASE58_CHARS + '{78}$');
+const confidentialb58Regex = RegExp('^' + BASE58_CHARS + '{78}$');
 const p2wpkhRegex = RegExp('^q' + BECH32_CHARS_LW + '{38}$');
 const p2wshRegex = RegExp('^q' + BECH32_CHARS_LW + '{58}$');
 const p2trRegex = RegExp('^p' + BECH32_CHARS_LW + '{58}$');
@@ -111,7 +111,7 @@ export function detectAddressType(address: string, network: string): AddressType
 
   // liquid-specific types
   if (network.startsWith('liquid')) {
-    if (ADDRESS_PREFIXES[network].base58.confidential.includes(firstChar) && confidentialb58Regex.test(address.slice(1))) {
+    if (ADDRESS_PREFIXES[network].base58.confidential.includes(address.substring(0, 2)) && confidentialb58Regex.test(address.slice(2))) {
       return 'confidential';
     } else if (address.startsWith(ADDRESS_PREFIXES[network].confidential)) {
       return 'confidential';
