@@ -102,7 +102,7 @@ export class GlobalFooterComponent implements OnInit, OnDestroy, OnChanges {
 
   networkLink(network) {
     const thisNetwork = network || 'mainnet';
-    if( network === '' || network === 'mainnet' || network === 'testnet' || network === 'testnet4' || network === 'signet' ) {
+    if( network === '' || network === 'mainnet' || network === 'testnet' || network === 'testnet4' || network === 'testnet5' || network === 'signet' ) {
       return (this.env.BASE_MODULE === 'mempool' ? '' : this.env.MEMPOOL_WEBSITE_URL + this.urlLanguage) + this.networkPaths[thisNetwork] || '/';
     }
     if( network === 'liquid' || network === 'liquidtestnet' ) {

@@ -19,6 +19,7 @@ export class FaucetComponent implements OnInit, OnDestroy {
   error: string = '';
   user: any = undefined;
   txid: string = '';
+  network: 'testnet4' | 'testnet5' = 'testnet4'; // the faucet is only routed under these two networks
 
   faucetStatusSubscription: Subscription;
   status: {
@@ -40,6 +41,9 @@ export class FaucetComponent implements OnInit, OnDestroy {
     private websocketService: WebsocketService,
     private audioService: AudioService
   ) {
+    if (this.stateService.network === 'testnet5') {
+      this.network = 'testnet5';
+    }
     this.initForm(5000, 500_000, null);
   }
 
@@ -86,7 +90,7 @@ export class FaucetComponent implements OnInit, OnDestroy {
   }
 
   updateFaucetStatus(): void {
-    this.servicesApiService.getFaucetStatus$().subscribe({
+    this.servicesApiService.getFaucetStatus$(this.network).subscribe({
       next: (status) => {
         if (!status) {
           this.error = 'internal_server_error';
@@ -116,8 +120,12 @@ export class FaucetComponent implements OnInit, OnDestroy {
     this.error = null;
     this.txid = '';
     this.stateService.markBlock$.next({});
-    this.servicesApiService.requestTestnet4Coins$(this.faucetForm.get('address')?.value, parseInt(this.faucetForm.get('satoshis')?.value))
-    .subscribe({
+    const address = this.faucetForm.get('address')?.value;
+    const sats = parseInt(this.faucetForm.get('satoshis')?.value);
+    const request$ = this.network === 'testnet5'
+      ? this.servicesApiService.requestTestnet5Coins$(address, sats)
+      : this.servicesApiService.requestTestnet4Coins$(address, sats);
+    request$.subscribe({
       next: ((response) => {
         this.txid = response.txid;
         this.websocketService.startTrackTransaction(this.txid);
@@ -144,7 +152,7 @@ export class FaucetComponent implements OnInit, OnDestroy {
 
   initForm(min: number, max: number, faucetAddress: string): void {
     this.faucetForm = this.formBuilder.group({
-      'address': ['', [Validators.required, Validators.pattern(getRegex('address', 'testnet4')), this.getNotFaucetAddressValidator(faucetAddress)]],
+      'address': ['', [Validators.required, Validators.pattern(getRegex('address', this.network)), this.getNotFaucetAddressValidator(faucetAddress)]],
       'satoshis': [min, [Validators.required, Validators.min(min), Validators.max(max)]]
     });
   }
@@ -153,7 +161,7 @@ export class FaucetComponent implements OnInit, OnDestroy {
     if (!this.faucetForm) {
       this.initForm(min, max, faucetAddress);
     } else {
-      this.faucetForm.get('address').setValidators([Validators.required, Validators.pattern(getRegex('address', 'testnet4')), this.getNotFaucetAddressValidator(faucetAddress)]);
+      this.faucetForm.get('address').setValidators([Validators.required, Validators.pattern(getRegex('address', this.network)), this.getNotFaucetAddressValidator(faucetAddress)]);
       this.faucetForm.get('satoshis').setValidators([Validators.required, Validators.min(min), Validators.max(max)]);
       this.faucetForm.get('satoshis').setValue(Math.max(min, this.faucetForm.get('satoshis').value));
       this.faucetForm.get('satoshis').updateValueAndValidity();

@@ -178,7 +178,7 @@ class PoolsRepository {
       if (parse) {
         rows[0].regexes = JSON.parse(rows[0].regexes);
       }
-      if (['testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK)) {
+      if (['testnet', 'signet', 'testnet4', 'testnet5', 'regtest'].includes(config.MEMPOOL.NETWORK)) {
         rows[0].addresses = []; // pools-v2.json only contains mainnet addresses
       } else if (parse) {
         rows[0].addresses = JSON.parse(rows[0].addresses);
@@ -211,7 +211,7 @@ class PoolsRepository {
       if (parse) {
         rows[0].regexes = JSON.parse(rows[0].regexes);
       }
-      if (['testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK)) {
+      if (['testnet', 'signet', 'testnet4', 'testnet5', 'regtest'].includes(config.MEMPOOL.NETWORK)) {
         rows[0].addresses = []; // pools.json only contains mainnet addresses
       } else if (parse) {
         rows[0].addresses = JSON.parse(rows[0].addresses);

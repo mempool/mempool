@@ -164,6 +164,7 @@ do
 		warm "http://${hostnameBitcoin}${url}"
 		warm "http://${hostnameBitcoin}/testnet${url}"
 		warm "http://${hostnameBitcoin}/testnet4${url}"
+		warm "http://${hostnameBitcoin}/testnet5${url}"
 		warm "http://${hostnameBitcoin}/signet${url}"
 		warm "http://${hostnameLiquid}${url}"
 		warm "http://${hostnameLiquid}/testnet${url}"
@@ -176,6 +177,7 @@ do
 		if (( RANDOM % 100 < 10 )); then
 			warm "http://${hostnameBitcoin}/testnet${url}"
 			warm "http://${hostnameBitcoin}/testnet4${url}"
+			warm "http://${hostnameBitcoin}/testnet5${url}"
 			warm "http://${hostnameBitcoin}/signet${url}"
 		fi
 	done
