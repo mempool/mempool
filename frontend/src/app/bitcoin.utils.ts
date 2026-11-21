@@ -277,6 +277,11 @@ const featureActivation = {
     segwit: 0,
     taproot: 0,
   },
+  testnet5: {
+    rbf: 0,
+    segwit: 0,
+    taproot: 0,
+  },
   signet: {
     rbf: 0,
     segwit: 0,

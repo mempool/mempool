@@ -26,7 +26,7 @@ The wallet is off by default. Nothing wallet-related loads unless it is enabled.
 
 Set them in `frontend/mempool-frontend-config.json`, or as environment variables of the same name in the Docker frontend image. Self-hosted instances should leave `WALLET_REQUIRES_INVITE` off.
 
-The wallet runs on mainnet, testnet and signet. It is not available on testnet4, regtest or Liquid.
+The wallet runs on mainnet, testnet and signet. It is not available on testnet4, testnet5, regtest or Liquid.
 
 ## Importing a wallet
 

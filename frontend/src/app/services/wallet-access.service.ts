@@ -12,7 +12,7 @@ export function hasWalletInvite(user: IUser | null | undefined): boolean {
 }
 
 // Not Liquid (confidential transactions need blinding keys), testnet4 (/testnet4/wallet is the
-// address-group page) or regtest.
+// address-group page), testnet5 or regtest.
 const WALLET_NETWORKS = ['', 'testnet', 'signet'];
 
 // Shared by the route guard and the nav link so they agree. Holds no wallet code.
@@ -47,7 +47,7 @@ export class WalletAccessService {
   // which can still hold the previous page's network while routes match.
   networkOfUrl(url: string): string {
     const env = this.stateService.env;
-    const match = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(testnet4?|signet|regtest)(?:$|[/?#])/);
+    const match = url.match(/^\/(?:[a-z]{2}(?:-[A-Z]{2})?\/)?(?:preview\/)?(testnet[45]?|signet|regtest)(?:$|[/?#])/);
     const network = match?.[1] ?? env.ROOT_NETWORK ?? '';
     if (env.BASE_MODULE === 'liquid') {
       return network === 'testnet' ? 'liquidtestnet' : 'liquid';
