@@ -75,7 +75,9 @@ class BlockProcessor {
         pool,
         accelerations
       );
+    }
 
+    if (auditResult) {
       if (blockExtended.extras) {
         blockExtended.extras.matchRate = auditResult.matchRate;
         blockExtended.extras.expectedFees = auditResult.expectedFees;
@@ -104,7 +106,7 @@ class BlockProcessor {
     templateAlgorithm: TemplateAlgorithm,
     pool: PoolTag,
     accelerations: Record<string, Acceleration>
-  ): Promise<ProcessedAudit> {
+  ): Promise<ProcessedAudit | undefined> {
     const auditMempool = memPool.getMempool();
     const isAccelerated = accelerationApi.isAcceleratedBlock(block, Object.values(accelerations));
 
@@ -150,6 +152,12 @@ class BlockProcessor {
         isAccelerated,
         pool.uniqueId
       );
+    }
+
+    // Nothing was projected: the mempool is empty, or no template could be built.
+    // There is no expected block to audit the mined block against.
+    if (!projectedBlocks?.[0]) {
+      return undefined;
     }
 
     const poolAccelerated = Audit.getPoolAcceleratedTxids(auditMempool, accelerations, pool.uniqueId);
