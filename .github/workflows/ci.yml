@@ -315,7 +315,7 @@ jobs:
       fail-fast: false
       matrix:
         node: ["26.13.1"]
-        module: ["mempool", "liquid", "testnet4"]
+        module: ["mempool", "liquid", "testnet4", "testnet5"]
 
     name: E2E tests for ${{ matrix.module }}
     steps:
@@ -449,6 +449,32 @@ jobs:
           parallel: true
           spec: |
             cypress/e2e/testnet4/*.spec.ts
+          group: Tests on Chrome (${{ matrix.module }})
+          browser: "chrome"
+          ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+        env:
+          CYPRESS_REROUTE_TESTNET: true
+          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+
+      # testnet5
+      - name: Chrome browser tests (${{ matrix.module }})
+        if: ${{ matrix.module == 'testnet5' }}
+        uses: cypress-io/github-action@bc982daf1fc26474fa0cf2c355d6c910616ce411 # v7.4.7
+        with:
+          tag: ${{ github.event_name }}
+          install: false
+          working-directory: ${{ matrix.module }}/frontend
+          build: npm run config:defaults:mempool
+          start: npm run start:parameterized
+          wait-on: "http://localhost:4200"
+          wait-on-timeout: 120
+          record: true
+          parallel: true
+          spec: |
+            cypress/e2e/testnet5/*.spec.ts
           group: Tests on Chrome (${{ matrix.module }})
           browser: "chrome"
           ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"

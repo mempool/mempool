@@ -1,12 +1,14 @@
 # start test network daemons on boot
 @reboot sleep 10 ; /usr/local/bin/bitcoind -testnet >/dev/null 2>&1
 @reboot sleep 20 ; /usr/local/bin/bitcoind -testnet4 >/dev/null 2>&1
+@reboot sleep 25 ; /usr/local/bitcoin-testnet5/bin/bitcoind -testnet5 >/dev/null 2>&1
 @reboot sleep 30 ; /usr/local/bin/bitcoind -signet >/dev/null 2>&1
 
 # start electrs on boot
 @reboot sleep 40 ; screen -dmS mainnet /bitcoin/electrs/start mainnet
 @reboot sleep 50 ; screen -dmS testnet /bitcoin/electrs/start testnet
 @reboot sleep 60 ; screen -dmS testnet4 /bitcoin/electrs/start testnet4
+@reboot sleep 65 ; screen -dmS testnet5 /bitcoin/electrs/start testnet5
 @reboot sleep 70 ; screen -dmS signet /bitcoin/electrs/start signet
 
 # daily update of popular-scripts
@@ -14,3 +16,4 @@
 31 03 * * * $HOME/electrs/start testnet popular-scripts >/dev/null 2>&1
 32 03 * * * $HOME/electrs/start signet popular-scripts >/dev/null 2>&1
 33 03 * * * $HOME/electrs/start mainnet popular-scripts >/dev/null 2>&1
+34 03 * * * $HOME/electrs/start testnet5 popular-scripts >/dev/null 2>&1

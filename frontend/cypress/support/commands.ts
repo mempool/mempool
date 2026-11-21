@@ -77,7 +77,7 @@ Cypress.Commands.add('mockMempoolSocketV2', () => {
   mockWebSocketV2();
 });
 
-Cypress.Commands.add('changeNetwork', (network: 'testnet' | 'testnet4' | 'signet' | 'liquid' | 'mainnet') => {
+Cypress.Commands.add('changeNetwork', (network: 'testnet' | 'testnet4' | 'testnet5' | 'signet' | 'liquid' | 'mainnet') => {
   cy.get('.dropdown-toggle').click().then(() => {
     cy.get(`a.${network}`).click().then(() => {
       cy.waitForPageIdle();

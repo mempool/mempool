@@ -9,7 +9,7 @@
     <p class="red-color d-inline">{{ error }}</p> <a *ngIf="txId" [routerLink]="['/tx/' | relativeUrl, txId]">{{ txId }}</a>
   </form>
 
-  @if (network === '' || network === 'testnet' || network === 'testnet4' || network === 'signet') {
+  @if (network === '' || network === 'testnet' || network === 'testnet4' || network === 'testnet5' || network === 'signet') {
     <br>
     <h1 class="text-start" style="margin-top: 1rem;" i18n="shared.submit-transactions|Submit Package">Submit Package</h1>
 

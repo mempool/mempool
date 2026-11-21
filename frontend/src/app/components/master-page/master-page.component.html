@@ -64,6 +64,7 @@
       <a ngbDropdownItem *ngIf="env.SIGNET_ENABLED" class="signet" [class.active]="network.val === 'signet'" [routerLink]="networkPaths['signet'] || '/signet'"><app-svg-images name="signet" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet me-1"></app-svg-images> Signet</a>
       <a ngbDropdownItem *ngIf="env.TESTNET_ENABLED" class="testnet" [class.active]="network.val === 'testnet'" [routerLink]="networkPaths['testnet'] || '/testnet'"><app-svg-images name="testnet" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet me-1"></app-svg-images> Testnet3</a>
       <a ngbDropdownItem *ngIf="env.TESTNET4_ENABLED" class="testnet4" [class.active]="network.val === 'testnet4'" [routerLink]="networkPaths['testnet4'] || '/testnet4'"><app-svg-images name="testnet4" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet me-1"></app-svg-images> Testnet4</a>
+      <a ngbDropdownItem *ngIf="env.TESTNET5_ENABLED" class="testnet5" [class.active]="network.val === 'testnet5'" [routerLink]="networkPaths['testnet5'] || '/testnet5'"><app-svg-images name="testnet5" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet me-1"></app-svg-images> Testnet5</a>
       <a ngbDropdownItem *ngIf="env.REGTEST_ENABLED" class="regtest" [class.active]="network.val === 'regtest'" [routerLink]="networkPaths['regtest'] || '/regtest'"><app-svg-images name="regtest" width="22" height="22" viewBox="0 0 65 65" style="width: 25px; height: 25px;" class="mainnet me-1"></app-svg-images> Regtest</a>
       <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage + (networkPaths['liquid'] || '')" ngbDropdownItem *ngIf="env.LIQUID_ENABLED" class="liquid" [class.active]="network.val === 'liquid'"><app-svg-images name="liquid" width="22" height="22" viewBox="0 0 125 125" style="width: 25px; height: 25px;" class="mainnet me-1"></app-svg-images> Liquid</a>
       <a [href]="env.LIQUID_WEBSITE_URL + urlLanguage  + (networkPaths['liquidtestnet'] || '/testnet')" ngbDropdownItem *ngIf="env.LIQUID_TESTNET_ENABLED" class="liquidtestnet" [class.active]="network.val === 'liquid'"><app-svg-images name="liquidtestnet" width="22" height="22" viewBox="0 0 125 125" style="width: 25px; height: 25px;" class="mainnet me-1"></app-svg-images> Liquid Testnet</a>
@@ -108,7 +109,7 @@
           <div class="svg-wrapper"><app-svg-images name="nav-wallet" width="21.59" height="100%"></app-svg-images></div>
         </a>
       </li>
-      <li class="nav-item" routerLinkActive="active" id="btn-faucet" *ngIf="stateService.isMempoolSpaceBuild && stateService.env.OFFICIAL_MEMPOOL_SPACE && stateService.network === 'testnet4'">
+      <li class="nav-item" routerLinkActive="active" id="btn-faucet" *ngIf="stateService.isMempoolSpaceBuild && stateService.env.OFFICIAL_MEMPOOL_SPACE && (stateService.network === 'testnet4' || stateService.network === 'testnet5')">
         <a class="nav-link" [routerLink]="['/faucet' | relativeUrl]" (click)="collapse()">
           <div class="svg-wrapper"><app-svg-images name="nav-faucet-drip" width="21.59" height="100%"></app-svg-images></div>
         </a>
@@ -139,7 +140,7 @@
   <div class="empty-sidenav"><!-- empty sidenav needed to push footer down the screen --></div>
 
   <div class="flex-grow-1 d-flex flex-column">
-    <app-testnet-alert *ngIf="network.val === 'testnet' || network.val === 'testnet4' || network.val === 'signet'"></app-testnet-alert>
+    <app-testnet-alert *ngIf="network.val === 'testnet' || network.val === 'testnet4' || network.val === 'testnet5' || network.val === 'signet'"></app-testnet-alert>
 
     <main style="min-width: 375px; max-width: 100vw">
       <router-outlet></router-outlet>

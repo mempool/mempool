@@ -106,7 +106,7 @@ class DatabaseMigration {
   private async $createMissingTablesAndIndexes(databaseSchemaVersion: number) {
     await this.$setStatisticsAddedIndexedFlag(databaseSchemaVersion);
 
-    const isBitcoin = ['mainnet', 'testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK);
+    const isBitcoin = ['mainnet', 'testnet', 'signet', 'testnet4', 'testnet5', 'regtest'].includes(config.MEMPOOL.NETWORK);
 
     await this.$executeQuery(this.getCreateElementsTableQuery(), await this.$checkIfTableExists('elements_pegs'));
     await this.$executeQuery(this.getCreateStatisticsQuery(), await this.$checkIfTableExists('statistics'));
@@ -143,7 +143,7 @@ class DatabaseMigration {
       await this.$executeQuery('ALTER TABLE blocks DROP FOREIGN KEY IF EXISTS `blocks_ibfk_1`');
       await this.$executeQuery('ALTER TABLE pools MODIFY `id` smallint unsigned AUTO_INCREMENT');
       await this.$executeQuery('ALTER TABLE blocks MODIFY `pool_id` smallint unsigned NULL');
-      await this.$executeQuery('ALTER TABLE blocks ADD FOREIGN KEY (`pool_id`) REFERENCES `pools` (`id`)');
+      await this.$executeQuery('ALTER TABLE blocks ADD CONSTRAINT `blocks_ibfk_1` FOREIGN KEY (`pool_id`) REFERENCES `pools` (`id`)');
       // Add new block indexing fields
       await this.$executeQuery('ALTER TABLE blocks ADD `version` integer unsigned NOT NULL DEFAULT "0"');
       await this.$executeQuery('ALTER TABLE blocks ADD `bits` integer unsigned NOT NULL DEFAULT "0"');
@@ -822,7 +822,7 @@ class DatabaseMigration {
         await this.$executeQuery('ALTER TABLE blocks DROP FOREIGN KEY IF EXISTS `blocks_ibfk_1`');
         await this.$executeQuery('ALTER TABLE pools MODIFY `id` smallint unsigned AUTO_INCREMENT');
         await this.$executeQuery('ALTER TABLE blocks MODIFY `pool_id` smallint unsigned NULL');
-        await this.$executeQuery('ALTER TABLE blocks ADD FOREIGN KEY (`pool_id`) REFERENCES `pools` (`id`)');
+        await this.$executeQuery('ALTER TABLE blocks ADD CONSTRAINT `blocks_ibfk_1` FOREIGN KEY (`pool_id`) REFERENCES `pools` (`id`)');
         await this.$executeQuery('ALTER TABLE blocks ADD `version` integer unsigned NOT NULL DEFAULT "0"');
         await this.$executeQuery('ALTER TABLE blocks ADD `bits` integer unsigned NOT NULL DEFAULT "0"');
         await this.$executeQuery('ALTER TABLE blocks ADD `nonce` bigint unsigned NOT NULL DEFAULT "0"');
@@ -1389,7 +1389,7 @@ class DatabaseMigration {
    */
   private getMigrationQueriesFromVersion(version: number): string[] {
     const queries: string[] = [];
-    const isBitcoin = ['mainnet', 'testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK);
+    const isBitcoin = ['mainnet', 'testnet', 'signet', 'testnet4', 'testnet5', 'regtest'].includes(config.MEMPOOL.NETWORK);
 
     if (version < 1) {
       if (config.MEMPOOL.NETWORK !== 'liquid' && config.MEMPOOL.NETWORK !== 'liquidtestnet') {
@@ -1562,7 +1562,7 @@ class DatabaseMigration {
       pegindex int(11) NOT NULL,
       pegblocktime int(11) unsigned NOT NULL,
       PRIMARY KEY (txid, txindex),
-      FOREIGN KEY (bitcoinaddress) REFERENCES federation_addresses (bitcoinaddress)
+      CONSTRAINT federation_txos_ibfk_1 FOREIGN KEY (bitcoinaddress) REFERENCES federation_addresses (bitcoinaddress)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
@@ -1603,7 +1603,7 @@ class DatabaseMigration {
       median_fee double unsigned NOT NULL,
       PRIMARY KEY (height),
       INDEX (pool_id),
-      FOREIGN KEY (pool_id) REFERENCES pools (id)
+      CONSTRAINT blocks_ibfk_1 FOREIGN KEY (pool_id) REFERENCES pools (id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 
@@ -1636,7 +1636,7 @@ class DatabaseMigration {
       pool_id smallint unsigned NULL,
       PRIMARY KEY (hashrate_timestamp),
       INDEX (pool_id),
-      FOREIGN KEY (pool_id) REFERENCES pools (id)
+      CONSTRAINT hashrates_ibfk_1 FOREIGN KEY (pool_id) REFERENCES pools (id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
   }
 

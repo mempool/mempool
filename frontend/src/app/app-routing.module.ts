@@ -94,6 +94,47 @@ const testnet4Routes: Routes = browserWindowEnv.TESTNET4_ENABLED ? [
   },
 ] : [];
 
+const testnet5Routes: Routes = browserWindowEnv.TESTNET5_ENABLED ? [
+  {
+    path: 'testnet5',
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadChildren: () => import('@app/bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
+        data: { preload: true },
+      },
+      {
+        path: '',
+        loadChildren: () => import('@app/master-page.module').then(m => m.MasterPageModule),
+        data: { preload: true },
+      },
+      {
+        path: 'widget/wallet',
+        children: [],
+        component: AddressGroupComponent,
+        data: {
+          networkSpecific: true,
+        }
+      },
+      {
+        path: 'status',
+        data: { networks: ['bitcoin', 'liquid'] },
+        component: StatusViewComponent
+      },
+      {
+        path: '',
+        loadChildren: () => import('@app/bitcoin-graphs.module').then(m => m.BitcoinGraphsModule),
+        data: { preload: true },
+      },
+      {
+        path: '**',
+        redirectTo: '/testnet5'
+      },
+    ]
+  },
+] : [];
+
 const signetRoutes: Routes = browserWindowEnv.SIGNET_ENABLED ? [
   {
     path: 'signet',
@@ -189,6 +230,7 @@ const regtestRoutes: Routes = browserWindowEnv.REGTEST_ENABLED ? [
 let routes: Routes = [
   ...testnetRoutes,
   ...testnet4Routes,
+  ...testnet5Routes,
   ...signetRoutes,
   ...regtestRoutes,
   {
@@ -229,6 +271,10 @@ let routes: Routes = [
       },
       {
         path: 'testnet4',
+        loadChildren: () => import('@app/previews.module').then(m => m.PreviewsModule)
+      },
+      {
+        path: 'testnet5',
         loadChildren: () => import('@app/previews.module').then(m => m.PreviewsModule)
       },
       {

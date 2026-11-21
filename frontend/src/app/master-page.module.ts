@@ -157,7 +157,7 @@ if (window['__env']?.OFFICIAL_MEMPOOL_SPACE) {
     routes[0].children.push({
       path: 'faucet',
       canActivate: [(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-        return state.url.startsWith('/testnet4/');
+        return state.url.startsWith('/testnet4/') || state.url.startsWith('/testnet5/');
       }],
       component: StartComponent,
       data: { preload: true, networkSpecific: true },

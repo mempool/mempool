@@ -137,7 +137,7 @@ class PriceUpdater {
 
   /** @asyncSafe */
   public async $run(): Promise<void> {
-    if (['testnet', 'signet', 'testnet4', 'regtest'].includes(config.MEMPOOL.NETWORK)) {
+    if (['testnet', 'signet', 'testnet4', 'testnet5', 'regtest'].includes(config.MEMPOOL.NETWORK)) {
       // Coins have no value on testnet/signet, so we want to always show 0
       return;
     }
