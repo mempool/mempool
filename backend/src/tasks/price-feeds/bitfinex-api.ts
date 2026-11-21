@@ -35,7 +35,8 @@ class BitfinexApi implements PriceFeed {
         if (priceHistory[time] === undefined) {
           priceHistory[time] = priceUpdater.getEmptyPricesObj();
         }
-        priceHistory[time][currency] = price[2];
+        // Candles are [time, open, close, high, low, volume]. The open is the price at `time`
+        priceHistory[time][currency] = price[1];
       }
     }
 
