@@ -37,7 +37,8 @@ class CoinbaseApi implements PriceFeed {
         if (priceHistory[price[0]] === undefined) {
           priceHistory[price[0]] = priceUpdater.getEmptyPricesObj();
         }
-        priceHistory[price[0]][currency] = price[4];
+        // Candles are [time, low, high, open, close, volume]. The open is the price at `time`
+        priceHistory[price[0]][currency] = price[3];
       }
     }
 
