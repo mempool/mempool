@@ -50,7 +50,8 @@ class KrakenApi implements PriceFeed {
         if (priceHistory[price[0]] === undefined) {
           priceHistory[price[0]] = priceUpdater.getEmptyPricesObj();
         }
-        priceHistory[price[0]][currency] = price[4];
+        // Candles are [time, open, high, low, close, vwap, volume, count]. The open is the price at `time`
+        priceHistory[price[0]][currency] = price[1];
       }
     }
 
@@ -83,12 +84,12 @@ class KrakenApi implements PriceFeed {
           continue;
         }
 
-        // prices[0] = kraken price timestamp
-        // prices[4] = closing price
+        // price[0] = start of the week, price[1] = opening price, price[4] = closing price.
+        // The row is stored at the start of the week, so it takes the opening price
         if (priceHistory[price[0]] === undefined) {
           priceHistory[price[0]] = priceUpdater.getEmptyPricesObj();
         }
-        priceHistory[price[0]][currency] = price[4];
+        priceHistory[price[0]][currency] = price[1];
       }
     }
 
