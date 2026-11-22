@@ -19,6 +19,7 @@ jest.mock('../../tasks/price-updater', () => ({
 }));
 
 const HOUR = 3600;
+const DAY = 86400;
 const WEEK = 604800;
 const T0 = 1739404800; // Thursday 2025-02-13 00:00 UTC
 
@@ -123,6 +124,16 @@ describe('Kraken weekly price history', () => {
     expect(PricesRepository.$updateMainCurrencyPrices).not.toHaveBeenCalled();
   });
 
+  test('leaves a row with daily neighbours that is not the closing price', async () => {
+    // A daily backfill row, from a stretch with one row per day and no hourly rows
+    stored({ [T0 - DAY]: { USD: 1 }, [T0]: { USD: 96900 }, [T0 + DAY]: { USD: 1 } });
+    mockKraken({ USD: [candle(T0, '97864.0', '96625.7')] });
+
+    await new KrakenApi().$insertHistoricalPrice();
+
+    expect(PricesRepository.$updateMainCurrencyPrices).not.toHaveBeenCalled();
+  });
+
   test('leaves the current week, whose closing price is still changing', async () => {
     stored({ ...hourlyNeighbours(CURRENT_WEEK), [CURRENT_WEEK]: { USD: 61000 } });
     mockKraken({ USD: [] });
@@ -147,6 +158,24 @@ describe('Kraken weekly price history', () => {
         candle(T0 + 2 * WEEK, '84112.1', '84112.1'),
         candle(T0 + 3 * WEEK, '84112.1', '90610.0'),
       ],
+    });
+
+    await new KrakenApi().$insertHistoricalPrice();
+
+    expect(PricesRepository.$updateMainCurrencyPrices).not.toHaveBeenCalled();
+  });
+
+  test('corrects nothing when Kraken does not answer for one currency', async () => {
+    // Without EUR's candles, EUR would look like a currency derived from USD and be reset
+    stored({ ...hourlyNeighbours(T0), [T0]: { USD: 96625.7, EUR: 93719.9 }, [CURRENT_WEEK]: { USD: 61000 } });
+    (query as jest.Mock).mockImplementation(async (url: string) => {
+      const currency = url.slice(-3);
+      if (currency === 'EUR') {
+        return undefined;
+      }
+      const ticker = ['CHF', 'AUD'].includes(currency) ? `XBT${currency}` : `XXBTZ${currency}`;
+      const rows = currency === 'USD' ? [candle(T0, '97864.0', '96625.7'), candle(CURRENT_WEEK, '60000.0', '61000.0')] : [];
+      return { error: [], result: { [ticker]: rows, last: 0 } };
     });
 
     await new KrakenApi().$insertHistoricalPrice();

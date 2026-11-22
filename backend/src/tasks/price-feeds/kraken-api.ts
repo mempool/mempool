@@ -10,13 +10,14 @@ function isSamePrice(stored: number, exchange: number): boolean {
 }
 
 // Earlier versions stored the week's closing price at the start of the week. A stored value
-// came from there if it is the closing price, or if no hourly rows surround it (so the hourly
-// updater did not write it) and it is nearer the closing price than the opening price
-function holdsWeekClose(value: number, open: number, close: number, hasHourlyNeighbours: boolean): boolean {
+// came from there if it is the closing price, or if no row an hour or a day either side of it
+// exists (so neither the hourly updater nor the daily backfill wrote it) and it is nearer the
+// closing price than the opening price
+function holdsWeekClose(value: number, open: number, close: number, hasNeighbours: boolean): boolean {
   if (value <= 0 || isSamePrice(value, open)) {
     return false;
   }
-  return isSamePrice(value, close) || (!hasHourlyNeighbours && Math.abs(value - close) < Math.abs(value - open));
+  return isSamePrice(value, close) || (!hasNeighbours && Math.abs(value - close) < Math.abs(value - open));
 }
 
 class KrakenApi implements PriceFeed {
@@ -92,10 +93,15 @@ class KrakenApi implements PriceFeed {
     const priceHistory: any = {}; // map: timestamp -> Prices
     const corrections: { [time: number]: { [currency: string]: number } } = {};
     const candleCurrencies: { [time: number]: Set<string> } = {};
+    let fetchFailed = false;
 
     for (const currency of this.currencies) {
       const response = await query(this.urlHist.replace('{GRANULARITY}', '10080') + currency);
-      const priceHistoryRaw = response ? response['result'][this.getTicker(currency)] : [];
+      const priceHistoryRaw = response?.['result']?.[this.getTicker(currency)];
+      if (!Array.isArray(priceHistoryRaw)) {
+        fetchFailed = true;
+        continue;
+      }
 
       for (const [index, price] of priceHistoryRaw.entries()) {
         // price[0] = start of the week, price[1] = opening price, price[4] = closing price.
@@ -110,8 +116,8 @@ class KrakenApi implements PriceFeed {
         if (stored) {
           // The last candle is the current week, whose closing price is still changing
           const isCurrentWeek = index === priceHistoryRaw.length - 1;
-          const hasHourlyNeighbours = storedPrices.has(time - 3600) || storedPrices.has(time + 3600);
-          if (!isCurrentWeek && holdsWeekClose(stored[currency], open, close, hasHourlyNeighbours)) {
+          const hasNeighbours = [-86400, -3600, 3600, 86400].some(offset => storedPrices.has(time + offset));
+          if (!isCurrentWeek && holdsWeekClose(stored[currency], open, close, hasNeighbours)) {
             corrections[time] = corrections[time] || {};
             corrections[time][currency] = open;
           }
@@ -135,6 +141,14 @@ class KrakenApi implements PriceFeed {
 
     if (Object.keys(priceHistory).length > 0) {
       logger.info(`Inserted ${Object.keys(priceHistory).length} Kraken EUR, USD, GBP, JPY, CAD, CHF and AUD weekly price history into db`, logger.tags.mining);
+    }
+
+    if (fetchFailed) {
+      // A currency with no answer would look like one Kraken has no history for, and be reset
+      if (Object.keys(corrections).length > 0) {
+        logger.warn(`Not correcting weekly price rows because Kraken did not return every currency; trying again on the next run`, logger.tags.mining);
+      }
+      return;
     }
 
     for (const time in corrections) {
