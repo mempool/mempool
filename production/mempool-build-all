@@ -63,7 +63,8 @@ build_frontend()
         cp "${HOME}/mempool/production/mempool-frontend-config.${site}.json" "mempool-frontend-config.json"
     fi
     npm install --omit=dev --omit=optional || exit 1
-    npm run build || exit 1
+    # node sizes its default heap from system RAM, too small for this build on low-memory hosts
+    NODE_OPTIONS="--max-old-space-size=4096" npm run build || exit 1
 }
 
 check_config()
