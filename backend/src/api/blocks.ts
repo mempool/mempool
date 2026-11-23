@@ -606,7 +606,7 @@ class Blocks {
       });
       this.updateTimerProgress(timer, `saved audit template for ${this.currentBlockHeight}`);
 
-      void BlocksAuditsRepository.$saveAudit({
+      void this.$saveBlockAudit({
         version: 1,
         templateAlgorithm: processingResult.templateAlgorithm,
         time: blockExtended.timestamp,
@@ -626,6 +626,14 @@ class Blocks {
       });
       this.updateTimerProgress(timer, `saved audit results for ${this.currentBlockHeight}`);
     }
+  }
+
+  /** @asyncSafe */
+  private async $saveBlockAudit(audit: BlockAudit): Promise<void> {
+    await BlocksAuditsRepository.$saveAudit(audit);
+    // the pools stats average this row, and the rebuild scheduled for the block can run before it lands
+    mining.markPoolsStatsDirty();
+    indexer.scheduleSingleTask('poolsStats', 30000);
   }
 
   /**
