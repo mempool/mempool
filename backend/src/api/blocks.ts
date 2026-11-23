@@ -401,6 +401,9 @@ class Blocks {
     }
 
     // TODO: make these match the definitions used by the RPC response
+    // as in the RPC, the stored totals and averages leave out the coinbase
+    const nonCoinbase = transactions.slice(1);
+    const segwit = nonCoinbase.filter(tx => tx.vin.some(vin => vin.witness?.length));
     const totalFee = transactions.reduce((acc, tx) => acc + tx.fee, 0);
     const totalVsize = transactions.reduce((acc, tx) => acc + tx.vsize, 0);
     const totalReward = transactions[0].vout.reduce((acc, vout) => acc + vout.value, 0);
@@ -408,8 +411,10 @@ class Blocks {
     const sortedByVsize = [...transactions].sort((a, b) => a.vsize - b.vsize);
     const sortedByFeerate = [...transactions].sort((a, b) => (a.fee / a.weight) - (b.fee / b.weight));
     const sortedFeerates = sortedByFeerate.map(tx => (tx.fee / (tx.weight / 4)));
-    const avgfee = totalFee / transactions.length;
-    const avgfeerate = totalFee / (block.weight / 4);
+    const total_size = nonCoinbase.reduce((acc, tx) => acc + tx.size, 0);
+    const total_weight = nonCoinbase.reduce((acc, tx) => acc + tx.weight, 0);
+    const avgfee = nonCoinbase.length ? Math.floor(totalFee / nonCoinbase.length) : 0;
+    const avgfeerate = total_weight ? Math.floor(totalFee * 4 / total_weight) : 0;
     const avgtxsize = totalVsize / transactions.length;
     const medianfee = sortedByFee[Math.floor(transactions.length / 2)].fee;
     const mediantime = block.timestamp;
@@ -420,19 +425,17 @@ class Blocks {
     const maxfeerate = sortedFeerates[sortedFeerates.length - 1];
     const mintxsize = sortedByVsize[0].vsize;
     const maxtxsize = sortedByVsize[sortedByVsize.length - 1].vsize;
-    const ins = transactions.reduce((acc, tx) => acc + tx.vin.length, 0);
+    const ins = nonCoinbase.reduce((acc, tx) => acc + tx.vin.length, 0);
     const outs = transactions.reduce((acc, tx) => acc + tx.vout.length, 0);
     const subsidy = totalReward - totalFee;
-    const swtotal_size = 0;
-    const swtotal_weight = 0;
-    const swtxs = 0;
+    const swtotal_size = segwit.reduce((acc, tx) => acc + tx.size, 0);
+    const swtotal_weight = segwit.reduce((acc, tx) => acc + tx.weight, 0);
+    const swtxs = segwit.length;
     const time = block.timestamp;
-    const total_out = transactions.reduce((acc, tx) => acc + tx.vout.reduce((acc, vout) => acc + vout.value, 0), 0);
-    const total_size = block.size;
-    const total_weight = block.weight;
+    const total_out = nonCoinbase.reduce((acc, tx) => acc + tx.vout.reduce((acc, vout) => acc + vout.value, 0), 0);
     const totalfee = totalFee;
     const txs = transactions.length;
-    const utxo_increase = 0;
+    const utxo_increase = outs - ins;
     const utxo_size_inc = 0;
 
     return {
