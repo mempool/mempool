@@ -509,8 +509,8 @@ class ElementsParser {
             } else {
               logger.debug(`Found redeem txid ${tx.txid}:${output.n} to peg-out address ${matchingAddress[0].bitcoinaddress}, amount ${matchingAddress[0].amount}`);
             }
-            const query_add_redeem = `UPDATE elements_pegs SET bitcointxid = ?, bitcoinindex = ? WHERE bitcoinaddress = ? AND amount = ? AND datetime = ? AND bitcointxid = ''`;
-            const params_add_redeem: (string | number)[] = [tx.txid, output.n, matchingAddress[0].bitcoinaddress, matchingAddress[0].amount, matchingAddress[0].datetime];
+            const query_add_redeem = `UPDATE elements_pegs SET bitcointxid = ?, bitcoinindex = ? WHERE txid = ? AND txindex = ? AND bitcointxid = ''`;
+            const params_add_redeem: (string | number)[] = [tx.txid, output.n, matchingAddress[0].txid, matchingAddress[0].txindex];
             await DB.query(query_add_redeem, params_add_redeem);
             const index = redeemCandidates.indexOf(matchingAddress[0]);
             if (index !== -1) {
@@ -608,7 +608,7 @@ class ElementsParser {
 
   /** @asyncUnsafe */
   protected async $getRedeemAddressesToScan(): Promise<any[]> {
-    const query = `SELECT datetime, amount, bitcoinaddress FROM elements_pegs where amount < 0 AND bitcoinaddress != '' AND bitcointxid = '';`;
+    const query = `SELECT txid, txindex, datetime, amount, bitcoinaddress FROM elements_pegs where amount < 0 AND bitcoinaddress != '' AND bitcointxid = '';`;
     const [rows]: any[] = await DB.query(query);
     return rows;
   }
