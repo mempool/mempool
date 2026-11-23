@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { Subscription, of, catchError } from 'rxjs';
+import { Subscription, of, catchError, timer } from 'rxjs';
 import { retry, tap } from 'rxjs/operators';
 import { ServicesApiServices } from '@app/services/services-api.service';
 
@@ -61,9 +61,11 @@ export class BitcoinInvoiceComponent implements OnChanges, OnDestroy {
     if (this.paymentStatusSubscription) {
       this.paymentStatusSubscription.unsubscribe();
     }
+    let failures = 0;
     this.paymentStatusSubscription = this.apiService.getPaymentStatus$(this.invoice.btcpayInvoiceId).pipe(
       tap(result => {
         if (result.status === 204) { // Manually trigger an error in that case so we can retry
+          failures = 0;
           throw result;
         } else if (result.status === 200) { // Invoice settled
           this.paymentStatus = 3;
@@ -71,7 +73,7 @@ export class BitcoinInvoiceComponent implements OnChanges, OnDestroy {
         }
       }),
       catchError(err => {
-        if (err.status === 204 || err.status === 504) {
+        if (err.status !== 400 && err.status !== 404) {
           throw err; // Will trigger the retry
         } else if (err.status === 400) {
           this.paymentErrorMessage = 'Invoice has expired';
@@ -81,7 +83,8 @@ export class BitcoinInvoiceComponent implements OnChanges, OnDestroy {
         this.paymentStatus = -1;
         return of(null);
       }),
-      retry({ delay: 1000 }),
+      // Not paid yet: check again in 1s. Failed check: wait 1s, doubling up to 30s
+      retry({ delay: err => timer(err.status === 204 ? 1000 : Math.min(1000 * 2 ** failures++, 30000)) }),
     ).subscribe();
   }
 
