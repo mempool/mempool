@@ -150,10 +150,11 @@ class FailoverRouter {
             }
           }
 
+          // only official instances publish the audit values and versions requested below
           await this.$updateLiquidAudit(host);
 
           // Check front and backend git hashes less often
-          if (Date.now() - host.hashes.lastUpdated > this.gitHashInterval) {
+          if (config.MEMPOOL.OFFICIAL && Date.now() - host.hashes.lastUpdated > this.gitHashInterval) {
             await Promise.all([
               this.$updateFrontendGitHash(host),
               this.$updateBackendVersions(host),
@@ -359,7 +360,7 @@ class FailoverRouter {
   }
 
   private async $updateLiquidAudit(host: FailoverHost): Promise<void> {
-    if (config.MEMPOOL.NETWORK !== 'liquid') {
+    if (!config.MEMPOOL.OFFICIAL || config.MEMPOOL.NETWORK !== 'liquid') {
       return;
     }
     try {
