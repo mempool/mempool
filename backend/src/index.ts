@@ -146,7 +146,7 @@ class Server {
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
         res.setHeader('Access-Control-Allow-Headers', 'Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With');
-        res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count,X-Mempool-Auth');
+        res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count,X-Mempool-Auth,X-Prevouts-Failed');
         next();
       })
       .use(express.urlencoded({ extended: true, limit: '10mb' }))
