@@ -118,8 +118,14 @@ export class WalletStorageService {
 
   remove(id: string): void {
     const records = this.readRecords();
-    if (records) {
-      this.persist(records.filter((r) => readRecord(r)?.id !== id));
+    if (records && this.persist(records.filter((r) => readRecord(r)?.id !== id))) {
+      // The id is a hash of the wallet's descriptor or addresses, so it goes with the wallet.
+      const active = this.readActive();
+      const network = Object.keys(active).find((n) => active[n] === id);
+      if (network) {
+        delete active[network];
+        this.storageService.setValue(ACTIVE_KEY, JSON.stringify(active));
+      }
     }
   }
 
