@@ -49,11 +49,9 @@
           <td>
             <ng-container *ngIf="!scriptTypeChangeable">{{ scriptType.name }}<span class="text-muted" *ngIf="scriptType.code !== scriptType.name"> · {{ scriptType.code }}</span></ng-container>
             <div class="script-type-control" *ngIf="scriptTypeChangeable">
-              <select class="form-select form-select-sm" [(ngModel)]="scriptTypeDraft" [disabled]="scanning" aria-label="Address type" i18n-aria-label="watch.detail.address-type">
+              <select class="form-select form-select-sm" [(ngModel)]="scriptTypeDraft" (ngModelChange)="confirmScriptType(confirmDialog)" [disabled]="scanning" aria-label="Address type" i18n-aria-label="watch.detail.address-type">
                 <option *ngFor="let t of scriptTypes" [value]="t.value">{{ t.label }}</option>
               </select>
-              <button type="button" class="btn btn-sm btn-outline-secondary" [disabled]="scanning || scriptTypeDraft === descriptorWallet?.scriptType"
-                      (click)="applyScriptType()" i18n="watch.detail.apply-script-type">Change and rescan</button>
             </div>
           </td>
         </tr>
@@ -70,9 +68,8 @@
           <td>
             <div class="gap-limit-control">
               <input type="number" class="form-control form-control-sm" [class.is-invalid]="gapLimitInvalid" [attr.min]="minGapLimit" [attr.max]="maxGapLimit"
-                     [(ngModel)]="gapLimit" [disabled]="scanning" aria-label="Gap limit" i18n-aria-label="watch.detail.gap-limit">
-              <button *ngIf="gapLimitChanged" type="button" class="btn btn-sm btn-primary" [disabled]="scanning"
-                      (click)="applyGapLimit()" i18n="watch.detail.apply-gap-limit">Apply and rescan</button>
+                     [(ngModel)]="gapLimit" (change)="confirmGapLimit(confirmDialog)" (keyup.enter)="confirmGapLimit(confirmDialog)"
+                     [disabled]="scanning" aria-label="Gap limit" i18n-aria-label="watch.detail.gap-limit">
             </div>
             <div class="gap-limit-error text-danger" *ngIf="gapLimitInvalid" role="alert" i18n="watch.detail.gap-limit-invalid">Gap limit must be a whole number from {{ minGapLimit }} to {{ maxGapLimit }}.</div>
           </td>
@@ -96,6 +93,17 @@
     <button type="button" class="btn btn-sm btn-danger" (click)="confirmForget(forgetDialog)" [disabled]="scanning" i18n="watch.forget">Forget wallet</button>
   </section>
 </div>
+
+<ng-template #confirmDialog let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="watch-confirm-title">{{ confirming.title }}</h4>
+  </div>
+  <div class="modal-body">{{ confirming.body }}</div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-sm btn-primary" (click)="modal.close(true)" [disabled]="scanning" i18n="watch.confirm-change">Change</button>
+    <button type="button" class="btn btn-sm btn-secondary" (click)="modal.dismiss()" ngbAutofocus i18n="watch.cancel">Cancel</button>
+  </div>
+</ng-template>
 
 <ng-template #forgetDialog let-modal>
   <div class="modal-header">

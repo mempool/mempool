@@ -40,6 +40,6 @@
 }
 .gap-limit-error { margin-top: .35rem; font-size: .85rem; }
 // NgbModal renders the dialog frame outside this component.
-::ng-deep .watch-forget-dialog .modal-content { color: var(--fg); background: var(--box-bg); border: 1px solid var(--stat-box-bg); }
+::ng-deep .watch-dialog .modal-content { color: var(--fg); background: var(--box-bg); border: 1px solid var(--stat-box-bg); }
 .modal-header, .modal-footer { border-color: var(--stat-box-bg); }
 .modal-title { font-size: 1.15rem; }
