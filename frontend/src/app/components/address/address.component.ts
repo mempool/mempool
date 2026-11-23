@@ -473,11 +473,12 @@ export class AddressComponent implements OnInit, OnDestroy {
       let utxosChanged = false;
       for (const vin of transaction.vin) {
         if (vin.prevout?.scriptpubkey_address === this.address.address) {
+          const parent = this.transactions.find((tx) => tx.txid === vin.txid);
           this.utxos.push({
             txid: vin.txid,
             vout: vin.vout,
             value: vin.prevout.value,
-            status: { confirmed: true }, // Assuming the input was confirmed
+            status: parent ? { ...parent.status } : { confirmed: true }, // assumed confirmed if its transaction is not loaded
           });
           utxosChanged = true;
         }
