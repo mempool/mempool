@@ -62,6 +62,8 @@ export interface WalletPageState {
   scriptTypeCheck: ScriptTypeCheck | null;
   /** 'on' while the shown wallet's addresses are tracked; otherwise it refreshes per block only. */
   liveUpdates: 'on' | 'off' | 'refused';
+  /** By wallet id: true if its last save did not reach local storage. */
+  unsaved: Record<string, boolean>;
 }
 
 const INITIAL_STATE: WalletPageState = {
@@ -77,6 +79,7 @@ const INITIAL_STATE: WalletPageState = {
   notice: null,
   scriptTypeCheck: null,
   liveUpdates: 'off',
+  unsaved: {},
 };
 
 function errorMessage(e: unknown): string {
@@ -751,17 +754,17 @@ export class WalletSessionService implements OnDestroy {
   private storeView(view: WalletView): void {
     const { wallet } = view;
     const updatedAt = Math.floor(Date.now() / 1000);
-    this.storage.save(wallet);
+    const unsaved = { ...this.state.unsaved, [wallet.id]: !this.storage.save(wallet) };
     this.views.set(wallet.id, view);
     this.scannedAt.set(wallet.id, updatedAt);
     const wallets = this.state.wallets.some((w) => w.id === wallet.id)
       ? this.state.wallets.map((w) => (w.id === wallet.id ? wallet : w))
       : [...this.state.wallets, wallet];
-    this.patch({ wallets, view, updatedAt });
+    this.patch({ wallets, view, updatedAt, unsaved });
   }
 
   private updateWallet(wallet: WatchWallet): void {
-    this.storage.save(wallet);
+    const unsaved = { ...this.state.unsaved, [wallet.id]: !this.storage.save(wallet) };
     const cached = this.views.get(wallet.id);
     const view = cached ? { ...cached, wallet } : null;
     if (view) {
@@ -770,6 +773,7 @@ export class WalletSessionService implements OnDestroy {
     this.patch({
       wallets: this.state.wallets.map((w) => (w.id === wallet.id ? wallet : w)),
       view: this.state.activeId === wallet.id ? view : this.state.view,
+      unsaved,
     });
   }
 }

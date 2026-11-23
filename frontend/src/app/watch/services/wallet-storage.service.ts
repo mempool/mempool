@@ -87,10 +87,10 @@ export class WalletStorageService {
       .filter((w): w is WatchWallet => w !== null && w.network === network);
   }
 
-  save(wallet: WatchWallet): void {
+  save(wallet: WatchWallet): boolean {
     const records = this.readRecords();
     if (!records) {
-      return;
+      return false;
     }
     const index = records.findIndex((r) => readRecord(r)?.id === wallet.id);
     if (index >= 0) {
@@ -98,7 +98,7 @@ export class WalletStorageService {
     } else {
       records.push(wallet);
     }
-    this.persist(records);
+    return this.persist(records);
   }
 
   /** Put `wallet` where the wallet `oldId` was, e.g. after re-importing it under another script type. */
@@ -159,7 +159,7 @@ export class WalletStorageService {
     }
   }
 
-  private persist(records: unknown[]): void {
-    this.storageService.setValue(STORAGE_KEY, JSON.stringify(records));
+  private persist(records: unknown[]): boolean {
+    return this.storageService.setValue(STORAGE_KEY, JSON.stringify(records));
   }
 }

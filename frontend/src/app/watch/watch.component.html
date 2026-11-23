@@ -51,6 +51,9 @@
       <div class="alert alert-warning mt-3 mb-0" *ngIf="state.view?.truncated" i18n="watch.truncated">
         This wallet has too much history to load completely in the browser. The balance and transactions are incomplete.
       </div>
+      <div class="alert alert-warning mt-3 mb-0" *ngIf="state.unsaved[state.activeId]" i18n="watch.not-saved">
+        The latest change to this wallet could not be saved in this browser. After the page is reloaded the wallet will be as it was when last saved, or missing.
+      </div>
 
       <ul ngbNav #walletNav="ngbNav" [(activeId)]="activeTab" [animation]="false" class="nav-tabs watch-tabs" role="tablist">
         <li ngbNavItem="overview" role="presentation">
