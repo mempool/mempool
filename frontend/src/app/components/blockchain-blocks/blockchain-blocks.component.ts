@@ -5,6 +5,7 @@ import { specialBlocks } from '@app/app.constants';
 import { BlockExtended } from '@interfaces/node-api.interface';
 import { Location } from '@angular/common';
 import { CacheService } from '@app/services/cache.service';
+import { getMinBlockFee, getMaxBlockFee } from '@app/shared/block.utils';
 
 interface BlockchainBlock extends BlockExtended {
   placeholder?: boolean;
@@ -140,8 +141,8 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
           for (const block of blocks) {
             if (block?.extras) {
-              block.extras.minFee = this.getMinBlockFee(block);
-              block.extras.maxFee = this.getMaxBlockFee(block);
+              block.extras.minFee = getMinBlockFee(block);
+              block.extras.maxFee = getMaxBlockFee(block);
             }
           }
 
@@ -281,8 +282,8 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
         this.cacheService.loadBlock(height);
         block = this.cacheService.getCachedBlock(height) || null;
         if (block?.extras) {
-          block.extras.minFee = this.getMinBlockFee(block);
-          block.extras.maxFee = this.getMaxBlockFee(block);
+          block.extras.minFee = getMinBlockFee(block);
+          block.extras.maxFee = getMaxBlockFee(block);
         }
       }
       this.blocks.push(block || {
@@ -323,8 +324,8 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
     const blockIndex = this.height - block.height;
     if (blockIndex >= 0 && blockIndex < this.blocks.length) {
       if (block?.extras) {
-        block.extras.minFee = this.getMinBlockFee(block);
-        block.extras.maxFee = this.getMaxBlockFee(block);
+        block.extras.minFee = getMinBlockFee(block);
+        block.extras.maxFee = getMaxBlockFee(block);
       }
       this.blocks[blockIndex] = block;
       this.blockStyles[blockIndex] = this.getStyleForBlock(block, blockIndex);
@@ -413,25 +414,6 @@ export class BlockchainBlocksComponent implements OnInit, OnChanges, OnDestroy {
       });
     }
     return emptyBlocks;
-  }
-
-  getMinBlockFee(block: BlockExtended): number {
-    if (block?.extras?.feeRange) {
-      // heuristic to check if feeRange is adjusted for effective rates
-      if (block.extras.medianFee === block.extras.feeRange[3]) {
-        return block.extras.feeRange[1];
-      } else {
-        return block.extras.feeRange[0];
-      }
-    }
-    return 0;
-  }
-
-  getMaxBlockFee(block: BlockExtended): number {
-    if (block?.extras?.feeRange) {
-      return block.extras.feeRange[block.extras.feeRange.length - 1];
-    }
-    return 0;
   }
 
   showIsEarlierThanParent(index: number): boolean {

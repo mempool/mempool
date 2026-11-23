@@ -9,6 +9,7 @@ import { ThemeService } from '@app/services/theme.service';
 import { contrastAuditColors, defaultAuditColors } from '@components/block-overview-graph/utils';
 import { Color } from '@components/block-overview-graph/sprite-types';
 import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { getMinBlockFee, getMaxBlockFee } from '@app/shared/block.utils';
 
 const OVERLAP_CELLS = 150;
 const OVERLAP_KINDS = ['staleOnly', 'shared', 'canonicalOnly'] as const;
@@ -103,12 +104,12 @@ export class StaleList implements OnInit {
         } else {
           newChainTips.forEach((chainTip) => {
             if (chainTip.stale?.extras) {
-              chainTip.stale.extras.minFee = this.getMinBlockFee(chainTip.stale);
-              chainTip.stale.extras.maxFee = this.getMaxBlockFee(chainTip.stale);
+              chainTip.stale.extras.minFee = getMinBlockFee(chainTip.stale);
+              chainTip.stale.extras.maxFee = getMaxBlockFee(chainTip.stale);
             }
             if (chainTip.canonical?.extras) {
-              chainTip.canonical.extras.minFee = this.getMinBlockFee(chainTip.canonical);
-              chainTip.canonical.extras.maxFee = this.getMaxBlockFee(chainTip.canonical);
+              chainTip.canonical.extras.minFee = getMinBlockFee(chainTip.canonical);
+              chainTip.canonical.extras.maxFee = getMaxBlockFee(chainTip.canonical);
             }
           });
           this.chainTips = this.chainTips.concat(newChainTips.map((chainTip) => ({ ...chainTip, details: this.getDetails(chainTip) })));
@@ -193,24 +194,6 @@ export class StaleList implements OnInit {
       ${this.gradientColors[network][0]} ${Math.max(backgroundHeight, 0)}%,
       ${this.gradientColors[network][1]} 100%
     )`;
-  }
-
-  getMinBlockFee(block: StaleTipBlock): number {
-    if (block?.extras?.feeRange) {
-      if (block.extras.medianFee === block.extras.feeRange[3]) {
-        return block.extras.feeRange[1];
-      } else {
-        return block.extras.feeRange[0];
-      }
-    }
-    return 0;
-  }
-
-  getMaxBlockFee(block: StaleTipBlock): number {
-    if (block?.extras?.feeRange) {
-      return block.extras.feeRange[block.extras.feeRange.length - 1];
-    }
-    return 0;
   }
 }
 
