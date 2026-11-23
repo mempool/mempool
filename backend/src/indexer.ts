@@ -214,7 +214,11 @@ class Indexer {
       await this.checkAvailableCoreIndexes();
 
       const chainValid = await blocks.$generateBlockDatabase();
-      if (chainValid === false) {
+      if (chainValid === 'unavailable') {
+        nextRunDelay = retryDelay;
+        return;
+      }
+      if (chainValid === 'repaired') {
         // Chain of block hash was invalid, so we need to reindex. Stop here and continue at the next iteration
         logger.warn(`The chain of block hash is invalid, re-indexing invalid data in 10 seconds.`, logger.tags.mining);
         nextRunDelay = retryDelay;

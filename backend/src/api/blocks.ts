@@ -1235,7 +1235,7 @@ class Blocks {
    * [INDEXING] Index all blocks metadata for the mining dashboard
    * @asyncSafe
    */
-  public async $generateBlockDatabase(): Promise<boolean> {
+  public async $generateBlockDatabase(): Promise<'valid' | 'repaired' | 'unavailable'> {
     try {
       const blockchainInfo = await bitcoinClient.getBlockchainInfo();
       let currentBlockHeight = blockchainInfo.blocks;

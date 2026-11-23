@@ -733,7 +733,7 @@ class BlocksRepository {
    * Check if the canonical chain of blocks is valid and fix it if needed
    * @asyncSafe
    */
-  public async $validateChain(): Promise<boolean> {
+  public async $validateChain(): Promise<'valid' | 'repaired' | 'unavailable'> {
     try {
       const start = new Date().getTime();
       const tip = await bitcoinApi.$getBlockHashTip();
@@ -750,7 +750,7 @@ class BlocksRepository {
         ORDER BY height DESC
       `);
       if (!blocks || blocks.length === 0) {
-        throw new Error('Cannot validate chain: no indexed blocks in database'); 
+        return 'valid'; // nothing indexed, so nothing to validate
       }
       const blocksByHash = {};
       const blocksByHeight = {};
@@ -815,14 +815,14 @@ class BlocksRepository {
           await HashratesRepository.$deleteHashratesFromTimestamp(firstBadBlockTimestamp - 604800);
         }
         await DifficultyAdjustmentsRepository.$deleteAdjustementsFromHeight(firstBadBlockHeight);
-        return false;
+        return 'repaired';
       }
 
       logger.debug(`validated best chain of ${tipHeight} blocks in ${new Date().getTime() - start} ms`);
-      return true;
+      return 'valid';
     } catch (e) {
       logger.err('Cannot validate chain of block hash. Reason: ' + (e instanceof Error ? e.message : e));
-      return true; // Don't do anything if there is a db error
+      return 'unavailable';
     }
   }
 
