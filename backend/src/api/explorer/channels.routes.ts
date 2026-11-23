@@ -1,6 +1,7 @@
 import config from '../../config';
 import { Application, Request, Response } from 'express';
 import channelsApi from './channels.api';
+import bitcoinApi from '../bitcoin/bitcoin-api-factory';
 import { handleError } from '../../utils/api';
 
 const TXID_REGEX = /^[a-f0-9]{64}$/i;
@@ -99,14 +100,22 @@ class ChannelsRoutes {
         return;
       }
       const channels = await channelsApi.$getChannelsByTransactionId(txIds);
+      // Only Esplora can tell which input spends a funding output. Otherwise assume a single close on the first input
+      const closedChannels = channels.filter((channel) => txIds.includes(channel.closing_transaction_id));
+      const outspends = closedChannels.length && config.MEMPOOL.BACKEND === 'esplora'
+        ? await bitcoinApi.$getOutSpendsByOutpoint(closedChannels.map((channel) => ({ txid: channel.transaction_id, vout: channel.transaction_vout }))).catch(() => [])
+        : [];
       const result: any[] = [];
       for (const txid of txIds) {
         const inputs: any = {};
         const outputs: any = {};
-        // Assuming that we only have one lightning close input in each transaction. This may not be true in the future
-        const foundChannelsFromInput = channels.find((channel) => channel.closing_transaction_id === txid);
-        if (foundChannelsFromInput) {
-          inputs[0] = foundChannelsFromInput;
+        for (const [i, channel] of closedChannels.entries()) {
+          const outspend = outspends[i];
+          if (channel.closing_transaction_id === txid && outspend?.txid === txid && outspend.vin !== undefined) {
+            inputs[outspend.vin] = channel;
+          } else if (channel.closing_transaction_id === txid && !inputs[0]) {
+            inputs[0] = channel;
+          }
         }
         const foundChannelsFromOutputs = channels.filter((channel) => channel.transaction_id === txid);
         for (const output of foundChannelsFromOutputs) {
