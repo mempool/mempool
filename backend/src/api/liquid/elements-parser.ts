@@ -238,6 +238,7 @@ class ElementsParser {
     }
 
     // Check claim script against each fedpegscript most recent first
+    let retry = false;
     for (const pegScript of (await this.$getFederationPegScripts())) {
       try {
         const tweakResult = await bitcoinClient.tweakFedPegScript(claimScript, pegScript.fedpegscript);
@@ -248,7 +249,15 @@ class ElementsParser {
       } catch (e) {
         const message = e instanceof Error ? e.message : String(e);
         logger.err(`tweakfedpegscript failed for address ${bitcoinaddress}: ${message}`);
+        // No answer (string code), node starting (-28), or HTTP 401 or 5xx: the call can succeed later
+        const code = (e as { code?: unknown } | null)?.code;
+        retry = retry || typeof code === 'string' || code === -28 || /status code: (401|5\d\d)$/.test(message);
       }
+    }
+
+    if (retry) {
+      // Fail the block so it is parsed again, instead of saving the fallback timelock for good
+      throw new Error(`Unable to resolve the timelock of the peg-in to ${bitcoinaddress}: tweakfedpegscript was unavailable`);
     }
 
     logger.err(`No matching fedpegscript found for address ${bitcoinaddress}, using fallback timelock ${FEDERATION_TIMELOCK_FALLBACK}.`);
