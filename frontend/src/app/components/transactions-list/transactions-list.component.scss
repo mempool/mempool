@@ -164,6 +164,10 @@
 	cursor: pointer;
 }
 
+.debug-link	{
+	cursor: pointer;
+}
+
 .mobile-bottomcol {
 	margin-top: 15px;
 	@media (min-width: 992px) {
@@ -281,6 +285,13 @@ h2 {
 .highlight {
 	background-color: var(--stat-box-bg);
 }
+
+// input open in the script debugger
+.debugging {
+	box-shadow: inset 3px 0 0 var(--info);
+	background-color: color-mix(in srgb, var(--info) 6%, transparent);
+}
+
 
 .sigged {
 	background-color: color-mix(in srgb, var(--fg) 12%, transparent);

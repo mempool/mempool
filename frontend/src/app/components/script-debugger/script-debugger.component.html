@@ -1,0 +1,125 @@
+<!-- which input is open is shown by the marker on its row in the inputs list -->
+<div class="subtitle-block">
+  <div class="title">
+    <h2 i18n="script-debugger.title">Script</h2>
+  </div>
+  <div class="title-buttons">
+    <button *ngIf="program" type="button" class="btn btn-outline-info btn-sm" [disabled]="index === 0" (click)="restart()" i18n="script-debugger.restart">Restart</button>
+    <button type="button" class="btn btn-outline-info btn-sm" (click)="hide.emit()" i18n="hide">Hide</button>
+  </div>
+</div>
+
+<div class="box">
+<div class="debugger" *ngIf="program; else unsupported">
+  <div class="pane-wrap script-wrap">
+  <div class="script-pane fade-edges" #scriptPane>
+    <svg [attr.width]="svgWidth" [attr.height]="svgHeight" [style.--block-font.px]="blockFont" xmlns="http://www.w3.org/2000/svg">
+      <g *ngFor="let box of visibleBoxes; trackBy: trackByIndex" class="section-box" [class.inner]="box.inner">
+        <rect class="box-border" [attr.x]="box.x" [attr.y]="box.y" [attr.width]="box.width" [attr.height]="box.height" rx="4" />
+        <rect class="box-label-bg" [attr.x]="box.x + 8" [attr.y]="box.y - 8" [attr.width]="box.label.length * labelCharW + 10" height="16" />
+        <text class="box-label" [attr.x]="box.x + 13" [attr.y]="box.y + 4">{{ box.label }}</text>
+      </g>
+      <line *ngFor="let guide of visibleGuides; trackBy: trackByIndex" class="indent-guide"
+        [attr.x1]="guide.x" [attr.y1]="guide.y1" [attr.x2]="guide.x" [attr.y2]="guide.y2" />
+      <g *ngFor="let block of visibleBlocks; trackBy: trackByBlock"
+        class="block op-{{ block.category }}"
+        [class.current]="block === currentBlock"
+        [class.not-executed]="block.notExecuted"
+        [class.error]="block === currentBlock && step?.error"
+        [class.dim-in]="dimStagger.has(block.ops[0])"
+        [style.--i]="dimStagger.get(block.ops[0])"
+        (click)="goToBlock(block)">
+        <ng-container *ngIf="block.hexW">
+          <rect class="hex-bg" [attr.x]="block.x" [attr.y]="block.y" [attr.width]="block.hexW" [attr.height]="blockH" />
+          <text class="hex" [attr.x]="block.x + block.hexW / 2" [attr.y]="block.y + blockH / 2 + blockFont * 0.35" text-anchor="middle">{{ block.hex }}</text>
+        </ng-container>
+        <rect class="name-bg" [attr.x]="block.x + block.hexW" [attr.y]="block.y" [attr.width]="block.width - block.hexW" [attr.height]="blockH" />
+        <text class="name" [attr.x]="block.x + block.hexW + 10" [attr.y]="block.y + blockH / 2 + blockFont * 0.35">{{ block.name }}</text>
+      </g>
+      <g *ngFor="let chip of chips; trackBy: trackByIndex" class="chip chip-{{ chip.kind }}" [class.current]="chip.step === index" (click)="goTo(chip.step)">
+        <rect [attr.x]="chip.x" [attr.y]="chip.y" [attr.width]="chip.width" [attr.height]="chipH" rx="12" />
+        <text [attr.x]="chip.x + chip.width / 2" [attr.y]="chip.y + chipH / 2 + 4" text-anchor="middle">{{ chip.label }}</text>
+      </g>
+      <path *ngIf="anchor as a" class="pc" [class.idle]="!currentBlock && !currentChip" d="M -11,-6 L -4,0 L -11,6 Z"
+        [style.transform]="'translate(' + a.x + 'px, ' + (a.y + a.h / 2) + 'px)'" />
+    </svg>
+
+    <div class="debugger-tooltip" #tooltipEl *ngIf="!isMobile && tooltip && anchor as a">
+      <ng-container *ngTemplateOutlet="tooltipContent; context: { $implicit: tooltip }"></ng-container>
+    </div>
+  </div>
+  </div>
+
+  <div class="debugger-tooltip mobile" *ngIf="isMobile && tooltip">
+    <ng-container *ngTemplateOutlet="tooltipContent; context: { $implicit: tooltip }"></ng-container>
+  </div>
+
+  <div class="stack-pane">
+    <div class="pane-title" i18n="script-debugger.stack">Stack</div>
+    <div class="pane-wrap stack-wrap">
+    <div class="stack-scroll fade-edges" #stackScroll>
+      <div class="stack-columns">
+        <div class="stack-column">
+          <div class="column-title" *ngIf="showAlt" i18n="script-debugger.main-stack">Main</div>
+          <ng-container *ngTemplateOutlet="stackColumn; context: { $implicit: mainView, key: 'm', valid: valid, anims: mainAnims, ghosts: mainGhosts }"></ng-container>
+        </div>
+        <div class="stack-column" *ngIf="showAlt">
+          <div class="column-title" i18n="script-debugger.alt-stack">Alt</div>
+          <ng-container *ngTemplateOutlet="stackColumn; context: { $implicit: altView, key: 'a', valid: false, anims: altAnims, ghosts: [] }"></ng-container>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="more-below" *ngIf="hiddenBelow" [class.expandable]="notDrawn" [disabled]="!notDrawn" (click)="drawAllStack()">
+      <span *ngIf="atDrawnEnd; else moreBelow" i18n="script-debugger.show-all">Show all</span>
+      <ng-template #moreBelow><span i18n="script-debugger.more-below">+{{ hiddenBelow }} more</span></ng-template>
+    </button>
+    </div>
+  </div>
+</div>
+</div>
+
+<ng-template #stackColumn let-view let-key="key" let-valid="valid" let-anims="anims" let-ghosts="ghosts">
+  <ng-container *ngFor="let item of view.pending; trackBy: trackByItem">
+    <ng-container *ngTemplateOutlet="stackItem; context: { $implicit: item.v, key: key + item.k, cls: 'pending' }"></ng-container>
+  </ng-container>
+  <ng-container *ngFor="let item of ghosts; let i = index; trackBy: trackByStep">
+    <ng-container *ngTemplateOutlet="stackItem; context: { $implicit: item, key: key + 'g' + i, cls: 'exiting' }"></ng-container>
+  </ng-container>
+  <div class="read-group op-{{ currentCategory }}" [class.leaving]="leaving && key === 'm'" *ngIf="view.read.length">
+    <ng-container *ngFor="let item of view.read; let i = index; trackBy: trackByItem">
+      <ng-container *ngTemplateOutlet="stackItem; context: { $implicit: item.v, key: key + item.k, cls: '', anim: anims[i] }"></ng-container>
+    </ng-container>
+  </div>
+  <ng-container *ngFor="let item of view.rest; let i = index; trackBy: trackByItem">
+    <ng-container *ngTemplateOutlet="stackItem; context: { $implicit: item.v, key: key + item.k, cls: valid && i === 0 && !view.read.length ? 'valid' : '', anim: anims[view.read.length + i] }"></ng-container>
+  </ng-container>
+</ng-template>
+
+<ng-template #stackItem let-item let-key="key" let-cls="cls" let-anim="anim">
+  <button type="button" class="stack-item {{ cls }} {{ anim?.cls || '' }}" [style.--from]="anim?.from" [class.expanded]="expanded === key" [attr.aria-expanded]="expanded === key" [attr.title]="item || null" (click)="toggleExpanded(key)">
+    <span *ngIf="labelByValue.get(item) as label" class="item-icon" [title]="label" [attr.aria-label]="label">
+      <fa-icon [icon]="['fas', labelIcons.get(label)]" [fixedWidth]="true"></fa-icon>
+    </span>
+    <span *ngIf="item === ''" class="empty" i18n="script-debugger.empty">empty</span>
+    <app-truncate *ngIf="item !== '' && expanded !== key" [text]="item" [lastChars]="8"></app-truncate>
+    <span *ngIf="item !== '' && expanded === key">{{ item }}</span>
+  </button>
+</ng-template>
+
+<ng-template #tooltipContent let-t>
+  <div class="tooltip-title" [class.valid]="t.valid" [class.invalid]="t.error">
+    <span>{{ t.label || t.title }}</span>
+    <span class="not-executed-badge" *ngIf="t.notExecuted" i18n="script-debugger.not-executed">not executed</span>
+  </div>
+  <div class="tooltip-text" *ngIf="t.text">{{ t.text }}</div>
+  <div class="tooltip-hex" *ngIf="t.hex">{{ t.hex }}</div>
+  <div class="tooltip-error" *ngIf="t.error">{{ t.error }}</div>
+  <div class="tooltip-note" *ngIf="t.note">{{ t.note }}</div>
+</ng-template>
+
+<ng-template #unsupported>
+  <div class="unsupported" *ngIf="tooLarge; else noScript" i18n="script-debugger.too-large">This script is too large to step through in the browser.</div>
+  <ng-template #noScript>
+    <div class="unsupported" i18n="script-debugger.unsupported">This input has no script to step through.</div>
+  </ng-template>
+</ng-template>

@@ -50,7 +50,13 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   @Input() txPreview = false;
   @Input() forceSignaturesMode: SignaturesMode = null;
 
+  @Input() debugIndex: number | null = null; // input open in the script debugger
+  @Input() debuggableInputs: number[] = []; // clicking one of these rows opens it in the script debugger (only set while the debugger is on)
+
   @Output() loadMore = new EventEmitter();
+  @Output() debugInput = new EventEmitter<number>();
+
+  debuggableSet = new Set<number>();
 
   latestBlock$: Observable<BlockExtended>;
   outspendsSubscription: Subscription;
@@ -224,6 +230,9 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes): void {
+    if (changes.debuggableInputs) {
+      this.debuggableSet = new Set(this.debuggableInputs);
+    }
     if (changes.inputIndex || changes.outputIndex || changes.rowLimit) {
       this.inputRowLimit = Math.max(this.rowLimit, (this.inputIndex || 0) + 3);
       this.outputRowLimit = Math.max(this.rowLimit, (this.outputIndex || 0) + 3);
@@ -564,6 +573,13 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
       limit = tx.vout.length;
     }
     return limit;
+  }
+
+  selectDebugInput(vinIndex: number): boolean {
+    if (this.debuggableSet.has(vinIndex) && this.debugIndex !== vinIndex && !window.getSelection()?.toString()) {
+      this.debugInput.emit(vinIndex);
+    }
+    return false;
   }
 
   toggleShowFullScript(vinIndex: number): void {
