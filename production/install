@@ -1113,6 +1113,7 @@ if [ "${TOR_INSTALL}" = ON ];then
             echo net.inet.ip.random_id=1 >> /etc/sysctl.conf
             sysctl net.inet.ip.random_id=1
             osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 755 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/freebsd/rc.d/nginx_tor_sockets" "${FREEBSD_SERVICE_HOME}"
+            osSudo "${ROOT_USER}" sysrc tor_enable=YES
         ;;
     esac
 
@@ -1822,18 +1823,25 @@ ln -s "${MEMPOOL_HOME}/mempool" "${NGINX_ETC_FOLDER}/mempool"
 osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_USER__!${NGINX_USER}!" "${NGINX_CONFIGURATION}"
 osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_ETC_FOLDER__!${NGINX_ETC_FOLDER}!" "${NGINX_CONFIGURATION}"
 
-#if [ "${TOR_INSTALL}" = ON ];then
-#    echo "[*] Read tor v3 onion hostnames"
-#
-#    NGINX_MEMPOOL_ONION=$(cat "${TOR_RESOURCES}/mempool/hostname")
-#    osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_MEMPOOL_ONION__!${NGINX_MEMPOOL_ONION%.onion}!" "${NGINX_CONFIGURATION}"
-#
-#    if [ "${ELEMENTS_LIQUID_ENABLE}" = "ON" ];then
-#        NGINX_LIQUID_ONION=$(cat "${TOR_RESOURCES}/liquid/hostname")
-#        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_LIQUID_ONION__!${NGINX_LIQUID_ONIONi%.onion}!" "${NGINX_CONFIGURATION}"
-#    fi
-#
-#fi
+if [ "${TOR_INSTALL}" = ON ];then
+    echo "[*] Read tor v3 onion hostnames"
+
+    if [ -f "${TOR_RESOURCES}/${MEMPOOL_TOR_HS}/hostname" ];then
+        NGINX_MEMPOOL_ONION=$(cat "${TOR_RESOURCES}/${MEMPOOL_TOR_HS}/hostname")
+        osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_MEMPOOL_ONION__!${NGINX_MEMPOOL_ONION%.onion}!" "${NGINX_CONFIGURATION}"
+    else
+        echo "[*] WARNING: Tor didn't create the Mempool onion hostname, Onion-Location will be wrong"
+    fi
+
+    if [ "${ELEMENTS_LIQUID_ENABLE}" = "ON" ];then
+        if [ -f "${TOR_RESOURCES}/${LIQUID_TOR_HS}/hostname" ];then
+            NGINX_LIQUID_ONION=$(cat "${TOR_RESOURCES}/${LIQUID_TOR_HS}/hostname")
+            osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_LIQUID_ONION__!${NGINX_LIQUID_ONION%.onion}!" "${NGINX_CONFIGURATION}"
+        else
+            echo "[*] WARNING: Tor didn't create the Liquid onion hostname, Onion-Location will be wrong"
+        fi
+    fi
+fi
 
 ##### OS systemd
 
@@ -1876,7 +1884,6 @@ kld_list="nvidia"
 nvidia_xorg_enable="YES"
 
 dbus_enable="YES"
-tor_enable="YES"
 bitcoin_enable="YES"
 postfix_enable="YES"
 EOF
@@ -1884,7 +1891,7 @@ EOF
 
     Debian)
         osSudo "${ROOT_USER}" systemctl daemon-reload
-        if [ "${TOR_ENABLE}" = ON ];then
+        if [ "${TOR_INSTALL}" = ON ];then
             osSudo "${ROOT_USER}" systemctl enable tor.service
         fi
         if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
