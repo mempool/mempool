@@ -56,7 +56,7 @@
         <li ngbNavItem="overview" role="presentation">
           <button ngbNavLink type="button" role="tab" i18n="watch.overview">Overview</button>
           <ng-template ngbNavContent>
-            <app-watch-overview [state]="state" (openTab)="activeTab = $event"></app-watch-overview>
+            <app-watch-overview [state]="state"></app-watch-overview>
           </ng-template>
         </li>
         <li ngbNavItem="transactions" role="presentation">
