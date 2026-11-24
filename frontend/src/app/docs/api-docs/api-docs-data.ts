@@ -12534,177 +12534,6 @@ export const restApiDocsData = [
     options: { officialOnly: true },
     type: 'endpoint',
     category: 'accelerator-private',
-    httpRequestMethod: 'POST',
-    fragment: 'accelerator-cancel',
-    title: 'POST Cancel Acceleration (Pro)',
-    description: {
-      default: '<p>Sends a request to cancel an acceleration in the <code>accelerating</code> status.<br>You can retrieve eligible acceleration <code>id</code> using the history endpoint GET <code>/api/v1/services/accelerator/history?status=accelerating</code>.'
-    },
-    urlString: '/v1/services/accelerator/cancel',
-    showConditions: [''],
-    showJsExamples: showJsExamplesDefaultFalse,
-    codeExample: {
-      default: {
-        codeTemplate: {
-          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/cancel`, //custom interpolation technique handled in replaceCurlPlaceholder()
-          commonJS: ``,
-          esModule: ``
-        },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: ['id=42'],
-          headers: 'X-Mempool-Auth: stacksats',
-          response: `HTTP/1.1 200 OK`,
-        },
-      }
-    }
-  },
-  {
-    options: { officialOnly: true },
-    type: 'endpoint',
-    category: 'accelerator-private',
-    httpRequestMethod: 'POST',
-    fragment: 'accelerator-auto-accelerate',
-    title: 'POST Auto-Accelerate A Transaction (Pro)',
-    description: {
-      default: `
-      <p>
-        <span>Sends a request to automatically accelerate a transaction based on specified trigger conditions. Competing requests are allowed (one per <code>txInput</code>/<code>type</code>).</span>
-      </p>
-      <div>
-        <span>The <code>type</code> parameter must be one of: <code>time_delay</code>, <code>block_height</code>, <code>timestamp</code>, or <code>next_block</code>.</span><br>
-        <span>The <code>value</code> parameter is required for types other than <code>next_block</code> and depends on the type:</span>
-        <ul>
-          <li><code>time_delay</code> - in hours, a floating point value >= 0.5</li>
-          <li><code>block_height</code> - a block height >= next block height</li>
-          <li><code>timestamp</code> - a Unix timestamp in seconds >= now + 60 seconds</li>
-        </ul>
-      </div>
-      `
-    },
-    urlString: '/v1/services/accelerator/auto-accelerate',
-    showConditions: [''],
-    showJsExamples: showJsExamplesDefaultFalse,
-    codeExample: {
-      default: {
-        codeTemplate: {
-          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/auto-accelerate`, //custom interpolation technique handled in replaceCurlPlaceholder()
-          commonJS: ``,
-          esModule: ``
-        },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: ['txid=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&type=time_delay&value=0.5'],
-          headers: 'X-Mempool-Auth: stacksats',
-          response: `HTTP/1.1 200 OK`,
-        },
-      }
-    }
-  },
-  {
-    options: { officialOnly: true },
-    type: 'endpoint',
-    category: 'accelerator-private',
-    httpRequestMethod: 'GET',
-    fragment: 'accelerator-auto-accelerate-history',
-    title: 'GET Auto-Acceleration History (Pro)',
-    description: {
-      default: `
-      <p>
-        <span>Returns the user's auto-acceleration requests history.</span><br>
-        <span>Possible status values: <code>tracking</code>, <code>accelerated</code>, <code>confirmed</code>, <code>canceled</code>.</span>
-      </p>`
-    },
-    urlString: '/v1/services/accelerator/auto-accelerate/history',
-    showConditions: [''],
-    showJsExamples: showJsExamplesDefaultFalse,
-    codeExample: {
-      default: {
-        codeTemplate: {
-          curl: `/api/v1/services/accelerator/auto-accelerate/history`,
-          commonJS: ``,
-          esModule: ``
-        },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: [],
-          headers: 'X-Mempool-Auth: stacksats',
-          response: `[
-  {
-    "txid": "ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29",
-    "status": "accelerated",
-    "added": 1706378712,
-    "trigger_type": "time_delay",
-    "trigger_value": 0.5
-  },
-  {
-    "txid": "c5840e89173331760e959a190b24e2a289121277ed7f8a095fe289b37cee9fde",
-    "status": "confirmed",
-    "added": 1706378704,
-    "trigger_type": "block_height",
-    "trigger_value": 827670
-  },
-  {
-    "txid": "178b5b9b310f0d667d7ea563a2cdcc17bc8cd15261b58b1653860a724ca83458",
-    "status": "tracking",
-    "added": 1706378684,
-    "trigger_type": "next_block",
-    "trigger_value": null
-  }
-]`,
-        },
-      }
-    }
-  },
-  {
-    options: { officialOnly: true },
-    type: 'endpoint',
-    category: 'accelerator-private',
-    httpRequestMethod: 'POST',
-    fragment: 'accelerator-auto-accelerate-cancel',
-    title: 'POST Cancel Auto-Acceleration (Pro)',
-    description: {
-      default: `
-        <p>
-          <span>Sends a request to cancel an auto-acceleration in the <code>tracking</code> status.</span><br>
-          <span>You can retrieve eligible auto-acceleration <code>txid</code> using the history endpoint GET <code>/api/v1/services/accelerator/auto-accelerate/history</code>.</span>
-        </p>
-        <p>
-          <span>When calling this endpoint without a <code>type</code> parameter, this will cancel all your active auto-acceleration requests matching the <code>txid</code>.</span>
-          <span>To cancel a single auto-acceleration request, send both <code>txid</code> and <code>type</code> parameters.</span><br>
-        </p>
-        <p>
-          <span>Parameter <code>type</code> can take the following values: <code>next_block</code>, <code>time_delay</code>, <code>block_height</code> or <code>timestamp</code>.</span>
-        </p>
-      `
-    },
-    urlString: '/v1/services/accelerator/auto-accelerate/cancel',
-    showConditions: [''],
-    showJsExamples: showJsExamplesDefaultFalse,
-    codeExample: {
-      default: {
-        codeTemplate: {
-          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/auto-accelerate/cancel`, //custom interpolation technique handled in replaceCurlPlaceholder()
-          commonJS: ``,
-          esModule: ``
-        },
-        codeSampleMainnet: {
-          esModule: [],
-          commonJS: [],
-          curl: ['txid=178b5b9b310f0d667d7ea563a2cdcc17bc8cd15261b58b1653860a724ca83458&type=time_delay'],
-          headers: 'X-Mempool-Auth: stacksats',
-          response: `If a request has been canceled:\nHTTP/1.1 200 OK\n\nWhen no request matches the query parameters:\nHTTP/1.1 204 No Content`,
-        },
-      }
-    }
-  },
-  {
-    options: { officialOnly: true },
-    type: 'endpoint',
-    category: 'accelerator-private',
     httpRequestMethod: 'GET',
     fragment: 'accelerator-history',
     title: 'GET User Acceleration History',
@@ -12816,6 +12645,495 @@ export const restApiDocsData = [
   }
 ]`,
         },
+      }
+    }
+  },
+  {
+    type: 'category',
+    category: 'accelerator-pro',
+    fragment: 'accelerator-pro',
+    title: 'Accelerator (Pro)',
+    showConditions: [''],
+    options: { officialOnly: true },
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-pro',
+    httpRequestMethod: 'POST',
+    fragment: 'accelerator-cancel',
+    title: 'POST Cancel Acceleration',
+    description: {
+      default: '<p>Sends a request to cancel an acceleration in the <code>accelerating</code> status.<br>You can retrieve eligible acceleration <code>id</code> using the history endpoint GET <code>/api/v1/services/accelerator/history?status=accelerating</code>.'
+    },
+    urlString: '/v1/services/accelerator/cancel',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/cancel`, //custom interpolation technique handled in replaceCurlPlaceholder()
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['id=42'],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `HTTP/1.1 200 OK`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-pro',
+    httpRequestMethod: 'POST',
+    fragment: 'accelerator-auto-accelerate',
+    title: 'POST Auto-Accelerate A Transaction',
+    description: {
+      default: `
+      <p>
+        <span>Schedules an unconfirmed transaction for automatic acceleration. A request is rejected if you already have a non-canceled schedule for that transaction and trigger type.</span>
+      </p>
+      <div>
+        <span>The <code>type</code> parameter must be one of: <code>time_delay</code>, <code>block_height</code>, <code>timestamp</code>, or <code>next_block</code>.</span><br>
+        <span>The <code>value</code> parameter is required for types other than <code>next_block</code> and depends on the type:</span>
+        <ul>
+          <li><code>time_delay</code> - in hours, at least 0.01</li>
+          <li><code>block_height</code> - a block height >= next block height</li>
+          <li><code>timestamp</code> - a Unix timestamp in seconds more than 60 seconds in the future</li>
+        </ul>
+      </div>
+      <p><code>next_block</code> ignores any supplied value and returns a null <code>trigger_value</code> in history. Once the trigger is met, the transaction becomes eligible for acceleration if it falls outside the projected next block. Returns <code>200 OK</code> with an empty body. Missing transaction data returns <code>400 cannot_fetch_raw_tx</code>; temporarily unavailable service capacity returns <code>503 not_available</code>.</p>
+      `
+    },
+    urlString: '/v1/services/accelerator/auto-accelerate',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/auto-accelerate`, //custom interpolation technique handled in replaceCurlPlaceholder()
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['txid=ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29&type=time_delay&value=0.5'],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `HTTP/1.1 200 OK`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-pro',
+    httpRequestMethod: 'GET',
+    fragment: 'accelerator-auto-accelerate-history',
+    title: 'GET Auto-Acceleration History',
+    description: {
+      default: `
+      <p>
+        <span>Returns the authenticated user's auto-acceleration requests history. Each numeric <code>id</code> identifies one schedule and can be used with GET or DELETE <code>/api/v1/services/accelerator/auto-accelerate/:id</code>. The <code>X-total-count</code> response header contains the number of returned schedules.</span><br>
+        <span>Possible status values: <code>tracking</code>, <code>accelerated</code>, <code>confirmed</code>, <code>canceled</code>.</span>
+        <span><code>tracking</code> means the request is pending and has not yet resulted in an acceleration.</span>
+      </p>`
+    },
+    urlString: '/v1/services/accelerator/auto-accelerate/history',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/services/accelerator/auto-accelerate/history`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `[
+  {
+    "id": 43,
+    "txid": "ee13ebb99632377c15c94980357f674d285ac413452050031ea6dcd3e9b2dc29",
+    "status": "accelerated",
+    "added": 1706378712,
+    "trigger_type": "time_delay",
+    "trigger_value": 0.5
+  },
+  {
+    "id": 42,
+    "txid": "c5840e89173331760e959a190b24e2a289121277ed7f8a095fe289b37cee9fde",
+    "status": "confirmed",
+    "added": 1706378704,
+    "trigger_type": "block_height",
+    "trigger_value": 827670
+  },
+  {
+    "id": 41,
+    "txid": "178b5b9b310f0d667d7ea563a2cdcc17bc8cd15261b58b1653860a724ca83458",
+    "status": "tracking",
+    "added": 1706378684,
+    "trigger_type": "next_block",
+    "trigger_value": null
+  }
+]`,
+        },
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-pro',
+    httpRequestMethod: 'GET',
+    fragment: 'accelerator-auto-accelerate-status',
+    title: 'GET Auto-Acceleration Status',
+    description: {
+      default: '<p>Checks whether you can create an auto-acceleration request for a new transaction. Returns <code>200 OK</code> with <code>canCreate</code>, a null <code>reason</code> when available, and the current transaction usage and limit.</p><p><code>txidsUsed</code> counts distinct transactions currently tracked across all users, not your number of requests. <code>txidLimit</code> is the service-wide limit. When <code>canCreate</code> is false, <code>reason</code> is <code>not_available</code>, <code>not_verified</code>, or <code>unauthorized</code>.</p><p>This check does not reserve capacity or validate a specific transaction. Another request for a transaction already being tracked may still be accepted when the limit is reached.</p>'
+    },
+    urlString: '/v1/services/accelerator/auto-accelerate/status',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: '/api/v1/services/accelerator/auto-accelerate/status',
+          commonJS: '',
+          esModule: ''
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `{
+  "canCreate": true,
+  "reason": null,
+  "txidsUsed": 7,
+  "txidLimit": 100
+}`
+        }
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-pro',
+    httpRequestMethod: 'GET',
+    fragment: 'accelerator-auto-accelerate-get',
+    title: 'GET Auto-Acceleration Request',
+    description: {
+      default: '<p>Returns one of your auto-acceleration requests by its numeric <code>:id</code> from history, in the same format as a history entry. Pending requests have status <code>tracking</code>. Canceled and completed requests remain available.</p><p>Returns <code>404 not_found</code> when the request does not exist or does not belong to you.</p>'
+    },
+    urlString: '/v1/services/accelerator/auto-accelerate/:id',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: '/api/v1/services/accelerator/auto-accelerate/%{1}',
+          commonJS: '',
+          esModule: ''
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['41'],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `{
+  "id": 41,
+  "txid": "178b5b9b310f0d667d7ea563a2cdcc17bc8cd15261b58b1653860a724ca83458",
+  "trigger_type": "next_block",
+  "trigger_value": null,
+  "added": 1706378684,
+  "status": "tracking"
+}`
+        }
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-pro',
+    httpRequestMethod: 'DELETE',
+    fragment: 'accelerator-auto-accelerate-delete',
+    title: 'DELETE Auto-Acceleration Request',
+    description: {
+      default: '<p>Cancels one of your pending auto-acceleration requests using its numeric <code>:id</code> from history. No request body is required. This does not cancel an acceleration already submitted or delete an address rule.</p><p>Returns <code>204 No Content</code> when canceled, <code>404 not_found</code> when there is no matching pending request, or <code>503 not_available</code> when the service is temporarily unavailable. The canceled request remains in history.</p>'
+    },
+    urlString: '/v1/services/accelerator/auto-accelerate/:id',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: '/api/v1/services/accelerator/auto-accelerate/%{1}',
+          commonJS: '',
+          esModule: ''
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['41'],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: 'HTTP/1.1 204 No Content'
+        }
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-pro',
+    httpRequestMethod: 'POST',
+    fragment: 'accelerator-auto-accelerate-address',
+    title: 'POST Create Address Auto-Acceleration Rule',
+    description: {
+      default: `<p>Creates a rule that automatically schedules transactions involving a mainnet Bitcoin address. Returns <code>200 OK</code> with the created rule. Use its eight-digit <code>rule_id</code>, including any leading zeros, to retrieve or delete it.</p>
+        <ul>
+          <li><code>address</code> (required): a mainnet Bitcoin address.</li>
+          <li><code>type</code> (required): <code>next_block</code>, <code>time_unconfirmed</code>, or <code>blocks_unconfirmed</code>.</li>
+          <li><code>value</code>: hours (at least 0.01) for <code>time_unconfirmed</code>, or a positive whole number of blocks for <code>blocks_unconfirmed</code>. Not required for <code>next_block</code>; supplied values are ignored.</li>
+          <li><code>direction</code> (optional): <code>incoming</code>, <code>outgoing</code>, or <code>both</code> (default). Incoming excludes spends returning change to the same address; outgoing and both include them.</li>
+          <li><code>minAmount</code> (optional): a nonnegative minimum amount. Incoming uses total outputs to the address; outgoing uses total inputs from it without subtracting change; both uses the larger total. Values are compared inclusively and rounded to two decimal places.</li>
+          <li><code>minAmountUnit</code> (optional): <code>sats</code> (default) or <code>usd</code>. USD amounts use the current BTC/USD price.</li>
+          <li><code>retroactive</code> (optional): defaults to false. When true, also attempts to schedule eligible transactions already unconfirmed for the address.</li>
+        </ul>
+        <p>Time and block delays are measured from the transaction's first-seen or admission time and height, not rule creation time. Once a trigger is met, acceleration becomes eligible if the transaction falls outside the projected next block. Retroactive discovery is best effort and may not include every existing transaction.</p>
+        <p>Rules with different directions may overlap. Another rule for the same address, trigger type, and direction returns <code>400 address_rule_already_exists</code>, even if its value differs. Multiple rules on one address use one address-quota slot. Identical transaction schedules from overlapping rules are not duplicated; successful acceleration cancels competing requests for that transaction.</p>
+        <p>Returns <code>400 max_monitored_addresses_reached</code> at your address limit, <code>503 not_available</code> when service capacity is unavailable, or <code>503 not_available_exchange_rates</code> when a USD threshold cannot be evaluated. Use the status endpoint to check availability before creating a rule.</p>`
+    },
+    urlString: '/v1/services/accelerator/auto-accelerate-address',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `%{1}" "[[hostname]][[baseNetworkUrl]]/api/v1/services/accelerator/auto-accelerate-address`,
+          commonJS: '',
+          esModule: ''
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['address=bc1q34nh0yxfrsulxa40t3wzpvjyxxe5wc2x3fzu7e&type=time_unconfirmed&value=1&direction=incoming&minAmount=100000&minAmountUnit=sats&retroactive=false'],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `{
+  "id": 123,
+  "rule_id": "01234567",
+  "user_id": 42,
+  "address": "bc1q34nh0yxfrsulxa40t3wzpvjyxxe5wc2x3fzu7e",
+  "trigger_type": "time_unconfirmed",
+  "trigger_value": 1,
+  "min_amount": 100000,
+  "min_amount_unit": "sats",
+  "direction": "incoming",
+  "added": 1730000000
+}`
+        }
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-pro',
+    httpRequestMethod: 'GET',
+    fragment: 'accelerator-auto-accelerate-address-status',
+    title: 'GET Address Auto-Acceleration Status',
+    description: {
+      default: '<p>Checks whether you can create a rule for a new address. Returns <code>200 OK</code> with <code>canCreate</code>, <code>reason</code>, your distinct <code>addressesUsed</code>, and your <code>addressLimit</code>. Several rules on the same address count as one address.</p><p><code>reason</code> is null when available, or <code>not_available</code>, <code>not_verified</code>, <code>unauthorized</code>, or <code>max_monitored_addresses_reached</code> when unavailable. The usage and limit are also returned when <code>canCreate</code> is false.</p><p>This is an availability check, not a reservation or validation of a proposed rule. An additional rule for an address you already monitor may still be accepted at your address limit.</p>'
+    },
+    urlString: '/v1/services/accelerator/auto-accelerate-address/status',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: '/api/v1/services/accelerator/auto-accelerate-address/status',
+          commonJS: '',
+          esModule: ''
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `{
+  "canCreate": true,
+  "reason": null,
+  "addressesUsed": 7,
+  "addressLimit": 10
+}`
+        }
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-pro',
+    httpRequestMethod: 'GET',
+    fragment: 'accelerator-auto-accelerate-address-list',
+    title: 'GET Address Auto-Acceleration Rules',
+    description: {
+      default: '<p>Returns all your address auto-acceleration rules across all addresses, newest first. Each rule includes its public <code>rule_id</code> for retrieval and deletion. Returns an empty array when you have no rules.</p><p>Multiple rules for one address are separate entries in this list; the number of rules is not your distinct-address usage.</p>'
+    },
+    urlString: '/v1/services/accelerator/auto-accelerate-address',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: '/api/v1/services/accelerator/auto-accelerate-address',
+          commonJS: '',
+          esModule: ''
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `[
+  {
+    "id": 123,
+    "rule_id": "01234567",
+    "user_id": 42,
+    "address": "bc1q34nh0yxfrsulxa40t3wzpvjyxxe5wc2x3fzu7e",
+    "trigger_type": "time_unconfirmed",
+    "trigger_value": 1,
+    "min_amount": 100000,
+    "min_amount_unit": "sats",
+    "direction": "incoming",
+    "added": 1730000000
+  }
+]`
+        }
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-pro',
+    httpRequestMethod: 'GET',
+    fragment: 'accelerator-auto-accelerate-address-get',
+    title: 'GET Address Auto-Acceleration Rule',
+    description: {
+      default: '<p>Returns one of your address rules by its eight-digit <code>:ruleId</code>. Use the string <code>rule_id</code> returned by create or list, preserving leading zeros, rather than its numeric <code>id</code>.</p><p>Returns <code>404 not_found</code> if the rule does not exist or does not belong to you.</p>'
+    },
+    urlString: '/v1/services/accelerator/auto-accelerate-address/:ruleId',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: '/api/v1/services/accelerator/auto-accelerate-address/%{1}',
+          commonJS: '',
+          esModule: ''
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['01234567'],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `{
+  "id": 123,
+  "rule_id": "01234567",
+  "user_id": 42,
+  "address": "bc1q34nh0yxfrsulxa40t3wzpvjyxxe5wc2x3fzu7e",
+  "trigger_type": "time_unconfirmed",
+  "trigger_value": 1,
+  "min_amount": 100000,
+  "min_amount_unit": "sats",
+  "direction": "incoming",
+  "added": 1730000000
+}`
+        }
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-pro',
+    httpRequestMethod: 'GET',
+    fragment: 'accelerator-auto-accelerate-address-list-by-address',
+    title: 'GET Auto-Acceleration Rules for an Address',
+    description: {
+      default: '<p>Returns your rules for the specified mainnet Bitcoin <code>:address</code>, newest first, in the same format as the user-wide rule list. Returns an empty array when you have no rules for that address. Rules belonging to other users are not included.</p>'
+    },
+    urlString: '/v1/services/accelerator/auto-accelerate-address/:address',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: '/api/v1/services/accelerator/auto-accelerate-address/%{1}',
+          commonJS: '',
+          esModule: ''
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['bc1q34nh0yxfrsulxa40t3wzpvjyxxe5wc2x3fzu7e'],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: `[
+  {
+    "id": 123,
+    "rule_id": "01234567",
+    "user_id": 42,
+    "address": "bc1q34nh0yxfrsulxa40t3wzpvjyxxe5wc2x3fzu7e",
+    "trigger_type": "time_unconfirmed",
+    "trigger_value": 1,
+    "min_amount": 100000,
+    "min_amount_unit": "sats",
+    "direction": "incoming",
+    "added": 1730000000
+  }
+]`
+        }
+      }
+    }
+  },
+  {
+    options: { officialOnly: true },
+    type: 'endpoint',
+    category: 'accelerator-pro',
+    httpRequestMethod: 'DELETE',
+    fragment: 'accelerator-auto-accelerate-address-delete',
+    title: 'DELETE Address Auto-Acceleration Rule',
+    description: {
+      default: '<p>Deletes one of your address rules using its eight-digit <code>:ruleId</code>. Use the public <code>rule_id</code> returned by create or list, including any leading zeros. No request body is required.</p><p>Returns <code>204 No Content</code> if deleted, or <code>404 not_found</code> if no matching rule belongs to you. Deleting a rule stops future matches but does not cancel transaction requests already created from it. Cancel those requests separately when needed.</p>'
+    },
+    urlString: '/v1/services/accelerator/auto-accelerate-address/:ruleId',
+    showConditions: [''],
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: '/api/v1/services/accelerator/auto-accelerate-address/%{1}',
+          commonJS: '',
+          esModule: ''
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: ['01234567'],
+          headers: 'X-Mempool-Auth: stacksats',
+          response: 'HTTP/1.1 204 No Content'
+        }
       }
     }
   },
