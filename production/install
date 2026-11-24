@@ -240,10 +240,8 @@ DEBIAN_ENV_HOME=/etc/default
 # where rc.d scripts live
 FREEBSD_SERVICE_HOME=/usr/local/etc/rc.d
 
-# mysql data folder and user/group
+# mysql data folder, chowned to mysql by the rc.d script on first start
 MYSQL_HOME=/mysql
-MYSQL_USER=mysql
-MYSQL_GROUP=mysql
 
 # mempool mysql user/password
 MEMPOOL_MAINNET_USER='mempool'
@@ -1752,6 +1750,8 @@ echo "[*] Adding MySQL configuration"
 case $OS in
 
     FreeBSD)
+        # set before the first start, or the DBs get created in the default /var/db/mysql
+        osSudo "${ROOT_USER}" sysrc mysql_dbdir="${MYSQL_HOME}"
         osSudo "${ROOT_USER}" service mysql-server onestart
     ;;
     Debian)
@@ -1814,6 +1814,7 @@ declare -x MEMPOOL_LIQUIDTESTNET_USER="${MEMPOOL_LIQUIDTESTNET_USER}"
 declare -x MEMPOOL_LIQUIDTESTNET_PASS="${MEMPOOL_LIQUIDTESTNET_PASS}"
 _EOF_
 chown "${MEMPOOL_USER}:${MEMPOOL_GROUP}" "${MEMPOOL_MYSQL_CREDENTIALS}"
+chmod 600 "${MEMPOOL_MYSQL_CREDENTIALS}"
 
 ##### nginx
 
@@ -1877,7 +1878,6 @@ nginx_tor_sockets_enable="YES"
 #nginx_mempool_configfile="/mempool/mempool.space/nginx/nginx.conf"
 
 mysql_enable="YES"
-mysql_dbdir="/mysql"
 mysql_args="--innodb-buffer-pool-size=8G --bind-address 127.0.0.1"
 
 kld_list="nvidia"
