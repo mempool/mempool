@@ -2,7 +2,7 @@ import config from '../config';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
 import memPool from './mempool';
-import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended, TransactionClassified, BlockAudit, TransactionAudit, TemplateAlgorithm, TransactionFlags } from '../mempool.interfaces';
+import { BlockExtended, BlockExtension, BlockSummary, PoolTag, TransactionExtended, TransactionMinerInfo, CpfpSummary, MempoolTransactionExtended, TransactionClassified, BlockAudit, TransactionAudit, TransactionFlags } from '../mempool.interfaces';
 import { Common } from './common';
 import diskCache from './disk-cache';
 import transactionUtils from './transaction-utils';
@@ -404,9 +404,9 @@ class Blocks {
     const totalFee = transactions.reduce((acc, tx) => acc + tx.fee, 0);
     const totalVsize = transactions.reduce((acc, tx) => acc + tx.vsize, 0);
     const totalReward = transactions[0].vout.reduce((acc, vout) => acc + vout.value, 0);
-    const sortedByFee = transactions.sort((a, b) => a.fee - b.fee);
-    const sortedByVsize = transactions.sort((a, b) => a.vsize - b.vsize);
-    const sortedByFeerate = transactions.sort((a, b) => (a.fee / a.weight) - (b.fee / b.weight));
+    const sortedByFee = [...transactions].sort((a, b) => a.fee - b.fee);
+    const sortedByVsize = [...transactions].sort((a, b) => a.vsize - b.vsize);
+    const sortedByFeerate = [...transactions].sort((a, b) => (a.fee / a.weight) - (b.fee / b.weight));
     const sortedFeerates = sortedByFeerate.map(tx => (tx.fee / (tx.weight / 4)));
     const avgfee = totalFee / transactions.length;
     const avgfeerate = totalFee / (block.weight / 4);
@@ -891,7 +891,7 @@ class Blocks {
         await this.$getStrippedBlockTransactions(hash, true, true, cpfpSummary, height); // This will index the block summary
       }
     } else {
-      await this.$getStrippedBlockTransactions(hash, true, true); // This will index the block summary
+      await this.$getStrippedBlockTransactions(hash, true, true, undefined, height); // This will index the block summary
     }
   }
 
@@ -1346,6 +1346,7 @@ class Blocks {
         cachedBlock.extras.firstSeen = firstSeen;
       }
     }
+    chainTips.updateStaleBlocksFirstSeen(results);
 
     logger.debug(`Indexed ${foundCount} / ${blocks.length} block first seen times in ${((Date.now() - startedAt) / 1000).toFixed(2)} seconds`);
   }
@@ -1456,6 +1457,7 @@ class Blocks {
       }
 
       const { rbfTransactions } = await this.$applyBlockTransactionsToMempool(txIds, cpfpSummary.transactions);
+      memPool.setRecentlyMined(block.id, block.previousblockhash, txIds);
       this.updateTimerProgress(timer, `applied mempool changes for ${this.currentBlockHeight}`);
 
       if (config.STATISTICS.ENABLED && config.DATABASE.ENABLED) {
@@ -1763,6 +1765,17 @@ class Blocks {
     }
 
     let height = blockHeight;
+    if (height == null) {
+      // If the block is orphaned, use the height from the chaintips cache
+      const orphanedBlock = chainTips.getOrphanedBlock(hash);
+      if (orphanedBlock) {
+        height = orphanedBlock.height;
+      } else {
+        const block = await bitcoinApi.$getBlock(hash);
+        height = block.height;
+      }
+    }
+
     let summary: BlockSummary;
     let summaryVersion = 0;
     if (cpfpSummary && !Common.isLiquid()) {
@@ -1789,18 +1802,8 @@ class Blocks {
       summaryVersion = cpfpSummary.version;
     } else {
       const txs = (await bitcoinApi.$getTxsForBlock(hash, true)).map(tx => transactionUtils.extendTransaction(tx));
-      summary = this.summarizeBlockTransactions(hash, height || 0, txs);
+      summary = this.summarizeBlockTransactions(hash, height, txs);
       summaryVersion = 1;
-    }
-    if (height == null) {
-      // If the block is orphaned, use the height from the chaintips cache
-      const orphanedBlock = chainTips.getOrphanedBlock(hash);
-      if (orphanedBlock) {
-        height = orphanedBlock.height;
-      } else {
-        const block = await bitcoinApi.$getBlock(hash);
-        height = block.height;
-      }
     }
 
     // Index the response if needed
@@ -1873,14 +1876,7 @@ class Blocks {
     const blocks: any[] = [];
 
     while (fromHeight <= toHeight) {
-      let block: BlockExtended | null = await blocksRepository.$getBlockByHeight(fromHeight);
-      if (!block) {
-        await this.$indexBlockByHeight(fromHeight);
-        block = await blocksRepository.$getBlockByHeight(fromHeight);
-        if (!block) {
-          continue;
-        }
-      }
+      const block: BlockExtended = await this.$indexBlockByHeight(fromHeight); // early returns the block from database
 
       // Cleanup fields before sending the response
       const cleanBlock: any = {

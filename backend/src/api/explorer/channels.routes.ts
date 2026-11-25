@@ -4,6 +4,7 @@ import channelsApi from './channels.api';
 import { handleError } from '../../utils/api';
 
 const TXID_REGEX = /^[a-f0-9]{64}$/i;
+const MAX_CHANNEL_TXIDS = 150;
 
 class ChannelsRoutes {
   constructor() { }
@@ -82,11 +83,20 @@ class ChannelsRoutes {
         handleError(req, res, 400, 'invalid txId format');
         return;
       }
+      const requestedTxIds = Object.values(req.query.txId);
+      if (requestedTxIds.length > MAX_CHANNEL_TXIDS) {
+        handleError(req, res, 400, 'Too many txids requested');
+        return;
+      }
       const txIds: string[] = [];
-      for (const txid of Object.values(req.query.txId)) {
+      for (const txid of requestedTxIds) {
         if (typeof txid === 'string' && TXID_REGEX.test(txid)) {
           txIds.push(txid);
         }
+      }
+      if (!txIds.length) {
+        res.json([]);
+        return;
       }
       const channels = await channelsApi.$getChannelsByTransactionId(txIds);
       const result: any[] = [];

@@ -1,0 +1,10 @@
+<div class="title-tx">
+  <h2 class="text-start">
+    <ng-container i18n="watch.transactions">Transactions</ng-container>
+    <span class="badge bg-secondary ms-2">{{ view.transactions.length }}</span>
+  </h2>
+</div>
+<p class="text-muted" *ngIf="!view.transactions.length" i18n="watch.no-txs">No transactions found for this wallet.</p>
+<app-transactions-list *ngIf="view.transactions.length"
+  [transactions]="shown" [addresses]="addresses" [showConfirmations]="true"
+  (loadMore)="loadMore()"></app-transactions-list>

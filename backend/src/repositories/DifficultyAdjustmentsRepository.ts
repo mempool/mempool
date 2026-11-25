@@ -107,16 +107,6 @@ class DifficultyAdjustmentsRepository {
       throw e;
     }
   }
-
-  public async $deleteLastAdjustment(): Promise<void> {
-    try {
-      logger.info(`Delete last difficulty adjustment from the database`, logger.tags.mining);
-      await DB.query(`DELETE FROM difficulty_adjustments ORDER BY time LIMIT 1`);
-    } catch (e: any) {
-      logger.err(`Cannot delete last difficulty adjustment from the database. Reason: ${e instanceof Error ? e.message : e}`, logger.tags.mining);
-      throw e;
-    }
-  }
 }
 
 export default new DifficultyAdjustmentsRepository();

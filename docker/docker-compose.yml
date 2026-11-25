@@ -31,6 +31,11 @@ services:
       DATABASE_USERNAME: "mempool"
       DATABASE_PASSWORD: "mempool"
       STATISTICS_ENABLED: "true"
+      MEMPOOL_MAX_BUFFERED_AMOUNT: "10000000"
+      MEMPOOL_MAX_MESSAGE_SIZE: "50000"
+      MEMPOOL_MAX_TRACKED_TXS: "100"
+      MEMPOOL_MSG_RATE_LIMIT: "100"
+      MEMPOOL_MSG_RATE_WINDOW: "10000"
     image: mempool/backend:latest
     user: "1000:1000"
     restart: on-failure

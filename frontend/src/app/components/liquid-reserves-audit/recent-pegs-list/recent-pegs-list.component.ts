@@ -7,6 +7,7 @@ import { Env, StateService } from '@app/services/state.service';
 import { AuditStatus, CurrentPegs, PegsVolume, RecentPeg } from '@interfaces/node-api.interface';
 import { WebsocketService } from '@app/services/websocket.service';
 import { SeoService } from '@app/services/seo.service';
+import { isMobile } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-recent-pegs-list',
@@ -24,7 +25,7 @@ export class RecentPegsListComponent implements OnInit {
   isPegCountLoading = true;
   page = 1;
   pageSize = 15;
-  maxSize = window.innerWidth <= 767.98 ? 3 : 5;
+  maxSize = isMobile() ? 3 : 5;
   skeletonLines: number[] = [];
   auditStatus$: Observable<AuditStatus>;
   auditUpdated$: Observable<boolean>;

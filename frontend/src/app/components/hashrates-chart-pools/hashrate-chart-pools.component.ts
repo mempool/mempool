@@ -11,6 +11,7 @@ import { MiningService } from '@app/services/mining.service';
 import { download } from '@app/shared/graphs.utils';
 import { ActivatedRoute } from '@angular/router';
 import { StateService } from '@app/services/state.service';
+import { isMobile } from '@app/shared/common.utils';
 
 interface Hashrate {
   timestamp: number;
@@ -214,10 +215,10 @@ export class HashrateChartPoolsComponent implements OnInit {
         right: this.right,
         left: this.left,
         bottom: 70,
-        top: this.isMobile() ? 10 : 50,
+        top: isMobile() ? 10 : 50,
       },
       tooltip: {
-        show: !this.isMobile(),
+        show: !isMobile(),
         trigger: 'axis',
         axisPointer: {
           type: 'line'
@@ -244,12 +245,12 @@ export class HashrateChartPoolsComponent implements OnInit {
       },
       xAxis: data.series.length === 0 ? undefined : {
         type: 'time',
-        splitNumber: this.isMobile() ? 5 : 10,
+        splitNumber: isMobile() ? 5 : 10,
         axisLabel: {
           hideOverlap: true,
         }
       },
-      legend: (this.isMobile() || data.series.length === 0) ? undefined : {
+      legend: (isMobile() || data.series.length === 0) ? undefined : {
         top: 'top',
         data: data.legends
       },
@@ -298,10 +299,6 @@ export class HashrateChartPoolsComponent implements OnInit {
 
   onChartInit(ec) {
     this.chartInstance = ec;
-  }
-
-  isMobile() {
-    return (window.innerWidth <= 767.98);
   }
 
   onSaveChart() {

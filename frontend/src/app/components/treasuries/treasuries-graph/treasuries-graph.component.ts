@@ -9,6 +9,7 @@ import { SeriesOption } from 'echarts/types/dist/echarts';
 import { WalletStats } from '@app/shared/wallet-stats';
 import { originalChartColors as chartColors } from '@app/app.constants';
 import { Treasury } from '@interfaces/node-api.interface';
+import { isMobile } from '@app/shared/common.utils';
 
 
 // export const treasuriesPalette = [
@@ -245,7 +246,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
         }
       } : undefined,
       tooltip: {
-        show: !this.isMobile(),
+        show: !isMobile(),
         trigger: 'axis',
         axisPointer: {
           type: 'line'
@@ -326,7 +327,7 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
       },
       xAxis: {
         type: 'time',
-        splitNumber: this.isMobile() ? 5 : 10,
+        splitNumber: isMobile() ? 5 : 10,
         axisLabel: {
           hideOverlap: true,
         }
@@ -416,9 +417,5 @@ export class TreasuriesGraphComponent implements OnInit, OnChanges, OnDestroy {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
-  }
-
-  isMobile() {
-    return (window.innerWidth <= 767.98);
   }
 }

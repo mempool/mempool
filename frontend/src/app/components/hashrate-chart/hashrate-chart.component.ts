@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, HostBinding } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, Input, LOCALE_ID, OnInit, OnDestroy, HostBinding } from '@angular/core';
 import { echarts, EChartsOption } from '@app/graphs/echarts';
-import { combineLatest, fromEvent, merge, Observable, of } from 'rxjs';
+import { combineLatest, fromEvent, merge, Observable, of, Subscription } from 'rxjs';
 import { map, mergeMap, share, startWith, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '@app/services/api.service';
 import { SeoService } from '@app/services/seo.service';
@@ -12,7 +12,7 @@ import { MiningService } from '@app/services/mining.service';
 import { download } from '@app/shared/graphs.utils';
 import { ActivatedRoute } from '@angular/router';
 import { StateService } from '@app/services/state.service';
-import { seoDescriptionNetwork } from '@app/shared/common.utils';
+import { seoDescriptionNetwork, isMobile } from '@app/shared/common.utils';
 import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 
 @Component({
@@ -30,7 +30,7 @@ import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HashrateChartComponent implements OnInit {
+export class HashrateChartComponent implements OnInit, OnDestroy {
   @Input() tableOnly = false;
   @Input() widget = false;
   @Input() height: number = 300;
@@ -53,6 +53,7 @@ export class HashrateChartComponent implements OnInit {
   timespan = '';
   chartInstance: any = undefined;
   network = '';
+  networkChangedSubscription: Subscription;
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -68,7 +69,7 @@ export class HashrateChartComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.stateService.networkChanged$.subscribe((network) => this.network = network);
+    this.networkChangedSubscription = this.stateService.networkChanged$.subscribe((network) => this.network = network);
 
     let firstRun = true;
 
@@ -236,7 +237,7 @@ export class HashrateChartComponent implements OnInit {
         left: this.left,
       },
       tooltip: {
-        show: !this.isMobile() || !this.widget,
+        show: !isMobile() || !this.widget,
         trigger: 'axis',
         axisPointer: {
           type: 'line'
@@ -281,7 +282,7 @@ export class HashrateChartComponent implements OnInit {
       },
       xAxis: data.hashrates.length === 0 ? undefined : {
         type: 'time',
-        splitNumber: (this.isMobile() || this.widget) ? 5 : 10,
+        splitNumber: (isMobile() || this.widget) ? 5 : 10,
         axisLabel: {
           hideOverlap: true,
         }
@@ -460,10 +461,6 @@ export class HashrateChartComponent implements OnInit {
     });
   }
 
-  isMobile() {
-    return (window.innerWidth <= 767.98);
-  }
-
   onSaveChart() {
     // @ts-ignore
     const prevBottom = this.chartOptions.grid.bottom;
@@ -480,5 +477,9 @@ export class HashrateChartComponent implements OnInit {
     this.chartOptions.grid.bottom = prevBottom;
     this.chartOptions.backgroundColor = 'none';
     this.chartInstance.setOption(this.chartOptions);
+  }
+
+  ngOnDestroy(): void {
+    this.networkChangedSubscription?.unsubscribe();
   }
 }

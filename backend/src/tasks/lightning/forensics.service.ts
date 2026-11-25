@@ -11,7 +11,6 @@ const tempCacheSize = 10000;
 
 class ForensicsService {
   loggerTimer = 0;
-  closedChannelsScanBlock = 0;
   txCache: { [txid: string]: IEsploraApi.Transaction } = {};
   tempCached: string[] = [];
 

@@ -164,6 +164,9 @@ export const MAX_PRICES = {
   ZAR: 10000000000,
 };
 
+const MAIN_CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'CHF', 'AUD', 'JPY'];
+const ADDITIONAL_CURRENCIES = ['BGN', 'BRL', 'CNY', 'CZK', 'DKK', 'HKD', 'HRK', 'HUF', 'IDR', 'ILS', 'INR', 'ISK', 'KRW', 'MXN', 'MYR', 'NOK', 'NZD', 'PHP', 'PLN', 'RON', 'RUB', 'SEK', 'SGD', 'THB', 'TRY', 'ZAR'];
+
 class PricesRepository {
   public async $savePrices(time: number, prices: ApiPrice): Promise<void> {
     if (prices.USD === -1) {
@@ -224,15 +227,32 @@ class PricesRepository {
     }
   }
 
-  /** @asyncUnsafe */
-  public async $getOldestPriceTime(): Promise<number> {
-    const [oldestRow] = await DB.query(`
-      SELECT UNIX_TIMESTAMP(time) AS time
-      FROM prices
-      ORDER BY time
-      LIMIT 1
-    `);
-    return oldestRow[0] ? oldestRow[0].time : 0;
+  /**
+   * Overwrite some of the 7 main currencies in one row. When USD changes, the currencies
+   * derived from the old USD price (all additional currencies, plus the main currencies listed
+   * in `derivedMainCurrencies`) are reset to -1 so that the price updater derives them again
+   */
+  public async $updateMainCurrencyPrices(time: number, prices: { [currency: string]: number }, derivedMainCurrencies: string[] = []): Promise<void> {
+    const currencies = Object.keys(prices).filter(currency => MAIN_CURRENCIES.includes(currency));
+    if (currencies.length === 0) {
+      return;
+    }
+    const assignments = currencies.map(currency => `${currency} = ?`);
+    if (currencies.includes('USD')) {
+      const derived = derivedMainCurrencies.filter(currency => MAIN_CURRENCIES.includes(currency) && !currencies.includes(currency));
+      assignments.push(...derived.concat(ADDITIONAL_CURRENCIES).map(currency => `${currency} = -1`));
+    }
+    try {
+      await DB.query(`
+        UPDATE prices
+        SET ${assignments.join(', ')}
+        WHERE time = FROM_UNIXTIME(?)`,
+        [...currencies.map(currency => prices[currency]), time]
+      );
+    } catch (e) {
+      logger.err(`Cannot update prices in db. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
   }
 
   /** @asyncUnsafe */
@@ -258,7 +278,7 @@ class PricesRepository {
   }
 
   /** @asyncUnsafe */
-  public async $getPricesTimes(): Promise<number[]> {
+  public async $getPricesTimes(): Promise<Set<number>> {
     const [times] = await DB.query(`
       SELECT UNIX_TIMESTAMP(time) AS time
       FROM prices
@@ -266,9 +286,26 @@ class PricesRepository {
       ORDER BY time
     `);
     if (!Array.isArray(times)) {
-      return [];
+      return new Set();
     }
-    return times.map(time => time.time);
+    return new Set(times.map(time => time.time));
+  }
+
+  /** @asyncUnsafe */
+  public async $getMainCurrencyPrices(): Promise<Map<number, { [currency: string]: number }>> {
+    const [rows] = await DB.query(`
+      SELECT UNIX_TIMESTAMP(time) AS time, USD, EUR, GBP, CAD, CHF, AUD, JPY
+      FROM prices
+      WHERE USD != -1
+    `);
+    const prices = new Map<number, { [currency: string]: number }>();
+    if (!Array.isArray(rows)) {
+      return prices;
+    }
+    for (const row of rows as { [field: string]: number }[]) {
+      prices.set(row.time, row);
+    }
+    return prices;
   }
 
   /** @asyncUnsafe */

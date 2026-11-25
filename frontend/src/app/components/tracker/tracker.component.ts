@@ -33,6 +33,8 @@ import { TrackerStage } from '@components/tracker/tracker-bar.component';
 import { MiningService, MiningStats } from '@app/services/mining.service';
 import { ETA, EtaService } from '@app/services/eta.service';
 import { getTransactionFlags, getUnacceleratedFeeRate } from '@app/shared/transaction.utils';
+import { StorageService } from '@app/services/storage.service';
+import { AnalyticsService } from '@app/services/analytics.service';
 
 
 interface Pool {
@@ -74,6 +76,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
   latestBlock: BlockExtended;
   transactionTime = -1;
   subscription: Subscription;
+  networkChangedSubscription: Subscription;
   fetchCpfpSubscription: Subscription;
   fetchRbfSubscription: Subscription;
   fetchCachedTxSubscription: Subscription;
@@ -86,6 +89,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
   currencyChangeSubscription: Subscription;
   urlFragmentSubscription: Subscription;
   partnerCodeSubscription: Subscription;
+  txConfirmedSubscription: Subscription;
   rbfTransaction: undefined | Transaction;
   replaced: boolean = false;
   latestReplacement: string;
@@ -147,6 +151,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
     private priceService: PriceService,
     private enterpriseService: EnterpriseService,
     private partnerCodeService: PartnerCodeService,
+    private analyticsService: AnalyticsService,
     private miningService: MiningService,
     private router: Router,
     private cd: ChangeDetectorRef,
@@ -172,7 +177,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
     });
 
     this.websocketService.want(['blocks', 'mempool-blocks']);
-    this.stateService.networkChanged$.subscribe(
+    this.networkChangedSubscription = this.stateService.networkChanged$.subscribe(
       (network) => {
         this.network = network;
         this.acceleratorAvailable = this.stateService.env.OFFICIAL_MEMPOOL_SPACE && this.stateService.env.ACCELERATOR && this.stateService.network === '';
@@ -499,6 +504,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
           this.websocketService.startTrackTransaction(tx.txid);
 
           if (!tx.status?.confirmed) {
+            this.analyticsService.action('/tx/:txid/tracker', 'unconfirmed-tx');
             this.trackerStage = 'pending';
             if (tx.firstSeen) {
               this.transactionTime = tx.firstSeen;
@@ -556,7 +562,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
         }
       );
 
-    this.stateService.txConfirmed$.subscribe(([txConfirmed, block]) => {
+    this.txConfirmedSubscription = this.stateService.txConfirmed$.subscribe(([txConfirmed, block]) => {
       if (txConfirmed && this.tx && !this.tx.status.confirmed && txConfirmed === this.tx.txid) {
         this.tx.status = {
           confirmed: true,
@@ -839,10 +845,6 @@ export class TrackerComponent implements OnInit, OnDestroy {
     this.stateService.markBlock$.next({});
   }
 
-  roundToOneDecimal(cpfpTx: any): number {
-    return +(cpfpTx.fee / (cpfpTx.weight / 4)).toFixed(1);
-  }
-
   @HostListener('window:resize', ['$event'])
   onResize(): void {
     this.isMobile = window.innerWidth < 850;
@@ -851,6 +853,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.networkChangedSubscription?.unsubscribe();
     this.subscription.unsubscribe();
     this.fetchCpfpSubscription.unsubscribe();
     this.fetchRbfSubscription.unsubscribe();
@@ -859,9 +862,9 @@ export class TrackerComponent implements OnInit, OnDestroy {
     this.txReplacedSubscription.unsubscribe();
     this.mempoolBlocksSubscription.unsubscribe();
     this.mempoolPositionSubscription.unsubscribe();
-    this.mempoolBlocksSubscription.unsubscribe();
     this.blocksSubscription.unsubscribe();
     this.miningSubscription?.unsubscribe();
+    this.txConfirmedSubscription?.unsubscribe();
     this.currencyChangeSubscription?.unsubscribe();
     this.enterpriseInfo$?.unsubscribe();
     this.urlFragmentSubscription?.unsubscribe();

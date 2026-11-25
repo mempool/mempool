@@ -41,11 +41,11 @@ import chainTips from './api/chain-tips';
 import { AxiosError } from 'axios';
 import v8 from 'v8';
 import { formatBytes, getBytesUnit } from './utils/format';
+import { apiErrorHandler } from './utils/api';
 import redisCache from './api/redis-cache';
 import accelerationApi from './api/services/acceleration';
 import bitcoinCoreRoutes from './api/bitcoin/bitcoin-core.routes';
 import bitcoinSecondClient from './api/bitcoin/bitcoin-second-client';
-import accelerationRoutes from './api/acceleration/acceleration.routes';
 import aboutRoutes from './api/about.routes';
 import mempoolBlocks from './api/mempool-blocks';
 import walletApi from './api/services/wallets';
@@ -400,15 +400,13 @@ class Server {
       nodesRoutes.initRoutes(this.app);
       channelsRoutes.initRoutes(this.app);
     }
-    if (config.MEMPOOL_SERVICES.ACCELERATIONS) {
-      accelerationRoutes.initRoutes(this.app);
-    }
     if (config.WALLETS.ENABLED) {
       servicesRoutes.initRoutes(this.app);
     }
     if (!config.MEMPOOL.OFFICIAL) {
       aboutRoutes.initRoutes(this.app);
     }
+    this.app.use(apiErrorHandler);
   }
 
   healthCheck(): void {
