@@ -28,7 +28,7 @@
       <tr>
         <td i18n="lightning.base-fee">Base fee</td>
         <td class="base-fee">
-          <span class="d-flex justify-content-between align-items-center">
+          <span class="d-flex flex-wrap gap-1 justify-content-between align-items-center">
             <span>
               <span *ngIf="channel.base_fee_mtokens !== null">
                 {{ channel.base_fee_mtokens | amountShortener : 0 }}
@@ -39,13 +39,13 @@
               </span>
             </span>
             <ng-template [ngIf]="channel.base_fee_mtokens !== null">
-              <span class="badge bg-success" *ngIf="channel.base_fee_mtokens === 0; else nonZeroBaseFee"
+              <span class="badge bg-success text-truncate mw-100" *ngIf="channel.base_fee_mtokens === 0; else nonZeroBaseFee"
                 i18n-ngbTooltip="lightning.zero-base-fee-tooltip"
                 ngbTooltip="This channel supports zero base fee routing"
                 placement="bottom" i18n="lightning.zero-base-fee">Zero base fee</span>
             </ng-template>
             <ng-template #nonZeroBaseFee>
-              <span class="badge bg-danger"
+              <span class="badge bg-danger text-truncate mw-100"
                 i18n-ngbTooltip="lightning.non-zero-base-fee-tooltip"
                 ngbTooltip="This channel does not support zero base fee routing"
                 placement="bottom" i18n="lightning.non-zero-base-fee">Non-zero base fee</span>

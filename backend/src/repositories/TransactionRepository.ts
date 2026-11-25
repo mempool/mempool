@@ -4,27 +4,6 @@ import { Ancestor, CpfpCluster, CpfpInfo, TemplateAlgorithm } from '../mempool.i
 import cpfpRepository from './CpfpRepository';
 
 class TransactionRepository {
-  public async $setCluster(txid: string, clusterRoot: string): Promise<void> {
-    try {
-      await DB.query(
-        `
-          INSERT INTO compact_transactions
-          (
-            txid,
-            cluster
-          )
-          VALUE (UNHEX(?), UNHEX(?))
-          ON DUPLICATE KEY UPDATE
-            cluster = UNHEX(?)
-        ;`,
-        [txid, clusterRoot, clusterRoot]
-      );
-    } catch (e: any) {
-      logger.err(`Cannot save transaction cpfp cluster into db. Reason: ` + (e instanceof Error ? e.message : e));
-      throw e;
-    }
-  }
-
   public buildBatchSetQuery(txs: { txid: string, cluster: string }[]): { query, params } {
     let query = `
           INSERT IGNORE INTO compact_transactions
@@ -42,19 +21,6 @@ class TransactionRepository {
       query,
       params: values,
     };
-  }
-
-  public async $batchSetCluster(txs): Promise<void> {
-    try {
-      const query = this.buildBatchSetQuery(txs);
-      await DB.query(
-        query.query,
-        query.params,
-      );
-    } catch (e: any) {
-      logger.err(`Cannot save cpfp transactions into db. Reason: ` + (e instanceof Error ? e.message : e));
-      throw e;
-    }
   }
 
   public async $getCpfpInfo(txid: string): Promise<CpfpInfo | void> {

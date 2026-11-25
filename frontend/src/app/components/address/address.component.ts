@@ -92,6 +92,22 @@ class AddressStats implements ChainStats {
   }
 }
 
+const STRIP_MIN_BLOCKS = 8;
+const STRIP_BLOCKS_PER_LOAD = 4;
+const STRIP_MAX_PAGES_PER_LOAD = 4;
+const STRIP_HISTORY_PAGE_SIZE = 25;
+
+// Pending transactions first (newest seen first), then confirmed by block height, newest first.
+function compareAddressTransactions(a: Transaction, b: Transaction): number {
+  if (a.status.confirmed !== b.status.confirmed) {
+    return a.status.confirmed ? 1 : -1;
+  }
+  if (!a.status.confirmed) {
+    return (b.firstSeen ?? 0) - (a.firstSeen ?? 0);
+  }
+  return (b.status.block_height ?? -1) - (a.status.block_height ?? -1);
+}
+
 @Component({
   selector: 'app-address',
   templateUrl: './address.component.html',
@@ -135,7 +151,15 @@ export class AddressComponent implements OnInit, OnDestroy {
   blockGroupStarts = new Map<string, AddressBlockGroup>();
   selectedBlockGroup: string | null = null;
   showBlockGroups = false;
+  stripGroups: AddressBlockGroup[] = [];
+  hideBlockStrip = true;
+  isLoadingStripHistory = false;
+  stripHistoryDone = false;
+  private stripHistory: Transaction[] = [];
+  private stripHistoryCursor: string | null = null;
+  private stripHistorySubscription: Subscription;
   private scrollSpyFrame = 0;
+  private scrollSpyPausedUntil = 0;
   private readonly onPageScroll = (): void => {
     this.scrollSpyFrame ||= requestAnimationFrame(() => {
       this.scrollSpyFrame = 0;
@@ -204,6 +228,8 @@ export class AddressComponent implements OnInit, OnDestroy {
           this.address = null;
           this.isLoadingTransactions = true;
           this.transactions = null;
+          this.hideBlockStrip = true;
+          this.resetStripHistory();
           this.updateBlockGroups();
           this.utxos = null;
           this.addressInfo = null;
@@ -315,6 +341,7 @@ export class AddressComponent implements OnInit, OnDestroy {
         times.forEach((time, index) => {
           this.tempTransactions[this.timeTxIndexes[index]].firstSeen = time;
         });
+        this.resetStripHistory();
         this.transactions = this.tempTransactions;
         this.sortTransactions();
         if (this.transactions.length === (this.mempoolStats.tx_count + this.chainStats.tx_count)) {
@@ -322,6 +349,7 @@ export class AddressComponent implements OnInit, OnDestroy {
         }
         this.updateBlockGroups();
         this.isLoadingTransactions = false;
+        this.fillStripHistory();
 
         const addressVin: Vin[] = [];
         const vinIds: string[] = [];
@@ -357,12 +385,14 @@ export class AddressComponent implements OnInit, OnDestroy {
       .subscribe(tx => {
         this.addTransaction(tx);
         this.mempoolStats.addTx(tx);
+        this.updateBlockGroups();
       });
 
     this.mempoolRemovedTxSubscription = this.stateService.mempoolRemovedTransactions$
       .subscribe(tx => {
         this.removeTransaction(tx);
         this.mempoolStats.removeTx(tx);
+        this.updateBlockGroups();
       });
 
     this.blockTxSubscription = this.stateService.blockTransactions$
@@ -380,6 +410,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           }
         }
         this.chainStats.addTx(transaction);
+        this.updateBlockGroups();
       });
   }
 
@@ -497,15 +528,7 @@ export class AddressComponent implements OnInit, OnDestroy {
   }
 
   private sortTransactions(): void {
-    this.transactions = this.transactions.slice().sort((a, b) => {
-      if (a.status.confirmed !== b.status.confirmed) {
-        return a.status.confirmed ? 1 : -1;
-      }
-      if (!a.status.confirmed) {
-        return (b.firstSeen ?? 0) - (a.firstSeen ?? 0);
-      }
-      return (b.status.block_height ?? -1) - (a.status.block_height ?? -1);
-    });
+    this.transactions = this.transactions.slice().sort(compareAddressTransactions);
     this.updateBlockGroups();
   }
 
@@ -513,11 +536,89 @@ export class AddressComponent implements OnInit, OnDestroy {
     const isLiquid = this.network === 'liquid' || this.network === 'liquidtestnet';
     this.blockGroups = this.address ? buildAddressBlockGroups(this.transactions, [this.address.address], this.fullyLoaded, isLiquid) : [];
     this.blockGroupStarts = new Map(this.blockGroups.map(group => [group.firstTxid, group]));
-    // Grouping adds little for addresses active in only a few blocks.
-    this.showBlockGroups = this.blockGroups.length >= 5 || (!this.fullyLoaded && this.blockGroups.length > 0);
-    if (!this.blockGroups.some(group => group.id === this.selectedBlockGroup)) {
-      this.selectedBlockGroup = this.blockGroups[0]?.id ?? null;
+
+    const listTxids = new Set(this.transactions?.map(tx => tx.txid));
+    const stripTransactions = this.stripHistory.length
+      ? [...(this.transactions ?? []), ...this.stripHistory.filter(tx => !listTxids.has(tx.txid))].sort(compareAddressTransactions)
+      : this.transactions;
+    const stripFullyLoaded = this.fullyLoaded || this.stripHistoryDone;
+    this.stripGroups = this.address ? buildAddressBlockGroups(stripTransactions, [this.address.address], stripFullyLoaded, isLiquid) : [];
+    const pendingGroup = this.stripGroups.find(group => !group.status.confirmed);
+    if (pendingGroup && this.mempoolStats) {
+      pendingGroup.count = this.mempoolStats.tx_count;
+      pendingGroup.net = isLiquid ? null : this.mempoolStats.funded_txo_sum - this.mempoolStats.spent_txo_sum;
+      pendingGroup.received = this.mempoolStats.funded_txo_count > 0;
+      pendingGroup.sent = this.mempoolStats.spent_txo_count > 0;
+      pendingGroup.partial = false;
     }
+
+    // Grouping adds little for addresses active in only a few blocks.
+    this.showBlockGroups = this.stripGroups.length >= 5 || (!stripFullyLoaded && this.stripGroups.length > 0);
+    if (!this.stripGroups.some(group => group.id === this.selectedBlockGroup)) {
+      this.selectedBlockGroup = this.stripGroups[0]?.id ?? null;
+    }
+  }
+
+  private get stripUsesOwnHistory(): boolean {
+    // Only Esplora backends serve the confirmed-only /txs/chain pages.
+    if (this.stateService.backend !== 'esplora') {
+      return false;
+    }
+    const lastTransaction = this.transactions?.[this.transactions.length - 1];
+    return !this.fullyLoaded && (!!this.stripHistoryCursor || (!!lastTransaction && !lastTransaction.status.confirmed));
+  }
+
+  toggleBlockStrip(): void {
+    this.hideBlockStrip = !this.hideBlockStrip;
+    if (!this.hideBlockStrip) {
+      this.fillStripHistory();
+    }
+  }
+
+  loadMoreStrip(automatic: boolean): void {
+    if (this.stripUsesOwnHistory) {
+      const confirmedBlocks = this.stripGroups.filter(group => group.status.confirmed).length;
+      this.fillStripHistory(confirmedBlocks + STRIP_BLOCKS_PER_LOAD);
+    } else if (!automatic) {
+      this.loadMore();
+    }
+  }
+
+  private fillStripHistory(minConfirmedBlocks = STRIP_MIN_BLOCKS, pagesLeft = STRIP_MAX_PAGES_PER_LOAD): void {
+    if (this.hideBlockStrip || !this.stripUsesOwnHistory || this.stripHistoryDone || this.isLoadingStripHistory) {
+      return;
+    }
+    const address = this.address;
+    this.isLoadingStripHistory = true;
+    this.stripHistorySubscription = (address.is_pubkey
+      ? this.electrsApiService.getScriptHashTransactionsChain$((address.address.length === 66 ? '21' : '41') + address.address + 'ac', this.stripHistoryCursor)
+      : this.electrsApiService.getAddressTransactionsChain$(address.address, this.stripHistoryCursor))
+      .subscribe({
+        next: (transactions) => {
+          this.isLoadingStripHistory = false;
+          if (transactions?.length) {
+            this.stripHistoryCursor = transactions[transactions.length - 1].txid;
+            this.stripHistory = this.stripHistory.concat(transactions);
+          }
+          this.stripHistoryDone = !transactions?.length || transactions.length < STRIP_HISTORY_PAGE_SIZE;
+          this.updateBlockGroups();
+          const confirmedBlocks = this.stripGroups.filter(group => group.status.confirmed).length;
+          if (confirmedBlocks < minConfirmedBlocks && pagesLeft > 1) {
+            this.fillStripHistory(minConfirmedBlocks, pagesLeft - 1);
+          }
+        },
+        error: () => {
+          this.isLoadingStripHistory = false;
+        },
+      });
+  }
+
+  private resetStripHistory(): void {
+    this.stripHistorySubscription?.unsubscribe();
+    this.stripHistory = [];
+    this.stripHistoryCursor = null;
+    this.stripHistoryDone = false;
+    this.isLoadingStripHistory = false;
   }
 
   // Bottom edge of the block strip once it sticks below the site header, or null when it doesn't stick.
@@ -532,6 +633,9 @@ export class AddressComponent implements OnInit, OnDestroy {
 
   // While scrolling through the transactions, select the block of the group shown below the strip.
   private selectBlockGroupInView(): void {
+    if (Date.now() < this.scrollSpyPausedUntil) {
+      return;
+    }
     const stripBottom = this.stickyStripBottom();
     if (!this.showBlockGroups || stripBottom === null) {
       return;
@@ -551,6 +655,7 @@ export class AddressComponent implements OnInit, OnDestroy {
 
   selectBlockGroup(id: string): void {
     this.selectedBlockGroup = id;
+    this.scrollSpyPausedUntil = Date.now() + 1000;
     const header = this.elementRef.nativeElement.querySelector<HTMLElement>(`app-address-block-group-header[data-block-group="${CSS.escape(id)}"]`);
     const stripBottom = this.stickyStripBottom();
     if (header && stripBottom !== null) {
@@ -743,6 +848,7 @@ export class AddressComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     window.removeEventListener('scroll', this.onPageScroll);
+    this.stripHistorySubscription?.unsubscribe();
     cancelAnimationFrame(this.scrollSpyFrame);
     this.mainSubscription.unsubscribe();
     this.mempoolTxSubscription.unsubscribe();

@@ -6,6 +6,7 @@ import { filter } from 'rxjs/operators';
 import { StateService } from '@app/services/state.service';
 import { LanguageService } from '@app/services/language.service';
 
+const TRACKED_HOSTNAMES = ['mempool.space', 'liquid.network', 'mempool.ninja', 'memepool.space', 'mempoo.space'];
 const SESSION_KEY = 'mlytx';
 const SESSION_TIMEOUT_MS = 6 * 60 * 60 * 1000;
 const SESSION_MAX_AGE_MS = 24 * 60 * 60 * 1000;
@@ -249,17 +250,14 @@ export class AnalyticsService {
   }
 
   private trackingAllowed(): boolean {
-    if (this.stateService.env.OFFICIAL_MEMPOOL_SPACE) {
-      return true;
-    }
-    const hostname = window.location.hostname;
-    if (hostname === 'mempool.space' || hostname.endsWith('.mempool.space')) {
-      return true;
-    }
     if (this.stateService.env.customize?.enterprise) {
       return true;
     }
-    return false;
+    if (!this.stateService.env.OFFICIAL_MEMPOOL_SPACE) {
+      return false;
+    }
+    const hostname = window.location.hostname;
+    return TRACKED_HOSTNAMES.includes(hostname) || hostname.endsWith('.mempool.space');
   }
 
   private doNotTrack(): boolean {

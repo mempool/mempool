@@ -3,6 +3,23 @@ import PricesRepository from '../../repositories/PricesRepository';
 import { query } from '../../utils/axios-query';
 import priceUpdater, { PriceFeed, PriceHistory } from '../price-updater';
 
+// Prices are stored in FLOAT columns, which MySQL returns rounded to six significant
+// digits, so a stored price can differ from the exchange's value by up to 5 parts per million
+function isSamePrice(stored: number, exchange: number): boolean {
+  return Math.abs(stored - exchange) <= Math.abs(exchange) * 1e-5;
+}
+
+// Earlier versions stored the week's closing price at the start of the week. A stored value
+// came from there if it is the closing price, or if no row an hour or a day either side of it
+// exists (so neither the hourly updater nor the daily backfill wrote it) and it is nearer the
+// closing price than the opening price
+function holdsWeekClose(value: number, open: number, close: number, hasNeighbours: boolean): boolean {
+  if (value <= 0 || isSamePrice(value, open)) {
+    return false;
+  }
+  return isSamePrice(value, close) || (!hasNeighbours && Math.abs(value - close) < Math.abs(value - open));
+}
+
 class KrakenApi implements PriceFeed {
   public name: string = 'Kraken';
   public currencies: string[] = ['USD', 'EUR', 'GBP', 'CAD', 'CHF', 'AUD', 'JPY'];
@@ -50,7 +67,8 @@ class KrakenApi implements PriceFeed {
         if (priceHistory[price[0]] === undefined) {
           priceHistory[price[0]] = priceUpdater.getEmptyPricesObj();
         }
-        priceHistory[price[0]][currency] = price[4];
+        // Candles are [time, open, high, low, close, vwap, volume, count]. The open is the price at `time`
+        priceHistory[price[0]][currency] = price[1];
       }
     }
 
@@ -62,7 +80,7 @@ class KrakenApi implements PriceFeed {
    * @asyncUnsafe
    */
   public async $insertHistoricalPrice(): Promise<void> {
-    const existingPriceTimes = await PricesRepository.$getPricesTimes();
+    const storedPrices = await PricesRepository.$getMainCurrencyPrices();
 
     // EUR weekly price history goes back to timestamp 1378339200 (September 5, 2013)
     // USD weekly price history goes back to timestamp 1380758400 (October 3, 2013)
@@ -73,22 +91,43 @@ class KrakenApi implements PriceFeed {
     // AUD weekly price history goes back to timestamp 1591833600 (June 11, 2020)
 
     const priceHistory: any = {}; // map: timestamp -> Prices
+    const corrections: { [time: number]: { [currency: string]: number } } = {};
+    const candleCurrencies: { [time: number]: Set<string> } = {};
+    let fetchFailed = false;
 
     for (const currency of this.currencies) {
       const response = await query(this.urlHist.replace('{GRANULARITY}', '10080') + currency);
-      const priceHistoryRaw = response ? response['result'][this.getTicker(currency)] : [];
+      const priceHistoryRaw = response?.['result']?.[this.getTicker(currency)];
+      if (!Array.isArray(priceHistoryRaw)) {
+        fetchFailed = true;
+        continue;
+      }
 
-      for (const price of priceHistoryRaw) {
-        if (existingPriceTimes.has(parseInt(price[0]))) {
+      for (const [index, price] of priceHistoryRaw.entries()) {
+        // price[0] = start of the week, price[1] = opening price, price[4] = closing price.
+        // The row is stored at the start of the week, so it takes the opening price
+        const time = parseInt(price[0], 10);
+        const open = parseFloat(price[1]);
+        const close = parseFloat(price[4]);
+        candleCurrencies[time] = candleCurrencies[time] || new Set();
+        candleCurrencies[time].add(currency);
+
+        const stored = storedPrices.get(time);
+        if (stored) {
+          // The last candle is the current week, whose closing price is still changing
+          const isCurrentWeek = index === priceHistoryRaw.length - 1;
+          const hasNeighbours = [-86400, -3600, 3600, 86400].some(offset => storedPrices.has(time + offset));
+          if (!isCurrentWeek && holdsWeekClose(stored[currency], open, close, hasNeighbours)) {
+            corrections[time] = corrections[time] || {};
+            corrections[time][currency] = open;
+          }
           continue;
         }
 
-        // prices[0] = kraken price timestamp
-        // prices[4] = closing price
         if (priceHistory[price[0]] === undefined) {
           priceHistory[price[0]] = priceUpdater.getEmptyPricesObj();
         }
-        priceHistory[price[0]][currency] = price[4];
+        priceHistory[price[0]][currency] = price[1];
       }
     }
 
@@ -102,6 +141,25 @@ class KrakenApi implements PriceFeed {
 
     if (Object.keys(priceHistory).length > 0) {
       logger.info(`Inserted ${Object.keys(priceHistory).length} Kraken EUR, USD, GBP, JPY, CAD, CHF and AUD weekly price history into db`, logger.tags.mining);
+    }
+
+    if (fetchFailed) {
+      // A currency with no answer would look like one Kraken has no history for, and be reset
+      if (Object.keys(corrections).length > 0) {
+        logger.warn(`Not correcting weekly price rows because Kraken did not return every currency; trying again on the next run`, logger.tags.mining);
+      }
+      return;
+    }
+
+    for (const time in corrections) {
+      // Currencies Kraken has no candle for at this time were derived from USD, so they are
+      // recalculated when USD changes
+      const derivedCurrencies = this.currencies.filter(currency => !candleCurrencies[time].has(currency));
+      await PricesRepository.$updateMainCurrencyPrices(parseInt(time, 10), corrections[time], derivedCurrencies);
+    }
+
+    if (Object.keys(corrections).length > 0) {
+      logger.notice(`Corrected ${Object.keys(corrections).length} weekly price rows to the opening price of the week`, logger.tags.mining);
     }
   }
 }

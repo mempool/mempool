@@ -425,7 +425,7 @@
                   </div>
                 </div>
               } @else {
-                <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<span><small style="font-family: monospace;">{{ ((invoice?.btcDue * 100_000_000) || cost) | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span> <span i18n="accelerator.pay-with">with</span></p>
+                <p><ng-container i18n="transaction.pay|Pay button label">Pay</ng-container>&nbsp;<span><small style="font-family: monospace;">{{ ((invoice?.btcDue * 100_000_000) || cost) | number }}</small>&nbsp;<span class="symbol" i18n="shared.sats">sats</span></span>&nbsp;<span i18n="accelerator.pay-with">with</span></p>
                 <div class="paymentMethod mx-2 d-flex justify-content-center align-items-center" style="width: 200px; height: 55px" (click)="moveToStep('bitcoin')">
                   <img src="/resources/bitcoin-btc-logo-full.svg" height=30>
                 </div>

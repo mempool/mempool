@@ -1,5 +1,6 @@
 {
   "OFFICIAL_MEMPOOL_SPACE": true,
+  "ANALYTICS_URL": "/t",
   "TESTNET_ENABLED": true,
   "TESTNET4_ENABLED": true,
   "LIQUID_ENABLED": true,

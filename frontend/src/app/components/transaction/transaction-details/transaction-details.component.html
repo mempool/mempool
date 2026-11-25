@@ -2,7 +2,7 @@
   <div class="row">
     @if (isMobile) {
       <div class="col-sm">
-        <table class="table table-borderless table-striped">
+        <table class="table table-borderless table-striped details-table">
           <tbody>
               <ng-container *ngTemplateOutlet="detailsLeft"></ng-container>
               <ng-container *ngTemplateOutlet="detailsRight"></ng-container>
@@ -109,7 +109,7 @@
       @if (featuresEnabled) {
         <tr>
           <td class="td-width" i18n="transaction.features|Transaction features" id="acceleratePreviewAnchor">Features</td>
-          <td>
+          <td class="wrap-cell">
             <app-tx-features [tx]="tx"></app-tx-features>
           </td>
         </tr>

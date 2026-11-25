@@ -4,6 +4,7 @@ import backendInfo from '../api/backend-info';
 import config from '../config';
 import logger from '../logger';
 import * as https from 'https';
+import { Common } from '../api/common';
 
 /** @asyncUnsafe */
 export async function query(path, throwOnFail: boolean = false): Promise<object | undefined> {
@@ -14,7 +15,6 @@ export async function query(path, throwOnFail: boolean = false): Promise<object 
    timeout: number;
    httpsAgent?: https.Agent;
  };
- const setDelay = (secs: number = 1): Promise<void> => new Promise(resolve => setTimeout(() => resolve(), secs * 1000));
  const axiosOptions: axiosOptions = {
    headers: {
      'User-Agent': (config.MEMPOOL.USER_AGENT === 'mempool') ? `mempool/v${backendInfo.getBackendInfo().version}` : `${config.MEMPOOL.USER_AGENT}`
@@ -57,7 +57,7 @@ export async function query(path, throwOnFail: boolean = false): Promise<object 
      retry++;
    }
    if (retry < config.MEMPOOL.EXTERNAL_MAX_RETRY) {
-     await setDelay(config.MEMPOOL.EXTERNAL_RETRY_INTERVAL);
+     await Common.sleep$(config.MEMPOOL.EXTERNAL_RETRY_INTERVAL * 1000);
    }
  }
 
