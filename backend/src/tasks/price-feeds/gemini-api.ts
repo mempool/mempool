@@ -38,7 +38,8 @@ class GeminiApi implements PriceFeed {
         if (priceHistory[time] === undefined) {
           priceHistory[time] = priceUpdater.getEmptyPricesObj();
         }
-        priceHistory[time][currency] = price[4];
+        // Candles are [time, open, high, low, close, volume]. The open is the price at `time`
+        priceHistory[time][currency] = price[1];
       }
     }
 
