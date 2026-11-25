@@ -156,6 +156,8 @@ export interface SinglePoolStats {
   name: string;
   link: string;
   blockCount: number;
+  bip54BlockCount?: number;
+  bip54Recent?: boolean | null;
   emptyBlocks: number;
   rank: number;
   share: number;
@@ -170,6 +172,7 @@ export interface SinglePoolStats {
 }
 export interface PoolsStats {
   blockCount: number;
+  bip54Pending?: boolean; // some blocks in the window still await their BIP-54 tag
   lastEstimatedHashrate: number;
   lastEstimatedHashrate3d: number;
   lastEstimatedHashrate1w: number;

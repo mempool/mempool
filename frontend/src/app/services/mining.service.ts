@@ -21,6 +21,7 @@ export interface MiningStats {
   pools: SinglePoolStats[];
   miningUnits: MiningUnits;
   totalBlockCount: number;
+  bip54Pending?: boolean;
 }
 
 @Injectable({
@@ -134,7 +135,7 @@ export class MiningService {
         lastEstimatedHashrate1w: poolStat.blockCount / stats.blockCount * stats.lastEstimatedHashrate1w / hashrateDivider,
         emptyBlockRatio: (poolStat.emptyBlocks / poolStat.blockCount * 100).toFixed(2),
         logo: `/resources/mining-pools/` + poolStat.slug + '.svg',
-        ...poolStat
+        ...poolStat,
       };
     });
 
@@ -148,6 +149,7 @@ export class MiningService {
       pools: poolsStats,
       miningUnits: miningUnits,
       totalBlockCount: parseInt(response.headers.get('x-total-count'), 10),
+      bip54Pending: stats.bip54Pending,
     };
   }
 
