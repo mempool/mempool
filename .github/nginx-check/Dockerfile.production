@@ -1,4 +1,4 @@
-FROM nginx:1.30.1-alpine
+FROM nginx:1.31.9-alpine
 
 # Stage the config the way production/install does: the repo is available at
 # ${NGINX_ETC_FOLDER}/mempool and production/nginx/nginx.conf becomes the main
