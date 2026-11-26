@@ -87,10 +87,10 @@ export class WalletStorageService {
       .filter((w): w is WatchWallet => w !== null && w.network === network);
   }
 
-  save(wallet: WatchWallet): void {
+  save(wallet: WatchWallet): boolean {
     const records = this.readRecords();
     if (!records) {
-      return;
+      return false;
     }
     const index = records.findIndex((r) => readRecord(r)?.id === wallet.id);
     if (index >= 0) {
@@ -98,7 +98,7 @@ export class WalletStorageService {
     } else {
       records.push(wallet);
     }
-    this.persist(records);
+    return this.persist(records);
   }
 
   /** Put `wallet` where the wallet `oldId` was, e.g. after re-importing it under another script type. */
@@ -118,8 +118,14 @@ export class WalletStorageService {
 
   remove(id: string): void {
     const records = this.readRecords();
-    if (records) {
-      this.persist(records.filter((r) => readRecord(r)?.id !== id));
+    if (records && this.persist(records.filter((r) => readRecord(r)?.id !== id))) {
+      // The id is a hash of the wallet's descriptor or addresses, so it goes with the wallet.
+      const active = this.readActive();
+      const network = Object.keys(active).find((n) => active[n] === id);
+      if (network) {
+        delete active[network];
+        this.storageService.setValue(ACTIVE_KEY, JSON.stringify(active));
+      }
     }
   }
 
@@ -159,7 +165,7 @@ export class WalletStorageService {
     }
   }
 
-  private persist(records: unknown[]): void {
-    this.storageService.setValue(STORAGE_KEY, JSON.stringify(records));
+  private persist(records: unknown[]): boolean {
+    return this.storageService.setValue(STORAGE_KEY, JSON.stringify(records));
   }
 }

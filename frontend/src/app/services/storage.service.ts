@@ -41,11 +41,13 @@ export class StorageService {
     }
   }
 
-  setValue(key: string, value: any): void {
+  setValue(key: string, value: any): boolean {
     try {
       localStorage.setItem(key, value);
+      return true;
     } catch (e) {
       console.log(e);
+      return false;
     }
   }
 
