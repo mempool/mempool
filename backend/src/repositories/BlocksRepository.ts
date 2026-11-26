@@ -1459,15 +1459,15 @@ class BlocksRepository {
   }
 
   /** @asyncSafe */
-  public async $getBlocksMissingBip54Tag(): Promise<{id: string, height: number, timestamp: number}[]> {
+  public async $getBlocksMissingBip54Tag(): Promise<{id: string, height: number, timestamp: number, stale: boolean}[]> {
     const timeFirstMainnetBip54Coinbase = 1771507776;
     const query = `SELECT 
     hash as id, 
     height,
-    UNIX_TIMESTAMP(blocks.blockTimestamp) AS timestamp
+    UNIX_TIMESTAMP(blocks.blockTimestamp) AS timestamp,
+    stale
     FROM blocks
     where coinbase_bip_54 IS NULL AND
-    stale = 0 AND
     height > 0 AND
     blockTimestamp >= FROM_UNIXTIME(${timeFirstMainnetBip54Coinbase})
     ORDER BY height DESC`;
@@ -1475,7 +1475,10 @@ class BlocksRepository {
     try {
       const [blocks]: any[] = await DB.query(query);
 
-      return blocks;
+      return blocks.map((block) => ({
+        ...block,
+        stale: !!block.stale
+      }));
     } catch (e) {
       logger.err(`Cannot get blocks with missing bip54 flag. Reason: ` + (e instanceof Error ? e.message : e));
     }
