@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
-import { combineLatest, EMPTY, fromEvent, interval, merge, Observable, of, Subject, Subscription, timer } from 'rxjs';
+import { combineLatest, EMPTY, fromEvent, interval, merge, Observable, of, Subject, Subscription, throwError, timer } from 'rxjs';
 import { catchError, delayWhen, distinctUntilChanged, filter, map, retry, scan, share, shareReplay, startWith, switchMap, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import { AuditStatus, BlockExtended, CurrentPegs, FederationAddress, FederationUtxo, OptimizedMempoolStats, RecentPeg } from '@interfaces/node-api.interface';
 import { MempoolInfo, ReplacementInfo } from '@interfaces/websocket.interface';
@@ -9,6 +9,7 @@ import { WebsocketService } from '@app/services/websocket.service';
 import { SeoService } from '@app/services/seo.service';
 import { ActiveFilter, FilterMode, GradientMode, toFlags } from '@app/shared/filters.utils';
 import { detectWebGL } from '@app/shared/graphs.utils';
+import { MIN_POINTS_TO_DRAW } from '@components/incoming-transactions-graph/incoming-transactions-graph.component';
 
 interface MempoolBlocksData {
   blocks: number;
@@ -225,39 +226,27 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
           this.isMempoolStatsLoading = true;
           this.mempoolStatsError = null;
         }),
-        switchMap(() => this.apiService.list2HStatistics$().pipe(
-          retry({ count: 3, delay: 1000 }),
-          catchError((err) => {
-            this.mempoolStatsError = err;
-            return of(null);
+        switchMap(() => merge(
+          this.apiService.list2HStatistics$().pipe(
+            retry({ delay: (err, retryCount) => this.scheduleMempoolStatsRetry(err, retryCount) }),
+            catchError((err) => {
+              this.mempoolStatsError = err;
+              return of([]);
+            }),
+          ),
+          this.stateService.live2Chart$,
+        ).pipe(
+          scan((acc, update) => this.accumulateMempoolStats(acc, update), [] as OptimizedMempoolStats[]),
+          tap((mempoolStats) => {
+            if (mempoolStats.length >= MIN_POINTS_TO_DRAW) {
+              this.mempoolStatsError = null;
+            }
           }),
         )),
-        switchMap((mempoolStats) => {
-          return merge(
-            this.stateService.live2Chart$
-              .pipe(
-                scan((acc, stats) => {
-                  const now = Date.now() / 1000;
-                  const start = now - (2 * 60 * 60);
-                  this.mempoolStatsError = null;
-                  acc.unshift(stats);
-                  acc = acc.filter(p => p.added >= start);
-                  return acc;
-                }, (mempoolStats || []))
-              ),
-            of(mempoolStats)
-          );
-        }),
-        map((mempoolStats) => {
-          if (mempoolStats) {
-            return {
-              mempool: mempoolStats,
-              weightPerSecond: this.handleNewMempoolData(mempoolStats.concat([])),
-            };
-          } else {
-            return null;
-          }
-        }),
+        map((mempoolStats) => ({
+          mempool: mempoolStats,
+          weightPerSecond: this.handleNewMempoolData(mempoolStats.concat([])),
+        })),
       ).subscribe((mempoolStats) => {
         this.isMempoolStatsLoading = false;
         this.mempoolStats = mempoolStats;
@@ -406,6 +395,36 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.currencySubscription = this.stateService.fiatCurrency$.subscribe((fiat) => {
       this.currency = fiat;
     });
+  }
+
+  private scheduleMempoolStatsRetry(err: any, retryCount: number): Observable<number> {
+    const MEMPOOL_STATS_FAST_RETRIES = 3;
+    const MEMPOOL_STATS_RETRY_MAX_MS = 30000;
+
+    if (retryCount > 12) {
+      return throwError(() => err);
+    }
+
+    if (retryCount > MEMPOOL_STATS_FAST_RETRIES) {
+      if (!this.stateService.isBrowser) {
+        return throwError(() => err);
+      }
+      this.isMempoolStatsLoading = false;
+      this.cd.markForCheck();
+    }
+
+    const slowRetries = Math.max(0, retryCount - MEMPOOL_STATS_FAST_RETRIES);
+    const backoff = Math.min(1000 * 2 ** slowRetries, MEMPOOL_STATS_RETRY_MAX_MS);
+    return timer(backoff);
+  }
+
+  private accumulateMempoolStats(acc: OptimizedMempoolStats[], update: OptimizedMempoolStats | OptimizedMempoolStats[]): OptimizedMempoolStats[] {
+    if (Array.isArray(update)) {
+      const newestFetched = update[0]?.added ?? 0;
+      return acc.filter(p => p.added > newestFetched).concat(update);
+    }
+    const start = Date.now() / 1000 - (2 * 60 * 60);
+    return [update, ...acc].filter(p => p.added >= start);
   }
 
   handleNewMempoolData(mempoolStats: OptimizedMempoolStats[]) {

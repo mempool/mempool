@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs';
 import { isMobile } from '@app/shared/common.utils';
 
 const OUTLIERS_MEDIAN_MULTIPLIER = 4;
+export const MIN_POINTS_TO_DRAW = 2;
 
 @Component({
   selector: 'app-incoming-transactions-graph',
@@ -57,7 +58,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
   ngOnInit() {
     this.rateUnitSub = this.stateService.rateUnits$.subscribe(rateUnits => {
       this.weightMode = rateUnits === 'wu';
-      if (this.data && !this.error) {
+      if (this.hasEnoughPoints() && !this.error) {
         this.mountChart();
       }
     });
@@ -67,7 +68,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
     if (this.isLoading) {
       return;
     }
-    if (!this.data || (this.data && this.data.series?.[0]?.length === 0) || this.error) {
+    if (!this.hasEnoughPoints() || this.error) {
       this.mountMessageOnChart();
       return;
     }
@@ -78,6 +79,10 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
       this.computeMedianVbytesPerSecond(this.data.series[0]);
     }
     this.mountChart();
+  }
+
+  private hasEnoughPoints(): boolean {
+    return (this.data?.series?.[0]?.length ?? 0) >= MIN_POINTS_TO_DRAW;
   }
 
   rendered() {
@@ -330,7 +335,7 @@ export class IncomingTransactionsGraphComponent implements OnInit, OnChanges, On
 
   mountMessageOnChart(): void {
     let errorMessage = $localize`:error.general-loading-data:Error loading data.`;
-    if (!this.error && this.data && this.data.series[0]?.length === 0) { // Empty array
+    if (!this.error && this.data && !this.hasEnoughPoints()) {
       errorMessage = $localize`No data to display yet. Try again later.`;
     }
     if (this.template === 'widget') {
