@@ -49,7 +49,6 @@ interface FeesChartData {
   standalone: false,
 })
 export class LightningFeesChartComponent implements OnInit, OnDestroy {
-  miningWindowPreference: string;
   radioGroupForm: UntypedFormGroup;
 
   chartOptions: EChartsOption = {};
@@ -64,6 +63,20 @@ export class LightningFeesChartComponent implements OnInit, OnDestroy {
   timespan = '';
   chartInstance: any = undefined;
   fragmentSubscription: Subscription;
+
+  feeRateLabel = $localize`:@@3e322ffba6477484e0dd2e65650fdd70322ea6d0:Fee rate`;
+  baseFeeLabel = $localize`:@@4ca458fe3274d1c79640b052d57cf3b900b650b6:Base fee`;
+  capacityLabel = $localize`:@@lightning.channel-size:Channel size`;
+  units = {
+    [this
+      .feeRateLabel]: $localize`:@@8fd0077b032e360ece45c4fd655f85b2400dcb83:ppm`,
+    [this
+      .baseFeeLabel]: $localize`:@@6acd06bd5a3af583cd46c6d9f7954d7a2b44095e:mSats`,
+    [this
+      .capacityLabel]: $localize`:@@e4b2d9e6a2ab9e6ca34027ec03beaac42b7badd4:sats`,
+  };
+  feeLabel = this.feeRateLabel;
+  legendSelected: Record<string, boolean>;
 
   constructor(
     @Inject(LOCALE_ID) public locale: string,
@@ -85,15 +98,27 @@ export class LightningFeesChartComponent implements OnInit, OnDestroy {
     this.seoService.setDescription(
       $localize`:@@meta.description.lightning.fees-chart:See the fee rate and base fee charged by Lightning network routing nodes, and the channel size, visualized over time.`
     );
-    this.miningWindowPreference =
+    const initialTimespan =
       [
         this.route.snapshot.fragment,
         this.storageService.getValue('lightningWindowPreference'),
       ].find((timespan) => WINDOWS.includes(timespan)) ?? 'all';
     this.radioGroupForm = this.formBuilder.group({
-      dateSpan: this.miningWindowPreference,
+      dateSpan: initialTimespan,
       mode: 'med',
     });
+
+    this.legendSelected = {
+      [this.feeRateLabel]: true,
+      [this.baseFeeLabel]: false,
+      [this.capacityLabel]: true,
+      ...JSON.parse(this.storageService.getValue('fees_ln_legend') || 'null'),
+    };
+    if (this.legendSelected[this.feeRateLabel]) {
+      this.legendSelected[this.baseFeeLabel] = false;
+    } else if (this.legendSelected[this.baseFeeLabel]) {
+      this.feeLabel = this.baseFeeLabel;
+    }
 
     this.fragmentSubscription = this.route.fragment.subscribe((fragment) => {
       if (
@@ -109,14 +134,13 @@ export class LightningFeesChartComponent implements OnInit, OnDestroy {
       .valueChanges.pipe(startWith(this.radioGroupForm.get('mode').value));
 
     const statistics$ = this.radioGroupForm.get('dateSpan').valueChanges.pipe(
-      startWith(this.miningWindowPreference),
+      startWith(initialTimespan),
       switchMap((timespan): Observable<HttpResponse<any[]>> => {
         this.timespan = timespan;
         if (!firstRun) {
           this.storageService.setValue('lightningWindowPreference', timespan);
         }
         firstRun = false;
-        this.miningWindowPreference = timespan;
         this.isLoading = true;
         return this.lightningApiService.cachedRequest(
           this.lightningApiService.listStatistics$,
@@ -128,9 +152,7 @@ export class LightningFeesChartComponent implements OnInit, OnDestroy {
 
     this.feesObservable$ = combineLatest([statistics$, mode$]).pipe(
       tap(([response, mode]) => {
-        const data = response.body.filter(
-          (val) => val[`${mode}_fee_rate`] !== null
-        );
+        const data = response.body.filter((val) => val[`${mode}_capacity`] > 0);
         this.prepareChartOptions({
           feeRate: data.map((val) => [
             val.added * 1000,
@@ -160,9 +182,6 @@ export class LightningFeesChartComponent implements OnInit, OnDestroy {
 
   prepareChartOptions(data: FeesChartData): void {
     const isEmpty = data.feeRate.length === 0;
-    const feeRateLabel = $localize`:@@3e322ffba6477484e0dd2e65650fdd70322ea6d0:Fee rate`;
-    const baseFeeLabel = $localize`:@@4ca458fe3274d1c79640b052d57cf3b900b650b6:Base fee`;
-    const capacityLabel = $localize`:@@lightning.channel-size:Channel size`;
     const legendItem = (name: string): object => ({
       name,
       inactiveColor: 'rgb(110, 112, 121)',
@@ -189,8 +208,8 @@ export class LightningFeesChartComponent implements OnInit, OnDestroy {
       grid: {
         top: 40,
         bottom: 70,
-        right: 65,
-        left: 65,
+        right: 60,
+        left: 60,
       },
       tooltip: {
         show: !isMobile(),
@@ -207,11 +226,6 @@ export class LightningFeesChartComponent implements OnInit, OnDestroy {
         },
         borderColor: '#000',
         formatter: (ticks): string => {
-          const units = [
-            $localize`:@@8fd0077b032e360ece45c4fd655f85b2400dcb83:ppm`,
-            $localize`:@@6acd06bd5a3af583cd46c6d9f7954d7a2b44095e:mSats`,
-            $localize`:@@e4b2d9e6a2ab9e6ca34027ec03beaac42b7badd4:sats`,
-          ];
           const date = new Date(ticks[0].data[0]).toLocaleDateString(
             this.locale,
             { year: 'numeric', month: 'short', day: 'numeric' }
@@ -222,7 +236,7 @@ export class LightningFeesChartComponent implements OnInit, OnDestroy {
                 tick.data[1],
                 this.locale,
                 '1.0-0'
-              )} ${units[tick.seriesIndex]}</span>`
+              )} ${this.units[tick.seriesName]}</span>`
           );
 
           return `<b style="color: white; margin-left: 18px">${date}</b><br>${lines.join(
@@ -244,14 +258,11 @@ export class LightningFeesChartComponent implements OnInit, OnDestroy {
         : {
             top: 'top',
             data: [
-              legendItem(feeRateLabel),
-              legendItem(baseFeeLabel),
-              legendItem(capacityLabel),
+              legendItem(this.feeRateLabel),
+              legendItem(this.baseFeeLabel),
+              legendItem(this.capacityLabel),
             ],
-            selected:
-              JSON.parse(
-                this.storageService.getValue('fees_ln_legend') || 'null'
-              ) ?? undefined,
+            selected: this.legendSelected,
           },
       yAxis: isEmpty
         ? undefined
@@ -261,7 +272,7 @@ export class LightningFeesChartComponent implements OnInit, OnDestroy {
               axisLabel: {
                 color: 'rgb(110, 112, 121)',
                 formatter: (val: number): string =>
-                  `${formatNumber(Math.round(val), this.locale, '1.0-0')}`,
+                  `${this.shortenAxisValue(val)} ${this.units[this.feeLabel]}`,
               },
               splitLine: {
                 lineStyle: {
@@ -278,7 +289,9 @@ export class LightningFeesChartComponent implements OnInit, OnDestroy {
               axisLabel: {
                 color: 'rgb(110, 112, 121)',
                 formatter: (val: number): string =>
-                  `${this.amountShortenerPipe.transform(val, 1)}`,
+                  `${this.shortenAxisValue(val)} ${
+                    this.units[this.capacityLabel]
+                  }`,
               },
               splitLine: {
                 show: false,
@@ -290,7 +303,7 @@ export class LightningFeesChartComponent implements OnInit, OnDestroy {
         : [
             {
               zlevel: 1,
-              name: feeRateLabel,
+              name: this.feeRateLabel,
               showSymbol: false,
               symbol: 'none',
               data: data.feeRate,
@@ -302,7 +315,7 @@ export class LightningFeesChartComponent implements OnInit, OnDestroy {
             },
             {
               zlevel: 1,
-              name: baseFeeLabel,
+              name: this.baseFeeLabel,
               showSymbol: false,
               symbol: 'none',
               data: data.baseFee,
@@ -315,7 +328,7 @@ export class LightningFeesChartComponent implements OnInit, OnDestroy {
             {
               zlevel: 0,
               yAxisIndex: 1,
-              name: capacityLabel,
+              name: this.capacityLabel,
               showSymbol: false,
               symbol: 'none',
               data: data.capacity,
@@ -357,6 +370,10 @@ export class LightningFeesChartComponent implements OnInit, OnDestroy {
     };
   }
 
+  shortenAxisValue(val: number): string {
+    return `${this.amountShortenerPipe.transform(val, val < 1000 ? 0 : 1)}`;
+  }
+
   onChartInit(ec): void {
     if (this.chartInstance !== undefined) {
       return;
@@ -365,9 +382,22 @@ export class LightningFeesChartComponent implements OnInit, OnDestroy {
     this.chartInstance = ec;
 
     this.chartInstance.on('legendselectchanged', (e) => {
+      const pair = {
+        [this.feeRateLabel]: this.baseFeeLabel,
+        [this.baseFeeLabel]: this.feeRateLabel,
+      }[e.name];
+      this.legendSelected = { ...e.selected };
+      if (pair && e.selected[e.name]) {
+        this.feeLabel = e.name;
+        this.legendSelected[pair] = false;
+        this.chartInstance.dispatchAction({
+          type: 'legendUnSelect',
+          name: pair,
+        });
+      }
       this.storageService.setValue(
         'fees_ln_legend',
-        JSON.stringify(e.selected)
+        JSON.stringify(this.legendSelected)
       );
     });
   }
