@@ -15,6 +15,8 @@ import {
   startWith,
   repeat,
   take,
+  takeUntil,
+  defaultIfEmpty,
   distinctUntilChanged
 } from 'rxjs/operators';
 import { Transaction } from '@interfaces/electrs.interface';
@@ -287,10 +289,14 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       }),
       switchMap((txid) => this.apiService.getTransactionTimes$([txid]).pipe(
         retry({ count: 2, delay: 2000 }),
-        // Try again until we either get a valid response, or the transaction is confirmed
-        repeat({ delay: 2000 }),
-        filter((transactionTimes) => transactionTimes?.[0] > 0 || this.tx.status?.confirmed),
+        // Try again until we get a valid response, less and less often and at most 15 times
+        repeat({ count: 15, delay: (attempt) => timer(Math.min(2000 * 2 ** (attempt - 1), 60000)) }),
+        filter((transactionTimes) => transactionTimes?.[0] > 0),
         take(1),
+        // Stop when the transaction is confirmed or the page moves on to another transaction
+        takeUntil(this.txChanged$.pipe(filter(() => this.tx?.txid !== txid || this.tx.status?.confirmed))),
+        defaultIfEmpty(null),
+        catchError(() => of(null)),
       )),
     )
     .subscribe((transactionTimes) => {
