@@ -652,13 +652,14 @@ const EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT = {
   'testnet4': 90_500,
   'testnet': 4_550_000,
   'signet': 260_000,
+  'regtest': 0,
   '': 905_000,
 };
 function isStandardEphemeralDust(tx: Transaction, height?: number, network?: string): boolean {
   if (
     tx.fee === 0
     && (height == null || (
-      EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[network]
+      EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[network] !== undefined
       && height >= EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[network]
     ))
   ) {
@@ -672,13 +673,14 @@ const OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT = {
   'testnet4': 108_000,
   'testnet': 4_750_000,
   'signet': 276_500,
+  'regtest': 0,
   '': 921_000,
 };
 const MAX_DATACARRIER_BYTES = 83;
 function isStandardOpReturn(bytes: number, outputs: number,height?: number, network?: string): boolean {
   if (
     (height == null || (
-      OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[network]
+      OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[network] !== undefined
       && height >= OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[network]
     )) // limits lifted
     || // OR
@@ -694,12 +696,13 @@ const LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT = {
   'testnet4': 108_000,
   'testnet': 4_750_000,
   'signet': 276_500,
+  'regtest': 0,
   '': 921_000,
 };
 function isNonStandardLegacySigops(tx: Transaction, height?: number, network?: string): boolean {
   if (
     height == null || (
-      LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[network]
+      LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[network] !== undefined
       && height >= LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[network]
     )
   ) {
