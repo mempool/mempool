@@ -1972,6 +1972,10 @@ export function scriptPubKeyToAddress(scriptPubKey: string, network: string): { 
   if (/^5120[0-9a-f]{64}$/.test(scriptPubKey)) {
     return { address: p2tr(scriptPubKey.substring(4, 4 + 64), network), type: 'v1_p2tr' };
   }
+  // op_return (checked before multisig: its data can end in 0xae)
+  if (/^6a/.test(scriptPubKey)) {
+    return { address: null, type: 'op_return' };
+  }
   // multisig
   if (/^[0-9a-f]+ae$/.test(scriptPubKey)) {
     return { address: null, type: 'multisig' };
@@ -1979,10 +1983,6 @@ export function scriptPubKeyToAddress(scriptPubKey: string, network: string): { 
   // anchor
   if (scriptPubKey === '51024e73') {
     return { address: p2a(network), type: 'anchor' };
-  }
-  // op_return
-  if (/^6a/.test(scriptPubKey)) {
-    return { address: null, type: 'op_return' };
   }
   return { address: null, type: 'unknown' };
 }
