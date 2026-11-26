@@ -47,6 +47,8 @@ BITCOIN_MAINNET_ENABLE=ON
 BITCOIN_MAINNET_MINFEE_ENABLE=ON
 BITCOIN_TESTNET_ENABLE=ON
 BITCOIN_TESTNET4_ENABLE=ON
+# needs a bitcoind with testnet5 (bitcoin/bitcoin#35861), which is in no release yet
+BITCOIN_TESTNET5_ENABLE=OFF
 BITCOIN_SIGNET_ENABLE=ON
 BITCOIN_MAINNET_LIGHTNING_ENABLE=ON
 BITCOIN_TESTNET_LIGHTNING_ENABLE=ON
@@ -107,6 +109,13 @@ BITCOIN_TESTNET4_RPC_HOST=127.0.0.1
 BITCOIN_TESTNET4_RPC_PORT=48332
 
 # used for firewall configuration
+BITCOIN_TESTNET5_P2P_HOST=127.0.0.1
+BITCOIN_TESTNET5_P2P_PORT=18353
+# used for RPC communication
+BITCOIN_TESTNET5_RPC_HOST=127.0.0.1
+BITCOIN_TESTNET5_RPC_PORT=18352
+
+# used for firewall configuration
 BITCOIN_SIGNET_P2P_HOST=127.0.0.1
 BITCOIN_SIGNET_P2P_PORT=18333
 # used for RPC communication
@@ -147,6 +156,11 @@ ELECTRS_TESTNET4_HTTP_HOST=127.0.0.1
 ELECTRS_TESTNET4_HTTP_PORT=3005
 
 # set either socket or TCP host/port, not both
+#ELECTRS_TESTNET5_HTTP_SOCK=/tmp/bitcoin.testnet5.electrs
+ELECTRS_TESTNET5_HTTP_HOST=127.0.0.1
+ELECTRS_TESTNET5_HTTP_PORT=3006
+
+# set either socket or TCP host/port, not both
 #ELECTRS_SIGNET_HTTP_SOCK=/tmp/bitcoin.testnet.electrs
 ELECTRS_SIGNET_HTTP_HOST=127.0.0.1
 ELECTRS_SIGNET_HTTP_PORT=3003
@@ -177,6 +191,11 @@ MEMPOOL_TESTNET4_HTTP_HOST=127.0.0.1
 MEMPOOL_TESTNET4_HTTP_PORT=8990
 
 # set either socket or TCP host/port, not both
+#MEMPOOL_TESTNET5_HTTP_SOCK=/tmp/bitcoin.testnet5.mempool
+MEMPOOL_TESTNET5_HTTP_HOST=127.0.0.1
+MEMPOOL_TESTNET5_HTTP_PORT=8988
+
+# set either socket or TCP host/port, not both
 #MEMPOOL_SIGNET_HTTP_SOCK=/tmp/bitcoin.bisq.mempool
 MEMPOOL_SIGNET_HTTP_HOST=127.0.0.1
 MEMPOOL_SIGNET_HTTP_PORT=8995
@@ -197,6 +216,10 @@ CKPOOL_TESTNET_STRATUM_PORT=3334
 # set CKPool bitcoin mainnet port
 CKPOOL_TESTNET4_STRATUM_HOST=127.0.0.1
 CKPOOL_TESTNET4_STRATUM_PORT=3335
+
+# set CKPool bitcoin testnet5 port
+CKPOOL_TESTNET5_STRATUM_HOST=127.0.0.1
+CKPOOL_TESTNET5_STRATUM_PORT=3336
 
 ##### OS options, should be automatically detected
 
@@ -247,6 +270,7 @@ MYSQL_HOME=/mysql
 MEMPOOL_MAINNET_USER='mempool'
 MEMPOOL_TESTNET_USER='mempool_testnet'
 MEMPOOL_TESTNET4_USER='mempool_testnet4'
+MEMPOOL_TESTNET5_USER='mempool_testnet5'
 MEMPOOL_SIGNET_USER='mempool_signet'
 MEMPOOL_MAINNET_LIGHTNING_USER='mempool_mainnet_lightning'
 MEMPOOL_TESTNET_LIGHTNING_USER='mempool_testnet_lightning'
@@ -257,6 +281,7 @@ MEMPOOL_LIQUIDTESTNET_USER='mempool_liquidtestnet'
 MEMPOOL_MAINNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 MEMPOOL_TESTNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 MEMPOOL_TESTNET4_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
+MEMPOOL_TESTNET5_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 MEMPOOL_SIGNET_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 MEMPOOL_MAINNET_LIGHTNING_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 MEMPOOL_TESTNET_LIGHTNING_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
@@ -287,6 +312,8 @@ CKPOOL_GROUP=ckpool
 BITCOIN_TESTNET_DATA=${BITCOIN_HOME}/testnet3
 # bitcoin testnet4 data
 BITCOIN_TESTNET4_DATA=${BITCOIN_HOME}/testnet4
+# bitcoin testnet5 data
+BITCOIN_TESTNET5_DATA=${BITCOIN_HOME}/testnet5
 # bitcoin signet data
 BITCOIN_SIGNET_DATA=${BITCOIN_HOME}/signet
 
@@ -304,6 +331,9 @@ ELECTRS_TESTNET_DATA=${ELECTRS_DATA_ROOT}/testnet
 # bitcoin testnet4 electrs database, only a few GB
 ELECTRS_TESTNET4_ZPOOL=${ZPOOL}
 ELECTRS_TESTNET4_DATA=${ELECTRS_DATA_ROOT}/testnet4
+# bitcoin testnet5 electrs database, only a few GB
+ELECTRS_TESTNET5_ZPOOL=${ZPOOL}
+ELECTRS_TESTNET5_DATA=${ELECTRS_DATA_ROOT}/testnet5
 # bitcoin signet electrs database, only a few GB
 ELECTRS_SIGNET_ZPOOL=${ZPOOL}
 ELECTRS_SIGNET_DATA=${ELECTRS_DATA_ROOT}/signet
@@ -350,6 +380,12 @@ BITCOIN_REPO_NAME=bitcoin
 BITCOIN_REPO_BRANCH=master
 #BITCOIN_LATEST_RELEASE=$(curl -s https://api.github.com/repos/bitcoin/bitcoin/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
 BITCOIN_LATEST_RELEASE=v32.0
+# Testnet5 (BIP95) is in no Bitcoin Core release yet. Its bitcoind is built from
+# bitcoin/bitcoin#35861 at a pinned commit and installed under its own prefix, so
+# every other network keeps running the release above.
+BITCOIN_TESTNET5_REPO_NAME=bitcoin-testnet5
+BITCOIN_TESTNET5_COMMIT=ee505609676a10c389da5962b25a2c0080b9df57
+BITCOIN_TESTNET5_PREFIX=/usr/local/bitcoin-testnet5
 echo -n '.'
 
 CKPOOL_REPO_URL=https://github.com/mempool/ckpool
@@ -581,6 +617,15 @@ zfsCreateFilesystems()
         done
     fi
 
+    # Bitcoin Testnet5
+    if [ "${BITCOIN_TESTNET5_ENABLE}" = ON ];then
+        zfs create -o "mountpoint=${BITCOIN_TESTNET5_DATA}" "${ZPOOL}/bitcoin/testnet5"
+        for folder in chainstate indexes blocks
+        do
+            zfs create -o "mountpoint=${BITCOIN_TESTNET5_DATA}/${folder}" "${ZPOOL}/bitcoin/testnet5/${folder}"
+        done
+    fi
+
     # Bitcoin Signet
     if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
         zfs create -o "mountpoint=${BITCOIN_SIGNET_DATA}" "${ZPOOL}/bitcoin/signet"
@@ -614,6 +659,15 @@ zfsCreateFilesystems()
         for folder in cache history txstore
         do
             zfs create -o "mountpoint=${ELECTRS_TESTNET4_DATA}/newindex/${folder}" "${ELECTRS_TESTNET4_ZPOOL}/electrs/testnet4/${folder}"
+        done
+    fi
+
+    # electrs testnet5 data
+    if [ "${BITCOIN_TESTNET5_ENABLE}" = ON ];then
+        zfs create -o "mountpoint=${ELECTRS_TESTNET5_DATA}" "${ELECTRS_TESTNET5_ZPOOL}/electrs/testnet5"
+        for folder in cache history txstore
+        do
+            zfs create -o "mountpoint=${ELECTRS_TESTNET5_DATA}/newindex/${folder}" "${ELECTRS_TESTNET5_ZPOOL}/electrs/testnet5/${folder}"
         done
     fi
 
@@ -679,6 +733,15 @@ ext4CreateDir()
         done
     fi
 
+    # Bitcoin Testnet5
+    if [ "${BITCOIN_TESTNET5_ENABLE}" = ON ];then
+        mkdir -p "${BITCOIN_TESTNET5_DATA}"
+        for folder in chainstate indexes blocks
+        do
+            mkdir -p "${BITCOIN_TESTNET5_DATA}/${folder}"
+        done
+    fi
+
     # Bitcoin Signet
     if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
         mkdir -p "${BITCOIN_SIGNET_DATA}"
@@ -712,6 +775,15 @@ ext4CreateDir()
         for folder in cache history txstore
         do
             mkdir -p "${ELECTRS_TESTNET4_DATA}/newindex/${folder}"
+        done
+    fi
+
+    # electrs testnet5 data
+    if [ "${BITCOIN_TESTNET5_ENABLE}" = ON ];then
+        mkdir -p "${ELECTRS_TESTNET5_DATA}"
+        for folder in cache history txstore
+        do
+            mkdir -p "${ELECTRS_TESTNET5_DATA}/newindex/${folder}"
         done
     fi
 
@@ -804,6 +876,7 @@ LN-Testnet:Enable Bitcoin Testnet Lightning:ON
 LN-Signet:Enable Bitcoin Signet Lightning:ON
 Testnet:Enable Bitcoin Testnet:ON
 Testnet4:Enable Bitcoin Testnet4:ON
+Testnet5:Enable Bitcoin Testnet5:OFF
 Signet:Enable Bitcoin Signet:ON
 Liquid:Enable Elements Liquid:ON
 Liquidtestnet:Enable Elements Liquidtestnet:ON
@@ -852,7 +925,7 @@ else
     BITCOIN_MAINNET_MINFEE_ENABLE=OFF
 fi
 
-if grep Testnet $tempfile >/dev/null 2>&1;then
+if grep -w Testnet $tempfile >/dev/null 2>&1;then
     BITCOIN_TESTNET_ENABLE=ON
 else
     BITCOIN_TESTNET_ENABLE=OFF
@@ -864,13 +937,19 @@ else
     BITCOIN_TESTNET4_ENABLE=OFF
 fi
 
+if grep Testnet5 $tempfile >/dev/null 2>&1;then
+    BITCOIN_TESTNET5_ENABLE=ON
+else
+    BITCOIN_TESTNET5_ENABLE=OFF
+fi
+
 if grep Signet $tempfile >/dev/null 2>&1;then
     BITCOIN_SIGNET_ENABLE=ON
 else
     BITCOIN_SIGNET_ENABLE=OFF
 fi
 
-if [ "${BITCOIN_MAINNET_ENABLE}" = ON -o "${BITCOIN_MAINNET_MINFEE_ENABLE}" = ON -o "${BITCOIN_TESTNET_ENABLE}" = ON -o "${BITCOIN_TESTNET4_ENABLE}" = ON -o "${BITCOIN_SIGNET_ENABLE}" = ON ];then
+if [ "${BITCOIN_MAINNET_ENABLE}" = ON -o "${BITCOIN_MAINNET_MINFEE_ENABLE}" = ON -o "${BITCOIN_TESTNET_ENABLE}" = ON -o "${BITCOIN_TESTNET4_ENABLE}" = ON -o "${BITCOIN_TESTNET5_ENABLE}" = ON -o "${BITCOIN_SIGNET_ENABLE}" = ON ];then
     BITCOIN_INSTALL=ON
 else
     BITCOIN_INSTALL=OFF
@@ -918,7 +997,7 @@ else
     CLN_INSTALL=OFF
 fi
 
-if [ "${BITCOIN_MAINNET_ENABLE}" = ON -o "${BITCOIN_TESTNET_ENABLE}" = ON -o "${BITCOIN_TESTNET4_ENABLE}" = ON -o "${BITCOIN_SIGNET_ENABLE}" = ON ];then
+if [ "${BITCOIN_MAINNET_ENABLE}" = ON -o "${BITCOIN_TESTNET_ENABLE}" = ON -o "${BITCOIN_TESTNET4_ENABLE}" = ON -o "${BITCOIN_TESTNET5_ENABLE}" = ON -o "${BITCOIN_SIGNET_ENABLE}" = ON ];then
     BITCOIN_ELECTRS_INSTALL=ON
 else
     BITCOIN_ELECTRS_INSTALL=OFF
@@ -1178,6 +1257,21 @@ if [ "${BITCOIN_INSTALL}" = ON ];then
         osSudo "${ROOT_USER}" sh -c "cd ${BITCOIN_HOME}/${BITCOIN_REPO_NAME} && gmake install"
     fi
 
+    if [ "${BITCOIN_TESTNET5_ENABLE}" = ON ];then
+        echo "[*] Cloning Bitcoin repo for Testnet5 from ${BITCOIN_REPO_URL}"
+        osSudo "${BITCOIN_USER}" git clone --branch "${BITCOIN_REPO_BRANCH}" "${BITCOIN_REPO_URL}" "${BITCOIN_HOME}/${BITCOIN_TESTNET5_REPO_NAME}"
+
+        echo "[*] Checking out Bitcoin ${BITCOIN_TESTNET5_COMMIT} for Testnet5"
+        osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_HOME}/${BITCOIN_TESTNET5_REPO_NAME} && git fetch origin ${BITCOIN_TESTNET5_COMMIT} && git checkout ${BITCOIN_TESTNET5_COMMIT}"
+
+        echo "[*] Building Bitcoin for Testnet5 from source repo"
+        osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_TESTNET5_REPO_NAME} && cmake -B build -DCMAKE_INSTALL_PREFIX=${BITCOIN_TESTNET5_PREFIX} -DWITH_GUI=OFF -DWITH_ZMQ=ON -DENABLE_IPC=OFF -DENABLE_WALLET=OFF -DBUILD_BITCOIN_TESTS=OFF"
+        osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_TESTNET5_REPO_NAME} && cmake --build build -j${NPROC}"
+
+        echo "[*] Installing Bitcoin Testnet5 binaries into ${BITCOIN_TESTNET5_PREFIX}"
+        osSudo "${ROOT_USER}" sh -c "cd ${BITCOIN_HOME}/${BITCOIN_TESTNET5_REPO_NAME}/build && cmake --install ."
+    fi
+
     echo "[*] Installing Bitcoin configuration"
     osSudo "${ROOT_USER}" install -c -o "${BITCOIN_USER}" -g "${BITCOIN_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.conf" "${BITCOIN_HOME}/bitcoin.conf"
 
@@ -1201,6 +1295,12 @@ install_ckpool_cron() {
     local network_label=$2
     local network_cmd=$3
     local port=$4
+
+    # CKPool's start script reads the RPC credentials from ${BITCOIN_HOME}/<network>.conf
+    if [ "${network_cmd}" != "bitcoin" ]; then
+        echo "[*] Linking ${BITCOIN_HOME}/${network_cmd}.conf to bitcoin.conf for CKPool ${network_label}"
+        osSudo "${BITCOIN_USER}" sh -c "cd ${BITCOIN_HOME} && ( [ -e ${network_cmd}.conf ] || ln -s bitcoin.conf ${network_cmd}.conf )"
+    fi
 
     echo "[*] Installing CKPool ${network_label} Cron for 'ckpool' user"
     case $OS in
@@ -1253,11 +1353,15 @@ if [ "${CKPOOL_INSTALL}" = ON ]; then
     fi
 
     if [ "${BITCOIN_TESTNET_ENABLE}" = ON ]; then
-        install_ckpool_cron "testnet" "Testnet" "testnet" 2334
+        install_ckpool_cron "testnet" "Testnet" "testnet3" 2334
     fi
 
     if [ "${BITCOIN_TESTNET4_ENABLE}" = ON ]; then
         install_ckpool_cron "testnet4" "Testnet4" "testnet4" 2335
+    fi
+
+    if [ "${BITCOIN_TESTNET5_ENABLE}" = ON ]; then
+        install_ckpool_cron "testnet5" "Testnet5" "testnet5" 2336
     fi
 fi
 
@@ -1324,6 +1428,9 @@ if [ "${BITCOIN_ELECTRS_INSTALL}" = ON ];then
     fi
     if [ "${BITCOIN_TESTNET4_ENABLE}" = ON ];then
         osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${ELECTRS_TESTNET4_DATA}"
+    fi
+    if [ "${BITCOIN_TESTNET5_ENABLE}" = ON ];then
+        osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${ELECTRS_TESTNET5_DATA}"
     fi
     if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
         osSudo "${ROOT_USER}" chown -R "${BITCOIN_USER}:${BITCOIN_GROUP}" "${ELECTRS_SIGNET_DATA}"
@@ -1508,6 +1615,23 @@ if [ "${BITCOIN_TESTNET4_ENABLE}" = ON ];then
     esac
 fi
 
+#################################
+# Bitcoin instance for Testnet5 #
+#################################
+
+if [ "${BITCOIN_TESTNET5_ENABLE}" = ON ];then
+    echo "[*] Installing Bitcoin Testnet5 service"
+    case $OS in
+
+        FreeBSD)
+        ;;
+
+        Debian)
+            osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/linux/bitcoin-testnet5.service" "${DEBIAN_SERVICE_HOME}"
+        ;;
+    esac
+fi
+
 ###############################
 # Bitcoin instance for Signet #
 ###############################
@@ -1582,6 +1706,14 @@ if [ "${BITCOIN_TESTNET4_ENABLE}" = ON ];then
     echo "[*] FIXME: must only crontab enabled daemons"
 fi
 
+#########################################
+# Electrs instance for Bitcoin Testnet5 #
+#########################################
+
+if [ "${BITCOIN_TESTNET5_ENABLE}" = ON ];then
+    echo "[*] FIXME: must only crontab enabled daemons"
+fi
+
 #######################################
 # Electrs instance for Bitcoin Signet #
 #######################################
@@ -1638,11 +1770,15 @@ case $OS in
             echo "[*] Installing Electrs Testnet4 Cronjob"
             crontab_bitcoin+="@reboot sleep 110 ; screen -dmS testnet4 /bitcoin/electrs/start testnet4\n"
         fi
+        if [ "${BITCOIN_TESTNET5_ENABLE}" = ON ];then
+            echo "[*] Installing Electrs Testnet5 Cronjob"
+            crontab_bitcoin+="@reboot sleep 130 ; screen -dmS testnet5 /bitcoin/electrs/start testnet5\n"
+        fi
         if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
             echo "[*] Installing Electrs Signet Cronjob"
             crontab_bitcoin+="@reboot sleep 90 ; screen -dmS signet /bitcoin/electrs/start signet\n"
         fi
-        if [ "${BITCOIN_MAINNET_ENABLE}" = ON -o "${BITCOIN_TESTNET_ENABLE}" = ON -o "${BITCOIN_TESTNET4_ENABLE}" = ON -o "${BITCOIN_SIGNET_ENABLE}" = ON ];then
+        if [ "${BITCOIN_MAINNET_ENABLE}" = ON -o "${BITCOIN_TESTNET_ENABLE}" = ON -o "${BITCOIN_TESTNET4_ENABLE}" = ON -o "${BITCOIN_TESTNET5_ENABLE}" = ON -o "${BITCOIN_SIGNET_ENABLE}" = ON ];then
             echo "${crontab_bitcoin}" | crontab -u "${BITCOIN_USER}" -
         fi
 
@@ -1663,7 +1799,7 @@ esac
 
 ##### Mempool -> Bitcoin Mainnet instance
 
-if [ "${BITCOIN_MAINNET_ENABLE}" = ON -o "${BITCOIN_TESTNET_ENABLE}" = ON -o "${BITCOIN_TESTNET4_ENABLE}" = ON -o "${BITCOIN_SIGNET_ENABLE}" = ON ];then
+if [ "${BITCOIN_MAINNET_ENABLE}" = ON -o "${BITCOIN_TESTNET_ENABLE}" = ON -o "${BITCOIN_TESTNET4_ENABLE}" = ON -o "${BITCOIN_TESTNET5_ENABLE}" = ON -o "${BITCOIN_SIGNET_ENABLE}" = ON ];then
     echo "[*] Creating Mempool instance for Bitcoin Mainnet"
     osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
     osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/mainnet"
@@ -1697,6 +1833,15 @@ if [ "${BITCOIN_TESTNET4_ENABLE}" = ON ];then
 
     echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Bitcoin Testnet4"
     osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/testnet4 && git checkout ${MEMPOOL_LATEST_RELEASE}"
+fi
+
+if [ "${BITCOIN_TESTNET5_ENABLE}" = ON ];then
+    echo "[*] Creating Mempool instance for Bitcoin Testnet5"
+    osSudo "${MEMPOOL_USER}" git config --global advice.detachedHead false
+    osSudo "${MEMPOOL_USER}" git clone --branch "${MEMPOOL_REPO_BRANCH}" "${MEMPOOL_REPO_URL}" "${MEMPOOL_HOME}/testnet5"
+
+    echo "[*] Checking out Mempool ${MEMPOOL_LATEST_RELEASE} for Bitcoin Testnet5"
+    osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME}/testnet5 && git checkout ${MEMPOOL_LATEST_RELEASE}"
 fi
 
 if [ "${BITCOIN_TESTNET_LIGHTNING_ENABLE}" = ON ];then
@@ -1772,6 +1917,9 @@ grant all on mempool_testnet.* to '${MEMPOOL_TESTNET_USER}'@'localhost' identifi
 create database if not exists mempool_testnet4;
 grant all on mempool_testnet4.* to '${MEMPOOL_TESTNET4_USER}'@'localhost' identified by '${MEMPOOL_TESTNET4_PASS}';
 
+create database if not exists mempool_testnet5;
+grant all on mempool_testnet5.* to '${MEMPOOL_TESTNET5_USER}'@'localhost' identified by '${MEMPOOL_TESTNET5_PASS}';
+
 create database if not exists mempool_signet;
 grant all on mempool_signet.* to '${MEMPOOL_SIGNET_USER}'@'localhost' identified by '${MEMPOOL_SIGNET_PASS}';
 
@@ -1800,6 +1948,8 @@ declare -x MEMPOOL_TESTNET_USER="${MEMPOOL_TESTNET_USER}"
 declare -x MEMPOOL_TESTNET_PASS="${MEMPOOL_TESTNET_PASS}"
 declare -x MEMPOOL_TESTNET4_USER="${MEMPOOL_TESTNET4_USER}"
 declare -x MEMPOOL_TESTNET4_PASS="${MEMPOOL_TESTNET4_PASS}"
+declare -x MEMPOOL_TESTNET5_USER="${MEMPOOL_TESTNET5_USER}"
+declare -x MEMPOOL_TESTNET5_PASS="${MEMPOOL_TESTNET5_PASS}"
 declare -x MEMPOOL_SIGNET_USER="${MEMPOOL_SIGNET_USER}"
 declare -x MEMPOOL_SIGNET_PASS="${MEMPOOL_SIGNET_PASS}"
 declare -x MEMPOOL_MAINNET_LIGHTNING_USER="${MEMPOOL_MAINNET_LIGHTNING_USER}"
@@ -1905,6 +2055,9 @@ EOF
         fi
         if [ "${BITCOIN_TESTNET4_ENABLE}" = ON ];then
             osSudo "${ROOT_USER}" systemctl enable bitcoin-testnet4.service
+        fi
+        if [ "${BITCOIN_TESTNET5_ENABLE}" = ON ];then
+            osSudo "${ROOT_USER}" systemctl enable bitcoin-testnet5.service
         fi
         if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
             osSudo "${ROOT_USER}" systemctl enable bitcoin-signet.service

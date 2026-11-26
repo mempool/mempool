@@ -76,6 +76,20 @@ const ADDRESS_CHARS: {
         + `{6,100}`
       + `)`,
   },
+  testnet5: {
+    base58: `[mn2]` // Starts with a single m, n, or 2 (P2PKH is m or n, 2 is P2SH)
+      + BASE58_CHARS
+      + `{33,34}`, // m|n is 34 length, 2 is 35 length (We match the first letter separately)
+    bech32: `(?:`
+        + `tb1` // Starts with tb1
+        + BECH32_CHARS_LW
+        + `{6,100}` // As per bech32, 6 char checksum is minimum
+      + `|`
+        + `TB1` // All upper case version
+        + BECH32_CHARS_UP
+        + `{6,100}`
+      + `)`,
+  },
   signet: {
     base58: `[mn2]`
       + BASE58_CHARS
@@ -156,7 +170,7 @@ const ADDRESS_CHARS: {
 type RegexTypeNoAddrNoBlockHash = | `transaction` | `blockheight` | `date` | `timestamp`;
 export type RegexType = `address` | `blockhash` | RegexTypeNoAddrNoBlockHash;
 
-export const NETWORKS = [`mainnet`, `testnet4`, `testnet`, `signet`, `regtest`, `liquid`, `liquidtestnet`] as const;
+export const NETWORKS = [`mainnet`, `testnet4`, `testnet5`, `testnet`, `signet`, `regtest`, `liquid`, `liquidtestnet`] as const;
 export type Network = typeof NETWORKS[number]; // Turn const array into union type
 
 export const ADDRESS_REGEXES: [RegExp, Network][] = NETWORKS
@@ -174,6 +188,8 @@ function isNetworkAvailable(network: Network, env: Env): boolean {
       return env.TESTNET_ENABLED === true;
     case 'testnet4':
       return env.TESTNET4_ENABLED === true;
+    case 'testnet5':
+      return env.TESTNET5_ENABLED === true;
     case 'signet':
       return env.SIGNET_ENABLED === true;
     case 'regtest':
@@ -192,7 +208,7 @@ function isNetworkAvailable(network: Network, env: Env): boolean {
 export function needBaseModuleChange(fromBaseModule: 'mempool' | 'liquid', toNetwork: Network): boolean {
   if (!toNetwork) {return false;} // No target network means no change needed
   if (fromBaseModule === 'mempool') {
-    return toNetwork !== 'mainnet' && toNetwork !== 'testnet' && toNetwork !== 'testnet4' && toNetwork !== 'signet' && toNetwork !== 'regtest';
+    return toNetwork !== 'mainnet' && toNetwork !== 'testnet' && toNetwork !== 'testnet4' && toNetwork !== 'testnet5' && toNetwork !== 'signet' && toNetwork !== 'regtest';
   }
   if (fromBaseModule === 'liquid') {
     return toNetwork !== 'liquid' && toNetwork !== 'liquidtestnet';
@@ -207,7 +223,7 @@ export function getTargetUrl(toNetwork: Network, address: string, env: Env): str
     targetUrl += '/address/';
     targetUrl += address;
   }
-  if (toNetwork === 'mainnet' || toNetwork === 'testnet' || toNetwork === 'testnet4' || toNetwork === 'signet' || toNetwork === 'regtest') {
+  if (toNetwork === 'mainnet' || toNetwork === 'testnet' || toNetwork === 'testnet4' || toNetwork === 'testnet5' || toNetwork === 'signet' || toNetwork === 'regtest') {
     targetUrl = env.MEMPOOL_WEBSITE_URL;
     targetUrl += (toNetwork === 'mainnet' ? '' : `/${toNetwork}`);
     targetUrl += '/address/';
@@ -243,6 +259,9 @@ export function getRegex(type: RegexType, network?: Network): RegExp {
           break;
         case `testnet4`:
           leadingZeroes = 8; // Assumes at least 32 bits of difficulty
+          break;
+        case `testnet5`:
+          leadingZeroes = 13; // Minimum difficulty is ~1,000,000 (nBits 0x1a0fffff)
           break;
         case `signet`:
           leadingZeroes = 5;
@@ -300,6 +319,15 @@ export function getRegex(type: RegexType, network?: Network): RegExp {
           regex += `(?:02|03)${HEX_CHARS}{64}`; // Compressed pubkey
           break;
         case `testnet4`:
+          regex += ADDRESS_CHARS.testnet.base58;
+          regex += `|`; // OR
+          regex += ADDRESS_CHARS.testnet.bech32;
+          regex += `|`; // OR
+          regex += `04${HEX_CHARS}{128}`; // Uncompressed pubkey
+          regex += `|`; // OR
+          regex += `(?:02|03)${HEX_CHARS}{64}`; // Compressed pubkey
+          break;
+        case `testnet5`:
           regex += ADDRESS_CHARS.testnet.base58;
           regex += `|`; // OR
           regex += ADDRESS_CHARS.testnet.bech32;

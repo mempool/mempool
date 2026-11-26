@@ -184,7 +184,7 @@
             </div>
           </div>
 
-          <p class="note" *ngIf="network.val !== 'signet' && network.val !== 'testnet4'">Electrum RPC interface for <a href="/signet/docs/api/electrs">Bitcoin Signet</a> and <a href="/testnet4/docs/api/electrs">Bitcoin Testnet4</a> is publicly available. Electrum RPC interface for all other networks is available to <a href='https://mempool.space/enterprise'>sponsors</a> only—whitelisting is required.</p>
+          <p class="note" *ngIf="network.val !== 'signet' && network.val !== 'testnet4' && network.val !== 'testnet5'">Electrum RPC interface for <a href="/signet/docs/api/electrs">Bitcoin Signet</a>, <a href="/testnet4/docs/api/electrs">Bitcoin Testnet4</a> and <a href="/testnet5/docs/api/electrs">Bitcoin Testnet5</a> is publicly available. Electrum RPC interface for all other networks is available to <a href='https://mempool.space/enterprise'>sponsors</a> only—whitelisting is required.</p>
           
           <div class="protocol-info">
             <h3>Request Format</h3>

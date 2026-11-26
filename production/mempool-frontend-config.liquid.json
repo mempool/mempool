@@ -4,6 +4,7 @@
   "ANALYTICS_URL": "/t",
   "TESTNET_ENABLED": true,
   "TESTNET4_ENABLED": true,
+  "TESTNET5_ENABLED": true,
   "LIQUID_ENABLED": true,
   "LIQUID_TESTNET_ENABLED": true,
   "SIGNET_ENABLED": true,

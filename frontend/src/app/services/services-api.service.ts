@@ -208,12 +208,16 @@ export class ServicesApiServices {
     return this.httpClient.get<{squareAppId: string, squareLocationId: string}>(`${this.stateService.env.SERVICES_API}/square/setup`);
   }
 
-  getFaucetStatus$() {
-    return this.httpClient.get<{ address?: string, min: number, max: number, code: 'ok' | 'faucet_not_available' | 'faucet_maximum_reached' | 'faucet_too_soon'}>(`${this.stateService.env.SERVICES_API}/testnet4/faucet/status`, { responseType: 'json' });
+  getFaucetStatus$(network: 'testnet4' | 'testnet5' = 'testnet4') {
+    return this.httpClient.get<{ address?: string, min: number, max: number, code: 'ok' | 'faucet_not_available' | 'faucet_maximum_reached' | 'faucet_too_soon'}>(`${this.stateService.env.SERVICES_API}/${network}/faucet/status`, { responseType: 'json' });
   }
 
   requestTestnet4Coins$(address: string, sats: number) {
     return this.httpClient.get<{txid: string}>(`${this.stateService.env.SERVICES_API}/testnet4/faucet/request?address=${address}&sats=${sats}`, { responseType: 'json' });
+  }
+
+  requestTestnet5Coins$(address: string, sats: number): Observable<{txid: string}> {
+    return this.httpClient.get<{txid: string}>(`${this.stateService.env.SERVICES_API}/testnet5/faucet/request?address=${address}&sats=${sats}`, { responseType: 'json' });
   }
 
   generateBTCPayAcceleratorInvoice$(txid: string, maxBidBoost: number, partnerCode: string | undefined): Observable<any> {

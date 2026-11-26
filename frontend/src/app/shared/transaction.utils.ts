@@ -605,6 +605,7 @@ export function isNonStandard(tx: Transaction, height?: number, network?: string
 
 const V3_STANDARDNESS_ACTIVATION_HEIGHT = {
   'testnet4': 42_000,
+  'testnet5': 0,
   'testnet': 2_900_000,
   'signet': 211_000,
   '': 863_500,
@@ -629,6 +630,7 @@ function isNonStandardVersion(tx: Transaction, height?: number, network?: string
 
 const ANCHOR_STANDARDNESS_ACTIVATION_HEIGHT = {
   'testnet4': 42_000,
+  'testnet5': 0,
   'testnet': 2_900_000,
   'signet': 211_000,
   '': 863_500,
@@ -650,6 +652,7 @@ function isNonStandardAnchor(vin: Vin, height?: number, network?: string): boole
 // Ephemeral dust is a new concept that allows a single dust output in a transaction, provided the transaction is zero fee
 const EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT = {
   'testnet4': 90_500,
+  'testnet5': 0,
   'testnet': 4_550_000,
   'signet': 260_000,
   '': 905_000,
@@ -658,7 +661,7 @@ function isStandardEphemeralDust(tx: Transaction, height?: number, network?: str
   if (
     tx.fee === 0
     && (height == null || (
-      EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[network]
+      EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[network] != null
       && height >= EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[network]
     ))
   ) {
@@ -670,6 +673,7 @@ function isStandardEphemeralDust(tx: Transaction, height?: number, network?: str
 // OP_RETURN size & count limits were lifted in v28.3/v29.2/v30.0
 const OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT = {
   'testnet4': 108_000,
+  'testnet5': 0,
   'testnet': 4_750_000,
   'signet': 276_500,
   '': 921_000,
@@ -678,7 +682,7 @@ const MAX_DATACARRIER_BYTES = 83;
 function isStandardOpReturn(bytes: number, outputs: number,height?: number, network?: string): boolean {
   if (
     (height == null || (
-      OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[network]
+      OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[network] != null
       && height >= OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[network]
     )) // limits lifted
     || // OR
@@ -692,6 +696,7 @@ function isStandardOpReturn(bytes: number, outputs: number,height?: number, netw
 // New legacy sigops limit started to be enforced in v30.0
 const LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT = {
   'testnet4': 108_000,
+  'testnet5': 0,
   'testnet': 4_750_000,
   'signet': 276_500,
   '': 921_000,
@@ -699,7 +704,7 @@ const LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT = {
 function isNonStandardLegacySigops(tx: Transaction, height?: number, network?: string): boolean {
   if (
     height == null || (
-      LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[network]
+      LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[network] != null
       && height >= LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[network]
     )
   ) {
@@ -2010,7 +2015,7 @@ export function addressToScriptPubKey(address: string, network: string): { scrip
 
 function p2pkh(pubKeyHash: string, network: string): string {
   const pubkeyHashArray = hexStringToUint8Array(pubKeyHash);
-  const version = ['testnet', 'testnet4', 'signet'].includes(network) ? 0x6f : 0x00;
+  const version = ['testnet', 'testnet4', 'testnet5', 'signet'].includes(network) ? 0x6f : 0x00;
   const versionedPayload = Uint8Array.from([version, ...pubkeyHashArray]);
   const hash1 = new Hash().update(versionedPayload).digest();
   const hash2 = new Hash().update(hash1).digest();
@@ -2022,7 +2027,7 @@ function p2pkh(pubKeyHash: string, network: string): string {
 
 function p2sh(scriptHash: string, network: string): string {
   const scriptHashArray = hexStringToUint8Array(scriptHash);
-  const version = ['testnet', 'testnet4', 'signet'].includes(network) ? 0xc4 : 0x05;
+  const version = ['testnet', 'testnet4', 'testnet5', 'signet'].includes(network) ? 0xc4 : 0x05;
   const versionedPayload = Uint8Array.from([version, ...scriptHashArray]);
   const hash1 = new Hash().update(versionedPayload).digest();
   const hash2 = new Hash().update(hash1).digest();
@@ -2034,7 +2039,7 @@ function p2sh(scriptHash: string, network: string): string {
 
 function p2wpkh(pubKeyHash: string, network: string): string {
   const pubkeyHashArray = hexStringToUint8Array(pubKeyHash);
-  const hrp = ['testnet', 'testnet4', 'signet'].includes(network) ? 'tb' : 'bc';
+  const hrp = ['testnet', 'testnet4', 'testnet5', 'signet'].includes(network) ? 'tb' : 'bc';
   const version = 0;
   const words = [version].concat(toWords(pubkeyHashArray));
   const bech32Address = bech32Encode(hrp, words);
@@ -2043,7 +2048,7 @@ function p2wpkh(pubKeyHash: string, network: string): string {
 
 function p2wsh(scriptHash: string, network: string): string {
   const scriptHashArray = hexStringToUint8Array(scriptHash);
-  const hrp = ['testnet', 'testnet4', 'signet'].includes(network) ? 'tb' : 'bc';
+  const hrp = ['testnet', 'testnet4', 'testnet5', 'signet'].includes(network) ? 'tb' : 'bc';
   const version = 0;
   const words = [version].concat(toWords(scriptHashArray));
   const bech32Address = bech32Encode(hrp, words);
@@ -2052,7 +2057,7 @@ function p2wsh(scriptHash: string, network: string): string {
 
 function p2tr(pubKey: string, network: string): string {
   const pubkeyArray = hexStringToUint8Array(pubKey);
-  const hrp = ['testnet', 'testnet4', 'signet'].includes(network) ? 'tb' : 'bc';
+  const hrp = ['testnet', 'testnet4', 'testnet5', 'signet'].includes(network) ? 'tb' : 'bc';
   const version = 1;
   const words = [version].concat(toWords(pubkeyArray));
   const bech32Address = bech32Encode(hrp, words, 'bech32m');
@@ -2061,7 +2066,7 @@ function p2tr(pubKey: string, network: string): string {
 
 function p2a(network: string): string {
   const pubkeyHashArray = hexStringToUint8Array('4e73');
-  const hrp = ['testnet', 'testnet4', 'signet'].includes(network) ? 'tb' : 'bc';
+  const hrp = ['testnet', 'testnet4', 'testnet5', 'signet'].includes(network) ? 'tb' : 'bc';
   const version = 1;
   const words = [version].concat(toWords(pubkeyHashArray));
   const bech32Address = bech32Encode(hrp, words, 'bech32m');
@@ -2153,13 +2158,13 @@ function base58ToSpk(address: string, network: string): string | null {
     const payloadHex = uint8ArrayToHexString(payload);
 
     // P2PKH
-    const p2pkhVersion = ['testnet', 'testnet4', 'signet'].includes(network) ? 0x6f : 0x00;
+    const p2pkhVersion = ['testnet', 'testnet4', 'testnet5', 'signet'].includes(network) ? 0x6f : 0x00;
     if (version === p2pkhVersion) {
       return '76a914' + payloadHex + '88ac';
     }
 
     // P2SH
-    const p2shVersion = ['testnet', 'testnet4', 'signet'].includes(network) ? 0xc4 : 0x05;
+    const p2shVersion = ['testnet', 'testnet4', 'testnet5', 'signet'].includes(network) ? 0xc4 : 0x05;
     if (version === p2shVersion) {
       return 'a914' + payloadHex + '87';
     }
@@ -2211,7 +2216,7 @@ function bech32Decode(address: string): { prefix: string, words: number[], encod
 }
 
 function bech32ToSpk(address: string, network: string): string | null {
-  const expectedHrp = ['testnet', 'testnet4', 'signet'].includes(network) ? 'tb' : 'bc';
+  const expectedHrp = ['testnet', 'testnet4', 'testnet5', 'signet'].includes(network) ? 'tb' : 'bc';
   try {
     const decoded = bech32Decode(address);
     if (decoded.prefix !== expectedHrp) {
