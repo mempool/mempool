@@ -5,6 +5,7 @@ import { ResultSetHeader } from 'mysql2';
 import { ILightningApi } from '../lightning/lightning-api.interface';
 import { ITopNodesPerCapacity, ITopNodesPerChannels } from '../../mempool.interfaces';
 import { bin2hex } from '../../utils/format';
+import { Common } from '../common';
 
 class NodesApi {
   private ispRankingCache: { data: any, expiresAt: number } | null = null;
@@ -555,6 +556,40 @@ class NodesApi {
       };
     } catch (e) {
       logger.err(`Cannot get LN ISP ranking. Reason: ${e instanceof Error ? e.message : e}`);
+      throw e;
+    }
+  }
+
+  public async $getNodesNetworksShare(): Promise<any> {
+    try {
+      const [nodes]: any[] = await DB.query(`
+        SELECT sockets, CAST(COALESCE(channels, 0) as INT) as channels, CAST(COALESCE(capacity, 0) as INT) as capacity
+        FROM nodes
+        WHERE status = 1
+      `);
+
+      const shares = {};
+      for (const type of ['clearnet', 'darknet', 'clearnetDarknet', 'unknown']) {
+        shares[type] = { nodes: 0, channels: 0, capacity: 0 };
+      }
+
+      for (const node of nodes) {
+        let hasClearnet = false;
+        let hasDarknet = false;
+        for (const socket of (node.sockets ?? '').split(',')) {
+          const network = Common.findSocketNetwork(socket).network;
+          hasClearnet = hasClearnet || network === 'ipv4' || network === 'ipv6';
+          hasDarknet = hasDarknet || network === 'torv2' || network === 'torv3' || network === 'i2p';
+        }
+        const type = hasClearnet && hasDarknet ? 'clearnetDarknet' : hasClearnet ? 'clearnet' : hasDarknet ? 'darknet' : 'unknown';
+        shares[type].nodes++;
+        shares[type].channels += node.channels;
+        shares[type].capacity += node.capacity;
+      }
+
+      return shares;
+    } catch (e) {
+      logger.err(`Cannot get LN nodes networks share. Reason: ${e instanceof Error ? e.message : e}`);
       throw e;
     }
   }

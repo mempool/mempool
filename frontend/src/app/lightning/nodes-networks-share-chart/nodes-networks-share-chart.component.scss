@@ -1,0 +1,103 @@
+.card-header {
+  border-bottom: 0;
+  font-size: 18px;
+  @media (min-width: 465px) {
+    font-size: 20px;
+  }
+  @media (min-width: 992px) {
+    height: 40px;
+  }
+}
+
+// Metric selector on the same row as the title (other graphs lift it to the menu row)
+.full-container .card-header {
+  @media (min-width: 830px) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .formRadioGroup {
+    @media (min-width: 830px) {
+      top: 0;
+      float: none;
+    }
+  }
+}
+
+.full-container {
+  display: flex;
+  flex-direction: column;
+  padding: 0px 15px;
+  width: 100%;
+  padding-bottom: 20px;
+}
+
+.chart-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.chart {
+  width: 100%;
+  height: 440px;
+  @media (max-width: 767.98px) {
+    height: 300px;
+  }
+}
+
+.loadingGraphs {
+  position: absolute;
+  top: 50%;
+  left: calc(50% - 15px);
+  z-index: 99;
+}
+
+.table {
+  .network {
+    width: 40%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  th.selected {
+    color: var(--fg);
+  }
+  td:not(.selected) .value {
+    color: var(--transparent-fg);
+  }
+  tr.hovered td {
+    background-color: var(--hover-bg);
+  }
+  tr.inactive td,
+  tr.inactive td .value {
+    color: rgb(110, 112, 121);
+  }
+  tr.inactive .swatch {
+    background-color: rgb(110, 112, 121) !important;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .table th,
+  .table td {
+    padding: 0.3em !important;
+  }
+}
+
+.network-info {
+  margin-left: 0.25rem;
+  color: var(--transparent-fg);
+  cursor: help;
+}
+// The global stylesheet removes outlines, so keyboard focus gets a ring of its own.
+.network-info:focus-visible {
+  border-radius: 0.2rem;
+  box-shadow: 0 0 0 2px var(--info);
+}
+
+.swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 8px;
+}

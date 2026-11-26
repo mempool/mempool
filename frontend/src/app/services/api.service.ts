@@ -465,6 +465,10 @@ export class ApiService {
     return this.httpClient.get<{ nodes: any[], channels: any[] }>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/search', { params });
   }
 
+  getNodesNetworksShare$(): Observable<any> {
+    return this.httpClient.get<any>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/nodes/networks');
+  }
+
   getNodesPerIsp(): Observable<any> {
     return this.httpClient.get<any[]>(this.apiBaseUrl + this.apiBasePath + '/api/v1/lightning/nodes/isp-ranking');
   }

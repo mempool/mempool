@@ -19,6 +19,7 @@ import { NodeStatisticsChartComponent } from '@app/lightning/node-statistics-cha
 import { NodeFeeChartComponent } from '@app/lightning/node-fee-chart/node-fee-chart.component';
 import { GraphsModule } from '@app/graphs/graphs.module';
 import { NodesNetworksChartComponent } from '@app/lightning/nodes-networks-chart/nodes-networks-chart.component';
+import { NodesNetworksShareChartComponent } from '@app/lightning/nodes-networks-share-chart/nodes-networks-share-chart.component';
 import { ChannelsStatisticsComponent } from '@app/lightning/channels-statistics/channels-statistics.component';
 import { NodesPerISPChartComponent } from '@app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component';
 import { NodesPerCountry } from '@app/lightning/nodes-per-country/nodes-per-country.component';
@@ -51,6 +52,7 @@ import { GroupComponent } from '@app/lightning/group/group.component';
     ClosingTypeComponent,
     LightningStatisticsChartComponent,
     NodesNetworksChartComponent,
+    NodesNetworksShareChartComponent,
     ChannelsStatisticsComponent,
     NodesPerISPChartComponent,
     NodesPerCountry,
@@ -89,6 +91,7 @@ import { GroupComponent } from '@app/lightning/group/group.component';
     ClosingTypeComponent,
     LightningStatisticsChartComponent,
     NodesNetworksChartComponent,
+    NodesNetworksShareChartComponent,
     ChannelsStatisticsComponent,
     NodesPerISPChartComponent,
     NodesPerCountry,

@@ -1,0 +1,144 @@
+<div class="full-container">
+  <div class="card-header mb-0 mb-md-2">
+    <div class="d-flex d-md-block align-items-baseline">
+      <span i18n="lightning.network-shares">Lightning Network Shares</span>
+      <button
+        class="btn p-0 ps-2"
+        style="margin: 0 0 4px 0px"
+        (click)="onSaveChart()"
+      >
+        <fa-icon [icon]="['fas', 'download']" [fixedWidth]="true"></fa-icon>
+      </button>
+    </div>
+
+    <form [formGroup]="radioGroupForm" class="formRadioGroup">
+      <div class="btn-group" role="group" name="radioBasic">
+        <input
+          type="radio"
+          class="btn-check"
+          id="networkshares-nodes"
+          [value]="'nodes'"
+          fragment="nodes"
+          [routerLink]="['/graphs/lightning/network-shares' | relativeUrl]"
+          formControlName="metric"
+        />
+        <label
+          class="btn btn-primary btn-sm"
+          for="networkshares-nodes"
+          i18n="lightning.nodes-count"
+          >Nodes</label
+        >
+        <input
+          type="radio"
+          class="btn-check"
+          id="networkshares-channels"
+          [value]="'channels'"
+          fragment="channels"
+          [routerLink]="['/graphs/lightning/network-shares' | relativeUrl]"
+          formControlName="metric"
+        />
+        <label
+          class="btn btn-primary btn-sm"
+          for="networkshares-channels"
+          i18n="lightning.channels"
+          >Channels</label
+        >
+        <input
+          type="radio"
+          class="btn-check"
+          id="networkshares-capacity"
+          [value]="'capacity'"
+          fragment="capacity"
+          [routerLink]="['/graphs/lightning/network-shares' | relativeUrl]"
+          formControlName="metric"
+        />
+        <label
+          class="btn btn-primary btn-sm"
+          for="networkshares-capacity"
+          i18n="lightning.capacity"
+          >Capacity</label
+        >
+      </div>
+    </form>
+  </div>
+
+  <div class="container pb-lg-0">
+    <div class="chart-container">
+      <div
+        class="chart"
+        *browserOnly
+        echarts
+        [initOpts]="chartInitOptions"
+        [options]="chartOptions"
+        (chartInit)="onChartInit($event)"
+      ></div>
+      <div
+        class="text-center loadingGraphs"
+        *ngIf="!stateService.isBrowser || isLoading"
+      >
+        <div class="spinner-border text-light"></div>
+      </div>
+    </div>
+
+    <table class="table table-borderless" *ngIf="shares$ | async as shares">
+      <thead>
+        <tr>
+          <th class="network text-start" i18n="lightning.network">Network</th>
+          <th
+            class="metric text-end"
+            *ngFor="let m of metrics"
+            [class.selected]="m === metric"
+          >
+            {{ metricNames[m] }}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let region of regions"
+          [class.inactive]="!isRegionSelected(region)"
+          [class.hovered]="region === hoveredRegion"
+          (mouseenter)="onRowHover(region, true)"
+          (mouseleave)="onRowHover(region, false)"
+        >
+          <td class="network text-start">
+            <span [class.text-nowrap]="region === 'unknown'"
+              ><span
+                class="swatch"
+                [style.background-color]="colors[region]"
+              ></span
+              >{{ names[region]
+              }}<fa-icon
+                *ngIf="region === 'unknown'"
+                class="network-info"
+                [icon]="['fas', 'info-circle']"
+                [fixedWidth]="true"
+                tabindex="0"
+                role="img"
+                ngbTooltip="Unknown nodes do not announce any address, so they are not part of the diagram. A channel is counted once for each of its two nodes: a channel between a clearnet only node and a darknet only node counts in both rows."
+                i18n-ngbTooltip="lightning.network-shares-unknown-help"
+                aria-label="Unknown nodes do not announce any address, so they are not part of the diagram. A channel is counted once for each of its two nodes: a channel between a clearnet only node and a darknet only node counts in both rows."
+                i18n-aria-label="lightning.network-shares-unknown-help"
+              ></fa-icon
+            ></span>
+          </td>
+          <td
+            class="metric text-end"
+            *ngFor="let m of metrics"
+            [class.selected]="m === metric"
+          >
+            <span class="value">
+              <app-amount
+                *ngIf="m === 'capacity'; else count"
+                [satoshis]="shares[region][m]"
+                [digitsInfo]="'1.2-2'"
+                [noFiat]="true"
+              ></app-amount>
+              <ng-template #count>{{ shares[region][m] | number }}</ng-template>
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
