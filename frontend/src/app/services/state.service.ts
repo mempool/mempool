@@ -85,6 +85,9 @@ export interface Env {
   ACCELERATOR_BUTTON: boolean;
   PUBLIC_ACCELERATIONS: boolean;
   ADDITIONAL_CURRENCIES: boolean;
+  WALLET_ENABLED: boolean;
+  WALLET_NAV_ENABLED: boolean;
+  WALLET_REQUIRES_INVITE: boolean;
   GIT_COMMIT_HASH_MEMPOOL_SPACE?: string;
   PACKAGE_JSON_VERSION_MEMPOOL_SPACE?: string;
   STRATUM_ENABLED: boolean;
@@ -92,6 +95,7 @@ export interface Env {
   TWIDGET_API?: string;
   customize?: Customization;
   PROD_DOMAINS: string[];
+  ANALYTICS_URL?: string;
 }
 
 const defaultEnv: Env = {
@@ -134,6 +138,9 @@ const defaultEnv: Env = {
   'ACCELERATOR_BUTTON': true,
   'PUBLIC_ACCELERATIONS': false,
   'ADDITIONAL_CURRENCIES': false,
+  'WALLET_ENABLED': false,
+  'WALLET_NAV_ENABLED': false,
+  'WALLET_REQUIRES_INVITE': false,
   'STRATUM_ENABLED': false,
   'SERVICES_API': 'https://mempool.space/api/v1/services',
   'TWIDGET_API': 'https://mempool.ninja',
@@ -187,6 +194,8 @@ export class StateService {
   mempoolTxPosition$ = new BehaviorSubject<{ txid: string, position: MempoolPosition, cpfp: CpfpInfo | null, accelerationPositions?: AccelerationPosition[] }>(null);
   mempoolRemovedTransactions$ = new Subject<Transaction>();
   multiAddressTransactions$ = new Subject<{ [address: string]: { mempool: Transaction[], confirmed: Transaction[], removed: Transaction[] }}>();
+  /** The startTrackAddresses() request the server refused. */
+  trackAddressesError$ = new Subject<number>();
   blockTransactions$ = new Subject<Transaction>();
   walletTransactions$ = new Subject<Transaction[]>();
   isLoadingWebSocket$ = new ReplaySubject<boolean>(1);

@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import * as fs from 'fs';
 import config from './config';
 import backendInfo from './api/backend-info';

@@ -1,4 +1,4 @@
-FROM node:24.13-bookworm-slim AS builder
+FROM node:26.13-bookworm-slim AS builder
 
 ARG commitHash
 ENV DOCKER_COMMIT_HASH=${commitHash}
@@ -13,7 +13,7 @@ RUN bash meta/scripts/check-install-scripts.sh && npm ci --omit=dev --omit=optio
 
 RUN npm run build
 
-FROM nginx:1.30.1-alpine
+FROM nginx:1.31.9-alpine
 
 WORKDIR /patch
 

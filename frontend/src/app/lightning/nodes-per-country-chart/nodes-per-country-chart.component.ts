@@ -9,7 +9,7 @@ import { StateService } from '@app/services/state.service';
 import { download } from '@app/shared/graphs.utils';
 import { AmountShortenerPipe } from '@app/shared/pipes/amount-shortener.pipe';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
-import { getFlagEmoji } from '@app/shared/common.utils';
+import { getFlagEmoji, isMobile } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-nodes-per-country-chart',
@@ -65,13 +65,13 @@ export class NodesPerCountryChartComponent implements OnInit {
   }
 
   generateChartSerieData(country) {
-    const shareThreshold = this.isMobile() ? 2 : 1;
+    const shareThreshold = isMobile() ? 2 : 1;
     const data: object[] = [];
     let totalShareOther = 0;
     let totalNodeOther = 0;
 
     let edgeDistance: string | number = '10%';
-    if (this.isMobile()) {
+    if (isMobile()) {
       edgeDistance = 0;
     }
 
@@ -83,7 +83,7 @@ export class NodesPerCountryChartComponent implements OnInit {
       }
       data.push({
         value: country.share,
-        name: country.name.en + (this.isMobile() ? `` : ` (${country.share}%)`),
+        name: country.name.en + (isMobile() ? `` : ` (${country.share}%)`),
         label: {
           overflow: 'truncate',
           color: 'var(--grey)',
@@ -91,7 +91,7 @@ export class NodesPerCountryChartComponent implements OnInit {
           edgeDistance: edgeDistance,
         },
         tooltip: {
-          show: !this.isMobile(),
+          show: !isMobile(),
           backgroundColor: 'rgba(17, 19, 31, 1)',
           borderRadius: 4,
           shadowColor: 'rgba(0, 0, 0, 0.5)',
@@ -146,7 +146,7 @@ export class NodesPerCountryChartComponent implements OnInit {
 
   prepareChartOptions(country) {
     let pieSize = ['20%', '80%']; // Desktop
-    if (this.isMobile()) {
+    if (isMobile()) {
       pieSize = ['15%', '60%'];
     }
 
@@ -171,8 +171,8 @@ export class NodesPerCountryChartComponent implements OnInit {
             lineStyle: {
               width: 2,
             },
-            length: this.isMobile() ? 1 : 20,
-            length2: this.isMobile() ? 1 : undefined,
+            length: isMobile() ? 1 : 20,
+            length2: isMobile() ? 1 : undefined,
           },
           label: {
             fontSize: 14,
@@ -196,10 +196,6 @@ export class NodesPerCountryChartComponent implements OnInit {
         }
       ],
     };
-  }
-
-  isMobile() {
-    return (window.innerWidth <= 767.98);
   }
 
   onChartInit(ec) {

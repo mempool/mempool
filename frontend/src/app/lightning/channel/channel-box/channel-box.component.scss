@@ -21,9 +21,14 @@
   .box {
     margin-bottom: 20px;
   }
+
+  td:first-child {
+    white-space: normal;
+  }
 }
 
 .base-fee {
+  max-width: 0;
   @media (max-width: 768px) {
     padding-right: 0px;
   }

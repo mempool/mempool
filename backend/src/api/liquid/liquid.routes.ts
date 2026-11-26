@@ -230,7 +230,12 @@ class LiquidRoutes {
 
   private async $getPegsList(req: Request, res: Response) {
     try {
-      const recentPegs = await elementsParser.$getPegsList(parseInt(req.params?.count));
+      const count = parseInt(req.params?.count, 10);
+      if (isNaN(count) || count < 0) {
+        handleError(req, res, 400, `Parameter 'count' must be a non-negative integer`);
+        return;
+      }
+      const recentPegs = await elementsParser.$getPegsList(count);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 30).toUTCString());

@@ -82,11 +82,11 @@ pkg install -y zsh sudo git screen curl wget neovim rsync nginx openssl openssh-
 
 ### Node.js + npm
 
-Build Node.js v26.12.1 and npm from source using `nvm`:
+Build Node.js v26.13.1 and npm from source using `nvm`:
 ```
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | zsh
 source $HOME/.zshrc
-nvm install v26.12.1 --shared-zlib
+nvm install v26.13.1 --shared-zlib
 nvm alias default node
 ```
 
@@ -119,11 +119,13 @@ DataDirectory /var/db/tor
 DataDirectoryGroupReadable 1
 
 HiddenServiceDir /var/db/tor/mempool
-HiddenServicePort 80 127.0.0.1:81
+HiddenServicePort 80 unix:/mempool/socket/nginx-tor-mempool
+HiddenServiceExportCircuitID haproxy
 HiddenServiceVersion 3
 
 HiddenServiceDir /var/db/tor/liquid
-HiddenServicePort 80 127.0.0.1:83
+HiddenServicePort 80 unix:/mempool/socket/nginx-tor-liquid
+HiddenServiceExportCircuitID haproxy
 HiddenServiceVersion 3
 ```
 

@@ -1,5 +1,5 @@
-import bitcoinApi, { bitcoinCoreApi } from '../api/bitcoin/bitcoin-api-factory';
-import { BlockExtended, BlockExtension, BlockPrice, EffectiveFeeStats } from '../mempool.interfaces';
+import bitcoinApi from '../api/bitcoin/bitcoin-api-factory';
+import { BlockExtended, BlockExtension, BlockPrice, EffectiveFeeStats, StaleTipBlock } from '../mempool.interfaces';
 import DB from '../database';
 import logger from '../logger';
 import { Common } from '../api/common';
@@ -13,7 +13,6 @@ import bitcoinClient from '../api/bitcoin/bitcoin-client';
 import config from '../config';
 import chainTips from '../api/chain-tips';
 import blocks from '../api/blocks';
-import BlocksAuditsRepository from './BlocksAuditsRepository';
 import transactionUtils from '../api/transaction-utils';
 import { parseDATUMTemplateCreator, parseDMNDTemplateCreator } from '../utils/bitcoin-script';
 import poolsUpdater from '../tasks/pools-updater';
@@ -63,6 +62,9 @@ interface DatabaseBlock {
   firstSeen: string; // UNIX_TIMESTAMP() returns a string when applied to datetime(6)
   stale: boolean;
   coinbaseBip54: boolean | null;
+  matchRate: number | null;
+  expectedFees: number | null;
+  expectedWeight: number | null;
 }
 
 const BLOCK_DB_FIELDS = `
@@ -111,6 +113,17 @@ const BLOCK_DB_FIELDS = `
   UNIX_TIMESTAMP(blocks.first_seen) AS firstSeen,
   blocks.stale
 `;
+
+function auditFields(): string {
+  return config.MEMPOOL.AUDIT ? `,
+  blocks_audits.match_rate AS matchRate,
+  blocks_audits.expected_fees AS expectedFees,
+  blocks_audits.expected_weight AS expectedWeight` : '';
+}
+
+function auditJoin(): string {
+  return config.MEMPOOL.AUDIT ? 'LEFT JOIN blocks_audits ON blocks_audits.hash = blocks.hash' : '';
+}
 
 class BlocksRepository {
   static version = 1;
@@ -465,31 +478,6 @@ class BlocksRepository {
   }
 
   /**
-   * Get the oldest indexed block
-   * @asyncSafe
-   */
-  public async $oldestBlockTimestamp(): Promise<number> {
-    const query = `SELECT UNIX_TIMESTAMP(blockTimestamp) as blockTimestamp
-      FROM blocks
-      WHERE stale = 0
-      ORDER BY height
-      LIMIT 1;`;
-
-    try {
-      const [rows]: any[] = await DB.query(query);
-
-      if (rows.length <= 0) {
-        return -1;
-      }
-
-      return <number>rows[0].blockTimestamp;
-    } catch (e) {
-      logger.err('Cannot get oldest indexed block timestamp. Reason: ' + (e instanceof Error ? e.message : e));
-      throw e;
-    }
-  }
-
-  /**
    * Get blocks mined by a specific mining pool
    * @asyncSafe
    */
@@ -501,18 +489,19 @@ class BlocksRepository {
 
     const params: any[] = [];
     let query = `
-      SELECT ${BLOCK_DB_FIELDS}
+      SELECT ${BLOCK_DB_FIELDS}${auditFields()}
       FROM blocks
       JOIN pools ON blocks.pool_id = pools.id
+      ${auditJoin()}
       WHERE pool_id = ? AND stale = 0`;
     params.push(pool.id);
 
     if (startHeight !== undefined) {
-      query += ` AND height < ?`;
+      query += ` AND blocks.height < ?`;
       params.push(startHeight);
     }
 
-    query += ` ORDER BY height DESC
+    query += ` ORDER BY blocks.height DESC
       LIMIT 100`;
 
     try {
@@ -537,9 +526,10 @@ class BlocksRepository {
   public async $getBlockByHeight(height: number): Promise<BlockExtended | null> {
     try {
       const [rows]: any[] = await DB.query(`
-        SELECT ${BLOCK_DB_FIELDS}
+        SELECT ${BLOCK_DB_FIELDS}${auditFields()}
         FROM blocks
         JOIN pools ON blocks.pool_id = pools.id
+        ${auditJoin()}
         WHERE blocks.height = ? AND stale = 0`,
         [height]
       );
@@ -587,9 +577,10 @@ class BlocksRepository {
   public async $getBlockByHash(hash: string): Promise<BlockExtended | null> {
     try {
       const [rows]: any[] = await DB.query(`
-        SELECT ${BLOCK_DB_FIELDS}
+        SELECT ${BLOCK_DB_FIELDS}${auditFields()}
         FROM blocks
         JOIN pools ON blocks.pool_id = pools.id
+        ${auditJoin()}
         WHERE blocks.hash = ?`,
         [hash]
       );
@@ -601,6 +592,70 @@ class BlocksRepository {
       return await this.formatDbBlockIntoExtendedBlock(rows[0] as DatabaseBlock);
     } catch (e) {
       logger.err(`Cannot get indexed block ${hash}. Reason: ` + (e instanceof Error ? e.message : e));
+      throw e;
+    }
+  }
+
+  /**
+   * Get the fields shown for stale chain tips, for the canonical blocks at the given
+   * heights and the blocks with the given hashes, in a single query
+   * @asyncSafe
+   */
+  public async $getStaleTipBlocks(heights: number[], hashes: string[]): Promise<StaleTipBlock[]> {
+    const conditions: string[] = [];
+    if (heights.length) {
+      conditions.push(`(blocks.height IN (${heights.map(() => '?').join(',')}) AND blocks.stale = 0)`);
+    }
+    if (hashes.length) {
+      conditions.push(`blocks.hash IN (${hashes.map(() => '?').join(',')})`);
+    }
+    if (!conditions.length) {
+      return [];
+    }
+
+    try {
+      const [rows]: any[] = await DB.query(`
+        SELECT
+          blocks.hash AS id,
+          blocks.height,
+          UNIX_TIMESTAMP(blocks.blockTimestamp) AS timestamp,
+          blocks.size,
+          blocks.weight,
+          blocks.tx_count,
+          blocks.median_fee AS medianFee,
+          blocks.fee_span AS feeRange,
+          blocks.coinbase_raw AS coinbaseRaw,
+          UNIX_TIMESTAMP(blocks.first_seen) AS firstSeen,
+          pools.unique_id AS poolId,
+          pools.name AS poolName,
+          pools.slug AS poolSlug
+        FROM blocks
+        JOIN pools ON blocks.pool_id = pools.id
+        WHERE ${conditions.join(' OR ')}`,
+        [...heights, ...hashes]
+      );
+
+      return rows.map(row => ({
+        id: row.id,
+        height: row.height,
+        timestamp: row.timestamp,
+        size: row.size,
+        weight: row.weight,
+        tx_count: row.tx_count,
+        extras: {
+          medianFee: row.medianFee,
+          feeRange: JSON.parse(row.feeRange),
+          pool: {
+            id: row.poolId,
+            name: row.poolName,
+            slug: row.poolSlug,
+            minerNames: this.getPoolMinerNames(row.poolName, row.coinbaseRaw),
+          },
+          firstSeen: this.parseFirstSeen(row.firstSeen),
+        },
+      }));
+    } catch (e) {
+      logger.err(`Cannot get stale tip blocks. Reason: ` + (e instanceof Error ? e.message : e));
       throw e;
     }
   }
@@ -877,41 +932,15 @@ class BlocksRepository {
   }
 
   /**
-   * Get the historical averaged block sizes
+   * Get the historical averaged block sizes and weights
    * @asyncSafe
    */
-   public async $getHistoricalBlockSizes(div: number, interval: string | null): Promise<any> {
+   public async $getHistoricalBlockSizesAndWeights(div: number, interval: string | null): Promise<{ sizes: any[], weights: any[] }> {
     try {
       let query = `SELECT
         CAST(AVG(height) as INT) as avgHeight,
         CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
-        CAST(AVG(size) as INT) as avgSize
-      FROM blocks
-      WHERE stale = 0`;
-
-      if (interval !== null) {
-        query += ` AND blockTimestamp BETWEEN DATE_SUB(NOW(), INTERVAL ${interval}) AND NOW()`;
-      }
-
-      query += ` GROUP BY UNIX_TIMESTAMP(blockTimestamp) DIV ${div}`;
-
-      const [rows]: any = await DB.query(query);
-      return rows;
-    } catch (e) {
-      logger.err('Cannot generate block size and weight history. Reason: ' + (e instanceof Error ? e.message : e));
-      throw e;
-    }
-  }
-
-  /**
-   * Get the historical averaged block weights
-   * @asyncSafe
-   */
-   public async $getHistoricalBlockWeights(div: number, interval: string | null): Promise<any> {
-    try {
-      let query = `SELECT
-        CAST(AVG(height) as INT) as avgHeight,
-        CAST(AVG(UNIX_TIMESTAMP(blockTimestamp)) as INT) as timestamp,
+        CAST(AVG(size) as INT) as avgSize,
         CAST(AVG(weight) as INT) as avgWeight
       FROM blocks
       WHERE stale = 0`;
@@ -923,7 +952,10 @@ class BlocksRepository {
       query += ` GROUP BY UNIX_TIMESTAMP(blockTimestamp) DIV ${div}`;
 
       const [rows]: any = await DB.query(query);
-      return rows;
+      return {
+        sizes: rows.map(row => ({ avgHeight: row.avgHeight, timestamp: row.timestamp, avgSize: row.avgSize })),
+        weights: rows.map(row => ({ avgHeight: row.avgHeight, timestamp: row.timestamp, avgWeight: row.avgWeight })),
+      };
     } catch (e) {
       logger.err('Cannot generate block size and weight history. Reason: ' + (e instanceof Error ? e.message : e));
       throw e;
@@ -1079,26 +1111,6 @@ class BlocksRepository {
     } catch (e) {
       logger.err(`Cannot get blocks with missing coinbase addresses. Reason: ` + (e instanceof Error ? e.message : e));
       return [];
-    }
-  }
-
-  /**
-   * Save indexed median fee to avoid recomputing it later
-   *
-   * @param id
-   * @param feePercentiles
-   * @asyncSafe
-   */
-  public async $saveFeePercentilesForBlockId(id: string, feePercentiles: number[]): Promise<void> {
-    try {
-      await DB.query(`
-        UPDATE blocks SET fee_percentiles = ?, median_fee_amt = ?
-        WHERE hash = ?`,
-        [JSON.stringify(feePercentiles), feePercentiles[3], id]
-      );
-    } catch (e) {
-      logger.err(`Cannot update block fee_percentiles. Reason: ` + (e instanceof Error ? e.message : e));
-      throw e;
     }
   }
 
@@ -1308,13 +1320,7 @@ class BlocksRepository {
     extras.virtualSize = dbBlk.weight / 4.0;
     extras.coinbaseBip54 = dbBlk.coinbaseBip54;
 
-    extras.firstSeen = null;
-    if (config.CORE_RPC.DEBUG_LOG_PATH) {
-      const dbFirstSeen = parseFloat(dbBlk.firstSeen);
-      if (dbFirstSeen > 1) { // Sentinel value 1 indicates that we could not find first seen time
-        extras.firstSeen = dbFirstSeen;
-      }
-    }
+    extras.firstSeen = this.parseFirstSeen(dbBlk.firstSeen);
 
     // Re-org can happen after indexing so we need to always get the
     // latest state from core
@@ -1325,11 +1331,10 @@ class BlocksRepository {
     extras.expectedFees = null;
     extras.expectedWeight = null;
     if (config.MEMPOOL.AUDIT) {
-      const auditScore = await BlocksAuditsRepository.$getBlockAuditScore(dbBlk.id);
-      if (auditScore != null) {
-        extras.matchRate = auditScore.matchRate;
-        extras.expectedFees = auditScore.expectedFees;
-        extras.expectedWeight = auditScore.expectedWeight;
+      if (dbBlk.matchRate != null) {
+        extras.matchRate = dbBlk.matchRate;
+        extras.expectedFees = dbBlk.expectedFees;
+        extras.expectedWeight = dbBlk.expectedWeight;
       }
     }
 
@@ -1361,14 +1366,27 @@ class BlocksRepository {
       }
     }
 
-    if (extras.pool.name === 'OCEAN') {
-      extras.pool.minerNames = parseDATUMTemplateCreator(extras.coinbaseRaw);
-    } else if (extras.pool.name === 'DMND') {
-      extras.pool.minerNames = parseDMNDTemplateCreator(extras.coinbaseRaw);
-    }
+    extras.pool.minerNames = this.getPoolMinerNames(extras.pool.name, extras.coinbaseRaw);
 
     blk.extras = <BlockExtension>extras;
     return <BlockExtended>blk;
+  }
+
+  private parseFirstSeen(dbFirstSeen: string): number | null {
+    if (!config.CORE_RPC.DEBUG_LOG_PATH) {
+      return null;
+    }
+    const firstSeen = parseFloat(dbFirstSeen);
+    return firstSeen > 1 ? firstSeen : null; // Sentinel value 1 indicates that we could not find first seen time
+  }
+
+  private getPoolMinerNames(poolName: string, coinbaseRaw: string): string[] | null {
+    if (poolName === 'OCEAN') {
+      return parseDATUMTemplateCreator(coinbaseRaw);
+    } else if (poolName === 'DMND') {
+      return parseDMNDTemplateCreator(coinbaseRaw);
+    }
+    return null;
   }
 
   // Execute reindexing tasks & lazy schema migrations

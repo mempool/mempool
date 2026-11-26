@@ -1,0 +1,71 @@
+<div class="import">
+  <div class="import-cancel" *ngIf="state.adding">
+    <button type="button" class="btn btn-sm btn-secondary" (click)="session.cancelAdding()" [disabled]="state.scanning" i18n="watch.cancel">Cancel</button>
+  </div>
+
+  <form (ngSubmit)="import()">
+    <div class="mb-3">
+      <label for="watch-label" i18n="watch.wallet-name">Wallet name</label>
+      <input id="watch-label" name="label" type="text" class="form-control" [attr.maxlength]="60" autocomplete="off"
+             [(ngModel)]="label" (ngModelChange)="session.clearError()" [disabled]="state.scanning"
+             placeholder="Enter wallet name" i18n-placeholder="watch.wallet-name-placeholder">
+    </div>
+
+    <div class="mb-3">
+      <label for="watch-key" i18n="watch.wallet-source">Wallet descriptor, address list or extended public key</label>
+      <textarea id="watch-key" name="key" class="form-control" rows="4" spellcheck="false" autocomplete="off"
+                [ngModel]="keyInput" (ngModelChange)="onKeyInput($event)" [disabled]="state.scanning"
+                placeholder="wpkh([…]xpub…/<0;1>/*), one address per line, or zpub…" i18n-placeholder="watch.source-placeholder"></textarea>
+      <small class="form-text detected-hint" *ngIf="detectedInput">
+        <ng-container i18n="watch.detected">Detected:</ng-container>&nbsp;<strong>{{ detectedInput }}</strong>
+      </small>
+    </div>
+
+    <div class="mb-3" *ngIf="needsScriptTypeHint">
+      <label id="watch-script-label" for="watch-script" i18n="watch.script-type">Address type</label>
+      <small class="text-muted ms-2" *ngIf="checkingScriptType" i18n="watch.script-type-checking">checking history…</small>
+      <div ngbDropdown class="script-type-picker">
+        <button #scriptToggle ngbDropdownToggle id="watch-script" type="button" class="form-select script-type-toggle" [disabled]="state.scanning"
+                aria-labelledby="watch-script-label watch-script">
+          <span *ngIf="needsScriptTypeChoice; else selectedType" class="script-type-placeholder" i18n="watch.script-type-choose">Choose an address type</span>
+          <ng-template #selectedType><ng-container *ngTemplateOutlet="scriptTypeOption; context: { $implicit: selectedOption }"></ng-container></ng-template>
+        </button>
+        <div ngbDropdownMenu class="script-type-menu" role="listbox" aria-labelledby="watch-script-label">
+          <button ngbDropdownItem *ngFor="let t of scriptTypes" type="button" role="option" class="script-type-item"
+                  [class.active]="!needsScriptTypeChoice && t.value === selectedScriptType" [attr.aria-selected]="!needsScriptTypeChoice && t.value === selectedScriptType" (click)="chooseScriptType(t.value); scriptToggle.focus()">
+            <ng-container *ngTemplateOutlet="scriptTypeOption; context: { $implicit: t }"></ng-container>
+          </button>
+        </div>
+      </div>
+      <ng-template #scriptTypeOption let-t>
+        <span class="script-type-name">{{ t.label }}</span>
+        <span class="script-type-path">{{ t.path }}</span>
+        <span class="badge rounded-pill history-badge" *ngIf="hasHistory(t.value)" i18n="watch.script-type-history-detected">History detected</span>
+      </ng-template>
+      <small class="form-text text-warning script-type-note" *ngIf="needsScriptTypeChoice" i18n="watch.script-type-several-paths">Multiple derivation paths have history - choose which you want to use</small>
+      <small class="form-text text-muted script-type-note" *ngIf="noneWithHistory" i18n="watch.script-type-none">Choose which address type to use</small>
+    </div>
+
+    <button type="submit" class="btn btn-primary" *ngIf="canLoad || state.scanning" [disabled]="state.scanning || needsScriptTypeChoice">
+      <ng-container *ngIf="!state.scanning" i18n="watch.load-button">Load wallet</ng-container>
+      <ng-container *ngIf="state.scanning">
+        <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+        <ng-container [ngSwitch]="state.progress?.phase">
+          <ng-container *ngSwitchCase="'deriving'" i18n="watch.deriving">Deriving addresses…</ng-container>
+          <ng-container *ngSwitchCase="'fetching'" i18n="watch.fetching">Loading history…</ng-container>
+          <ng-container *ngSwitchDefault i18n="watch.starting">Starting…</ng-container>
+        </ng-container>
+      </ng-container>
+    </button>
+
+    <p class="text-muted mt-2 mb-0" *ngIf="state.scanning && state.progress as progress">
+      <app-watch-scan-status [progress]="progress"></app-watch-scan-status>
+    </p>
+  </form>
+
+  <div class="alert alert-danger mt-3 mb-0" *ngIf="state.error">{{ state.error }}</div>
+
+  <p class="privacy-note" i18n="watch.privacy-note">
+    Addresses are derived in your browser and your key is never sent. Balances are requested in batches, so the server can tell the addresses belong to one wallet.
+  </p>
+</div>

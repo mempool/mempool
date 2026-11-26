@@ -1,6 +1,7 @@
 <div infiniteScroll [alwaysCallback]="true" [infiniteScrollDistance]="2" [infiniteScrollUpDistance]="1.5" [infiniteScrollThrottle]="50" (scrolled)="onScroll()">
 
 <ng-container *ngFor="let tx of transactions; let i = index; trackBy: trackByFn">
+  <ng-container *ngIf="txHeaderTemplate" [ngTemplateOutlet]="txHeaderTemplate" [ngTemplateOutletContext]="{ $implicit: tx, index: i }"></ng-container>
   <div *ngIf="!transactionPage" class="header-bg box tx-page-container">
     <a class="tx-link" [routerLink]="['/tx/' | relativeUrl, tx.txid]">
       <app-truncate [text]="tx.txid"></app-truncate>

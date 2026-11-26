@@ -11,6 +11,7 @@ import { StorageService } from '@app/services/storage.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { StateService } from '@app/services/state.service';
+import { isMobile } from '@app/shared/common.utils';
 
 @Component({
   selector: 'app-block-health-graph',
@@ -123,7 +124,7 @@ export class BlockHealthGraphComponent implements OnInit {
         left: this.left,
       },
       tooltip: {
-        show: !this.isMobile(),
+        show: !isMobile(),
         trigger: 'axis',
         axisPointer: {
           type: 'line'
@@ -279,10 +280,6 @@ export class BlockHealthGraphComponent implements OnInit {
         }
       });
     });
-  }
-
-  isMobile() {
-    return (window.innerWidth <= 767.98);
   }
 
   onSaveChart() {

@@ -1,0 +1,52 @@
+.wallet-switcher { margin: 1.5rem 0 1rem; }
+.wallet-switcher-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-width: 16rem;
+  max-width: 100%;
+  text-align: left;
+  .wallet-switcher-label { margin-right: auto; }
+}
+.wallet-switcher-menu {
+  min-width: 16rem;
+  background-color: var(--secondary);
+  border: 1px solid var(--transparent-fg);
+  box-shadow: 0 .5rem 1rem var(--box-bg);
+  &.show { display: grid; grid-template-columns: minmax(0, 1fr) 2.5rem; }
+  .dropdown-divider, .wallet-switcher-add { grid-column: 1 / -1; }
+}
+.wallet-switcher-item.active, .wallet-settings-button.active { color: var(--fg); background: var(--active-bg); }
+// The global stylesheet removes outlines, so keyboard focus gets a ring of its own.
+.wallet-switcher-item, .wallet-switcher-add, .wallet-settings-button { &:focus-visible { box-shadow: inset 0 0 0 2px var(--info); } }
+.wallet-switcher-item, .wallet-switcher-add {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  cursor: pointer;
+}
+.wallet-switcher-item {
+  min-width: 0;
+  .check { flex: 0 0 1rem; color: var(--primary); font-size: .8rem; }
+  .wallet-switcher-label { margin-right: auto; }
+}
+.wallet-settings-button {
+  padding: 0;
+  color: var(--transparent-fg);
+  text-align: center;
+  &:hover, &:focus-visible { color: var(--fg); }
+}
+.wallet-switcher-add { color: var(--transparent-fg); }
+.wallet-switcher-label {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wallet-switcher-fingerprint {
+  color: var(--transparent-fg);
+  font-family: monospace;
+  font-size: .72rem;
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
