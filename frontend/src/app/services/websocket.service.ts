@@ -95,6 +95,9 @@ export class WebsocketService {
         this.stateService.resetChainTip();
 
         this.reconnectWebsocket();
+        if (this.lastWant) {
+          this.want(JSON.parse(this.lastWant), true);
+        }
       });
     }
   }
