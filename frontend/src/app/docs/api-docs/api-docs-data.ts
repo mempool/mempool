@@ -6567,7 +6567,7 @@ export const restApiDocsData = [
     fragment: 'get-reward-stats',
     title: 'GET Reward Stats',
     description: {
-      default: 'Returns block reward and total transactions confirmed for the past <code>:blockCount</code> blocks.'
+      default: 'Returns block reward and total transactions confirmed for the past <code>:blockCount</code> blocks. <code>:blockCount</code> can be at most 4,320 (about one month of blocks).'
     },
     urlString: '/v1/mining/reward-stats/:blockCount',
     showConditions: bitcoinNetworks,
