@@ -1,10 +1,10 @@
-import { Component, OnInit, ChangeDetectionStrategy, EventEmitter, Output, ViewChild, HostListener, ElementRef, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, EventEmitter, Output, ViewChild, HostListener, ElementRef, Input } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { EventType, NavigationStart, Router } from '@angular/router';
 import { AssetsService } from '@app/services/assets.service';
 import { Env, StateService } from '@app/services/state.service';
 import { Observable, of, Subject, zip, BehaviorSubject, combineLatest } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap, catchError, map, startWith,  tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, switchMap, catchError, map, startWith,  tap, takeUntil } from 'rxjs/operators';
 import { ElectrsApiService } from '@app/services/electrs-api.service';
 import { RelativeUrlPipe } from '@app/shared/pipes/relative-url/relative-url.pipe';
 import { ApiService } from '@app/services/api.service';
@@ -18,7 +18,7 @@ import { Network, findOtherNetworks, getRegex, getTargetUrl, needBaseModuleChang
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SearchFormComponent implements OnInit {
+export class SearchFormComponent implements OnInit, OnDestroy {
   @Input() hamburgerOpen = false;
   env: Env;
   network = '';
@@ -26,6 +26,7 @@ export class SearchFormComponent implements OnInit {
   isSearching = false;
   isTypeaheading$ = new BehaviorSubject<boolean>(false);
   typeAhead$: Observable<any>;
+  private destroy$: Subject<void> = new Subject<void>();
   searchForm: UntypedFormGroup;
   dropdownHidden = false;
 
@@ -70,22 +71,22 @@ export class SearchFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.env = this.stateService.env;
-    this.stateService.networkChanged$.subscribe((network) => {
+    this.stateService.networkChanged$.pipe(takeUntil(this.destroy$)).subscribe((network) => {
       this.network = network;
       // TODO: Eventually change network type here from string to enum of consts
       this.regexAddress = getRegex('address', network as any || 'mainnet');
       this.regexBlockhash = getRegex('blockhash', network as any || 'mainnet');
     });
 
-    this.router.events.subscribe((e: NavigationStart) => { // Reset search focus when changing page
+    this.router.events.pipe(takeUntil(this.destroy$)).subscribe((e: NavigationStart) => { // Reset search focus when changing page
       if (this.searchInput && e.type === EventType.NavigationStart) {
         this.searchInput.nativeElement.blur();
       }
     });
 
-    this.stateService.searchFocus$.subscribe(() => {
+    this.stateService.searchFocus$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       if (!this.searchInput) { // Try again a bit later once the view is properly initialized
-        setTimeout(() => this.searchInput.nativeElement.focus(), 100);
+        setTimeout(() => this.searchInput?.nativeElement.focus(), 100);
       } else if (this.searchInput) {
         this.searchInput.nativeElement.focus();
       }
@@ -225,6 +226,11 @@ export class SearchFormComponent implements OnInit {
           };
         })
       );
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   handleKeyDown($event): void {

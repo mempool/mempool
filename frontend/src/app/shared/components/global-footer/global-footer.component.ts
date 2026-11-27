@@ -60,7 +60,7 @@ export class GlobalFooterComponent implements OnInit, OnDestroy, OnChanges {
     this.backendInfo$ = this.stateService.backendInfo$;
     this.servicesBackendInfo$ = this.stateService.servicesBackendInfo$;
     this.urlLanguage = this.languageService.getLanguageForUrl();
-    this.navigationService.subnetPaths.subscribe((paths) => {
+    this.navigationService.subnetPaths.pipe(takeUntil(this.destroy$)).subscribe((paths) => {
       this.networkPaths = paths;
     });
     this.enterpriseInfo$ = this.enterpriseService.info$.subscribe(info => {
