@@ -131,9 +131,13 @@ const ADDRESS_CHARS: {
       + `)`,
   },
   liquidtestnet: {
-    base58: `[89]` // ???(TODO: find version) is P2PKH, 8|9 is P2SH
-      + BASE58_CHARS
-      + `{33}`, // P2PKH is ???(TODO: find size), P2SH is 34
+    base58: `[F89]` // F is P2PKH, 8|9 is P2SH
+        + BASE58_CHARS
+        + `{33}` // All min-max lengths are 34
+      + `|`
+        + `[v][tj]` // Confidential P2PKH or P2SH starts with vt or vj
+        + BASE58_CHARS
+        + `{78}`,
     bech32: `(?:`
         + `(?:` // bech32 liquid testnet starts with tex or tlq
           + `tex1` // TODO: Why does mempool use this and not ert|el like in the elements source?

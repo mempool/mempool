@@ -2170,6 +2170,38 @@ function base58ToSpk(address: string, network: string): string | null {
   return null;
 }
 
+export function normalizeAddressCase(address: string): string {
+  if (/^(?:[A-Z]{2,5}1[AC-HJ-NP-Z02-9]{8,117}|04[a-fA-F0-9]{128}|(?:02|03)[a-fA-F0-9]{64})$/.test(address)) {
+    return address.toLowerCase();
+  }
+  return address;
+}
+
+export function voutPaysAddress(vout: Vout | undefined, address: string): boolean {
+  if (!vout || !address) { // coinbase inputs have no prevout
+    return false;
+  }
+  if (vout.scriptpubkey_type === 'p2pk') { // strip out push and checksig opcodes
+    return vout.scriptpubkey.slice(2, -2) === address;
+  }
+  return vout.scriptpubkey_address === address;
+}
+
+export function netAmountForAddress(tx: Transaction, address: string): number {
+  let amount = 0;
+  for (const vout of tx?.vout || []) {
+    if (voutPaysAddress(vout, address)) {
+      amount += vout.value;
+    }
+  }
+  for (const vin of tx?.vin || []) {
+    if (voutPaysAddress(vin.prevout, address)) {
+      amount -= vin.prevout.value;
+    }
+  }
+  return amount;
+}
+
 // bech32 encoding / decoding
 // Adapted from https://github.com/bitcoinjs/bech32/blob/5ceb0e3d4625561a459c85643ca6947739b2d83c/src/index.ts
 const BECH32_ALPHABET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';

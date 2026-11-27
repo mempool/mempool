@@ -1,7 +1,7 @@
 import '@angular/localize/init';
 import { ScriptInfo } from '@app/shared/script.utils';
 import { Vin, Vout } from '@interfaces/electrs.interface';
-import { BECH32_CHARS_LW, BASE58_CHARS, HEX_CHARS } from '@app/shared/regex.utils';
+import { BECH32_CHARS_LW, BASE58_CHARS, HEX_CHARS, getRegex, Network } from '@app/shared/regex.utils';
 import { parseTaproot } from './transaction.utils';
 
 export type AddressType = 'fee'
@@ -70,7 +70,7 @@ const ADDRESS_PREFIXES = {
     base58: {
       pubkey: ['F'],
       script: ['8','9'],
-      confidential: ['V'], // TODO: check if this is actually correct
+      confidential: ['v'],
     },
     bech32: 'tex1',
     confidential: 'tlq1',
@@ -79,7 +79,7 @@ const ADDRESS_PREFIXES = {
 
 // precompiled regexes for common address types (excluding prefixes)
 const base58Regex = RegExp('^' + BASE58_CHARS + '{26,34}$');
-const confidentialb58Regex = RegExp('^[TJ]' + BASE58_CHARS + '{78}$');
+const confidentialb58Regex = RegExp('^[TJtj]' + BASE58_CHARS + '{78}$');
 const p2wpkhRegex = RegExp('^q' + BECH32_CHARS_LW + '{38}$');
 const p2wshRegex = RegExp('^q' + BECH32_CHARS_LW + '{58}$');
 const p2trRegex = RegExp('^p' + BECH32_CHARS_LW + '{58}$');
@@ -119,6 +119,13 @@ export function detectAddressType(address: string, network: string): AddressType
   }
 
   return 'unknown';
+}
+
+export function isUnconfidentialAddress(address: string, network: string): boolean {
+  const addressNetwork = (network || 'mainnet') as Network;
+  return !!address
+    && getRegex('address', addressNetwork).test(address)
+    && detectAddressType(address, addressNetwork) !== 'confidential';
 }
 
 /**

@@ -27,7 +27,8 @@ import { ApiService } from '@app/services/api.service';
 import { SeoService } from '@app/services/seo.service';
 import { StorageService } from '@app/services/storage.service';
 import { seoDescriptionNetwork, isMobile } from '@app/shared/common.utils';
-import { getTransactionFlags, getUnacceleratedFeeRate } from '@app/shared/transaction.utils';
+import { getTransactionFlags, getUnacceleratedFeeRate, normalizeAddressCase, voutPaysAddress } from '@app/shared/transaction.utils';
+import { isUnconfidentialAddress } from '@app/shared/address-utils';
 import { Filter, TransactionFlags, toFilters } from '@app/shared/filters.utils';
 import { BlockExtended, CpfpInfo, RbfTree, MempoolPosition, DifficultyAdjustment, Acceleration, AccelerationPosition } from '@interfaces/node-api.interface';
 import { LiquidUnblinding } from '@components/transaction/liquid-ublinding';
@@ -101,6 +102,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   mempoolPositionSubscription: Subscription;
   queryParamsSubscription: Subscription;
   urlFragmentSubscription: Subscription;
+  destinationAlertSubscription: Subscription;
   mempoolBlocksSubscription: Subscription;
   blocksSubscription: Subscription;
   miningSubscription: Subscription;
@@ -182,6 +184,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   auditEnabled: boolean = this.stateService.env.AUDIT && this.stateService.env.BASE_MODULE === 'mempool' && this.stateService.env.MINING_DASHBOARD === true;
   isMempoolSpaceBuild = this.stateService.isMempoolSpaceBuild;
   partnerCode: string | undefined;
+  destinationAlert: string | undefined;
 
   graphContainer: ElementRef;
   private txList: TransactionsListComponent;
@@ -275,6 +278,14 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.urlFragmentSubscription = this.route.fragment.subscribe((fragment) => {
       this.updateFragmentParams(fragment);
+    });
+
+    this.destinationAlertSubscription = combineLatest([
+      this.txChanged$,
+      this.route.fragment,
+    ]).subscribe(([, fragment]) => {
+      this.updateDestinationAlert(fragment);
+      this.cd.markForCheck();
     });
 
     this.blocksSubscription = this.stateService.blocks$.subscribe((blocks) => {
@@ -1285,6 +1296,11 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.storageService.setValue('hide-accelerator-pref', 'false');
   }
 
+  closeDestinationAlert(): void {
+    this.fragmentParams.delete('destinationAlert');
+    this.router.navigate([], { fragment: this.formatFragment(this.fragmentParams), queryParamsHandling: 'merge' });
+  }
+
   get showAccelerationSummary(): boolean {
     return (
       this.tx
@@ -1313,6 +1329,7 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.queryParamsSubscription.unsubscribe();
     this.flowPrefSubscription.unsubscribe();
     this.urlFragmentSubscription.unsubscribe();
+    this.destinationAlertSubscription.unsubscribe();
     this.mempoolBlocksSubscription.unsubscribe();
     this.mempoolPositionSubscription.unsubscribe();
     this.blocksSubscription.unsubscribe();
@@ -1329,5 +1346,15 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
     this.partnerCodeSubscription = this.partnerCodeService.partnerCode$.subscribe((partnerCode) => {
       this.partnerCode = partnerCode;
     });
+  }
+
+  private updateDestinationAlert(fragment: string | null): void {
+    const address = normalizeAddressCase(new URLSearchParams(fragment || '').get('destinationAlert') || '');
+    if (!this.tx || !isUnconfidentialAddress(address, this.network)) {
+      this.destinationAlert = undefined;
+      return;
+    }
+    const isPaid = !!this.tx.vout?.some(vout => voutPaysAddress(vout, address));
+    this.destinationAlert = isPaid ? undefined : address;
   }
 }
