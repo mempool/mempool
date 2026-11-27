@@ -1,5 +1,4 @@
 # start test network daemons on boot
-@reboot sleep 10 ; /usr/local/bin/bitcoind -testnet >/dev/null 2>&1
 @reboot sleep 20 ; /usr/local/bin/bitcoind -testnet4 >/dev/null 2>&1
 @reboot sleep 30 ; /usr/local/bin/bitcoind -signet >/dev/null 2>&1
 
