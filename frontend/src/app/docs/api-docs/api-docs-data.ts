@@ -1,4 +1,4 @@
-const bitcoinNetworks = ['', 'testnet', 'testnet4', 'signet'];
+const bitcoinNetworks = ['', 'testnet', 'testnet4', 'testnet5', 'signet'];
 const liquidNetworks = ['liquid', 'liquidtestnet'];
 const lightningNetworks = ['', 'testnet', 'signet'];
 const miningTimeIntervals = '<code>24h</code>, <code>3d</code>, <code>1w</code>, <code>1m</code>, <code>3m</code>, <code>6m</code>, <code>1y</code>, <code>2y</code>, <code>3y</code>';
