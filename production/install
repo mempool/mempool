@@ -350,20 +350,17 @@ BITCOIN_REPO_NAME=bitcoin
 BITCOIN_REPO_BRANCH=master
 #BITCOIN_LATEST_RELEASE=$(curl -s https://api.github.com/repos/bitcoin/bitcoin/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
 BITCOIN_LATEST_RELEASE=v32.0
-echo -n '.'
 
 CKPOOL_REPO_URL=https://github.com/mempool/ckpool
 CKPOOL_REPO_NAME=ckpool
 CKPOOL_REPO_BRANCH=master
 CKPOOL_LATEST_RELEASE=master
-echo -n '.'
 
 ELEMENTS_REPO_URL=https://github.com/ElementsProject/elements
 ELEMENTS_REPO_NAME=elements
 ELEMENTS_REPO_BRANCH=master
 #ELEMENTS_LATEST_RELEASE=$(curl -s https://api.github.com/repos/ElementsProject/elements/releases/latest|grep tag_name|head -1|cut -d '"' -f4)
 ELEMENTS_LATEST_RELEASE=elements-23.3.4
-echo -n '.'
 
 BITCOIN_ELECTRS_REPO_URL=https://github.com/mempool/electrs
 BITCOIN_ELECTRS_REPO_NAME=electrs
@@ -411,14 +408,7 @@ osSudo()
 {
     SUDO_USER=$1
     shift
-    case $OS in
-        FreeBSD)
-            sudo -H -i -u "${SUDO_USER}" $*
-        ;;
-        Debian)
-            sudo -H -i -u "${SUDO_USER}" $*
-        ;;
-    esac
+    sudo -H -i -u "${SUDO_USER}" $*
 }
 
 osPackageUpdate()
@@ -1100,7 +1090,7 @@ if [ "${TOR_INSTALL}" = ON ];then
     if [ "${ELEMENTS_LIQUID_ENABLE}" = "ON" ];then
         if ! grep "${LIQUID_TOR_HS}" "${TOR_CONFIGURATION}" >/dev/null 2>&1;then
             osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServiceDir ${TOR_RESOURCES}/${LIQUID_TOR_HS}/ >> ${TOR_CONFIGURATION}"
-            osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServicePort 80 unix:/mempool/socket/nginx-tor-liquid >> ${TOR_CONFIGURATION}"
+            osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServicePort 80 unix:${MEMPOOL_HOME}/socket/nginx-tor-liquid >> ${TOR_CONFIGURATION}"
             osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServiceExportCircuitID haproxy >> ${TOR_CONFIGURATION}"
             osSudo "${ROOT_USER}" /bin/sh -c "echo HiddenServiceVersion 3 >> ${TOR_CONFIGURATION}"
         fi
@@ -1301,10 +1291,7 @@ if [ "${ELEMENTS_INSTALL}" = ON ];then
     osSudo "${ROOT_USER}" install -c -o "${ELEMENTS_USER}" -g "${ELEMENTS_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/elements.conf" "${ELEMENTS_HOME}/elements.conf"
 
     echo "[*] Configuring Elements Liquid RPC credentials in elements.conf"
-    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
-    osSudo "${ROOT_USER}" sed -i.orig "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
-    osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" "${ELEMENTS_HOME}/elements.conf"
-    osSudo "${ROOT_USER}" sed -i.orig "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
+    osSudo "${ROOT_USER}" sed -i.orig -e "s/__BITCOIN_RPC_USER__/${BITCOIN_RPC_USER}/" -e "s/__BITCOIN_RPC_PASS__/${BITCOIN_RPC_PASS}/" -e "s/__ELEMENTS_RPC_USER__/${ELEMENTS_RPC_USER}/" -e "s/__ELEMENTS_RPC_PASS__/${ELEMENTS_RPC_PASS}/" "${ELEMENTS_HOME}/elements.conf"
 fi
 
 ###################################
@@ -1330,7 +1317,6 @@ if [ "${BITCOIN_ELECTRS_INSTALL}" = ON ];then
     fi
 
     echo "[*] Cloning Bitcoin Electrs repo from ${BITCOIN_ELECTRS_REPO_URL}"
-    osSudo "${BITCOIN_USER}" git config --global advice.detachedHead false
     osSudo "${BITCOIN_USER}" git clone --branch "${BITCOIN_ELECTRS_REPO_BRANCH}" "${BITCOIN_ELECTRS_REPO_URL}" "${BITCOIN_HOME}/${BITCOIN_ELECTRS_REPO_NAME}"
 
     echo "[*] Checking out Electrs ${BITCOIN_ELECTRS_LATEST_RELEASE}"
@@ -1368,7 +1354,6 @@ if [ "${ELEMENTS_ELECTRS_INSTALL}" = ON ];then
     fi
 
     echo "[*] Cloning Liquid Electrs repo from ${ELEMENTS_ELECTRS_REPO_URL}"
-    osSudo "${ELEMENTS_USER}" git config --global advice.detachedHead false
     osSudo "${ELEMENTS_USER}" git clone --branch "${ELEMENTS_ELECTRS_REPO_BRANCH}" "${ELEMENTS_ELECTRS_REPO_URL}" "${ELEMENTS_HOME}/${ELEMENTS_ELECTRS_REPO_NAME}"
 
     echo "[*] Checking out Liquid Electrs ${ELEMENTS_ELECTRS_LATEST_RELEASE}"
@@ -1407,10 +1392,7 @@ case $OS in
         osSudo "${ROOT_USER}" mkdir -p "${CLN_HOME}/.lightning/bitcoin"
         osSudo "${ROOT_USER}" mkdir -p "${CLN_HOME}/.lightning/signet"
         osSudo "${ROOT_USER}" mkdir -p "${CLN_HOME}/.lightning/testnet"
-        osSudo "${ROOT_USER}" chmod 750 "${CLN_HOME}" "${CLN_HOME}/.lightning"
-        osSudo "${ROOT_USER}" chmod 750 "${CLN_HOME}" "${CLN_HOME}/.lightning/bitcoin"
-        osSudo "${ROOT_USER}" chmod 750 "${CLN_HOME}" "${CLN_HOME}/.lightning/signet"
-        osSudo "${ROOT_USER}" chmod 750 "${CLN_HOME}" "${CLN_HOME}/.lightning/testnet"
+        osSudo "${ROOT_USER}" chmod 750 "${CLN_HOME}" "${CLN_HOME}/.lightning" "${CLN_HOME}/.lightning/bitcoin" "${CLN_HOME}/.lightning/signet" "${CLN_HOME}/.lightning/testnet"
         osSudo "${ROOT_USER}" chown -R "${CLN_USER}:${CLN_GROUP}" "${CLN_HOME}"
         echo "[*] Creating symlink to .bitcoin folder"
         osSudo "${CLN_USER}" ln -s "${BITCOIN_HOME}/.bitcoin" "${CLN_HOME}/.bitcoin"
@@ -1628,19 +1610,19 @@ case $OS in
         crontab_bitcoin=()
         if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
             echo "[*] Installing Electrs Mainnet Cronjob"
-            crontab_bitcoin+="@reboot sleep 30 ; screen -dmS mainnet /bitcoin/electrs/start mainnet\n"
+            crontab_bitcoin+="@reboot sleep 30 ; screen -dmS mainnet ${BITCOIN_ELECTRS_HOME}/start mainnet\n"
         fi
         if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
             echo "[*] Installing Electrs Testnet Cronjob"
-            crontab_bitcoin+="@reboot sleep 70 ; screen -dmS testnet /bitcoin/electrs/start testnet\n"
+            crontab_bitcoin+="@reboot sleep 70 ; screen -dmS testnet ${BITCOIN_ELECTRS_HOME}/start testnet\n"
         fi
         if [ "${BITCOIN_TESTNET4_ENABLE}" = ON ];then
             echo "[*] Installing Electrs Testnet4 Cronjob"
-            crontab_bitcoin+="@reboot sleep 110 ; screen -dmS testnet4 /bitcoin/electrs/start testnet4\n"
+            crontab_bitcoin+="@reboot sleep 110 ; screen -dmS testnet4 ${BITCOIN_ELECTRS_HOME}/start testnet4\n"
         fi
         if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
             echo "[*] Installing Electrs Signet Cronjob"
-            crontab_bitcoin+="@reboot sleep 90 ; screen -dmS signet /bitcoin/electrs/start signet\n"
+            crontab_bitcoin+="@reboot sleep 90 ; screen -dmS signet ${BITCOIN_ELECTRS_HOME}/start signet\n"
         fi
         if [ "${BITCOIN_MAINNET_ENABLE}" = ON -o "${BITCOIN_TESTNET_ENABLE}" = ON -o "${BITCOIN_TESTNET4_ENABLE}" = ON -o "${BITCOIN_SIGNET_ENABLE}" = ON ];then
             echo "${crontab_bitcoin}" | crontab -u "${BITCOIN_USER}" -
@@ -1820,9 +1802,8 @@ chmod 600 "${MEMPOOL_MYSQL_CREDENTIALS}"
 
 echo "[*] Adding Nginx configuration"
 osSudo "${ROOT_USER}" install -c -o "${ROOT_USER}" -g "${ROOT_GROUP}" -m 644 "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/nginx/nginx.conf" "${NGINX_CONFIGURATION}"
-ln -s "${MEMPOOL_HOME}/mempool" "${NGINX_ETC_FOLDER}/mempool"
-osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_USER__!${NGINX_USER}!" "${NGINX_CONFIGURATION}"
-osSudo "${ROOT_USER}" sed -i.orig "s!__NGINX_ETC_FOLDER__!${NGINX_ETC_FOLDER}!" "${NGINX_CONFIGURATION}"
+ln -s "${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}" "${NGINX_ETC_FOLDER}/mempool"
+osSudo "${ROOT_USER}" sed -i.orig -e "s!__NGINX_USER__!${NGINX_USER}!" -e "s!__NGINX_ETC_FOLDER__!${NGINX_ETC_FOLDER}!" "${NGINX_CONFIGURATION}"
 
 if [ "${TOR_INSTALL}" = ON ];then
     echo "[*] Read tor v3 onion hostnames"
@@ -1944,6 +1925,7 @@ esac
 
 echo "[*] Build Mempool"
 osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME} && ./upgrade" || true
+
 
 
 
