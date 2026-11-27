@@ -779,9 +779,9 @@ ext4CreateDir()
 : ${SIG_KILL=9}
 : ${SIG_TERM=15}
 
-input=`tempfile 2>/dev/null` || input=/tmp/input$$
-output=`tempfile 2>/dev/null` || output=/tmp/test$$
-trap "rm -f $input $output" $SIG_OFFNE $SIG_HUP $SIG_INT $SIG_TRAP $SIG_TERM
+input=$(mktemp)
+output=$(mktemp)
+trap "rm -f $input $output" $SIG_OFFNE $SIG_HUP $SIG_INT $SIG_QUIT $SIG_TERM
 
 DIALOG_ERROR=254
 export DIALOG_ERROR
@@ -794,7 +794,7 @@ returncode=0
 # dialog part 1 #
 #################
 
-$CUT >$input <<-EOF
+cat >$input <<-EOF
 Tor:Enable Tor v3 HS Onion:ON
 CKPool:Enable CKPool Stratum Interface:ON
 Mainnet:Enable Bitcoin Mainnet:ON
@@ -808,19 +808,18 @@ Signet:Enable Bitcoin Signet:ON
 Liquid:Enable Elements Liquid:ON
 Liquidtestnet:Enable Elements Liquidtestnet:ON
 CoreLN:Enable Core Lightning:ON
-Unfurl:Enable Unfurl:ON
 EOF
 
 cat $input | sed -e 's/^/"/' -e 's/:/" "/g' -e 's/$/"/' >$output
 cat $output >$input
 
+retval=0
 $DIALOG --backtitle "${backtitle}" \
         --title "${title}" "$@" \
+        --separate-output \
         --checklist "Toggle the features below to configure your fullnode:\n" \
         20 80 10 \
-        --file $input 2> $output
-
-retval=$?
+        --file $input 2> $output || retval=$?
 
 tempfile=$output
 if [ $retval != $DIALOG_OK ];then
@@ -828,43 +827,43 @@ if [ $retval != $DIALOG_OK ];then
     exit 1
 fi
 
-if grep Tor $tempfile >/dev/null 2>&1;then
+if grep -qx Tor $tempfile;then
     TOR_INSTALL=ON
 else
     TOR_INSTALL=OFF
 fi
 
-if grep CKPool $tempfile >/dev/null 2>&1;then
+if grep -qx CKPool $tempfile;then
     CKPOOL_INSTALL=ON
 else
     CKPOOL_INSTALL=OFF
 fi
 
-if grep Mainnet $tempfile >/dev/null 2>&1;then
+if grep -qx Mainnet $tempfile;then
     BITCOIN_MAINNET_ENABLE=ON
 else
     BITCOIN_MAINNET_ENABLE=OFF
 fi
 
-if grep Mainnet-Minfee $tempfile >/dev/null 2>&1;then
+if grep -qx Mainnet-Minfee $tempfile;then
     BITCOIN_MAINNET_MINFEE_ENABLE=ON
 else
     BITCOIN_MAINNET_MINFEE_ENABLE=OFF
 fi
 
-if grep Testnet $tempfile >/dev/null 2>&1;then
+if grep -qx Testnet $tempfile;then
     BITCOIN_TESTNET_ENABLE=ON
 else
     BITCOIN_TESTNET_ENABLE=OFF
 fi
 
-if grep Testnet4 $tempfile >/dev/null 2>&1;then
+if grep -qx Testnet4 $tempfile;then
     BITCOIN_TESTNET4_ENABLE=ON
 else
     BITCOIN_TESTNET4_ENABLE=OFF
 fi
 
-if grep Signet $tempfile >/dev/null 2>&1;then
+if grep -qx Signet $tempfile;then
     BITCOIN_SIGNET_ENABLE=ON
 else
     BITCOIN_SIGNET_ENABLE=OFF
@@ -876,31 +875,31 @@ else
     BITCOIN_INSTALL=OFF
 fi
 
-if grep LN-Mainnet $tempfile >/dev/null 2>&1;then
+if grep -qx LN-Mainnet $tempfile;then
     BITCOIN_MAINNET_LIGHTNING_ENABLE=ON
 else
     BITCOIN_MAINNET_LIGHTNING_ENABLE=OFF
 fi
 
-if grep LN-Testnet $tempfile >/dev/null 2>&1;then
+if grep -qx LN-Testnet $tempfile;then
     BITCOIN_TESTNET_LIGHTNING_ENABLE=ON
 else
     BITCOIN_TESTNET_LIGHTNING_ENABLE=OFF
 fi
 
-if grep LN-Signet $tempfile >/dev/null 2>&1;then
+if grep -qx LN-Signet $tempfile;then
     BITCOIN_SIGNET_LIGHTNING_ENABLE=ON
 else
     BITCOIN_SIGNET_LIGHTNING_ENABLE=OFF
 fi
 
-if grep Liquid $tempfile >/dev/null 2>&1;then
+if grep -qx Liquid $tempfile;then
     ELEMENTS_LIQUID_ENABLE=ON
 else
     ELEMENTS_LIQUID_ENABLE=OFF
 fi
 
-if grep Liquidtestnet $tempfile >/dev/null 2>&1;then
+if grep -qx Liquidtestnet $tempfile;then
     ELEMENTS_LIQUIDTESTNET_ENABLE=ON
 else
     ELEMENTS_LIQUIDTESTNET_ENABLE=OFF
@@ -912,7 +911,7 @@ else
     ELEMENTS_INSTALL=OFF
 fi
 
-if grep CoreLN $tempfile >/dev/null 2>&1;then
+if grep -qx CoreLN $tempfile;then
     CLN_INSTALL=ON
 else
     CLN_INSTALL=OFF
@@ -928,6 +927,52 @@ if [ "${ELEMENTS_LIQUID_ENABLE}" = ON -o "${ELEMENTS_LIQUIDTESTNET_ENABLE}" = ON
     ELEMENTS_ELECTRS_INSTALL=ON
 else
     ELEMENTS_ELECTRS_INSTALL=OFF
+fi
+
+DEPENDENCY_ERRORS=""
+
+if [ "${BITCOIN_MAINNET_LIGHTNING_ENABLE}" = ON -a \( "${BITCOIN_MAINNET_ENABLE}" != ON -o "${CLN_INSTALL}" != ON \) ];then
+    DEPENDENCY_ERRORS+="LN-Mainnet requires Mainnet and CoreLN\n"
+fi
+
+if [ "${BITCOIN_TESTNET_LIGHTNING_ENABLE}" = ON -a \( "${BITCOIN_TESTNET_ENABLE}" != ON -o "${CLN_INSTALL}" != ON \) ];then
+    DEPENDENCY_ERRORS+="LN-Testnet requires Testnet and CoreLN\n"
+fi
+
+if [ "${BITCOIN_SIGNET_LIGHTNING_ENABLE}" = ON -a \( "${BITCOIN_SIGNET_ENABLE}" != ON -o "${CLN_INSTALL}" != ON \) ];then
+    DEPENDENCY_ERRORS+="LN-Signet requires Signet and CoreLN\n"
+fi
+
+# liquidv1 runs with validatepegin=1, which needs the mainnet bitcoind
+if [ "${ELEMENTS_LIQUID_ENABLE}" = ON -a "${BITCOIN_MAINNET_ENABLE}" != ON ];then
+    DEPENDENCY_ERRORS+="Liquid requires Mainnet\n"
+fi
+
+# CLN is only set up for the bitcoin, testnet and signet networks
+if [ "${CLN_INSTALL}" = ON -a "${BITCOIN_MAINNET_ENABLE}" != ON -a "${BITCOIN_TESTNET_ENABLE}" != ON -a "${BITCOIN_SIGNET_ENABLE}" != ON ];then
+    DEPENDENCY_ERRORS+="CoreLN requires Mainnet, Testnet or Signet\n"
+fi
+
+# CKPool only gets a cron job for mainnet, testnet and testnet4
+if [ "${CKPOOL_INSTALL}" = ON -a "${BITCOIN_MAINNET_ENABLE}" != ON -a "${BITCOIN_TESTNET_ENABLE}" != ON -a "${BITCOIN_TESTNET4_ENABLE}" != ON ];then
+    DEPENDENCY_ERRORS+="CKPool requires Mainnet, Testnet or Testnet4\n"
+fi
+
+# the minfee node is only used by the mainnet backend
+if [ "${BITCOIN_MAINNET_MINFEE_ENABLE}" = ON -a "${BITCOIN_MAINNET_ENABLE}" != ON ];then
+    DEPENDENCY_ERRORS+="Mainnet-Minfee requires Mainnet\n"
+fi
+
+# mempool-config.mainnet.json sets USE_SECOND_NODE_FOR_MINFEE, so the mainnet backend reads the minfee node
+if [ "${BITCOIN_MAINNET_ENABLE}" = ON -a "${BITCOIN_MAINNET_MINFEE_ENABLE}" != ON ];then
+    DEPENDENCY_ERRORS+="Mainnet requires Mainnet-Minfee\n"
+fi
+
+if [ -n "${DEPENDENCY_ERRORS}" ];then
+    echo
+    echo -n "${DEPENDENCY_ERRORS}"
+    echo "Installation aborted."
+    exit 1
 fi
 
 ##################
