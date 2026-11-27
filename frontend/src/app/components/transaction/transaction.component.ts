@@ -350,10 +350,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       switchMap((txId) =>
         this.apiService
           .getRbfCachedTx$(txId)
+          .pipe(
+            catchError(() => of(null))
+          )
       ),
-      catchError(() => {
-        return of(null);
-      })
     ).subscribe((tx) => {
       this.loadingCachedTx = false;
       if (!tx) {

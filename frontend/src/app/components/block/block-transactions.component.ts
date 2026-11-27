@@ -44,14 +44,16 @@ export class BlockTransactionsComponent implements OnInit {
       tap(([_, queryParams]) => {
         this.page = +queryParams['page'] || 1;
       }),
-      switchMap(([block, _]) => this.electrsApiService.getBlockTransactions$(block.id, (this.page - 1) * this.itemsPerPage)
-        .pipe(
-          startWith(null),
-          catchError((err) => {
-            this.transactionsError = err;
-            return of([]);
-        }))
-      ),
+      switchMap(([block, _]) => {
+        this.transactionsError = null;
+        return this.electrsApiService.getBlockTransactions$(block.id, (this.page - 1) * this.itemsPerPage)
+          .pipe(
+            startWith(null),
+            catchError((err) => {
+              this.transactionsError = err;
+              return of([]);
+          }));
+      }),
       tap((transactions: Transaction[]) => {
         // The block API doesn't contain the block rewards on Liquid
         if (this.stateService.isLiquid() && transactions && transactions[0] && transactions[0].vin[0].is_coinbase) {
