@@ -310,7 +310,15 @@ class BitcoinApi implements AbstractBitcoinApi {
   /** @asyncUnsafe */
   async $getCoinbaseTx(blockhash: string): Promise<IEsploraApi.Transaction> {
     const txids = await this.$getTxIdsForBlock(blockhash);
-    return this.$getRawTransaction(txids[0]);
+    try {
+      const transaction: IBitcoinApi.Transaction = await this.bitcoindClient.getRawTransaction(txids[0], true, blockhash);
+      return await this.$convertTransaction(transaction, false);
+    } catch (e) {
+      if (e instanceof Error && e.message.startsWith('The genesis block coinbase')) {
+        return this.$returnCoinbaseTransaction();
+      }
+      throw e;
+    }
   }
 
   async $getAddressTransactionSummary(address: string): Promise<IEsploraApi.AddressTxSummary[]> {

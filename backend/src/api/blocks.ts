@@ -1,3 +1,4 @@
+import { isAxiosError } from 'axios';
 import config from '../config';
 import bitcoinApi, { bitcoinCoreApi } from './bitcoin/bitcoin-api-factory';
 import logger from '../logger';
@@ -1153,7 +1154,19 @@ class Blocks {
     logger.debug(`Updating blocks missing bip54 tag from #${blocksMissingCoinbaseBip54[0].height} to #${blocksMissingCoinbaseBip54[blocksMissingCoinbaseBip54.length - 1].height}`, logger.tags.mining);
     for (const block of blocksMissingCoinbaseBip54) {
       try {
-        const coinbaseTx = await bitcoinApi.$getCoinbaseTx(block.id);
+        let coinbaseTx: IEsploraApi.Transaction;
+        if (block.stale) {
+          coinbaseTx = await bitcoinCoreApi.$getCoinbaseTx(block.id);
+        } else {
+          try {
+            coinbaseTx = await bitcoinApi.$getCoinbaseTx(block.id);
+          } catch (e) {
+            if (!isAxiosError(e) || e.response?.status !== 404) {
+              throw e;
+            }
+            coinbaseTx = await bitcoinCoreApi.$getCoinbaseTx(block.id);
+          }
+        }
 
         const coinbaseBip54 = Common.isBip54Coinbase(block, coinbaseTx);
         if (coinbaseBip54 === null) {
