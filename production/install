@@ -34,7 +34,7 @@ esac
 TOR_INSTALL=ON
 CERTBOT_INSTALL=ON
 
-# install 4 network daemons
+# install network daemons
 BITCOIN_INSTALL=ON
 ELEMENTS_INSTALL=ON
 CLN_INSTALL=ON
@@ -42,7 +42,7 @@ CLN_INSTALL=ON
 # install CKPool
 CKPOOL_INSTALL=ON
 
-# configure 4 network instances
+# configure network instances
 BITCOIN_MAINNET_ENABLE=ON
 BITCOIN_MAINNET_MINFEE_ENABLE=ON
 BITCOIN_TESTNET_ENABLE=ON
@@ -62,7 +62,7 @@ ELEMENTS_ELECTRS_INSTALL=ON
 ELEMENTS_ELECTRS_LIGHT_MODE=ON
 ELEMENTS_ELECTRS_COMPACTION=OFF
 
-# automaitcally configure firewall
+# automatically configure firewall
 FIREWALL_CONFIGURE=ON
 
 ############
@@ -71,7 +71,7 @@ FIREWALL_CONFIGURE=ON
 
 HOSTNAME=$(hostname)
 
-# get newest zpool if using zfs
+# get first zpool if using zfs
 ZPOOL=""
 [ "${OS}" = FreeBSD ] && ZPOOL=$(zpool list -H|head -1|cut -f 1)
 
@@ -126,63 +126,39 @@ ELEMENTS_LIQUID_RPC_PORT=7041
 ELEMENTS_RPC_USER=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 ELEMENTS_RPC_PASS=$(head -150 /dev/urandom | ${MD5} | awk '{print $1}')
 
-# set either socket or TCP host/port, not both
-#ELECTRS_MAINNET_HTTP_SOCK=/tmp/bitcoin.mainnet.electrs
 ELECTRS_MAINNET_HTTP_HOST=127.0.0.1
 ELECTRS_MAINNET_HTTP_PORT=3000
 
-# set either socket or TCP host/port, not both
-#ELECTRS_LIQUID_HTTP_SOCK=/tmp/elements.liquid.electrs
 ELECTRS_LIQUID_HTTP_HOST=127.0.0.1
 ELECTRS_LIQUID_HTTP_PORT=3001
 
-# set either socket or TCP host/port, not both
-#ELECTRS_TESTNET_HTTP_SOCK=/tmp/bitcoin.testnet.electrs
 ELECTRS_TESTNET_HTTP_HOST=127.0.0.1
 ELECTRS_TESTNET_HTTP_PORT=3002
 
-# set either socket or TCP host/port, not both
-#ELECTRS_TESTNET4_HTTP_SOCK=/tmp/bitcoin.testnet4.electrs
 ELECTRS_TESTNET4_HTTP_HOST=127.0.0.1
 ELECTRS_TESTNET4_HTTP_PORT=3005
 
-# set either socket or TCP host/port, not both
-#ELECTRS_SIGNET_HTTP_SOCK=/tmp/bitcoin.testnet.electrs
 ELECTRS_SIGNET_HTTP_HOST=127.0.0.1
 ELECTRS_SIGNET_HTTP_PORT=3003
 
-# set either socket or TCP host/port, not both
-#ELECTRS_LIQUIDTESTNET_HTTP_SOCK=/tmp/bitcoin.testnet.electrs
 ELECTRS_LIQUIDTESTNET_HTTP_HOST=127.0.0.1
 ELECTRS_LIQUIDTESTNET_HTTP_PORT=3004
 
-# set either socket or TCP host/port, not both
-#MEMPOOL_MAINNET_HTTP_SOCK=/tmp/bitcoin.mainnet.mempool
 MEMPOOL_MAINNET_HTTP_HOST=127.0.0.1
 MEMPOOL_MAINNET_HTTP_PORT=8999
 
-# set either socket or TCP host/port, not both
-#MEMPOOL_LIQUID_HTTP_SOCK=/tmp/elements.liquid.mempool
 MEMPOOL_LIQUID_HTTP_HOST=127.0.0.1
 MEMPOOL_LIQUID_HTTP_PORT=8998
 
-# set either socket or TCP host/port, not both
-#MEMPOOL_TESTNET_HTTP_SOCK=/tmp/bitcoin.testnet.mempool
 MEMPOOL_TESTNET_HTTP_HOST=127.0.0.1
 MEMPOOL_TESTNET_HTTP_PORT=8997
 
-# set either socket or TCP host/port, not both
-#MEMPOOL_TESTNET4_HTTP_SOCK=/tmp/bitcoin.testnet.mempool
 MEMPOOL_TESTNET4_HTTP_HOST=127.0.0.1
 MEMPOOL_TESTNET4_HTTP_PORT=8990
 
-# set either socket or TCP host/port, not both
-#MEMPOOL_SIGNET_HTTP_SOCK=/tmp/bitcoin.bisq.mempool
 MEMPOOL_SIGNET_HTTP_HOST=127.0.0.1
 MEMPOOL_SIGNET_HTTP_PORT=8995
 
-# set either socket or TCP host/port, not both
-#MEMPOOL_LIQUIDTESTNET_HTTP_SOCK=/tmp/bitcoin.bisq.mempool
 MEMPOOL_LIQUIDTESTNET_HTTP_HOST=127.0.0.1
 MEMPOOL_LIQUIDTESTNET_HTTP_PORT=8994
 
@@ -190,11 +166,11 @@ MEMPOOL_LIQUIDTESTNET_HTTP_PORT=8994
 CKPOOL_MAINNET_STRATUM_HOST=127.0.0.1
 CKPOOL_MAINNET_STRATUM_PORT=3333
 
-# set CKPool bitcoin mainnet port
+# set CKPool bitcoin testnet port
 CKPOOL_TESTNET_STRATUM_HOST=127.0.0.1
 CKPOOL_TESTNET_STRATUM_PORT=3334
 
-# set CKPool bitcoin mainnet port
+# set CKPool bitcoin testnet4 port
 CKPOOL_TESTNET4_STRATUM_HOST=127.0.0.1
 CKPOOL_TESTNET4_STRATUM_PORT=3335
 
@@ -477,7 +453,7 @@ osUserCreate()
 {
     case $OS in
         FreeBSD)
-            # pw useradd -d /mempool -g mempool [-G additional_group] -n mampool
+            # pw useradd -d /mempool -g mempool [-G additional_group] -n mempool
             if [ $# -eq 3 ] ; then
                 osSudo "${ROOT_USER}" pw useradd -d "$2" -g "$3" -n "$1"
             elif [ $# -eq 4 ]; then
@@ -1027,7 +1003,7 @@ osPackageInstallAll
 # Mempool top-level repo #
 ##########################
 
-echo "[*] Creating Mempool user with Tor access"
+echo "[*] Creating Mempool user"
 osGroupCreate "${MEMPOOL_GROUP}"
 osUserCreate "${MEMPOOL_USER}" "${MEMPOOL_HOME}" "${MEMPOOL_GROUP}"
 osSudo "${ROOT_USER}" chsh -s `which zsh` "${MEMPOOL_USER}"
@@ -1243,7 +1219,7 @@ if [ "${CKPOOL_INSTALL}" = ON ]; then
     osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_REPO_NAME} && ./configure CFLAGS=\"-g3 -O0 -fno-inline -fno-omit-frame-pointer -fno-eliminate-unused-debug-types -fno-eliminate-unused-debug-symbols -Wall -I/usr/local/include/libepoll-shim\" LDFLAGS=\"-L/usr/local/lib -lepoll-shim -lpthread\""
     osSudo "${CKPOOL_USER}" sh -c "cd ${CKPOOL_REPO_NAME} && gmake -j${NPROC}"
 
-    echo "[*] Copy CKPool binarary into OS"
+    echo "[*] Copy CKPool binary into OS"
     osSudo "${ROOT_USER}" sh -c "cd ${CKPOOL_HOME}/${CKPOOL_REPO_NAME} && cp src/ckpool /usr/local/bin"
 
     TEMP_CRON_FILE="tmp_cron"
@@ -1496,7 +1472,7 @@ fi
 #################################
 
 if [ "${BITCOIN_TESTNET4_ENABLE}" = ON ];then
-    echo "[*] Installing Bitcoin Testnet service"
+    echo "[*] Installing Bitcoin Testnet4 service"
     case $OS in
 
         FreeBSD)
@@ -1525,12 +1501,12 @@ if [ "${BITCOIN_SIGNET_ENABLE}" = ON ];then
     esac
 fi
 
-###############################
-# Bitcoin instance for Liquid #
-###############################
+################################
+# Elements instance for Liquid #
+################################
 
 if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
-    echo "[*] Installing Bitcoin Liquid service"
+    echo "[*] Installing Elements Liquid service"
     case $OS in
 
         FreeBSD)
@@ -1541,13 +1517,13 @@ if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
         ;;
     esac
 fi
-
-#######################################
-# Bitcoin instance for Liquid Testnet #
+########################################
+# Elements instance for Liquid Testnet #
+########################################
 #######################################
 
 if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
-    echo "[*] Installing Bitcoin Liquid service"
+    echo "[*] Installing Elements Liquid Testnet service"
     case $OS in
 
         FreeBSD)
@@ -1844,7 +1820,7 @@ if [ "${TOR_INSTALL}" = ON ];then
     fi
 fi
 
-##### OS systemd
+##### electrs sockets
 
 echo "[*] Setting permissions for electrs sockets"
 case $OS in
