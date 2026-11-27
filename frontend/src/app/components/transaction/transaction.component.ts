@@ -378,11 +378,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.setupGraph();
 
         this.fetchRbfHistory$.next(this.tx.txid);
-        this.txRbfInfoSubscription = this.stateService.txRbfInfo$.subscribe((rbfInfo) => {
-          if (this.tx) {
-            this.rbfInfo = rbfInfo;
-          }
-        });
         this.txChanged$.next(true);
       }
     });
