@@ -1399,6 +1399,21 @@ case $OS in
 
         echo "[*] Installing Core Lightning package"
         osPackageInstall ${CLN_PKG}
+
+######## FIXME: this code doesn't work properly, needs fixing
+#
+#        crontab -l|head -3|sed -e s/...................//|zsh
+#
+#        echo "[*] Installing Core Lightning mainnet Cronjob"
+#        public_ipv4=$( ifconfig | grep 'inet ' | awk -F ' ' '{ print $2 }' | grep -v '^103\.165\.192\.' | grep -v '^127\.0\.0\.1' )
+#        public_ipv6=$( ifconfig | grep 'inet6' | awk -F ' ' '{ print $2 }' | grep -v '^2001:df6:7280::' | grep -v '^fe80::' | grep -v '^::1' )
+#
+#        crontab_cln+="@reboot sleep 10 ; screen -dmS main lightningd --rpc-file-mode 0660 --alias `hostname` --disable-ip-discovery --autolisten false --bind-addr $public_ipv4 --announce-addr $public_ipv4 --bind-addr $public_ipv6 --announce-addr $public_ipv6\n"
+#        crontab_cln+="@reboot sleep 10 ; screen -dmS tes lightningd --rpc-file-mode 0660 --alias `hostname` --network testnet --disable-ip-discovery --autolisten false --bind-addr $public_ipv4 --announce-addr $public_ipv4 --bind-addr $public_ipv6 --announce-addr $public_ipv6\n"
+#        crontab_cln+="@reboot sleep 10 ; screen -dmS sig lightningd --rpc-file-mode 0660 --alias `hostname` --network signet --disable-ip-discovery --autolisten false --bind-addr $public_ipv4 --announce-addr $public_ipv4 --bind-addr $public_ipv6 --announce-addr $public_ipv6 \n"
+#        crontab_cln+="@reboot sleep 20 ; /mempool/mempool.space/lightning-seeder >/dev/null 2>&1\n"
+#        crontab_cln+="1 * * * * /mempool/mempool.space/lightning-seeder >/dev/null 2>&1\n"
+#        echo "${crontab_cln}" | crontab -u "${CLN_USER}" -
     ;;
     Debian)
     ;;
@@ -1914,6 +1929,62 @@ osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME} && ./upgrade" || true
 
 
 
+##### OS services
+
+#if [ "${BITCOIN_MAINNET_ENABLE}" = ON ];then
+#    echo "[*] Starting Bitcoin Mainnet"
+#    case $OS in
+#
+#        FreeBSD)
+#            osSudo "${ROOT_USER}" service bitcoin onestart
+#            osSudo "${BITCOIN_USER}" sh -c "grep @reboot ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/bitcoin.crontab|cut -d ';' -f2|zsh"
+#        ;;
+#
+#        Debian)
+#            osSudo "${ROOT_USER}" systemctl start bitcoin
+#            osSudo "${ROOT_USER}" systemctl start electrs
+#            osSudo "${ROOT_USER}" journalctl --no-pager --unit bitcoin
+#        ;;
+#    esac
+#fi
+#
+#if [ "${BITCOIN_TESTNET_ENABLE}" = ON ];then
+#    echo "[*] Starting Bitcoin Mainnet"
+#    case $OS in
+#
+#        FreeBSD)
+#        ;;
+#
+#        Debian)
+#            echo "[*] Starting Bitcoin Testnet"
+#            osSudo "${ROOT_USER}" systemctl start bitcoin-testnet
+#            osSudo "${ROOT_USER}" systemctl start electrs-testnet
+#            osSudo "${ROOT_USER}" journalctl --no-pager --unit bitcoin-testnet
+#    esac
+#fi
+#if [ "${ELEMENTS_LIQUID_ENABLE}" = ON ];then
+#    case $OS in
+#
+#        FreeBSD)
+#            echo "[*] Starting Elements Liquid"
+#            osSudo "${ELEMENTS_USER}" sh -c "grep @reboot ${MEMPOOL_HOME}/${MEMPOOL_REPO_NAME}/production/elements.crontab|cut -d ';' -f2|zsh"
+#        ;;
+#
+#        Debian)
+#            echo "[*] Starting Elements Liquid"
+#            osSudo "${ROOT_USER}" systemctl start liquid
+#            osSudo "${ROOT_USER}" systemctl start electrs-liquid
+#            osSudo "${ROOT_USER}" journalctl --no-pager --unit liquid
+#    esac
+#fi
+
+#osSudo "${ROOT_USER}" tail "${BITCOIN_HOME}/debug.log"
+
+##### OS notes
+
+#echo "[*] Adding notes to motd"
+#osSudo "${ROOT_USER}" sh -c 'echo " " >> /etc/motd'
+
 ##### OS firewall
 
 #case $OS in
@@ -1932,6 +2003,12 @@ osSudo "${MEMPOOL_USER}" sh -c "cd ${MEMPOOL_HOME} && ./upgrade" || true
 #esac
 
 ##### finish
+
+#if [ "${TOR_INSTALL}" = ON ];then
+#    echo "Your auto-generated Tor addresses are:"
+#    echo "${NGINX_MEMPOOL_ONION}"
+#    echo "${NGINX_LIQUID_ONION}"
+#fi
 
 echo
 echo 'Please reboot to start all the services.'
