@@ -59,6 +59,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
   hoverData: any[] = [];
   conversions: any;
   allowZoom: boolean = false;
+  yAxisRanges: { min: number, max: number, interval: number }[] = [];
 
   selected = { [$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`]: true, 'Fiat': false };
 
@@ -187,6 +188,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
 
     const maxValue = this.data.reduce((acc, d) => Math.max(acc, Math.abs(d[1] ?? d.value[1])), 0);
     const minValue = this.data.reduce((acc, d) => Math.min(acc, Math.abs(d[1] ?? d.value[1])), maxValue);
+    this.yAxisRanges = this.computeYAxisRanges(-Infinity, Infinity);
 
     this.adjustedRight = this.selected['Fiat'] ? +this.right + 40 : +this.right;
     this.adjustedLeft = this.selected[$localize`:@@7e69426bd97a606d8ae6026762858e6e7c86a1fd:Balance`] ? +this.left : +this.left - 40;
@@ -349,7 +351,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
           splitLine: {
             show: false,
           },
-          min: this.period === 'all' ? 0 : 'dataMin'
+          ...this.yAxisRanges[0],
         },
         {
           type: 'value',
@@ -363,7 +365,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
           splitLine: {
             show: false,
           },
-          min: this.period === 'all' ? 0 : 'dataMin'
+          ...this.yAxisRanges[1],
         },
       ],
       series: [
@@ -400,6 +402,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
       ],
       dataZoom: this.allowZoom ? [{
         type: 'inside',
+        filterMode: 'none',
         realtime: true,
         zoomLock: true,
         maxSpan: 100,
@@ -409,6 +412,7 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
         showDetail: false,
         show: true,
         type: 'slider',
+        filterMode: 'none',
         brushSelect: false,
         realtime: true,
         left: this.adjustedLeft,
@@ -475,6 +479,58 @@ export class AddressGraphComponent implements OnChanges, OnDestroy {
     this.chartInstance.on('showTip', this.onTooltip.bind(this));
     this.chartInstance.on('click', 'series', this.onChartClick.bind(this));
     this.chartInstance.on('legendselectchanged', this.onLegendSelectChanged.bind(this));
+    this.chartInstance.on('datazoom', this.onDataZoom.bind(this));
+  }
+
+  onDataZoom() {
+    const [start, end] = this.chartInstance.getModel().getComponent('dataZoom', 0)?.getValueRange() || [];
+    if (start == null || end == null) {
+      return;
+    }
+    this.yAxisRanges = this.computeYAxisRanges(start, end);
+    this.chartInstance.setOption({ yAxis: this.yAxisRanges });
+  }
+
+  computeYAxisRanges(start: number, end: number): { min: number, max: number, interval: number }[] {
+    return [
+      this.fitAxis(this.data.map(d => Array.isArray(d) ? d : d.value), start, end, 1),
+      this.fitAxis(this.fiatData, start, end, 0),
+    ];
+  }
+
+  fitAxis(points: any[][], start: number, end: number, minInterval: number): { min: number, max: number, interval: number } {
+    let lo = Infinity;
+    let hi = -Infinity;
+    for (let i = 0; i < points.length; i++) {
+      const [time, value] = points[i];
+      if (time > end || (time < start && points[i + 1]?.[0] <= start)) {
+        continue;
+      }
+      lo = Math.min(lo, value);
+      hi = Math.max(hi, value);
+    }
+    if (hi === -Infinity) {
+      return { min: null, max: null, interval: null };
+    }
+    if (this.period === 'all' || lo === hi) {
+      lo = Math.min(0, lo);
+    }
+    if (hi === lo) {
+      return { min: null, max: null, interval: null };
+    }
+    const interval = this.niceInterval((hi - lo) / 5, minInterval);
+    return {
+      min: Math.floor(lo / interval) * interval,
+      max: Math.ceil(hi / interval) * interval,
+      interval,
+    };
+  }
+
+  niceInterval(rough: number, minInterval: number): number {
+    const exponent = Math.pow(10, Math.floor(Math.log10(rough)));
+    const fraction = rough / exponent;
+    const nice = fraction < 1.5 ? 1 : fraction < 2.5 ? 2 : fraction < 4 ? 3 : fraction < 7 ? 5 : 10;
+    return Math.max(minInterval, nice * exponent);
   }
 
   ngOnDestroy(): void {
