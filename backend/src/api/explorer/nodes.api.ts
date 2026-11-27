@@ -5,7 +5,7 @@ import { ResultSetHeader } from 'mysql2';
 import { ILightningApi } from '../lightning/lightning-api.interface';
 import { ITopNodesPerCapacity, ITopNodesPerChannels } from '../../mempool.interfaces';
 import { bin2hex } from '../../utils/format';
-import { Common } from '../common';
+import { isIP } from 'net';
 
 class NodesApi {
   private ispRankingCache: { data: any, expiresAt: number } | null = null;
@@ -577,9 +577,9 @@ class NodesApi {
         let hasClearnet = false;
         let hasDarknet = false;
         for (const socket of (node.sockets ?? '').split(',')) {
-          const network = Common.findSocketNetwork(socket).network;
-          hasClearnet = hasClearnet || network === 'ipv4' || network === 'ipv6';
-          hasDarknet = hasDarknet || network === 'torv2' || network === 'torv3' || network === 'i2p';
+          const network = this.getSocketNetworkType(socket);
+          hasClearnet = hasClearnet || network === 'clearnet';
+          hasDarknet = hasDarknet || network === 'darknet';
         }
         const type = hasClearnet && hasDarknet ? 'clearnetDarknet' : hasClearnet ? 'clearnet' : hasDarknet ? 'darknet' : 'unknown';
         shares[type].nodes++;
@@ -592,6 +592,16 @@ class NodesApi {
       logger.err(`Cannot get LN nodes networks share. Reason: ${e instanceof Error ? e.message : e}`);
       throw e;
     }
+  }
+
+  // nodes.sockets holds "host:port" for both lnd and cln, so read the host itself instead of
+  // Common.findSocketNetwork(), which expects a "type://" prefix with cln. cjdns uses fc00::/8.
+  private getSocketNetworkType(socket: string): 'clearnet' | 'darknet' | null {
+    const host = socket.trim().replace(/:\d+$/, '').replace(/^\[(.*)\]$/, '$1');
+    if (/\.(onion|i2p)$/i.test(host) || (isIP(host) === 6 && /^fc[0-9a-f]{2}:/i.test(host))) {
+      return 'darknet';
+    }
+    return isIP(host) ? 'clearnet' : null;
   }
 
   public async $getNodesPerCountry(countryId: string) {

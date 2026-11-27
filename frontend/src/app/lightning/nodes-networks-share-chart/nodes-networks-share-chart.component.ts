@@ -117,9 +117,9 @@ export class NodesNetworksShareChartComponent implements OnInit, OnDestroy {
     );
 
     // Unknown is not part of the diagram, so it starts unselected
-    this.legendSelected = JSON.parse(
-      this.storageService.getValue(LEGEND_STORAGE_KEY)
-    ) ?? {
+    // getValue() returns '' when storage is unavailable (and in SSR)
+    const storedLegend = this.storageService.getValue(LEGEND_STORAGE_KEY);
+    this.legendSelected = (storedLegend && JSON.parse(storedLegend)) || {
       [this.names.clearnet]: true,
       [this.names.clearnetDarknet]: true,
       [this.names.darknet]: true,
@@ -339,6 +339,10 @@ export class NodesNetworksShareChartComponent implements OnInit, OnDestroy {
       );
       this.zone.run(() => {
         this.legendSelected = e.selected;
+        // onSaveChart() re-applies chartOptions, so it must carry the current selection
+        (
+          this.chartOptions.legend as { selected: Record<string, boolean> }
+        ).selected = e.selected;
         this.cd.markForCheck();
       });
     });

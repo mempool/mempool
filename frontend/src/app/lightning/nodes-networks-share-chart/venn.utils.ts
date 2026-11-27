@@ -75,6 +75,10 @@ export function computeVennLayout(
   let r1 = Math.sqrt(Math.max(a, 0) / Math.PI);
   let r2 = Math.sqrt(Math.max(b, 0) / Math.PI);
   const d0 = solveDistance(r1, r2, Math.min(ab, a, b));
+  // Decided before scaling: solveDistance() returns |r1 - r2| and r1 + r2 exactly for these
+  // cases, and comparing the scaled values could flip them through rounding
+  const nested = r1 > 0 && r2 > 0 && d0 <= Math.abs(r1 - r2);
+  const apart = d0 >= r1 + r2;
 
   // Scale the pair of circles to the box, keeping room on both sides for
   // the labels of regions too narrow to hold them
@@ -110,7 +114,7 @@ export function computeVennLayout(
   let bothPath = null;
   let bothTop = cy;
 
-  if (r1 > 0 && r2 > 0 && d < r1 + r2 && d > Math.abs(r1 - r2)) {
+  if (r1 > 0 && r2 > 0 && !nested && !apart) {
     // Circles intersect at (x1 + p, cy ± h)
     const p = (d * d + r1 * r1 - r2 * r2) / (2 * d);
     const h = Math.sqrt(Math.max(r1 * r1 - p * p, 0));
@@ -126,14 +130,16 @@ export function computeVennLayout(
     onlyBPath = `M ${upper} A ${r2} ${r2} 0 ${
       1 - bigInner2
     } 1 ${lower} A ${r1} ${r1} 0 ${bigInner1} 0 ${upper} Z`;
-  } else if (r1 > 0 && r2 > 0 && d <= Math.abs(r1 - r2)) {
-    // One set contains the other: the smaller circle is the intersection
+  } else if (nested) {
+    // One set contains the other: the smaller circle is the intersection, and the larger
+    // one keeps only the ring around it (a hole wound the other way, so nonzero fill skips it)
+    const hole = (x: number, r: number): string =>
+      `M ${x - r} ${cy} A ${r} ${r} 0 1 0 ${x + r} ${cy} A ${r} ${r} 0 1 0 ${
+        x - r
+      } ${cy} Z`;
     bothPath = r1 < r2 ? onlyAPath : onlyBPath;
-    if (r1 < r2) {
-      onlyAPath = null;
-    } else {
-      onlyBPath = null;
-    }
+    onlyAPath = r1 > r2 ? `${onlyAPath} ${hole(x2, r2)}` : null;
+    onlyBPath = r2 > r1 ? `${onlyBPath} ${hole(x1, r1)}` : null;
   }
 
   const bothLeft = Math.max(x2 - r2, x1 - r1);
