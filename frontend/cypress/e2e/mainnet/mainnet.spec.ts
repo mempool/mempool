@@ -77,20 +77,20 @@ describe('Mainnet', () => {
       });
     });
 
-    //TODO: This test is flaky, refactor later
-    it.skip('loads dashboard, drop websocket and reconnect', () => {
+    it('loads dashboard, drop websocket and reconnect', () => {
       cy.viewport('macbook-16');
       cy.mockMempoolSocket();
       cy.visit('/');
-      cy.get('.badge').should('not.exist');
+      cy.get('.connection-badge .badge').should('not.exist');
       dropWebSocket();
-      cy.get('.badge').should('be.visible');
-      cy.get('.badge', { timeout: 25000 }).should('not.exist');
-      emitMempoolInfo({
-        'params': {
-          command: 'init'
-        }
-      });
+      cy.get('.connection-badge .badge').should('be.visible');
+      // The app reconnects 2 to 4 seconds after the drop, and the mock socket then queues
+      // Cypress commands of its own. Wait that out instead of retrying an assertion while
+      // it happens.
+      cy.wait(5000);
+      cy.get('.connection-badge .badge').should('not.exist');
+      // on reconnecting, the mock socket sends the same data as it did at first
+      cy.get('#mempool-block-0').should('be.visible');
       cy.get(':nth-child(1) > #bitcoin-block-0').should('not.exist');
       cy.get(':nth-child(2) > #bitcoin-block-0').should('not.exist');
       cy.get(':nth-child(3) > #bitcoin-block-0').should('not.exist');
@@ -311,37 +311,23 @@ describe('Mainnet', () => {
           });
         });
 
-        it.skip('loads last blockchain block and keypress arrow right', () => { //Skip for now as "last" doesn't really work with infinite scrolling
+        it('loads first blockchain block and keypress arrow right past the last block shown', () => {
           cy.viewport('macbook-16');
           cy.visit('/');
           cy.waitForSkeletonGone();
-          cy.get('bitcoin-block-offset-0-index-7').click().then(() => {
-            cy.waitForPageIdle();
+          cy.get('[data-cy="bitcoin-block-offset-0-index-0"]').invoke('attr', 'id').then((id) => {
+            const height = parseInt(id.replace('bitcoin-block-', ''), 10);
+            cy.get(`#${id}`).click();
+            cy.get('.title-block .block-link').should('have.text', `${height}`);
 
-            // block 6
-            cy.document().right();
-            cy.wait(5000);
-            cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+            // the blockchain starts with 8 blocks, so the last steps load blocks it did not show
+            for (let step = 1; step <= 9; step++) {
+              cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+              cy.document().right();
+              cy.get('.title-block .block-link').should('have.text', `${height - step}`);
+              cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
+            }
             cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
-
-            // block 7
-            cy.document().right();
-            cy.wait(5000);
-            cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
-            cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
-
-            // block 8 - last visible block
-            cy.document().right();
-            cy.wait(5000);
-            cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
-            cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
-
-            // block 9 - not visible at the blochchain blocks visible block
-            cy.document().right();
-            cy.wait(5000);
-            cy.get('[ngbtooltip="Next Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
-            cy.get('[ngbtooltip="Previous Block"] > .ng-fa-icon > .svg-inline--fa').should('be.visible');
-
           });
         });
 
