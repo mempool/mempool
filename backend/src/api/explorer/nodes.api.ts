@@ -5,6 +5,7 @@ import { ResultSetHeader } from 'mysql2';
 import { ILightningApi } from '../lightning/lightning-api.interface';
 import { ITopNodesPerCapacity, ITopNodesPerChannels } from '../../mempool.interfaces';
 import { bin2hex } from '../../utils/format';
+import { isIP } from 'net';
 
 class NodesApi {
   private ispRankingCache: { data: any, expiresAt: number } | null = null;
@@ -557,6 +558,60 @@ class NodesApi {
       logger.err(`Cannot get LN ISP ranking. Reason: ${e instanceof Error ? e.message : e}`);
       throw e;
     }
+  }
+
+  public async $getNodesNetworksShare(): Promise<any> {
+    try {
+      // nodes.channels/capacity are only refreshed for nodes that still have channels, so aggregate live channels instead
+      const [nodes]: any[] = await DB.query(`
+        SELECT nodes.sockets, CAST(COALESCE(endpoints.channels, 0) as INT) as channels, CAST(COALESCE(endpoints.capacity, 0) as INT) as capacity
+        FROM nodes
+        LEFT JOIN (
+          SELECT public_key, COUNT(*) as channels, SUM(capacity) as capacity
+          FROM (
+            SELECT node1_public_key as public_key, capacity FROM channels WHERE status = 1
+            UNION ALL
+            SELECT node2_public_key as public_key, capacity FROM channels WHERE status = 1
+          ) channel_endpoints
+          GROUP BY public_key
+        ) endpoints ON endpoints.public_key = nodes.public_key
+        WHERE nodes.status = 1
+      `);
+
+      const shares = {};
+      for (const type of ['clearnet', 'darknet', 'clearnetDarknet', 'unknown']) {
+        shares[type] = { nodes: 0, channels: 0, capacity: 0 };
+      }
+
+      for (const node of nodes) {
+        let hasClearnet = false;
+        let hasDarknet = false;
+        for (const socket of (node.sockets ?? '').split(',')) {
+          const network = this.getSocketNetworkType(socket);
+          hasClearnet = hasClearnet || network === 'clearnet';
+          hasDarknet = hasDarknet || network === 'darknet';
+        }
+        const type = hasClearnet && hasDarknet ? 'clearnetDarknet' : hasClearnet ? 'clearnet' : hasDarknet ? 'darknet' : 'unknown';
+        shares[type].nodes++;
+        shares[type].channels += node.channels;
+        shares[type].capacity += node.capacity;
+      }
+
+      return shares;
+    } catch (e) {
+      logger.err(`Cannot get LN nodes networks share. Reason: ${e instanceof Error ? e.message : e}`);
+      throw e;
+    }
+  }
+
+  // nodes.sockets holds "host:port" for both lnd and cln, so read the host itself instead of
+  // Common.findSocketNetwork(), which expects a "type://" prefix with cln. cjdns uses fc00::/8.
+  private getSocketNetworkType(socket: string): 'clearnet' | 'darknet' | null {
+    const host = socket.trim().replace(/:\d+$/, '').replace(/^\[(.*)\]$/, '$1');
+    if (/\.(onion|i2p)$/i.test(host) || (isIP(host) === 6 && /^fc[0-9a-f]{2}:/i.test(host))) {
+      return 'darknet';
+    }
+    return isIP(host) ? 'clearnet' : null;
   }
 
   public async $getNodesPerCountry(countryId: string) {

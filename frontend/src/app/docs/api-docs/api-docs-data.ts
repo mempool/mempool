@@ -10283,6 +10283,111 @@ export const restApiDocsData = [
     type: 'endpoint',
     category: 'lightning',
     httpRequestMethod: 'GET',
+    fragment: 'get-node-stats-per-network',
+    title: 'GET Node Stats Per Network',
+    description: {
+      default: '<p>Returns the number of active nodes, their channels and their capacity, split by the networks the nodes announce: clearnet only (IPv4, IPv6), darknet only (Tor, I2P), both, or no address at all. Channels and capacity are counted for each of the two nodes of a channel. Capacity figures are in satoshis.</p>'
+    },
+    urlString: '/v1/lightning/nodes/networks',
+    showConditions: lightningNetworks,
+    showJsExamples: showJsExamplesDefaultFalse,
+    codeExample: {
+      default: {
+        codeTemplate: {
+          curl: `/api/v1/lightning/nodes/networks`,
+          commonJS: ``,
+          esModule: ``
+        },
+        codeSampleMainnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "clearnet": {
+    "nodes": 1160,
+    "channels": 13849,
+    "capacity": 240917392195
+  },
+  "darknet": {
+    "nodes": 3788,
+    "channels": 14353,
+    "capacity": 49909096695
+  },
+  "clearnetDarknet": {
+    "nodes": 1000,
+    "channels": 19766,
+    "capacity": 218519741798
+  },
+  "unknown": {
+    "nodes": 5987,
+    "channels": 14210,
+    "capacity": 40109875788
+  }
+}`
+        },
+        codeSampleTestnet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "clearnet": {
+    "nodes": 312,
+    "channels": 1802,
+    "capacity": 6815723018
+  },
+  "darknet": {
+    "nodes": 410,
+    "channels": 1205,
+    "capacity": 1350211542
+  },
+  "clearnetDarknet": {
+    "nodes": 61,
+    "channels": 862,
+    "capacity": 4730582190
+  },
+  "unknown": {
+    "nodes": 1987,
+    "channels": 2441,
+    "capacity": 1102330981
+  }
+}`
+        },
+        codeSampleSignet: {
+          esModule: [],
+          commonJS: [],
+          curl: [],
+          response: `{
+  "clearnet": {
+    "nodes": 18,
+    "channels": 64,
+    "capacity": 61320000
+  },
+  "darknet": {
+    "nodes": 9,
+    "channels": 21,
+    "capacity": 8501200
+  },
+  "clearnetDarknet": {
+    "nodes": 4,
+    "channels": 38,
+    "capacity": 41875310
+  },
+  "unknown": {
+    "nodes": 57,
+    "channels": 71,
+    "capacity": 10233050
+  }
+}`
+        },
+        codeSampleLiquid: emptyCodeSample,
+        codeSampleLiquidTestnet: emptyCodeSample,
+      }
+    }
+  },
+  {
+    type: 'endpoint',
+    category: 'lightning',
+    httpRequestMethod: 'GET',
     fragment: 'get-isp-node-stats',
     title: 'GET Node Stats Per ISP',
     description: {

@@ -3,6 +3,7 @@ import { SharedModule } from '@app/shared/shared.module';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { NodesNetworksChartComponent } from '@app/lightning/nodes-networks-chart/nodes-networks-chart.component';
+import { NodesNetworksShareChartComponent } from '@app/lightning/nodes-networks-share-chart/nodes-networks-share-chart.component';
 import { LightningStatisticsChartComponent } from '@app/lightning/statistics-chart/lightning-statistics-chart.component';
 import { NodesPerISPChartComponent } from '@app/lightning/nodes-per-isp-chart/nodes-per-isp-chart.component';
 import { NodesPerCountryChartComponent } from '@app/lightning/nodes-per-country-chart/nodes-per-country-chart.component';
@@ -14,6 +15,11 @@ const routes: Routes = [
     path: 'nodes-networks',
     data: { networks: ['bitcoin'] },
     component: NodesNetworksChartComponent,
+  },
+  {
+    path: 'network-shares',
+    data: { networks: ['bitcoin'] },
+    component: NodesNetworksShareChartComponent,
   },
   {
     path: 'capacity',

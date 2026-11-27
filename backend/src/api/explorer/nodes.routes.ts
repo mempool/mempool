@@ -14,6 +14,7 @@ class NodesRoutes {
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/country/:country', this.$getNodesPerCountry)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/search/:search', this.$searchNode)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/isp-ranking', this.$getISPRanking)
+      .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/networks', this.$getNodesNetworksShare)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/isp/:isp', this.$getNodesPerISP)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/countries', this.$getNodesCountries)
       .get(config.MEMPOOL.API_URL_PREFIX + 'lightning/nodes/rankings', this.$getNodesRanking)
@@ -297,6 +298,18 @@ class NodesRoutes {
       res.json(nodesPerAs);
     } catch (e) {
       handleError(req, res, 500, 'Failed to get ISP ranking');
+    }
+  }
+
+  private async $getNodesNetworksShare(req: Request, res: Response): Promise<void> {
+    try {
+      const shares = await nodesApi.$getNodesNetworksShare();
+      res.header('Pragma', 'public');
+      res.header('Cache-control', 'public');
+      res.setHeader('Expires', new Date(Date.now() + 1000 * 600).toUTCString());
+      res.json(shares);
+    } catch (e) {
+      handleError(req, res, 500, 'Failed to get nodes networks share');
     }
   }
 
