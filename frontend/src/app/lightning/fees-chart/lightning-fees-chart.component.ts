@@ -406,13 +406,12 @@ export class LightningFeesChartComponent implements OnInit, OnDestroy {
     if (this.isLoading || !this.chartInstance) {
       return;
     }
-    // @ts-ignore
-    const prevBottom = this.chartOptions.grid.bottom;
+    const prevBottom = this.chartInstance.getOption().grid[0].bottom;
     const now = new Date();
-    // @ts-ignore
-    this.chartOptions.grid.bottom = 40;
-    this.chartOptions.backgroundColor = 'var(--active-bg)';
-    this.chartInstance.setOption(this.chartOptions);
+    this.chartInstance.setOption({
+      grid: { bottom: 40 },
+      backgroundColor: 'var(--active-bg)',
+    });
     download(
       this.chartInstance.getDataURL({
         pixelRatio: 2,
@@ -421,9 +420,9 @@ export class LightningFeesChartComponent implements OnInit, OnDestroy {
         now.getTime() / 1000
       )}.svg`
     );
-    // @ts-ignore
-    this.chartOptions.grid.bottom = prevBottom;
-    this.chartOptions.backgroundColor = 'none';
-    this.chartInstance.setOption(this.chartOptions);
+    this.chartInstance.setOption({
+      grid: { bottom: prevBottom },
+      backgroundColor: 'none',
+    });
   }
 }
