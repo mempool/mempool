@@ -562,10 +562,20 @@ class NodesApi {
 
   public async $getNodesNetworksShare(): Promise<any> {
     try {
+      // nodes.channels/capacity are only refreshed for nodes that still have channels, so aggregate live channels instead
       const [nodes]: any[] = await DB.query(`
-        SELECT sockets, CAST(COALESCE(channels, 0) as INT) as channels, CAST(COALESCE(capacity, 0) as INT) as capacity
+        SELECT nodes.sockets, CAST(COALESCE(endpoints.channels, 0) as INT) as channels, CAST(COALESCE(endpoints.capacity, 0) as INT) as capacity
         FROM nodes
-        WHERE status = 1
+        LEFT JOIN (
+          SELECT public_key, COUNT(*) as channels, SUM(capacity) as capacity
+          FROM (
+            SELECT node1_public_key as public_key, capacity FROM channels WHERE status = 1
+            UNION ALL
+            SELECT node2_public_key as public_key, capacity FROM channels WHERE status = 1
+          ) channel_endpoints
+          GROUP BY public_key
+        ) endpoints ON endpoints.public_key = nodes.public_key
+        WHERE nodes.status = 1
       `);
 
       const shares = {};

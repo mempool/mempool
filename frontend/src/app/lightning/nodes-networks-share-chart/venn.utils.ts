@@ -138,6 +138,7 @@ export function computeVennLayout(
         x - r
       } ${cy} Z`;
     bothPath = r1 < r2 ? onlyAPath : onlyBPath;
+    bothTop = cy - Math.min(r1, r2);
     onlyAPath = r1 > r2 ? `${onlyAPath} ${hole(x2, r2)}` : null;
     onlyBPath = r2 > r1 ? `${onlyBPath} ${hole(x1, r1)}` : null;
   }
