@@ -1,5 +1,6 @@
 import config from '../../config';
 import { Application, Request, Response } from 'express';
+import { RowDataPacket } from 'mysql2';
 import nodesApi from './nodes.api';
 import DB from '../../database';
 import { INodesRanking } from '../../mempool.interfaces';
@@ -193,12 +194,17 @@ class NodesRoutes {
   }
 
   private async $getNode(req: Request, res: Response) {
+    if (!/^[0-9a-f]{66}$/i.test(req.params.public_key)) {
+      handleError(req, res, 400, 'Invalid public key');
+      return;
+    }
     try {
-      const node = await nodesApi.$getNode(req.params.public_key);
-      if (!node) {
+      const [rows] = await DB.query<RowDataPacket[]>(`SELECT 1 FROM nodes WHERE public_key = ?`, [req.params.public_key]);
+      if (rows.length === 0) {
         handleError(req, res, 404, 'Node not found');
         return;
       }
+      const node = await nodesApi.$getNode(req.params.public_key);
       res.header('Pragma', 'public');
       res.header('Cache-control', 'public');
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
@@ -341,12 +347,16 @@ class NodesRoutes {
   }
 
   private async $getNodesPerISP(req: Request, res: Response) {
+    if (!/^\d+(,\d+)*$/.test(req.params.isp)) {
+      handleError(req, res, 400, 'Invalid ISP id');
+      return;
+    }
     try {
       const [isp]: any[] = await DB.query(
         `SELECT geo_names.names as isp_name
         FROM geo_names
         WHERE geo_names.type = 'as_organization' AND geo_names.id = ?`,
-        [req.params.isp]
+        [req.params.isp.split(',')[0]]
       );
 
       if (isp.length === 0) {
