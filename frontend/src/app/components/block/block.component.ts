@@ -13,6 +13,7 @@ import { ApiService } from '@app/services/api.service';
 import { BlockOverviewGraphComponent } from '@components/block-overview-graph/block-overview-graph.component';
 import { detectWebGL } from '@app/shared/graphs.utils';
 import { seoDescriptionNetwork, isMobile } from '@app/shared/common.utils';
+import { getMinBlockFee, getMaxBlockFee } from '@app/shared/block.utils';
 import { PriceService, Price } from '@app/services/price.service';
 import { CacheService } from '@app/services/cache.service';
 import { ServicesApiServices } from '@app/services/services-api.service';
@@ -168,8 +169,8 @@ export class BlockComponent implements OnInit, OnDestroy {
           if (block.id === this.blockHash) {
             this.block = block;
             if (block.extras) {
-              block.extras.minFee = this.getMinBlockFee(block);
-              block.extras.maxFee = this.getMaxBlockFee(block);
+              block.extras.minFee = getMinBlockFee(block);
+              block.extras.maxFee = getMaxBlockFee(block);
               if (block?.extras?.reward != undefined) {
                 this.fees = block.extras.reward / 100000000 - this.blockSubsidy;
               }
@@ -276,8 +277,8 @@ export class BlockComponent implements OnInit, OnDestroy {
         this.block = block;
         this.blockHash = block.id;
         if (block.extras) {
-          block.extras.minFee = this.getMinBlockFee(block);
-          block.extras.maxFee = this.getMaxBlockFee(block);
+          block.extras.minFee = getMinBlockFee(block);
+          block.extras.maxFee = getMaxBlockFee(block);
         }
         this.blockHeight = block.height;
         this.lastBlockHeight = this.blockHeight;
@@ -1009,25 +1010,6 @@ export class BlockComponent implements OnInit, OnDestroy {
         }
     }
     return true;
-  }
-
-  getMinBlockFee(block: BlockExtended): number {
-    if (block?.extras?.feeRange) {
-      // heuristic to check if feeRange is adjusted for effective rates
-      if (block.extras.medianFee === block.extras.feeRange[3]) {
-        return block.extras.feeRange[1];
-      } else {
-        return block.extras.feeRange[0];
-      }
-    }
-    return 0;
-  }
-
-  getMaxBlockFee(block: BlockExtended): number {
-    if (block?.extras?.feeRange) {
-      return block.extras.feeRange[block.extras.feeRange.length - 1];
-    }
-    return 0;
   }
 
   loadedCacheBlock(block: BlockExtended): void {

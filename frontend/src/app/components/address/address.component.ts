@@ -351,22 +351,10 @@ export class AddressComponent implements OnInit, OnDestroy {
         this.isLoadingTransactions = false;
         this.fillStripHistory();
 
-        const addressVin: Vin[] = [];
-        const vinIds: string[] = [];
-        for (const tx of this.transactions) {
-          tx.vin.forEach((v, index) => {
-            if (v.prevout?.scriptpubkey_address === this.address.address) {
-              addressVin.push(v);
-              vinIds.push(`${tx.txid}:${index}`);
-            }
-          });
-        }
-        this.addressTypeInfo.processInputs(addressVin, vinIds);
+        this.updateAddressTypeInfo(this.transactions);
         if (this.addressTypeInfo.type === 'v1_p2tr' && !this.addressTypeInfo.tapscript) {
           this.setTapTreeIncomplete(true);
         }
-        // hack to trigger change detection
-        this.addressTypeInfo = this.addressTypeInfo.clone();
 
         if (!this.showBalancePeriod()) {
           this.setBalancePeriod('all');
@@ -421,6 +409,7 @@ export class AddressComponent implements OnInit, OnDestroy {
 
     this.transactions.unshift(transaction);
     this.sortTransactions();
+    this.updateAddressTypeInfo([transaction]);
 
     if (playSound) {
       if (transaction.vout.some((vout) => vout?.scriptpubkey_address === this.address.address)) {
@@ -473,11 +462,12 @@ export class AddressComponent implements OnInit, OnDestroy {
       let utxosChanged = false;
       for (const vin of transaction.vin) {
         if (vin.prevout?.scriptpubkey_address === this.address.address) {
+          const parent = this.transactions.find((tx) => tx.txid === vin.txid);
           this.utxos.push({
             txid: vin.txid,
             vout: vin.vout,
             value: vin.prevout.value,
-            status: { confirmed: true }, // Assuming the input was confirmed
+            status: parent ? { ...parent.status } : { confirmed: true }, // assumed confirmed if its transaction is not loaded
           });
           utxosChanged = true;
         }
@@ -666,6 +656,23 @@ export class AddressComponent implements OnInit, OnDestroy {
     header?.focus({ preventScroll: true });
   }
 
+  // the address's exact type and scripts are learned from the inputs that spend from it
+  private updateAddressTypeInfo(transactions: Transaction[]): void {
+    const addressVin: Vin[] = [];
+    const vinIds: string[] = [];
+    for (const tx of transactions) {
+      tx.vin.forEach((v, index) => {
+        if (v.prevout?.scriptpubkey_address === this.address.address) {
+          addressVin.push(v);
+          vinIds.push(`${tx.txid}:${index}`);
+        }
+      });
+    }
+    this.addressTypeInfo.processInputs(addressVin, vinIds);
+    // hack to trigger change detection
+    this.addressTypeInfo = this.addressTypeInfo.clone();
+  }
+
   loadMore(): void {
     if (this.isLoadingTransactions || this.fullyLoaded) {
       return;
@@ -692,6 +699,7 @@ export class AddressComponent implements OnInit, OnDestroy {
           }
           this.transactions = [...txByTxid.values()];
           this.sortTransactions();
+          this.updateAddressTypeInfo(transactions);
           this.fullyLoaded = this.transactions.length === this.mempoolStats.tx_count + this.chainStats.tx_count;
         } else {
           this.fullyLoaded = true;
