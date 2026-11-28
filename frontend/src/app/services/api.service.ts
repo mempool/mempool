@@ -597,7 +597,7 @@ export class ApiService {
   }
 
   getPrevouts$(outpoints: {txid: string; vout: number}[]): Observable<any> {
-    return this.httpClient.post(this.apiBaseUrl + this.apiBasePath + '/api/v1/prevouts', outpoints);
+    return this.httpClient.post(this.apiBaseUrl + this.apiBasePath + '/api/v1/prevouts', outpoints, { observe: 'response' });
   }
 
   getCpfpLocalTx$(tx: any[]): Observable<CpfpInfo[]> {

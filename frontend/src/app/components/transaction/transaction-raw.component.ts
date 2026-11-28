@@ -140,7 +140,9 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
         this.missingPrevouts = [];
         this.isLoadingPrevouts = true;
 
-        const prevouts: { prevout: Vout, unconfirmed: boolean }[] = await firstValueFrom(this.apiService.getPrevouts$(prevoutsToFetch));
+        const response = await firstValueFrom(this.apiService.getPrevouts$(prevoutsToFetch));
+        const prevouts: { prevout: Vout, unconfirmed: boolean }[] = response.body;
+        const failed = (response.headers.get('X-Prevouts-Failed') || '').split(',').filter(Boolean).map(Number);
 
         if (prevouts?.length !== prevoutsToFetch.length) {
           throw new Error();
@@ -152,7 +154,7 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
             const fetched = prevouts[fetchIndex];
             if (fetched) {
               input.prevout = fetched.prevout;
-            } else {
+            } else if (!failed.includes(fetchIndex)) {
               this.missingPrevouts.push(`${input.txid}:${input.vout}`);
             }
             fetchIndex++;
@@ -161,6 +163,9 @@ export class TransactionRawComponent implements OnInit, OnDestroy {
 
         if (this.missingPrevouts.length) {
           throw new Error(`Some prevouts do not exist or are already spent (${this.missingPrevouts.length})`);
+        }
+        if (failed.length) {
+          throw new Error(`The server failed to look up some prevouts (${failed.length})`);
         }
 
         this.hasPrevouts = true;

@@ -1271,6 +1271,7 @@ class BitcoinRoutes {
       }
 
       const result = Array(outpoints.length).fill(null);
+      const failed: number[] = [];
       const memPool = mempool.getMempool();
 
       for (let i = 0; i < outpoints.length; i++) {
@@ -1298,7 +1299,11 @@ class BitcoinRoutes {
               unconfirmed = false;
             }
           } catch (e) {
-            // Ignore bitcoin client errors, just leave prevout as null
+            // No answer from Core (network error, warmup or a protocol error). Other RPC errors are about the outpoint.
+            const code = (e as { code?: unknown })?.code;
+            if (typeof code !== 'number' || code === -28 || code <= -32000) {
+              failed.push(i);
+            }
           }
         }
 
@@ -1307,6 +1312,12 @@ class BitcoinRoutes {
         }
       }
 
+      if (failed.length && failed.length === outpoints.length) {
+        handleError(req, res, 503, 'Failed to get prevouts');
+        return;
+      } else if (failed.length) {
+        res.setHeader('X-Prevouts-Failed', failed.join(','));
+      }
       res.json(result);
 
     } catch (e) {
