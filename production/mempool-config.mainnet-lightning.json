@@ -90,5 +90,27 @@
     "USERNAME": "__MEMPOOL_MAINNET_LIGHTNING_USER__",
     "PASSWORD": "__MEMPOOL_MAINNET_LIGHTNING_PASS__",
     "DATABASE": "mempool_mainnet_lightning"
+  },
+  "REPLICATION": {
+    "ENABLED": true,
+    "LIGHTNING": true,
+    "SERVERS": [
+      "node202.va1.mempool.space",
+      "node204.va1.mempool.space",
+      "node205.va1.mempool.space",
+      "node207.va1.mempool.space",
+      "node209.va1.mempool.space",
+      "node210.va1.mempool.space",
+      "node202.fra.mempool.space",
+      "node203.fra.mempool.space",
+      "node204.fra.mempool.space",
+      "node205.fra.mempool.space",
+      "node206.fra.mempool.space",
+      "node207.fra.mempool.space",
+      "node208.fra.mempool.space",
+      "node203.tk7.mempool.space",
+      "node204.tk7.mempool.space",
+      "node205.tk7.mempool.space"
+    ]
   }
 }
