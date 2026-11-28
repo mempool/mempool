@@ -1,5 +1,5 @@
 import { TransactionFlags } from '@app/shared/filters.utils';
-import { getVarIntLength, parseMultisigScript, isPoint, parseTapscriptMultisig, parseTapscriptUnanimousMultisig, ScriptInfo } from '@app/shared/script.utils';
+import { getVarIntLength, opcodes, parseMultisigScript, isPoint, parseTapscriptMultisig, parseTapscriptUnanimousMultisig, ScriptInfo } from '@app/shared/script.utils';
 import { Transaction, Vin, Vout } from '@interfaces/electrs.interface';
 import { CpfpInfo, RbfInfo, TransactionStripped } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
@@ -652,13 +652,14 @@ const EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT = {
   'testnet4': 90_500,
   'testnet': 4_550_000,
   'signet': 260_000,
+  'regtest': 0,
   '': 905_000,
 };
 function isStandardEphemeralDust(tx: Transaction, height?: number, network?: string): boolean {
   if (
     tx.fee === 0
     && (height == null || (
-      EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[network]
+      EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[network] !== undefined
       && height >= EPHEMERAL_DUST_STANDARDNESS_ACTIVATION_HEIGHT[network]
     ))
   ) {
@@ -672,13 +673,14 @@ const OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT = {
   'testnet4': 108_000,
   'testnet': 4_750_000,
   'signet': 276_500,
+  'regtest': 0,
   '': 921_000,
 };
 const MAX_DATACARRIER_BYTES = 83;
 function isStandardOpReturn(bytes: number, outputs: number,height?: number, network?: string): boolean {
   if (
     (height == null || (
-      OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[network]
+      OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[network] !== undefined
       && height >= OP_RETURN_STANDARDNESS_ACTIVATION_HEIGHT[network]
     )) // limits lifted
     || // OR
@@ -694,12 +696,13 @@ const LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT = {
   'testnet4': 108_000,
   'testnet': 4_750_000,
   'signet': 276_500,
+  'regtest': 0,
   '': 921_000,
 };
 function isNonStandardLegacySigops(tx: Transaction, height?: number, network?: string): boolean {
   if (
     height == null || (
-      LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[network]
+      LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[network] !== undefined
       && height >= LEGACY_SIGOPS_STANDARDNESS_ACTIVATION_HEIGHT[network]
     )
   ) {
@@ -1108,7 +1111,7 @@ function convertScriptSigAsm(hex: string): string {
       } else if (op === 0xba) {
         b.push('OP_CHECKSIGADD');
       } else {
-        const opcode = opcodes[op];
+        const opcode = opcodeNames[op];
         if (opcode) {
           b.push(opcode);
         } else {
@@ -1969,6 +1972,10 @@ export function scriptPubKeyToAddress(scriptPubKey: string, network: string): { 
   if (/^5120[0-9a-f]{64}$/.test(scriptPubKey)) {
     return { address: p2tr(scriptPubKey.substring(4, 4 + 64), network), type: 'v1_p2tr' };
   }
+  // op_return (checked before multisig: its data can end in 0xae)
+  if (/^6a/.test(scriptPubKey)) {
+    return { address: null, type: 'op_return' };
+  }
   // multisig
   if (/^[0-9a-f]+ae$/.test(scriptPubKey)) {
     return { address: null, type: 'multisig' };
@@ -1976,10 +1983,6 @@ export function scriptPubKeyToAddress(scriptPubKey: string, network: string): { 
   // anchor
   if (scriptPubKey === '51024e73') {
     return { address: p2a(network), type: 'anchor' };
-  }
-  // op_return
-  if (/^6a/.test(scriptPubKey)) {
-    return { address: null, type: 'op_return' };
   }
   return { address: null, type: 'unknown' };
 }
@@ -2493,7 +2496,8 @@ export function compactSize(n: number): Uint8Array {
 }
 
 // Inversed the opcodes object from https://github.com/mempool/mempool/blob/14e49126c3ca8416a8d7ad134a95c5e090324d69/backend/src/utils/bitcoin-script.ts#L1
-const opcodes = {
+// (opcode value => asm name; `opcodes` from script.utils maps asm name => opcode value)
+const opcodeNames = {
   0: 'OP_0',
   76: 'OP_PUSHDATA1',
   77: 'OP_PUSHDATA2',

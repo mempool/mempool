@@ -4,7 +4,7 @@ import { RbfTree, RbfTransaction } from '@interfaces/node-api.interface';
 import { StateService } from '@app/services/state.service';
 import { ApiService } from '@app/services/api.service';
 import { forkJoin, of, Observable, Subject } from 'rxjs';
-import { catchError, map, retry, switchMap, takeUntil } from 'rxjs/operators';
+import { catchError, map, retry, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { Transaction } from '@interfaces/electrs.interface';
 import { buildRbfDiffView, RbfDiffView } from '@app/shared/rbf-diff.utils';
 
@@ -60,6 +60,8 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
   // a new comparison is loading or after one failed to load
   private renderedPair: { oldTxid: string, newTxid: string } | null = null;
   private nodeIndex = new Map<string, RbfTree>();
+  // transactions already fetched for a comparison: another backend instance may not have them
+  private loadedTxs = new Map<string, Transaction>();
   private destroy$ = new Subject<void>();
   // Comparisons go through one stream so a slower earlier request can never land
   // on top of a newer selection. A null request cancels whatever is in flight.
@@ -501,6 +503,9 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
    * usually lands on an instance that has the transaction.
    */
   private fetchCachedTx$(txid: string): Observable<Transaction | null> {
+    if (this.loadedTxs.has(txid)) {
+      return of(this.loadedTxs.get(txid));
+    }
     return this.apiService.getRbfCachedTx$(txid).pipe(
       map((tx) => {
         if (!tx) {
@@ -509,6 +514,7 @@ export class RbfTimelineComponent implements OnInit, OnChanges, OnDestroy {
         return tx;
       }),
       retry({ count: 2, delay: 400 }),
+      tap((tx) => this.loadedTxs.set(txid, tx)),
       catchError(() => of(null)),
     );
   }
