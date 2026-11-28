@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostBinding, Input, NgZone, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { AddressBlockGroup } from '@components/address-blocks/address-blocks.utils';
-import { feeLevels } from '@app/app.constants';
+import { AddressBlockGroup, minedBlockBackground, pendingBlockBackground } from '@components/address-blocks/address-blocks.utils';
 import { ThemeService } from '@app/services/theme.service';
 import { StateService } from '@app/services/state.service';
 import { fromEvent, Subscription } from 'rxjs';
+
+const MAX_AUTO_LOADS = 2;
 
 @Component({
   selector: 'app-address-blocks',
@@ -18,20 +19,11 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
   @Input() loading = false;
   @Input() fullyLoaded = false;
   @Output() selectGroup = new EventEmitter<string>();
-  @Output() loadMore = new EventEmitter<void>();
+  @Output() loadMore = new EventEmitter<boolean>();
 
   @HostBinding('style.--sticky-top') stickyTop = '0px';
   pendingBackground: string;
   blockBackground: string;
-  gradientColors = {
-    '': ['var(--mainnet-alt)', 'var(--primary)'],
-    liquid: ['var(--liquid)', 'var(--testnet-alt)'],
-    'liquidtestnet': ['var(--liquidtestnet)', 'var(--liquidtestnet-alt)'],
-    testnet: ['var(--testnet)', 'var(--testnet-alt)'],
-    testnet4: ['var(--testnet)', 'var(--testnet-alt)'],
-    signet: ['var(--signet)', 'var(--signet-alt)'],
-    regtest: ['var(--regtest)', 'var(--regtest-alt)'],
-  };
   dragging = false;
   @ViewChild('strip', { static: true }) strip: ElementRef<HTMLElement>;
   private subscriptions = new Subscription();
@@ -40,6 +32,7 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
   private startScrollLeft = 0;
   private suppressClick = false;
   private headerObserver: ResizeObserver;
+  private autoLoads = 0;
 
   constructor(
     private themeService: ThemeService,
@@ -59,9 +52,9 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
       this.headerObserver.observe(header);
     }
     // networkChanged$ only emits on changes, so start from the current network.
-    this.updateBlockBackground(this.stateService.network);
+    this.blockBackground = minedBlockBackground(this.stateService.network);
     this.subscriptions.add(this.stateService.networkChanged$.subscribe(network => {
-      this.updateBlockBackground(network);
+      this.blockBackground = minedBlockBackground(network);
       this.cd.markForCheck();
     }));
     this.subscriptions.add(this.themeService.themeState$.subscribe(({ loading }) => {
@@ -76,7 +69,7 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
         const strip = this.strip.nativeElement;
         const remaining = strip.scrollWidth - strip.scrollLeft - strip.clientWidth;
         if (!this.loading && !this.fullyLoaded && remaining < 2 * strip.querySelector<HTMLElement>('.activity-block').offsetWidth) {
-          this.zone.run(() => this.loadMore.emit());
+          this.zone.run(() => this.loadMore.emit(false));
         }
       }));
     });
@@ -91,6 +84,13 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.updatePendingBackground();
+    if (changes.groups && !this.groups.length) {
+      this.autoLoads = 0;
+    }
+    if (changes.groups || changes.loading || changes.fullyLoaded) {
+      // Wait for the view to render the blocks before measuring the strip.
+      requestAnimationFrame(() => this.loadMoreIfShort());
+    }
     if (changes.selectedGroup && !changes.selectedGroup.firstChange) {
       // Wait for the view to render the selection before revealing it.
       requestAnimationFrame(() => this.revealSelectedBlock());
@@ -100,6 +100,15 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
     this.headerObserver?.disconnect();
+  }
+
+  private loadMoreIfShort(): void {
+    const strip = this.strip.nativeElement;
+    if (!this.loading && !this.fullyLoaded && this.groups.length && this.autoLoads < MAX_AUTO_LOADS
+      && strip.scrollWidth <= strip.clientWidth) {
+      this.autoLoads++;
+      this.loadMore.emit(true);
+    }
   }
 
   // Scrolls the strip, not the page, so the selected block is fully visible.
@@ -178,20 +187,8 @@ export class AddressBlocksComponent implements OnInit, OnChanges, OnDestroy {
     return btc < 999.995 ? '1.2-2' : '1.0-0';
   }
 
-  private updateBlockBackground(network: string): void {
-    const [top, bottom] = this.gradientColors[network] ?? this.gradientColors[''];
-    this.blockBackground = `linear-gradient(${top}, ${bottom})`;
-  }
-
   private updatePendingBackground(): void {
     const fees = this.groups.find(group => !group.status.confirmed)?.feeRates ?? [];
-    const colors = fees.slice().sort((a, b) => a - b).map(fee => {
-      const nextLevel = feeLevels.findIndex(level => level > fee);
-      const index = nextLevel < 0 ? feeLevels.length - 1 : Math.max(0, nextLevel - 1);
-      return '#' + this.themeService.mempoolFeeColors[index];
-    });
-    this.pendingBackground = colors.length > 1
-      ? `linear-gradient(to right, ${colors.join(', ')})`
-      : colors[0] ?? 'var(--mempool-block-loading)';
+    this.pendingBackground = pendingBlockBackground(fees, this.themeService.mempoolFeeColors);
   }
 }

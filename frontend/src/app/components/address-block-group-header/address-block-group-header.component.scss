@@ -1,31 +1,48 @@
+@use '../address-blocks/block-cube';
+
 :host {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: flex-start;
+  align-items: center;
   gap: 0.5rem 1rem;
   margin-top: 1rem;
   padding-bottom: 0.5rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.25rem;
   scroll-margin-top: 90px;
   @media (max-width: 575px) { scroll-margin-top: 120px; }
 
   &:focus-visible { outline: 1px solid var(--info); }
 
   &.first-group {
-    margin-top: 0;
+    margin-top: 1.5rem;
   }
 }
 
-.group-count, .group-partial { font-size: 0.85rem; }
+.block-cube {
+  @include block-cube.faces;
+  --block-size: 18px;
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--block-size);
+  height: var(--block-size);
+  margin-left: 3px; // room for the side face
+
+  &::before {
+    filter: brightness(0.7);
+  }
+
+  &.pending {
+    &::after { background: var(--mempool-block-top); }
+    &::before { background: var(--mempool-block-side); }
+  }
+}
+
+.group-count, .group-partial {
+  font-size: 0.85rem;
+  color: var(--transparent-fg);
+}
 
 h3 {
   font-size: 1.1rem;
   margin-bottom: 0;
-  @media (max-width: 575px) { flex-basis: 100%; }
-}
-
-app-timestamp {
-  font-size: 14px;
-  white-space: nowrap;
 }
