@@ -315,7 +315,17 @@ class MiningRoutes {
 
   private async $getRewardStats(req: Request, res: Response) {
     try {
-      const response = await mining.$getRewardStats(144);
+      const REWARD_STATS_CAP = 4_320;
+      if (!/^[1-9]\d*$/.test(req.params.blockCount)) {
+        handleError(req, res, 400, `Parameter 'blockCount' must be a valid non-zero integer`);
+        return;
+      }
+      const blockCount = parseInt(req.params.blockCount, 10);
+      if (blockCount > REWARD_STATS_CAP) {
+        handleError(req, res, 400, `Parameter 'blockCount' can be at most ${REWARD_STATS_CAP} / ~1 month`);
+        return;
+      }
+      const response = await mining.$getRewardStats(blockCount);
       res.setHeader('Expires', new Date(Date.now() + 1000 * 60).toUTCString());
       res.json(response);
     } catch (e) {
