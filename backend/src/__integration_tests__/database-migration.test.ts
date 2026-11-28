@@ -1,3 +1,4 @@
+import { RowDataPacket } from 'mysql2';
 import DB from '../database';
 import { setupTestDatabase, waitForDatabase } from './test-helpers';
 
@@ -92,6 +93,18 @@ describe('Database Migration Integration Tests', () => {
     expect(columnNames).toContain('id');
     expect(columnNames).toContain('name');
     expect(columnNames).toContain('slug');
+  });
+
+  test('statistics table should have the added index', async () => {
+    const [indexColumns] = await DB.query<RowDataPacket[]>(
+      `SELECT COLUMN_NAME
+       FROM information_schema.STATISTICS
+       WHERE TABLE_SCHEMA = 'mempool_test'
+       AND TABLE_NAME = 'statistics'
+       AND INDEX_NAME = 'added'`
+    );
+
+    expect(indexColumns.map(column => column.COLUMN_NAME)).toEqual(['added']);
   });
 });
 

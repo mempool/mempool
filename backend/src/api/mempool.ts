@@ -26,8 +26,8 @@ class Mempool {
   // With the esplora backend, blocks come from Core but the mempool txid list comes from electrs, which
   // can still be indexing a block the backend has already applied; its stale list would re-add that block's transactions.
   private recentlyMined: { hash: string, txids: Set<string> }[] = [];
-  // one block covers the normal case; two also covers a second block found before electrs catches up
-  private static readonly RECENTLY_MINED_BLOCKS = 2;
+  // one block covers the normal case; more cover blocks that arrive together, as on testnet4
+  private static readonly RECENTLY_MINED_BLOCKS = 8;
   private mempoolInfo: IBitcoinApi.MempoolInfo;
   public clusterMempool: ClusterMempool | null = null;
   private $asyncMempoolChangedCallback: ((newMempool: {[txId: string]: MempoolTransactionExtended; }, mempoolSize: number, newTransactions: MempoolTransactionExtended[],
