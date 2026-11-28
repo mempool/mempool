@@ -133,6 +133,7 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
               }
               return forkJoin(batches.map(batch => { return this.electrsApiService.cachedRequest(this.electrsApiService.getOutspendsBatched$, 250, batch); })).pipe(
                 map(batchedOutspends => ({ txIds, outspends: batchedOutspends.flat(1) })),
+                catchError(() => of({ txIds, outspends: [] })),
               );
             } else {
               return of({ txIds, outspends: [] });
@@ -170,11 +171,8 @@ export class TransactionsListComponent implements OnInit, OnChanges, OnDestroy {
             filter(() => this.stateService.networkSupportsLightning() && !this.txPreview),
             switchMap((txIds) => this.apiService.getChannelByTxIds$(txIds).pipe(
               map(channels => channels.map((channel, i) => ({ txid: txIds[i], channel }))),
+              catchError(() => of([])),
             )),
-            catchError((error) => {
-              // handle 404
-              return of([]);
-            }),
             tap((channels) => {
               if (!this.transactions) {
                 return;

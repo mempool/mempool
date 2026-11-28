@@ -350,10 +350,10 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
       switchMap((txId) =>
         this.apiService
           .getRbfCachedTx$(txId)
+          .pipe(
+            catchError(() => of(null))
+          )
       ),
-      catchError(() => {
-        return of(null);
-      })
     ).subscribe((tx) => {
       this.loadingCachedTx = false;
       if (!tx) {
@@ -378,11 +378,6 @@ export class TransactionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.setupGraph();
 
         this.fetchRbfHistory$.next(this.tx.txid);
-        this.txRbfInfoSubscription = this.stateService.txRbfInfo$.subscribe((rbfInfo) => {
-          if (this.tx) {
-            this.rbfInfo = rbfInfo;
-          }
-        });
         this.txChanged$.next(true);
       }
     });
